@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Quest extends Model
+class Task extends Model
 {
     use HasFactory;
 
-    protected $table = 'player_quests';
+    protected $table = 'player_tasks';
 
     protected $fillable = [
         'world_id',
@@ -22,7 +22,7 @@ class Quest extends Model
         'progress',
         'target',
         'rewards',
-        'requirements',
+        'deadline',
         'started_at',
         'completed_at',
         'created_at',
@@ -31,7 +31,7 @@ class Quest extends Model
 
     protected $casts = [
         'rewards' => 'array',
-        'requirements' => 'array',
+        'deadline' => 'datetime',
         'started_at' => 'datetime',
         'completed_at' => 'datetime',
     ];
@@ -70,5 +70,18 @@ class Quest extends Model
     public function scopeByStatus($query, $status)
     {
         return $query->where('status', $status);
+    }
+
+    public function scopeExpired($query)
+    {
+        return $query->where('deadline', '<', now());
+    }
+
+    public function scopeNotExpired($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('deadline')
+              ->orWhere('deadline', '>', now());
+        });
     }
 }

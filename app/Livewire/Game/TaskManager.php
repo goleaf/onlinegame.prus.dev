@@ -4,210 +4,672 @@ namespace App\Livewire\Game;
 
 use App\Models\Game\Player;
 use App\Models\Game\Village;
+use App\Models\Game\World;
+use App\Models\Game\Task;
+use App\Models\Game\Quest;
+use App\Models\Game\Achievement;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class TaskManager extends Component
 {
-    public $village;
-    public $tasks = [];
-    public $newTask = '';
-    public $taskPriority = 'medium';
-    public $taskCategory = 'general';
-    public $showAddTask = false;
-    public $filterStatus = 'all';
-    public $filterCategory = 'all';
+    use WithPagination;
 
-    public function mount($villageId = null)
+    public $world;
+    public $player;
+    public $isLoading = false;
+    public $notifications = [];
+
+    // Task data
+    public $tasks = [];
+    public $activeTasks = [];
+    public $completedTasks = [];
+    public $availableTasks = [];
+    public $taskProgress = [];
+    public $taskRewards = [];
+
+    // Quest data
+    public $quests = [];
+    public $activeQuests = [];
+    public $completedQuests = [];
+    public $availableQuests = [];
+    public $questProgress = [];
+
+    // Achievement data
+    public $achievements = [];
+    public $unlockedAchievements = [];
+    public $availableAchievements = [];
+    public $achievementProgress = [];
+
+    // View modes and filters
+    public $viewMode = 'tasks';  // tasks, quests, achievements
+    public $taskType = 'all';  // all, active, completed, available
+    public $questType = 'all';  // all, active, completed, available
+    public $achievementType = 'all';  // all, unlocked, available
+    public $sortBy = 'created_at';
+    public $sortOrder = 'desc';
+    public $searchQuery = '';
+
+    // Real-time features
+    public $realTimeUpdates = true;
+    public $autoRefresh = true;
+    public $refreshInterval = 30;  // seconds
+    public $lastUpdate = null;
+
+    // Pagination
+    public $perPage = 20;
+    public $currentPage = 1;
+
+    // Task categories
+    public $taskCategories = [
+        'tasks' => 'Tasks',
+        'quests' => 'Quests',
+        'achievements' => 'Achievements'
+    ];
+
+    public $taskTypes = [
+        'all' => 'All Tasks',
+        'active' => 'Active',
+        'completed' => 'Completed',
+        'available' => 'Available'
+    ];
+
+    public $questTypes = [
+        'all' => 'All Quests',
+        'active' => 'Active',
+        'completed' => 'Completed',
+        'available' => 'Available'
+    ];
+
+    public $achievementTypes = [
+        'all' => 'All Achievements',
+        'unlocked' => 'Unlocked',
+        'available' => 'Available'
+    ];
+
+    protected $listeners = [
+        'refreshTasks',
+        'taskCompleted',
+        'questCompleted',
+        'achievementUnlocked',
+        'taskProgressUpdated',
+        'questProgressUpdated',
+        'gameTickProcessed',
+        'villageSelected'
+    ];
+
+    public function mount($worldId = null, $world = null)
     {
-        if ($villageId) {
-            $this->village = Village::findOrFail($villageId);
+        if ($world) {
+            $this->world = $world;
+        } elseif ($worldId) {
+            $this->world = World::findOrFail($worldId);
         } else {
             $player = Player::where('user_id', Auth::id())->first();
-            $this->village = $player?->villages()->first();
+            $this->world = $player?->village?->world;
         }
 
-        $this->loadTasks();
+        if ($this->world) {
+            $this->loadPlayerData();
+            $this->loadTasks();
+            $this->initializeTaskFeatures();
+        }
+    }
+
+    public function loadPlayerData()
+    {
+        try {
+            $this->player = Player::where('user_id', Auth::id())
+                ->where('world_id', $this->world->id)
+                ->with(['villages', 'alliance'])
+                ->first();
+
+            if (!$this->player) {
+                $this->addNotification('Player not found in this world', 'error');
+                return;
+            }
+        } catch (\Exception $e) {
+            $this->addNotification('Error loading player data: ' . $e->getMessage(), 'error');
+        }
     }
 
     public function loadTasks()
     {
-        // Sample tasks - in a real game, these would come from the database
-        $this->tasks = [
-            [
-                'id' => 1,
-                'title' => 'Upgrade Woodcutter to Level 2',
-                'description' => 'Increase wood production by upgrading the woodcutter',
-                'category' => 'building',
-                'priority' => 'high',
-                'status' => 'pending',
-                'created_at' => now()->subMinutes(30),
-                'due_at' => now()->addHours(2),
-                'progress' => 0
-            ],
-            [
-                'id' => 2,
-                'title' => 'Build Warehouse',
-                'description' => 'Increase storage capacity for resources',
-                'category' => 'building',
-                'priority' => 'medium',
-                'status' => 'in_progress',
-                'created_at' => now()->subHours(1),
-                'due_at' => now()->addHours(4),
-                'progress' => 60
-            ],
-            [
-                'id' => 3,
-                'title' => 'Explore Map',
-                'description' => 'Scout the surrounding area for resources',
-                'category' => 'exploration',
-                'priority' => 'low',
+        $this->isLoading = true;
+
+        try {
+            switch ($this->viewMode) {
+                case 'tasks':
+                    $this->loadTaskData();
+                    break;
+                case 'quests':
+                    $this->loadQuestData();
+                    break;
+                case 'achievements':
+                    $this->loadAchievementData();
+                    break;
+            }
+
+            $this->lastUpdate = now();
+        } catch (\Exception $e) {
+            $this->addNotification('Error loading tasks: ' . $e->getMessage(), 'error');
+        }
+
+        $this->isLoading = false;
+    }
+
+    private function loadTaskData()
+    {
+        $query = Task::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id);
+
+        switch ($this->taskType) {
+            case 'active':
+                $query->where('status', 'active');
+                break;
+            case 'completed':
+                $query->where('status', 'completed');
+                break;
+            case 'available':
+                $query->where('status', 'available');
+                break;
+        }
+
+        if ($this->searchQuery) {
+            $query->where('title', 'like', '%' . $this->searchQuery . '%')
+                ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
+        }
+
+        $this->tasks = $query->orderBy($this->sortBy, $this->sortOrder)->get();
+        $this->activeTasks = Task::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id)
+            ->where('status', 'active')
+            ->get();
+        $this->completedTasks = Task::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id)
+            ->where('status', 'completed')
+            ->get();
+        $this->availableTasks = Task::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id)
+            ->where('status', 'available')
+            ->get();
+    }
+
+    private function loadQuestData()
+    {
+        $query = Quest::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id);
+
+        switch ($this->questType) {
+            case 'active':
+                $query->where('status', 'active');
+                break;
+            case 'completed':
+                $query->where('status', 'completed');
+                break;
+            case 'available':
+                $query->where('status', 'available');
+                break;
+        }
+
+        if ($this->searchQuery) {
+            $query->where('title', 'like', '%' . $this->searchQuery . '%')
+                ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
+        }
+
+        $this->quests = $query->orderBy($this->sortBy, $this->sortOrder)->get();
+        $this->activeQuests = Quest::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id)
+            ->where('status', 'active')
+            ->get();
+        $this->completedQuests = Quest::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id)
+            ->where('status', 'completed')
+            ->get();
+        $this->availableQuests = Quest::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id)
+            ->where('status', 'available')
+            ->get();
+    }
+
+    private function loadAchievementData()
+    {
+        $query = Achievement::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id);
+
+        switch ($this->achievementType) {
+            case 'unlocked':
+                $query->where('status', 'unlocked');
+                break;
+            case 'available':
+                $query->where('status', 'available');
+                break;
+        }
+
+        if ($this->searchQuery) {
+            $query->where('title', 'like', '%' . $this->searchQuery . '%')
+                ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
+        }
+
+        $this->achievements = $query->orderBy($this->sortBy, $this->sortOrder)->get();
+        $this->unlockedAchievements = Achievement::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id)
+            ->where('status', 'unlocked')
+            ->get();
+        $this->availableAchievements = Achievement::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id)
+            ->where('status', 'available')
+            ->get();
+    }
+
+    // Task management methods
+    public function startTask($taskId)
+    {
+        $task = Task::find($taskId);
+        if ($task && $task->status === 'available') {
+            $task->update([
+                'status' => 'active',
+                'started_at' => now()
+            ]);
+            $this->loadTasks();
+            $this->addNotification("Task '{$task->title}' started", 'success');
+            $this->dispatch('taskStarted', ['taskId' => $taskId]);
+        } else {
+            $this->addNotification('Task not available or already active', 'error');
+        }
+    }
+
+    public function completeTask($taskId)
+    {
+        $task = Task::find($taskId);
+        if ($task && $task->status === 'active') {
+            $task->update([
                 'status' => 'completed',
-                'created_at' => now()->subHours(2),
-                'due_at' => now()->subHours(1),
-                'progress' => 100
-            ],
-            [
-                'id' => 4,
-                'title' => 'Research New Technology',
-                'description' => 'Unlock new building types',
-                'category' => 'research',
-                'priority' => 'medium',
-                'status' => 'pending',
-                'created_at' => now()->subMinutes(15),
-                'due_at' => now()->addDays(1),
-                'progress' => 0
-            ]
-        ];
+                'completed_at' => now()
+            ]);
+            $this->giveTaskRewards($task);
+            $this->loadTasks();
+            $this->addNotification("Task '{$task->title}' completed!", 'success');
+            $this->dispatch('taskCompleted', ['taskId' => $taskId]);
+        } else {
+            $this->addNotification('Task not active or already completed', 'error');
+        }
     }
 
-    public function addTask()
+    public function abandonTask($taskId)
     {
-        if (empty($this->newTask))
+        $task = Task::find($taskId);
+        if ($task && $task->status === 'active') {
+            $task->update([
+                'status' => 'available',
+                'started_at' => null
+            ]);
+            $this->loadTasks();
+            $this->addNotification("Task '{$task->title}' abandoned", 'info');
+            $this->dispatch('taskAbandoned', ['taskId' => $taskId]);
+        } else {
+            $this->addNotification('Task not active', 'error');
+        }
+    }
+
+    // Quest management methods
+    public function startQuest($questId)
+    {
+        $quest = Quest::find($questId);
+        if ($quest && $quest->status === 'available') {
+            $quest->update([
+                'status' => 'active',
+                'started_at' => now()
+            ]);
+            $this->loadTasks();
+            $this->addNotification("Quest '{$quest->title}' started", 'success');
+            $this->dispatch('questStarted', ['questId' => $questId]);
+        } else {
+            $this->addNotification('Quest not available or already active', 'error');
+        }
+    }
+
+    public function completeQuest($questId)
+    {
+        $quest = Quest::find($questId);
+        if ($quest && $quest->status === 'active') {
+            $quest->update([
+                'status' => 'completed',
+                'completed_at' => now()
+            ]);
+            $this->giveQuestRewards($quest);
+            $this->loadTasks();
+            $this->addNotification("Quest '{$quest->title}' completed!", 'success');
+            $this->dispatch('questCompleted', ['questId' => $questId]);
+        } else {
+            $this->addNotification('Quest not active or already completed', 'error');
+        }
+    }
+
+    public function abandonQuest($questId)
+    {
+        $quest = Quest::find($questId);
+        if ($quest && $quest->status === 'active') {
+            $quest->update([
+                'status' => 'available',
+                'started_at' => null
+            ]);
+            $this->loadTasks();
+            $this->addNotification("Quest '{$quest->title}' abandoned", 'info');
+            $this->dispatch('questAbandoned', ['questId' => $questId]);
+        } else {
+            $this->addNotification('Quest not active', 'error');
+        }
+    }
+
+    // Achievement management methods
+    public function claimAchievement($achievementId)
+    {
+        $achievement = Achievement::find($achievementId);
+        if ($achievement && $achievement->status === 'available') {
+            $achievement->update([
+                'status' => 'unlocked',
+                'unlocked_at' => now()
+            ]);
+            $this->giveAchievementRewards($achievement);
+            $this->loadTasks();
+            $this->addNotification("Achievement '{$achievement->title}' unlocked!", 'success');
+            $this->dispatch('achievementUnlocked', ['achievementId' => $achievementId]);
+        } else {
+            $this->addNotification('Achievement not available or already unlocked', 'error');
+        }
+    }
+
+    // Reward methods
+    private function giveTaskRewards($task)
+    {
+        if ($task->rewards) {
+            $rewards = json_decode($task->rewards, true);
+            foreach ($rewards as $type => $amount) {
+                switch ($type) {
+                    case 'points':
+                        $this->player->increment('points', $amount);
+                        break;
+                    case 'resources':
+                        foreach ($amount as $resource => $value) {
+                            $this->player->villages->first()->increment($resource, $value);
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
+    private function giveQuestRewards($quest)
+    {
+        if ($quest->rewards) {
+            $rewards = json_decode($quest->rewards, true);
+            foreach ($rewards as $type => $amount) {
+                switch ($type) {
+                    case 'points':
+                        $this->player->increment('points', $amount);
+                        break;
+                    case 'resources':
+                        foreach ($amount as $resource => $value) {
+                            $this->player->villages->first()->increment($resource, $value);
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
+    private function giveAchievementRewards($achievement)
+    {
+        if ($achievement->rewards) {
+            $rewards = json_decode($achievement->rewards, true);
+            foreach ($rewards as $type => $amount) {
+                switch ($type) {
+                    case 'points':
+                        $this->player->increment('points', $amount);
+                        break;
+                    case 'resources':
+                        foreach ($amount as $resource => $value) {
+                            $this->player->villages->first()->increment($resource, $value);
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
+    // View mode methods
+    public function setViewMode($mode)
+    {
+        $this->viewMode = $mode;
+        $this->loadTasks();
+        $this->addNotification('Switched to ' . ($this->taskCategories[$mode] ?? $mode) . ' view', 'info');
+    }
+
+    public function setTaskType($type)
+    {
+        $this->taskType = $type;
+        $this->loadTasks();
+        $this->addNotification('Task type set to ' . ($this->taskTypes[$type] ?? $type), 'info');
+    }
+
+    public function setQuestType($type)
+    {
+        $this->questType = $type;
+        $this->loadTasks();
+        $this->addNotification('Quest type set to ' . ($this->questTypes[$type] ?? $type), 'info');
+    }
+
+    public function setAchievementType($type)
+    {
+        $this->achievementType = $type;
+        $this->loadTasks();
+        $this->addNotification('Achievement type set to ' . ($this->achievementTypes[$type] ?? $type), 'info');
+    }
+
+    public function sortTasks($sortBy)
+    {
+        if ($this->sortBy === $sortBy) {
+            $this->sortOrder = $this->sortOrder === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $sortBy;
+            $this->sortOrder = 'asc';
+        }
+
+        $this->loadTasks();
+        $this->addNotification("Sorted by {$sortBy} ({$this->sortOrder})", 'info');
+    }
+
+    public function searchTasks()
+    {
+        if (empty($this->searchQuery)) {
+            $this->addNotification('Search cleared', 'info');
             return;
+        }
 
-        $task = [
-            'id' => count($this->tasks) + 1,
-            'title' => $this->newTask,
-            'description' => 'Custom task created by player',
-            'category' => $this->taskCategory,
-            'priority' => $this->taskPriority,
-            'status' => 'pending',
-            'created_at' => now(),
-            'due_at' => now()->addHours(24),
-            'progress' => 0
+        $this->loadTasks();
+        $this->addNotification("Searching for: {$this->searchQuery}", 'info');
+    }
+
+    public function clearFilters()
+    {
+        $this->taskType = 'all';
+        $this->questType = 'all';
+        $this->achievementType = 'all';
+        $this->searchQuery = '';
+        $this->sortBy = 'created_at';
+        $this->sortOrder = 'desc';
+
+        $this->loadTasks();
+        $this->addNotification('All filters cleared', 'info');
+    }
+
+    // Real-time features
+    public function toggleRealTimeUpdates()
+    {
+        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->addNotification(
+            $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
+            'info'
+        );
+    }
+
+    public function toggleAutoRefresh()
+    {
+        $this->autoRefresh = !$this->autoRefresh;
+        $this->addNotification(
+            $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
+            'info'
+        );
+    }
+
+    public function setRefreshInterval($interval)
+    {
+        $this->refreshInterval = max(5, min(300, $interval));
+        $this->addNotification("Refresh interval set to {$this->refreshInterval} seconds", 'info');
+    }
+
+    public function refreshTasks()
+    {
+        $this->loadTasks();
+        $this->addNotification('Tasks refreshed', 'success');
+    }
+
+    // Event handlers
+    #[On('taskCompleted')]
+    public function handleTaskCompleted($data)
+    {
+        $this->loadTasks();
+        $this->addNotification('Task completed', 'success');
+    }
+
+    #[On('questCompleted')]
+    public function handleQuestCompleted($data)
+    {
+        $this->loadTasks();
+        $this->addNotification('Quest completed', 'success');
+    }
+
+    #[On('achievementUnlocked')]
+    public function handleAchievementUnlocked($data)
+    {
+        $this->loadTasks();
+        $this->addNotification('Achievement unlocked!', 'success');
+    }
+
+    #[On('taskProgressUpdated')]
+    public function handleTaskProgressUpdated($data)
+    {
+        $this->loadTasks();
+        $this->addNotification('Task progress updated', 'info');
+    }
+
+    #[On('questProgressUpdated')]
+    public function handleQuestProgressUpdated($data)
+    {
+        $this->loadTasks();
+        $this->addNotification('Quest progress updated', 'info');
+    }
+
+    #[On('gameTickProcessed')]
+    public function handleGameTickProcessed()
+    {
+        if ($this->realTimeUpdates) {
+            $this->loadTasks();
+        }
+    }
+
+    #[On('villageSelected')]
+    public function handleVillageSelected($villageId)
+    {
+        $this->loadTasks();
+        $this->addNotification('Village selected - tasks updated', 'info');
+    }
+
+    // Utility methods
+    public function addNotification($message, $type = 'info')
+    {
+        $this->notifications[] = [
+            'id' => uniqid(),
+            'message' => $message,
+            'type' => $type,
+            'timestamp' => now()
+        ];
+    }
+
+    public function clearNotifications()
+    {
+        $this->notifications = [];
+    }
+
+    public function getTaskIcon($type)
+    {
+        $icons = [
+            'task' => 'check-circle',
+            'quest' => 'star',
+            'achievement' => 'trophy',
+            'building' => 'home',
+            'troop' => 'users',
+            'resource' => 'coins',
+            'battle' => 'sword'
         ];
 
-        $this->tasks[] = $task;
-        $this->newTask = '';
-        $this->showAddTask = false;
-
-        $this->dispatch('task-added', ['task' => $task]);
+        return $icons[$type] ?? 'check-circle';
     }
 
-    public function updateTaskStatus($taskId, $status)
+    public function getTaskColor($status)
     {
-        foreach ($this->tasks as &$task) {
-            if ($task['id'] == $taskId) {
-                $task['status'] = $status;
-                if ($status === 'completed') {
-                    $task['progress'] = 100;
-                }
-                break;
-            }
-        }
-
-        $this->dispatch('task-updated', ['task_id' => $taskId, 'status' => $status]);
-    }
-
-    public function updateTaskProgress($taskId, $progress)
-    {
-        foreach ($this->tasks as &$task) {
-            if ($task['id'] == $taskId) {
-                $task['progress'] = max(0, min(100, $progress));
-                if ($task['progress'] >= 100) {
-                    $task['status'] = 'completed';
-                } elseif ($task['progress'] > 0) {
-                    $task['status'] = 'in_progress';
-                }
-                break;
-            }
-        }
-
-        $this->dispatch('task-progress-updated', ['task_id' => $taskId, 'progress' => $progress]);
-    }
-
-    public function deleteTask($taskId)
-    {
-        $this->tasks = array_filter($this->tasks, function ($task) use ($taskId) {
-            return $task['id'] != $taskId;
-        });
-
-        $this->dispatch('task-deleted', ['task_id' => $taskId]);
-    }
-
-    public function toggleAddTask()
-    {
-        $this->showAddTask = !$this->showAddTask;
-    }
-
-    public function setFilterStatus($status)
-    {
-        $this->filterStatus = $status;
-    }
-
-    public function setFilterCategory($category)
-    {
-        $this->filterCategory = $category;
-    }
-
-    public function getFilteredTasks()
-    {
-        $filtered = $this->tasks;
-
-        if ($this->filterStatus !== 'all') {
-            $filtered = array_filter($filtered, function ($task) {
-                return $task['status'] === $this->filterStatus;
-            });
-        }
-
-        if ($this->filterCategory !== 'all') {
-            $filtered = array_filter($filtered, function ($task) {
-                return $task['category'] === $this->filterCategory;
-            });
-        }
-
-        return $filtered;
-    }
-
-    public function getTaskStats()
-    {
-        $total = count($this->tasks);
-        $completed = count(array_filter($this->tasks, function ($task) {
-            return $task['status'] === 'completed';
-        }));
-        $inProgress = count(array_filter($this->tasks, function ($task) {
-            return $task['status'] === 'in_progress';
-        }));
-        $pending = count(array_filter($this->tasks, function ($task) {
-            return $task['status'] === 'pending';
-        }));
-
-        return [
-            'total' => $total,
-            'completed' => $completed,
-            'in_progress' => $inProgress,
-            'pending' => $pending,
-            'completion_rate' => $total > 0 ? round(($completed / $total) * 100, 1) : 0
+        $colors = [
+            'active' => 'blue',
+            'completed' => 'green',
+            'available' => 'gray',
+            'unlocked' => 'yellow'
         ];
+
+        return $colors[$status] ?? 'gray';
+    }
+
+    public function getProgressPercentage($current, $target)
+    {
+        if ($target == 0) return 0;
+        return min(100, round(($current / $target) * 100, 2));
+    }
+
+    public function formatTimeRemaining($endTime)
+    {
+        if (!$endTime) return 'No time limit';
+        
+        $remaining = now()->diffInSeconds($endTime);
+        if ($remaining <= 0) return 'Expired';
+        
+        $hours = floor($remaining / 3600);
+        $minutes = floor(($remaining % 3600) / 60);
+        $seconds = $remaining % 60;
+        
+        if ($hours > 0) {
+            return "{$hours}h {$minutes}m";
+        } elseif ($minutes > 0) {
+            return "{$minutes}m {$seconds}s";
+        } else {
+            return "{$seconds}s";
+        }
+    }
+
+    private function initializeTaskFeatures()
+    {
+        // Initialize any additional features
+        $this->lastUpdate = now();
     }
 
     public function render()
     {
         return view('livewire.game.task-manager', [
-            'filteredTasks' => $this->getFilteredTasks(),
-            'taskStats' => $this->getTaskStats()
+            'taskCategories' => $this->taskCategories,
+            'taskTypes' => $this->taskTypes,
+            'questTypes' => $this->questTypes,
+            'achievementTypes' => $this->achievementTypes,
         ]);
     }
 }

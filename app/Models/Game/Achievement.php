@@ -2,34 +2,66 @@
 
 namespace App\Models\Game;
 
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Achievement extends Model
 {
+    use HasFactory;
+
+    protected $table = 'player_achievements';
+
     protected $fillable = [
-        'name',
+        'world_id',
+        'player_id',
+        'title',
         'description',
-        'category',
-        'requirements',
+        'type',
+        'status',
+        'progress',
+        'target',
         'rewards',
-        'icon',
-        'is_hidden',
-        'is_active',
+        'requirements',
+        'unlocked_at',
+        'created_at',
+        'updated_at',
     ];
 
     protected $casts = [
-        'requirements' => 'array',
         'rewards' => 'array',
-        'is_hidden' => 'boolean',
-        'is_active' => 'boolean',
+        'requirements' => 'array',
+        'unlocked_at' => 'datetime',
     ];
 
-    public function players(): BelongsToMany
+    public function world(): BelongsTo
     {
-        return $this
-            ->belongsToMany(Player::class, 'player_achievements')
-            ->withPivot(['unlocked_at', 'progress_data'])
-            ->withTimestamps();
+        return $this->belongsTo(World::class);
+    }
+
+    public function player(): BelongsTo
+    {
+        return $this->belongsTo(Player::class);
+    }
+
+    // Scopes
+    public function scopeUnlocked($query)
+    {
+        return $query->where('status', 'unlocked');
+    }
+
+    public function scopeAvailable($query)
+    {
+        return $query->where('status', 'available');
+    }
+
+    public function scopeByType($query, $type)
+    {
+        return $query->where('type', $type);
+    }
+
+    public function scopeByStatus($query, $status)
+    {
+        return $query->where('status', $status);
     }
 }

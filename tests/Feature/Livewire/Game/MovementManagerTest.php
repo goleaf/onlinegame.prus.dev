@@ -407,7 +407,9 @@ class MovementManagerTest extends TestCase
 
         $component = Livewire::test(MovementManager::class, ['village' => $this->village]);
 
-        $this->assertNull($component->village);
+        // The component should still have the village object (even though player is deleted)
+        $this->assertNotNull($component->village);
+        $this->assertNull($component->village->player);
     }
 
     public function test_handles_missing_troops()

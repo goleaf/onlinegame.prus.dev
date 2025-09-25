@@ -125,22 +125,32 @@ return new class extends Migration {
             $table->index(['target_player_id', 'is_public']);
         });
 
-        // Reports table
+        // Reports table for battle reports and notifications
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('player_id')->constrained()->onDelete('cascade');
-            $table->enum('type', ['attack', 'defense', 'support', 'spy', 'trade', 'system']);
+            $table->foreignId('world_id')->constrained()->onDelete('cascade');
+            $table->foreignId('attacker_id')->constrained('players')->onDelete('cascade');
+            $table->foreignId('defender_id')->constrained('players')->onDelete('cascade');
+            $table->foreignId('from_village_id')->constrained('villages')->onDelete('cascade');
+            $table->foreignId('to_village_id')->constrained('villages')->onDelete('cascade');
             $table->string('title');
             $table->text('content');
-            $table->json('data')->nullable();  // JSON for report data
+            $table->enum('type', ['attack', 'defense', 'support', 'spy', 'trade', 'system'])->default('attack');
+            $table->enum('status', ['victory', 'defeat', 'draw', 'pending'])->default('pending');
+            $table->json('battle_data')->nullable();  // JSON for battle statistics
+            $table->json('attachments')->nullable();  // JSON for report attachments
             $table->boolean('is_read')->default(false);
             $table->boolean('is_important')->default(false);
-            $table->timestamp('occurred_at');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
-            $table->index(['player_id', 'type']);
-            $table->index(['player_id', 'is_read']);
-            $table->index(['occurred_at']);
+            $table->index(['world_id', 'attacker_id']);
+            $table->index(['world_id', 'defender_id']);
+            $table->index(['world_id', 'type']);
+            $table->index(['world_id', 'status']);
+            $table->index(['world_id', 'is_read']);
+            $table->index(['world_id', 'is_important']);
+            $table->index(['created_at']);
         });
     }
 

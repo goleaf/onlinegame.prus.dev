@@ -20,41 +20,72 @@ class MovementManager extends Component
     public $village;
 
     public $movements;
+
     public $selectedMovement = null;
+
     public $notifications = [];
+
     public $isLoading = false;
+
     // Real-time features
     public $realTimeUpdates = true;
+
     public $autoRefresh = true;
+
     public $refreshInterval = 10;  // seconds
+
     public $gameSpeed = 1;
+
     // Movement creation
     public $targetVillageId = null;
+
     public $movementType = 'attack';  // 'attack', 'reinforce', 'support', 'return'
+
     public $selectedTroops = [];
+
     public $troopQuantities = [];
+
     public $movementTime = null;
+
     public $arrivalTime = null;
+
     // Filtering and Sorting
     public $filterByType = null;  // 'attack', 'reinforce', 'support', 'return'
+
     public $filterByStatus = null;  // 'travelling', 'arrived', 'returning', 'completed'
+
     public $sortBy = 'created_at';
+
     public $sortOrder = 'desc';
+
     public $searchQuery = '';
+
     public $showOnlyMyMovements = true;
+
     public $showOnlyTravelling = false;
+
     public $showOnlyCompleted = false;
+
     // Stats
     public $movementStats = [];
+
     public $movementHistory = [];
+
     public $troopStats = [];
+
     public $distanceStats = [];
+
     public $timeStats = [];
+
     // Available troops for selection
     public $availableTroops = [];
+
     public $troopCapacity = 0;
+
     public $totalAttackPower = 0;
+
     public $totalDefensePower = 0;
+
     public $travelTime = 0;
 
     protected $listeners = [
@@ -107,7 +138,7 @@ class MovementManager extends Component
         try {
             $query = Movement::where('from_village_id', $this->village->id)
                 ->orWhere('to_village_id', $this->village->id)
-                ->with(['fromVillage', 'toVillage', 'player', 'troops']);
+                ->with(['fromVillage', 'toVillage', 'player']);
 
             if ($this->filterByType) {
                 $query->where('type', $this->filterByType);
@@ -209,7 +240,7 @@ class MovementManager extends Component
                 $troop = Troop::find($troopId);
                 if ($troop) {
                     $troopsData[$troop->unitType->key] = $quantity;
-                    
+
                     // Deduct troops from village
                     if ($troop->count >= $quantity) {
                         $troop->decrement('count', $quantity);
@@ -217,7 +248,7 @@ class MovementManager extends Component
                 }
             }
         }
-        
+
         $movement->update(['troops' => $troopsData]);
 
         $this->reset(['targetVillageId', 'selectedTroops', 'troopQuantities', 'movementTime', 'arrivalTime']);
@@ -263,7 +294,7 @@ class MovementManager extends Component
 
     public function selectMovement($movementId)
     {
-        $this->selectedMovement = Movement::with(['fromVillage', 'toVillage', 'player', 'troops'])->find($movementId);
+        $this->selectedMovement = Movement::with(['fromVillage', 'toVillage', 'player'])->find($movementId);
         $this->addNotification("Selected movement: {$movementId}", 'info');
     }
 
@@ -286,8 +317,20 @@ class MovementManager extends Component
 
     public function selectTroop($troopId, $quantity = 1)
     {
+        $troop = Troop::find($troopId);
+        if (!$troop || $troop->village_id !== $this->village->id) {
+            $this->addNotification("Invalid troop ID: {$troopId}", 'error');
+            return;
+        }
+
+        $quantity = (int) $quantity;
+        if ($quantity <= 0) {
+            $this->addNotification("Invalid troop quantity: {$quantity}", 'error');
+            return;
+        }
+
         $this->selectedTroops[$troopId] = $troopId;
-        $this->troopQuantities[$troopId] = max(1, (int) $quantity);
+        $this->troopQuantities[$troopId] = $quantity;
         $this->addNotification("Troop selected: {$troopId} x{$quantity}", 'info');
     }
 
