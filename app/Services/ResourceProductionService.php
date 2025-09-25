@@ -79,18 +79,18 @@ class ResourceProductionService
             $level = $building->level;
 
             if ($buildingType->key === 'warehouse') {
-                $capacities['wood'] += $this->calculateStorageCapacity($level);
-                $capacities['clay'] += $this->calculateStorageCapacity($level);
-                $capacities['iron'] += $this->calculateStorageCapacity($level);
+                $capacities['wood'] += $this->calculateStorageCapacityForLevel($level);
+                $capacities['clay'] += $this->calculateStorageCapacityForLevel($level);
+                $capacities['iron'] += $this->calculateStorageCapacityForLevel($level);
             } elseif ($buildingType->key === 'granary') {
-                $capacities['crop'] += $this->calculateStorageCapacity($level);
+                $capacities['crop'] += $this->calculateStorageCapacityForLevel($level);
             }
         }
 
         return $capacities;
     }
 
-    private function calculateStorageCapacity($level)
+    private function calculateStorageCapacityForLevel($level)
     {
         // Storage capacity increases by 1000 per level
         return 1000 * $level;
@@ -156,4 +156,3 @@ class ResourceProductionService
         }
     }
 }
-

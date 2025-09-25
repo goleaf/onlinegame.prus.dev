@@ -34,6 +34,16 @@ class GameDashboard extends Component
 
     public $isLoading = false;
 
+    public $realTimeUpdates = true;
+
+    public $showNotifications = true;
+
+    public $gameSpeed = 1;
+
+    public $worldTime;
+
+    public $resourceProductionRates = [];
+
     protected $listeners = [
         'refreshGameData',
         'gameTickProcessed',
@@ -48,10 +58,25 @@ class GameDashboard extends Component
         if (!Auth::check()) {
             return redirect('/login');
         }
+
         $this->loadGameData();
+        $this->initializeRealTimeFeatures();
 
         // Start real-time polling for game updates
         $this->startPolling();
+    }
+
+    public function initializeRealTimeFeatures()
+    {
+        $this->worldTime = now();
+        $this->calculateResourceProductionRates();
+
+        // Dispatch initial real-time setup
+        $this->dispatch('initializeRealTime', [
+            'interval' => $this->refreshInterval * 1000,
+            'autoRefresh' => $this->autoRefresh,
+            'realTimeUpdates' => $this->realTimeUpdates
+        ]);
     }
 
     public function loadGameData()
@@ -240,6 +265,101 @@ class GameDashboard extends Component
         $this->loadGameData();
     }
 
+    public function calculateResourceProductionRates()
+    {
+        if (!$this->currentVillage) {
+            return;
+        }
+
+        $this->resourceProductionRates = [];
+        foreach ($this->currentVillage->resources as $resource) {
+            $this->resourceProductionRates[$resource->type] = [
+                'current' => $resource->amount,
+                'production' => $resource->production_rate,
+                'capacity' => $resource->storage_capacity,
+                'percentage' => min(100, ($resource->amount / $resource->storage_capacity) * 100)
+            ];
+        }
+    }
+
+    public function toggleRealTimeUpdates()
+    {
+        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->addNotification(
+            $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
+            'info'
+        );
+    }
+
+    public function toggleNotifications()
+    {
+        $this->showNotifications = !$this->showNotifications;
+        $this->addNotification(
+            $this->showNotifications ? 'Notifications enabled' : 'Notifications disabled',
+            'info'
+        );
+    }
+
+    public function setGameSpeed($speed)
+    {
+        $this->gameSpeed = max(0.5, min(3.0, $speed));
+        $this->addNotification("Game speed set to {$this->gameSpeed}x", 'info');
+    }
+
+    public function getResourceIcon($type)
+    {
+        $icons = [
+            'wood' => '🌲',
+            'clay' => '🏺',
+            'iron' => '⚒️',
+            'crop' => '🌾'
+        ];
+        return $icons[$type] ?? '📦';
+    }
+
+    public function getBuildingIcon($buildingType)
+    {
+        $icons = [
+            'main_building' => '🏛️',
+            'barracks' => '🏰',
+            'stable' => '🐎',
+            'workshop' => '🔨',
+            'academy' => '🎓',
+            'smithy' => '⚒️',
+            'rally_point' => '🚩',
+            'marketplace' => '🏪',
+            'residence' => '🏠',
+            'palace' => '👑',
+            'treasury' => '💰',
+            'trade_office' => '📊',
+            'great_barracks' => '🏰',
+            'great_stable' => '🐎',
+            'city_wall' => '🧱',
+            'earth_wall' => '🌍',
+            'palisade' => '🪵',
+            'stonemason' => '🗿',
+            'brewery' => '🍺',
+            'trapper' => '🪤',
+            'great_warehouse' => '📦',
+            'great_granary' => '🌾',
+            'wonder_of_the_world' => '🏛️',
+            'horse_drinking_trough' => '🐎',
+            'brewery' => '🍺',
+            'bakery' => '🍞',
+            'brickworks' => '🧱',
+            'iron_foundry' => '⚒️',
+            'armoury' => '🛡️',
+            'grain_mill' => '🌾',
+            'sawmill' => '🌲',
+            'clay_pit' => '🏺',
+            'iron_mine' => '⛏️',
+            'crop_field' => '🌾',
+            'warehouse' => '📦',
+            'granary' => '🌾'
+        ];
+        return $icons[$buildingType] ?? '🏗️';
+    }
+
     public function render()
     {
         return view('livewire.game.game-dashboard', [
@@ -249,7 +369,10 @@ class GameDashboard extends Component
             'recentEvents' => $this->recentEvents,
             'gameStats' => $this->gameStats,
             'notifications' => $this->notifications,
-            'isLoading' => $this->isLoading
+            'isLoading' => $this->isLoading,
+            'resourceProductionRates' => $this->resourceProductionRates,
+            'worldTime' => $this->worldTime,
+            'gameSpeed' => $this->gameSpeed
         ]);
     }
 }

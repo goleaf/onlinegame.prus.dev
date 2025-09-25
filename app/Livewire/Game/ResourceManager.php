@@ -37,6 +37,23 @@ class ResourceManager extends Component
     public $lastUpdate;
     public $autoUpdate = true;
     public $updateInterval = 5;  // seconds
+    public $realTimeUpdates = true;
+    public $showNotifications = true;
+    public $gameSpeed = 1;
+    public $notifications = [];
+    public $resourceHistory = [];
+    public $productionHistory = [];
+    public $storageWarnings = [];
+    public $isLoading = false;
+    public $showDetails = false;
+    public $selectedResource = null;
+
+    protected $listeners = [
+        'resources-updated',
+        'gameTickProcessed',
+        'buildingUpgraded',
+        'villageSelected'
+    ];
 
     public function mount($villageId = null)
     {
@@ -49,7 +66,20 @@ class ResourceManager extends Component
 
         $this->loadResources();
         $this->lastUpdate = now();
+        $this->initializeResourceFeatures();
         $this->startResourcePolling();
+    }
+
+    public function initializeResourceFeatures()
+    {
+        $this->calculateStorageWarnings();
+        $this->initializeResourceHistory();
+
+        $this->dispatch('initializeResourceRealTime', [
+            'interval' => $this->updateInterval * 1000,
+            'autoUpdate' => $this->autoUpdate,
+            'realTimeUpdates' => $this->realTimeUpdates
+        ]);
     }
 
     public function loadResources()
@@ -111,27 +141,6 @@ class ResourceManager extends Component
     public function stopResourcePolling()
     {
         $this->dispatch('stop-resource-polling');
-    }
-
-    public function toggleAutoUpdate()
-    {
-        $this->autoUpdate = !$this->autoUpdate;
-
-        if ($this->autoUpdate) {
-            $this->startResourcePolling();
-        } else {
-            $this->stopResourcePolling();
-        }
-    }
-
-    public function setUpdateInterval($seconds)
-    {
-        $this->updateInterval = max(1, min(60, $seconds));
-
-        if ($this->autoUpdate) {
-            $this->stopResourcePolling();
-            $this->startResourcePolling();
-        }
     }
 
     #[On('tick')]
@@ -216,8 +225,243 @@ class ResourceManager extends Component
         $this->dispatch('resources-updated');
     }
 
+    public function calculateStorageWarnings()
+    {
+        $this->storageWarnings = [];
+
+        foreach ($this->resources as $type => $amount) {
+            $capacity = $this->capacities[$type];
+            $percentage = ($amount / $capacity) * 100;
+
+            if ($percentage >= 90) {
+                $this->storageWarnings[$type] = [
+                    'level' => 'critical',
+                    'message' => "{$type} storage is {$percentage}% full!",
+                    'percentage' => $percentage
+                ];
+            } elseif ($percentage >= 75) {
+                $this->storageWarnings[$type] = [
+                    'level' => 'warning',
+                    'message' => "{$type} storage is {$percentage}% full",
+                    'percentage' => $percentage
+                ];
+            }
+        }
+    }
+
+    public function initializeResourceHistory()
+    {
+        $this->resourceHistory = [
+            'wood' => [],
+            'clay' => [],
+            'iron' => [],
+            'crop' => []
+        ];
+
+        $this->productionHistory = [
+            'wood' => [],
+            'clay' => [],
+            'iron' => [],
+            'crop' => []
+        ];
+    }
+
+    public function updateResourceHistory()
+    {
+        $timestamp = now()->timestamp;
+
+        foreach ($this->resources as $type => $amount) {
+            $this->resourceHistory[$type][] = [
+                'timestamp' => $timestamp,
+                'amount' => $amount
+            ];
+
+            // Keep only last 50 data points
+            $this->resourceHistory[$type] = array_slice($this->resourceHistory[$type], -50);
+        }
+
+        foreach ($this->productionRates as $type => $rate) {
+            $this->productionHistory[$type][] = [
+                'timestamp' => $timestamp,
+                'rate' => $rate
+            ];
+
+            // Keep only last 50 data points
+            $this->productionHistory[$type] = array_slice($this->productionHistory[$type], -50);
+        }
+    }
+
+    public function toggleRealTimeUpdates()
+    {
+        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->addNotification(
+            $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
+            'info'
+        );
+    }
+
+    public function toggleAutoUpdate()
+    {
+        $this->autoUpdate = !$this->autoUpdate;
+
+        if ($this->autoUpdate) {
+            $this->startResourcePolling();
+        } else {
+            $this->stopResourcePolling();
+        }
+
+        $this->addNotification(
+            $this->autoUpdate ? 'Auto-update enabled' : 'Auto-update disabled',
+            'info'
+        );
+    }
+
+    public function setUpdateInterval($interval)
+    {
+        $this->updateInterval = max(1, min(60, $interval));
+
+        if ($this->autoUpdate) {
+            $this->stopResourcePolling();
+            $this->startResourcePolling();
+        }
+
+        $this->addNotification("Update interval set to {$this->updateInterval} seconds", 'info');
+    }
+
+    public function setGameSpeed($speed)
+    {
+        $this->gameSpeed = max(0.5, min(3.0, $speed));
+        $this->addNotification("Game speed set to {$this->gameSpeed}x", 'info');
+    }
+
+    public function selectResource($type)
+    {
+        $this->selectedResource = $type;
+        $this->showDetails = true;
+    }
+
+    public function toggleDetails()
+    {
+        $this->showDetails = !$this->showDetails;
+    }
+
+    public function getResourceIcon($type)
+    {
+        $icons = [
+            'wood' => '🌲',
+            'clay' => '🏺',
+            'iron' => '⚒️',
+            'crop' => '🌾'
+        ];
+        return $icons[$type] ?? '📦';
+    }
+
+    public function getResourceColor($type)
+    {
+        $colors = [
+            'wood' => 'green',
+            'clay' => 'orange',
+            'iron' => 'gray',
+            'crop' => 'yellow'
+        ];
+        return $colors[$type] ?? 'blue';
+    }
+
+    public function getResourcePercentage($type)
+    {
+        $amount = $this->resources[$type];
+        $capacity = $this->capacities[$type];
+        return min(100, ($amount / $capacity) * 100);
+    }
+
+    public function getTimeToFull($type)
+    {
+        $amount = $this->resources[$type];
+        $capacity = $this->capacities[$type];
+        $production = $this->productionRates[$type];
+
+        if ($production <= 0) {
+            return '∞';
+        }
+
+        $remaining = $capacity - $amount;
+        $timeInSeconds = $remaining / $production;
+
+        return gmdate('H:i:s', $timeInSeconds);
+    }
+
+    public function addNotification($message, $type = 'info')
+    {
+        $this->notifications[] = [
+            'id' => uniqid(),
+            'message' => $message,
+            'type' => $type,
+            'timestamp' => now()
+        ];
+
+        // Keep only last 10 notifications
+        $this->notifications = array_slice($this->notifications, -10);
+    }
+
+    public function removeNotification($notificationId)
+    {
+        $this->notifications = array_filter($this->notifications, function ($notification) use ($notificationId) {
+            return $notification['id'] !== $notificationId;
+        });
+    }
+
+    public function clearNotifications()
+    {
+        $this->notifications = [];
+    }
+
+    #[On('gameTickProcessed')]
+    public function handleGameTickProcessed()
+    {
+        if ($this->realTimeUpdates) {
+            $this->loadResources();
+            $this->calculateStorageWarnings();
+            $this->updateResourceHistory();
+        }
+    }
+
+    #[On('buildingUpgraded')]
+    public function handleBuildingUpgraded($data)
+    {
+        $this->loadResources();
+        $this->calculateProductionRates();
+        $this->addNotification('Building upgraded - resource production updated', 'success');
+    }
+
+    #[On('villageSelected')]
+    public function handleVillageSelected($villageId)
+    {
+        $this->village = Village::findOrFail($villageId);
+        $this->loadResources();
+        $this->calculateStorageWarnings();
+        $this->addNotification('Village selected - resources updated', 'info');
+    }
+
     public function render()
     {
-        return view('livewire.game.resource-manager');
+        return view('livewire.game.resource-manager', [
+            'village' => $this->village,
+            'resources' => $this->resources,
+            'productionRates' => $this->productionRates,
+            'capacities' => $this->capacities,
+            'lastUpdate' => $this->lastUpdate,
+            'autoUpdate' => $this->autoUpdate,
+            'updateInterval' => $this->updateInterval,
+            'realTimeUpdates' => $this->realTimeUpdates,
+            'showNotifications' => $this->showNotifications,
+            'gameSpeed' => $this->gameSpeed,
+            'notifications' => $this->notifications,
+            'resourceHistory' => $this->resourceHistory,
+            'productionHistory' => $this->productionHistory,
+            'storageWarnings' => $this->storageWarnings,
+            'isLoading' => $this->isLoading,
+            'showDetails' => $this->showDetails,
+            'selectedResource' => $this->selectedResource
+        ]);
     }
 }

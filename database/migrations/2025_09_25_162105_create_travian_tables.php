@@ -159,6 +159,7 @@ return new class extends Migration {
             $table->index(['village_id', 'event_type']);
             $table->index(['event_type', 'occurred_at']);
         });
+
     }
 
     /**

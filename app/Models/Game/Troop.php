@@ -2,24 +2,22 @@
 
 namespace App\Models\Game;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
 class Troop extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'village_id',
         'unit_type_id',
         'count',
-        'is_training',
-        'training_started_at',
-        'training_completed_at',
-    ];
-
-    protected $casts = [
-        'is_training' => 'boolean',
-        'training_started_at' => 'datetime',
-        'training_completed_at' => 'datetime',
+        'in_village',
+        'in_attack',
+        'in_defense',
+        'in_support',
     ];
 
     public function village(): BelongsTo

@@ -29,11 +29,31 @@ class TroopManager extends Component
     public $canTrain = false;
     public $notifications = [];
     public $isLoading = false;
+    public $realTimeUpdates = true;
+    public $autoRefresh = true;
+    public $refreshInterval = 5;
+    public $gameSpeed = 1;
+    public $trainingProgress = [];
+    public $troopHistory = [];
+    public $showDetails = false;
+    public $selectedTroop = null;
+    public $filterByType = null;
+    public $sortBy = 'count';
+    public $sortOrder = 'desc';
+    public $searchQuery = '';
+    public $showOnlyAvailable = false;
+    public $showOnlyTraining = false;
+    public $trainingMode = 'single';  // single, batch, continuous
+    public $batchSize = 10;
+    public $continuousTraining = false;
 
     protected $listeners = [
         'refreshTroops',
         'trainingCompleted',
-        'villageSelected'
+        'villageSelected',
+        'gameTickProcessed',
+        'troopTrained',
+        'troopDisbanded'
     ];
 
     public function mount($villageId = null)
@@ -48,7 +68,20 @@ class TroopManager extends Component
 
         if ($this->village) {
             $this->loadTroopData();
+            $this->initializeTroopFeatures();
         }
+    }
+
+    public function initializeTroopFeatures()
+    {
+        $this->calculateTrainingProgress();
+        $this->initializeTroopHistory();
+
+        $this->dispatch('initializeTroopRealTime', [
+            'interval' => $this->refreshInterval * 1000,
+            'autoRefresh' => $this->autoRefresh,
+            'realTimeUpdates' => $this->realTimeUpdates
+        ]);
     }
 
     public function loadTroopData()
@@ -234,14 +267,6 @@ class TroopManager extends Component
         });
     }
 
-    #[On('villageSelected')]
-    public function handleVillageSelected($data)
-    {
-        if ($data['villageId'] == $this->village->id) {
-            $this->loadTroopData();
-        }
-    }
-
     #[On('trainingCompleted')]
     public function handleTrainingCompleted($data)
     {
@@ -285,6 +310,334 @@ class TroopManager extends Component
         $this->addNotification('Troop data refreshed', 'info');
     }
 
+    public function calculateTrainingProgress()
+    {
+        $this->trainingProgress = [];
+
+        foreach ($this->trainingQueues as $queue) {
+            $startTime = $queue['started_at'];
+            $endTime = $queue['completed_at'];
+            $now = now();
+
+            if ($now->lt($endTime)) {
+                $totalDuration = $endTime->diffInSeconds($startTime);
+                $elapsed = $now->diffInSeconds($startTime);
+                $progress = min(100, ($elapsed / $totalDuration) * 100);
+
+                $this->trainingProgress[$queue['id']] = [
+                    'progress' => $progress,
+                    'remaining' => $endTime->diffInSeconds($now),
+                    'unit_name' => $queue['unit_type'],
+                    'quantity' => $queue['quantity']
+                ];
+            }
+        }
+    }
+
+    public function initializeTroopHistory()
+    {
+        $this->troopHistory = [];
+    }
+
+    public function toggleRealTimeUpdates()
+    {
+        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->addNotification(
+            $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
+            'info'
+        );
+    }
+
+    public function toggleAutoRefresh()
+    {
+        $this->autoRefresh = !$this->autoRefresh;
+        $this->addNotification(
+            $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
+            'info'
+        );
+    }
+
+    public function setRefreshInterval($interval)
+    {
+        $this->refreshInterval = max(1, min(60, $interval));
+        $this->addNotification("Refresh interval set to {$this->refreshInterval} seconds", 'info');
+    }
+
+    public function setGameSpeed($speed)
+    {
+        $this->gameSpeed = max(0.5, min(3.0, $speed));
+        $this->addNotification("Game speed set to {$this->gameSpeed}x", 'info');
+    }
+
+    public function selectTroop($troopId)
+    {
+        $this->selectedTroop = $troopId;
+        $this->showDetails = true;
+    }
+
+    public function toggleDetails()
+    {
+        $this->showDetails = !$this->showDetails;
+    }
+
+    public function filterByType($type)
+    {
+        $this->filterByType = $type;
+        $this->addNotification("Filtering by type: {$type}", 'info');
+    }
+
+    public function clearFilters()
+    {
+        $this->filterByType = null;
+        $this->searchQuery = '';
+        $this->showOnlyAvailable = false;
+        $this->showOnlyTraining = false;
+        $this->addNotification('All filters cleared', 'info');
+    }
+
+    public function sortTroops($sortBy)
+    {
+        if ($this->sortBy === $sortBy) {
+            $this->sortOrder = $this->sortOrder === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $sortBy;
+            $this->sortOrder = 'desc';
+        }
+
+        $this->addNotification("Sorted by {$sortBy} ({$this->sortOrder})", 'info');
+    }
+
+    public function searchTroops()
+    {
+        if (empty($this->searchQuery)) {
+            $this->addNotification('Search cleared', 'info');
+            return;
+        }
+
+        $this->addNotification("Searching for: {$this->searchQuery}", 'info');
+    }
+
+    public function toggleAvailableFilter()
+    {
+        $this->showOnlyAvailable = !$this->showOnlyAvailable;
+        $this->addNotification(
+            $this->showOnlyAvailable ? 'Showing only available troops' : 'Showing all troops',
+            'info'
+        );
+    }
+
+    public function toggleTrainingFilter()
+    {
+        $this->showOnlyTraining = !$this->showOnlyTraining;
+        $this->addNotification(
+            $this->showOnlyTraining ? 'Showing only training troops' : 'Showing all troops',
+            'info'
+        );
+    }
+
+    public function setTrainingMode($mode)
+    {
+        $this->trainingMode = $mode;
+        $this->addNotification("Training mode set to: {$mode}", 'info');
+    }
+
+    public function setBatchSize($size)
+    {
+        $this->batchSize = max(1, min(100, $size));
+        $this->addNotification("Batch size set to: {$this->batchSize}", 'info');
+    }
+
+    public function toggleContinuousTraining()
+    {
+        $this->continuousTraining = !$this->continuousTraining;
+        $this->addNotification(
+            $this->continuousTraining ? 'Continuous training enabled' : 'Continuous training disabled',
+            'info'
+        );
+    }
+
+    public function getUnitIcon($type)
+    {
+        $icons = [
+            'legionnaire' => '⚔️',
+            'praetorian' => '🛡️',
+            'imperian' => '👑',
+            'equites_legati' => '🐎',
+            'equites_imperatoris' => '🏇',
+            'equites_caesaris' => '👑',
+            'ram' => '🐏',
+            'fire_catapult' => '🔥',
+            'senator' => '👨‍💼',
+            'settler' => '🏘️',
+            'clubswinger' => '🏏',
+            'spearman' => '🔱',
+            'axeman' => '🪓',
+            'scout' => '👁️',
+            'paladin' => '⚔️',
+            'teutonic_knight' => '⚔️',
+            'ram' => '🐏',
+            'catapult' => '💥',
+            'chief' => '👑',
+            'settler' => '🏘️',
+            'phalanx' => '🛡️',
+            'swordsman' => '⚔️',
+            'pathfinder' => '🗺️',
+            'theutates_thunder' => '⚡',
+            'druidrider' => '🌿',
+            'haeduan' => '🏹',
+            'ram' => '🐏',
+            'trebuchet' => '💥',
+            'chieftain' => '👑',
+            'settler' => '🏘️'
+        ];
+        return $icons[$type] ?? '⚔️';
+    }
+
+    public function getUnitColor($unit)
+    {
+        if ($unit['is_training']) {
+            return 'orange';
+        }
+
+        if ($unit['count'] > 0) {
+            return 'green';
+        }
+
+        return 'gray';
+    }
+
+    public function getUnitStatus($unit)
+    {
+        if ($unit['is_training']) {
+            return 'Training...';
+        }
+
+        if ($unit['count'] > 0) {
+            return 'Available';
+        }
+
+        return 'Not Available';
+    }
+
+    public function getTrainingTime($unitType, $quantity)
+    {
+        $baseTime = 60;  // 1 minute base
+        $quantityMultiplier = $quantity;
+        $totalTime = $baseTime * $quantityMultiplier;
+
+        return gmdate('H:i:s', $totalTime);
+    }
+
+    public function getTrainingCost($unitType, $quantity)
+    {
+        $unit = $this->unitTypes[$unitType] ?? null;
+        if (!$unit) {
+            return [];
+        }
+
+        return [
+            'wood' => ($unit['wood_cost'] ?? 0) * $quantity,
+            'clay' => ($unit['clay_cost'] ?? 0) * $quantity,
+            'iron' => ($unit['iron_cost'] ?? 0) * $quantity,
+            'crop' => ($unit['crop_cost'] ?? 0) * $quantity
+        ];
+    }
+
+    public function canAffordTraining($unitType, $quantity)
+    {
+        $cost = $this->getTrainingCost($unitType, $quantity);
+        $resources = $this->village->resources;
+
+        foreach ($cost as $resource => $amount) {
+            $resourceModel = $resources->where('type', $resource)->first();
+            if (!$resourceModel || $resourceModel->amount < $amount) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function startBatchTraining()
+    {
+        if ($this->trainingMode !== 'batch') {
+            $this->addNotification('Batch training mode not enabled', 'error');
+            return;
+        }
+
+        $this->addNotification("Starting batch training of {$this->batchSize} units", 'info');
+    }
+
+    public function startContinuousTraining()
+    {
+        if (!$this->continuousTraining) {
+            $this->addNotification('Continuous training not enabled', 'error');
+            return;
+        }
+
+        $this->addNotification('Starting continuous training', 'info');
+    }
+
+    public function stopContinuousTraining()
+    {
+        $this->continuousTraining = false;
+        $this->addNotification('Continuous training stopped', 'info');
+    }
+
+    public function disbandTroops($unitType, $quantity)
+    {
+        if ($quantity <= 0) {
+            $this->addNotification('Invalid quantity for disbanding', 'error');
+            return;
+        }
+
+        $troop = $this->troops->where('unit_type', $unitType)->first();
+        if (!$troop || $troop->count < $quantity) {
+            $this->addNotification('Not enough troops to disband', 'error');
+            return;
+        }
+
+        $troop->decrement('count', $quantity);
+        $this->loadTroopData();
+        $this->addNotification("Disbanded {$quantity} {$unitType}", 'success');
+
+        $this->dispatch('troopDisbanded', [
+            'unit_type' => $unitType,
+            'quantity' => $quantity
+        ]);
+    }
+
+    #[On('gameTickProcessed')]
+    public function handleGameTickProcessed()
+    {
+        if ($this->realTimeUpdates) {
+            $this->loadTroopData();
+            $this->calculateTrainingProgress();
+        }
+    }
+
+    #[On('troopTrained')]
+    public function handleTroopTrained($data)
+    {
+        $this->loadTroopData();
+        $this->addNotification('Troop training completed', 'success');
+    }
+
+    #[On('troopDisbanded')]
+    public function handleTroopDisbanded($data)
+    {
+        $this->loadTroopData();
+        $this->addNotification('Troops disbanded', 'info');
+    }
+
+    #[On('villageSelected')]
+    public function handleVillageSelected($villageId)
+    {
+        $this->village = Village::findOrFail($villageId);
+        $this->loadTroopData();
+        $this->addNotification('Village selected - troops updated', 'info');
+    }
+
     public function render()
     {
         return view('livewire.game.troop-manager', [
@@ -297,7 +650,24 @@ class TroopManager extends Component
             'trainingCost' => $this->trainingCost,
             'canTrain' => $this->canTrain,
             'notifications' => $this->notifications,
-            'isLoading' => $this->isLoading
+            'isLoading' => $this->isLoading,
+            'realTimeUpdates' => $this->realTimeUpdates,
+            'autoRefresh' => $this->autoRefresh,
+            'refreshInterval' => $this->refreshInterval,
+            'gameSpeed' => $this->gameSpeed,
+            'trainingProgress' => $this->trainingProgress,
+            'troopHistory' => $this->troopHistory,
+            'showDetails' => $this->showDetails,
+            'selectedTroop' => $this->selectedTroop,
+            'filterByType' => $this->filterByType,
+            'sortBy' => $this->sortBy,
+            'sortOrder' => $this->sortOrder,
+            'searchQuery' => $this->searchQuery,
+            'showOnlyAvailable' => $this->showOnlyAvailable,
+            'showOnlyTraining' => $this->showOnlyTraining,
+            'trainingMode' => $this->trainingMode,
+            'batchSize' => $this->batchSize,
+            'continuousTraining' => $this->continuousTraining
         ]);
     }
 }

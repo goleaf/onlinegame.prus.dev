@@ -14,10 +14,10 @@ class WorldMap extends Component
 {
     #[Reactive]
     public $world;
-    
+
     public $mapData = [];
     public $selectedVillage = null;
-    public $mapSize = 400; // 400x400 grid
+    public $mapSize = 400;  // 400x400 grid
     public $viewCenter = ['x' => 200, 'y' => 200];
     public $zoomLevel = 1;
     public $showCoordinates = true;
@@ -27,12 +27,26 @@ class WorldMap extends Component
     public $filterTribe = null;
     public $isLoading = false;
     public $notifications = [];
+    public $autoRefresh = true;
+    public $refreshInterval = 10;
+    public $realTimeUpdates = true;
+    public $showPlayerVillages = true;
+    public $showEnemyVillages = true;
+    public $showNeutralVillages = true;
+    public $searchQuery = '';
+    public $selectedPlayer = null;
+    public $mapMode = 'normal';  // normal, alliance, tribe, player
+    public $highlightedVillages = [];
+    public $mapStats = [];
 
     protected $listeners = [
         'refreshMap',
         'villageSelected',
         'mapUpdated',
-        'centerOnVillage'
+        'centerOnVillage',
+        'gameTickProcessed',
+        'playerSelected',
+        'allianceSelected'
     ];
 
     public function mount($worldId = null)
@@ -46,13 +60,24 @@ class WorldMap extends Component
 
         if ($this->world) {
             $this->loadMapData();
+            $this->initializeMapFeatures();
         }
+    }
+
+    public function initializeMapFeatures()
+    {
+        $this->calculateMapStats();
+        $this->dispatch('initializeMapRealTime', [
+            'interval' => $this->refreshInterval * 1000,
+            'autoRefresh' => $this->autoRefresh,
+            'realTimeUpdates' => $this->realTimeUpdates
+        ]);
     }
 
     public function loadMapData()
     {
         $this->isLoading = true;
-        
+
         try {
             $villages = Village::where('world_id', $this->world->id)
                 ->with(['player', 'alliance'])
@@ -86,7 +111,7 @@ class WorldMap extends Component
     public function selectVillage($villageId)
     {
         $village = Village::with(['player', 'alliance'])->find($villageId);
-        
+
         if ($village) {
             $this->selectedVillage = [
                 'id' => $village->id,
@@ -108,13 +133,13 @@ class WorldMap extends Component
     public function centerOnVillage($villageId)
     {
         $village = Village::find($villageId);
-        
+
         if ($village) {
             $this->viewCenter = [
                 'x' => $village->x_coordinate,
                 'y' => $village->y_coordinate
             ];
-            
+
             $this->addNotification("Centered on village: {$village->name}", 'info');
         }
     }
@@ -122,7 +147,7 @@ class WorldMap extends Component
     public function moveMap($direction)
     {
         $moveDistance = 50 / $this->zoomLevel;
-        
+
         switch ($direction) {
             case 'north':
                 $this->viewCenter['y'] = max(0, $this->viewCenter['y'] - $moveDistance);
@@ -154,7 +179,7 @@ class WorldMap extends Component
     public function resetZoom()
     {
         $this->zoomLevel = 1;
-        $this->addNotification("Zoom reset to 1x", 'info');
+        $this->addNotification('Zoom reset to 1x', 'info');
     }
 
     public function toggleCoordinates()
@@ -175,7 +200,7 @@ class WorldMap extends Component
     public function setFilterAlliance($allianceId)
     {
         $this->filterAlliance = $allianceId;
-        $this->addNotification("Filtered by alliance", 'info');
+        $this->addNotification('Filtered by alliance', 'info');
     }
 
     public function setFilterTribe($tribe)
@@ -188,7 +213,7 @@ class WorldMap extends Component
     {
         $this->filterAlliance = null;
         $this->filterTribe = null;
-        $this->addNotification("Filters cleared", 'info');
+        $this->addNotification('Filters cleared', 'info');
     }
 
     public function getFilteredMapData()
@@ -214,10 +239,10 @@ class WorldMap extends Component
     {
         $data = $this->getFilteredMapData();
         $viewSize = 100 / $this->zoomLevel;
-        
+
         return array_filter($data, function ($village) use ($viewSize) {
             return abs($village['x'] - $this->viewCenter['x']) <= $viewSize &&
-                   abs($village['y'] - $this->viewCenter['y']) <= $viewSize;
+                abs($village['y'] - $this->viewCenter['y']) <= $viewSize;
         });
     }
 
@@ -241,14 +266,14 @@ class WorldMap extends Component
             'type' => $type,
             'timestamp' => now()
         ];
-        
+
         // Keep only last 10 notifications
         $this->notifications = array_slice($this->notifications, -10);
     }
 
     public function removeNotification($notificationId)
     {
-        $this->notifications = array_filter($this->notifications, function($notification) use ($notificationId) {
+        $this->notifications = array_filter($this->notifications, function ($notification) use ($notificationId) {
             return $notification['id'] !== $notificationId;
         });
     }
@@ -256,6 +281,165 @@ class WorldMap extends Component
     public function clearNotifications()
     {
         $this->notifications = [];
+    }
+
+    public function calculateMapStats()
+    {
+        if (!$this->world) {
+            return;
+        }
+
+        $villages = Village::where('world_id', $this->world->id)->get();
+        $players = Player::where('world_id', $this->world->id)->get();
+        $alliances = $this->world->alliances;
+
+        $this->mapStats = [
+            'total_villages' => $villages->count(),
+            'total_players' => $players->count(),
+            'total_alliances' => $alliances->count(),
+            'active_villages' => $villages->where('is_active', true)->count(),
+            'capital_villages' => $villages->where('is_capital', true)->count(),
+            'average_population' => $villages->avg('population'),
+            'largest_village' => $villages->max('population'),
+            'tribes' => $players->pluck('tribe')->unique()->values()->toArray()
+        ];
+    }
+
+    public function searchVillages()
+    {
+        if (empty($this->searchQuery)) {
+            $this->highlightedVillages = [];
+            return;
+        }
+
+        $villages = Village::where('world_id', $this->world->id)
+            ->where(function ($query) {
+                $query
+                    ->where('name', 'like', '%' . $this->searchQuery . '%')
+                    ->orWhereHas('player', function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchQuery . '%');
+                    });
+            })
+            ->get();
+
+        $this->highlightedVillages = $villages->pluck('id')->toArray();
+        $this->addNotification('Found ' . $villages->count() . ' villages matching "' . $this->searchQuery . '"', 'info');
+    }
+
+    public function filterByAlliance($allianceId)
+    {
+        $this->filterAlliance = $allianceId;
+        $this->mapMode = 'alliance';
+        $this->addNotification('Filtering by alliance', 'info');
+    }
+
+    public function filterByTribe($tribe)
+    {
+        $this->filterTribe = $tribe;
+        $this->mapMode = 'tribe';
+        $this->addNotification('Filtering by tribe: ' . $tribe, 'info');
+    }
+
+    public function filterByPlayer($playerId)
+    {
+        $this->selectedPlayer = $playerId;
+        $this->mapMode = 'player';
+        $this->addNotification('Filtering by player', 'info');
+    }
+
+    public function clearFilters()
+    {
+        $this->filterAlliance = null;
+        $this->filterTribe = null;
+        $this->selectedPlayer = null;
+        $this->mapMode = 'normal';
+        $this->highlightedVillages = [];
+        $this->searchQuery = '';
+        $this->addNotification('All filters cleared', 'info');
+    }
+
+    public function toggleRealTimeUpdates()
+    {
+        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->addNotification(
+            $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
+            'info'
+        );
+    }
+
+    public function toggleAutoRefresh()
+    {
+        $this->autoRefresh = !$this->autoRefresh;
+        $this->addNotification(
+            $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
+            'info'
+        );
+    }
+
+    public function setRefreshInterval($interval)
+    {
+        $this->refreshInterval = max(5, min(60, $interval));
+        $this->addNotification("Refresh interval set to {$this->refreshInterval} seconds", 'info');
+    }
+
+    public function zoomIn()
+    {
+        $this->zoomLevel = min(3, $this->zoomLevel + 0.5);
+        $this->addNotification('Zoomed in', 'info');
+    }
+
+    public function zoomOut()
+    {
+        $this->zoomLevel = max(0.5, $this->zoomLevel - 0.5);
+        $this->addNotification('Zoomed out', 'info');
+    }
+
+    public function resetZoom()
+    {
+        $this->zoomLevel = 1;
+        $this->addNotification('Zoom reset', 'info');
+    }
+
+    public function centerOnCoordinates($x, $y)
+    {
+        $this->viewCenter = ['x' => $x, 'y' => $y];
+        $this->addNotification("Centered on coordinates ({$x}|{$y})", 'info');
+    }
+
+    public function getVillageColor($village)
+    {
+        if (in_array($village['id'], $this->highlightedVillages)) {
+            return 'highlight';
+        }
+
+        if ($village['is_capital']) {
+            return 'capital';
+        }
+
+        if ($village['alliance_name']) {
+            return 'alliance';
+        }
+
+        return 'normal';
+    }
+
+    public function getTribeIcon($tribe)
+    {
+        $icons = [
+            'roman' => '🏛️',
+            'teuton' => '⚔️',
+            'gaul' => '🌿'
+        ];
+        return $icons[$tribe] ?? '🏘️';
+    }
+
+    #[On('gameTickProcessed')]
+    public function handleGameTickProcessed()
+    {
+        if ($this->realTimeUpdates) {
+            $this->loadMapData();
+            $this->calculateMapStats();
+        }
     }
 
     public function render()
@@ -273,7 +457,18 @@ class WorldMap extends Component
             'filterAlliance' => $this->filterAlliance,
             'filterTribe' => $this->filterTribe,
             'notifications' => $this->notifications,
-            'isLoading' => $this->isLoading
+            'isLoading' => $this->isLoading,
+            'autoRefresh' => $this->autoRefresh,
+            'refreshInterval' => $this->refreshInterval,
+            'realTimeUpdates' => $this->realTimeUpdates,
+            'showPlayerVillages' => $this->showPlayerVillages,
+            'showEnemyVillages' => $this->showEnemyVillages,
+            'showNeutralVillages' => $this->showNeutralVillages,
+            'searchQuery' => $this->searchQuery,
+            'selectedPlayer' => $this->selectedPlayer,
+            'mapMode' => $this->mapMode,
+            'highlightedVillages' => $this->highlightedVillages,
+            'mapStats' => $this->mapStats
         ]);
     }
 }

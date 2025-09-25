@@ -42,12 +42,28 @@ class VillageManager extends Component
 
     public $isLoading = false;
 
+    public $autoRefresh = true;
+
+    public $refreshInterval = 5;
+
+    public $realTimeUpdates = true;
+
+    public $showNotifications = true;
+
+    public $gameSpeed = 1;
+
+    public $buildingProgress = [];
+
+    public $resourceProductionRates = [];
+
     protected $listeners = [
         'refreshVillage',
         'buildingUpgraded',
         'resourceUpdated',
         'buildingCompleted',
-        'villageSelected'
+        'villageSelected',
+        'gameTickProcessed',
+        'buildingProgressUpdated'
     ];
 
     public function mount($village)
@@ -56,7 +72,21 @@ class VillageManager extends Component
             ->findOrFail($village);
 
         $this->loadVillageData();
+        $this->initializeRealTimeFeatures();
         $this->startVillagePolling();
+    }
+
+    public function initializeRealTimeFeatures()
+    {
+        $this->calculateResourceProductionRates();
+        $this->calculateBuildingProgress();
+
+        // Dispatch initial real-time setup
+        $this->dispatch('initializeVillageRealTime', [
+            'interval' => $this->refreshInterval * 1000,
+            'autoRefresh' => $this->autoRefresh,
+            'realTimeUpdates' => $this->realTimeUpdates
+        ]);
     }
 
     public function loadVillageData()
@@ -264,6 +294,149 @@ class VillageManager extends Component
         $this->addNotification('Village data refreshed', 'info');
     }
 
+    public function calculateResourceProductionRates()
+    {
+        if (!$this->village) {
+            return;
+        }
+
+        $this->resourceProductionRates = [];
+        foreach ($this->village->resources as $resource) {
+            $this->resourceProductionRates[$resource->type] = [
+                'current' => $resource->amount,
+                'production' => $resource->production_rate,
+                'capacity' => $resource->storage_capacity,
+                'percentage' => min(100, ($resource->amount / $resource->storage_capacity) * 100)
+            ];
+        }
+    }
+
+    public function calculateBuildingProgress()
+    {
+        $this->buildingProgress = [];
+
+        foreach ($this->buildingQueues as $queue) {
+            $startTime = $queue->started_at;
+            $endTime = $queue->completed_at;
+            $now = now();
+
+            if ($now->lt($endTime)) {
+                $totalDuration = $endTime->diffInSeconds($startTime);
+                $elapsed = $now->diffInSeconds($startTime);
+                $progress = min(100, ($elapsed / $totalDuration) * 100);
+
+                $this->buildingProgress[$queue->id] = [
+                    'progress' => $progress,
+                    'remaining' => $endTime->diffInSeconds($now),
+                    'building_name' => $queue->buildingType->name,
+                    'target_level' => $queue->target_level
+                ];
+            }
+        }
+    }
+
+    public function toggleRealTimeUpdates()
+    {
+        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->addNotification(
+            $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
+            'info'
+        );
+    }
+
+    public function toggleAutoRefresh()
+    {
+        $this->autoRefresh = !$this->autoRefresh;
+        $this->addNotification(
+            $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
+            'info'
+        );
+    }
+
+    public function setRefreshInterval($interval)
+    {
+        $this->refreshInterval = max(1, min(60, $interval));
+        $this->addNotification("Refresh interval set to {$this->refreshInterval} seconds", 'info');
+    }
+
+    public function setGameSpeed($speed)
+    {
+        $this->gameSpeed = max(0.5, min(3.0, $speed));
+        $this->addNotification("Game speed set to {$this->gameSpeed}x", 'info');
+    }
+
+    public function getResourceIcon($type)
+    {
+        $icons = [
+            'wood' => '🌲',
+            'clay' => '🏺',
+            'iron' => '⚒️',
+            'crop' => '🌾'
+        ];
+        return $icons[$type] ?? '📦';
+    }
+
+    public function getBuildingIcon($buildingType)
+    {
+        $icons = [
+            'main_building' => '🏛️',
+            'barracks' => '🏰',
+            'stable' => '🐎',
+            'workshop' => '🔨',
+            'academy' => '🎓',
+            'smithy' => '⚒️',
+            'rally_point' => '🚩',
+            'marketplace' => '🏪',
+            'residence' => '🏠',
+            'palace' => '👑',
+            'treasury' => '💰',
+            'trade_office' => '📊',
+            'warehouse' => '📦',
+            'granary' => '🌾'
+        ];
+        return $icons[$buildingType] ?? '🏗️';
+    }
+
+    public function addNotification($message, $type = 'info')
+    {
+        $this->notifications[] = [
+            'id' => uniqid(),
+            'message' => $message,
+            'type' => $type,
+            'timestamp' => now()
+        ];
+
+        // Keep only last 10 notifications
+        $this->notifications = array_slice($this->notifications, -10);
+    }
+
+    public function removeNotification($notificationId)
+    {
+        $this->notifications = array_filter($this->notifications, function ($notification) use ($notificationId) {
+            return $notification['id'] !== $notificationId;
+        });
+    }
+
+    public function clearNotifications()
+    {
+        $this->notifications = [];
+    }
+
+    #[On('buildingProgressUpdated')]
+    public function handleBuildingProgressUpdated($data)
+    {
+        $this->calculateBuildingProgress();
+        $this->addNotification('Building progress updated', 'info');
+    }
+
+    #[On('gameTickProcessed')]
+    public function handleGameTickProcessed()
+    {
+        $this->loadVillageData();
+        $this->calculateResourceProductionRates();
+        $this->calculateBuildingProgress();
+    }
+
     public function render()
     {
         return view('livewire.game.village-manager', [
@@ -276,7 +449,13 @@ class VillageManager extends Component
             'canUpgrade' => $this->canUpgrade,
             'buildingQueues' => $this->buildingQueues,
             'notifications' => $this->notifications,
-            'isLoading' => $this->isLoading
+            'isLoading' => $this->isLoading,
+            'resourceProductionRates' => $this->resourceProductionRates,
+            'buildingProgress' => $this->buildingProgress,
+            'autoRefresh' => $this->autoRefresh,
+            'refreshInterval' => $this->refreshInterval,
+            'realTimeUpdates' => $this->realTimeUpdates,
+            'gameSpeed' => $this->gameSpeed
         ]);
     }
 }

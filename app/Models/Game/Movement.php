@@ -2,30 +2,34 @@
 
 namespace App\Models\Game;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
 class Movement extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'player_id',
         'from_village_id',
         'to_village_id',
-        'movement_type',
+        'type',
         'troops',
+        'resources',
         'started_at',
         'arrives_at',
-        'return_at',
+        'returned_at',
         'status',
-        'movement_data',
+        'metadata',
     ];
 
     protected $casts = [
         'troops' => 'array',
+        'resources' => 'array',
         'started_at' => 'datetime',
         'arrives_at' => 'datetime',
-        'return_at' => 'datetime',
-        'movement_data' => 'array',
+        'returned_at' => 'datetime',
+        'metadata' => 'array',
     ];
 
     public function player(): BelongsTo
