@@ -3,12 +3,11 @@
 namespace App\Livewire\Game;
 
 use App\Models\Game\Building;
-use App\Models\Game\Movement;
 use App\Models\Game\Player;
 use App\Models\Game\Report;
 use App\Models\Game\Troop;
-use App\Models\Game\Village;
 use App\Models\Game\World;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -56,21 +55,21 @@ class StatisticsViewer extends Component
         'resources' => 'Resources',
         'buildings' => 'Buildings',
         'troops' => 'Troops',
-        'achievements' => 'Achievements'
+        'achievements' => 'Achievements',
     ];
 
     public $timeRanges = [
         'today' => 'Today',
         'week' => 'This Week',
         'month' => 'This Month',
-        'all' => 'All Time'
+        'all' => 'All Time',
     ];
 
     public $statTypes = [
         'all' => 'All Statistics',
         'personal' => 'Personal',
         'alliance' => 'Alliance',
-        'world' => 'World'
+        'world' => 'World',
     ];
 
     protected $listeners = [
@@ -80,7 +79,7 @@ class StatisticsViewer extends Component
         'battleCompleted',
         'achievementUnlocked',
         'gameTickProcessed',
-        'villageSelected'
+        'villageSelected',
     ];
 
     public function mount($worldId = null, $world = null)
@@ -109,8 +108,9 @@ class StatisticsViewer extends Component
                 ->with(['villages', 'alliance'])
                 ->first();
 
-            if (!$this->player) {
+            if (! $this->player) {
                 $this->addNotification('Player not found in this world', 'error');
+
                 return;
             }
         } catch (\Exception $e) {
@@ -126,24 +126,31 @@ class StatisticsViewer extends Component
             switch ($this->viewMode) {
                 case 'overview':
                     $this->loadOverviewStats();
+
                     break;
                 case 'rankings':
                     $this->loadRankingStats();
+
                     break;
                 case 'battles':
                     $this->loadBattleStats();
+
                     break;
                 case 'resources':
                     $this->loadResourceStats();
+
                     break;
                 case 'buildings':
                     $this->loadBuildingStats();
+
                     break;
                 case 'troops':
                     $this->loadTroopStats();
+
                     break;
                 case 'achievements':
                     $this->loadAchievementStats();
+
                     break;
             }
 
@@ -157,31 +164,66 @@ class StatisticsViewer extends Component
 
     private function loadOverviewStats()
     {
+        // Use subquery optimization to get all stats in one query
+        $playerStats = Player::where('id', $this->player->id)
+            ->with(['villages' => function ($query) {
+                $query->selectRaw('player_id, COUNT(*) as village_count, SUM(population) as total_population, 
+                    SUM(wood) as total_wood, SUM(clay) as total_clay, SUM(iron) as total_iron, SUM(crop) as total_crop,
+                    SUM(wood_production) as wood_prod, SUM(clay_production) as clay_prod, 
+                    SUM(iron_production) as iron_prod, SUM(crop_production) as crop_prod')
+                    ->groupBy('player_id');
+            }])
+            ->with(['alliance:id,name'])
+            ->first();
+
         $this->playerStats = [
             'rank' => $this->getPlayerRank(),
-            'points' => $this->player->points ?? 0,
-            'villages' => $this->player->villages->count(),
-            'population' => $this->player->villages->sum('population'),
-            'alliance' => $this->player->alliance?->name ?? 'No Alliance',
-            'join_date' => $this->player->created_at,
-            'last_active' => $this->player->updated_at,
+            'points' => $playerStats->points ?? 0,
+            'villages' => $playerStats->villages->first()->village_count ?? 0,
+            'population' => $playerStats->villages->first()->total_population ?? 0,
+            'alliance' => $playerStats->alliance?->name ?? 'No Alliance',
+            'join_date' => $playerStats->created_at,
+            'last_active' => $playerStats->updated_at,
         ];
 
+        // Optimize battle stats with single query using subqueries
+        $battleStats = Report::where('world_id', $this->world->id)
+            ->where(function ($q) {
+                $q->where('attacker_id', $this->player->id)
+                  ->orWhere('defender_id', $this->player->id);
+            })
+            ->selectRaw('
+                SUM(CASE WHEN attacker_id = ? AND status = "victory" THEN 1 ELSE 0 END) as attacks_won,
+                SUM(CASE WHEN attacker_id = ? AND status = "defeat" THEN 1 ELSE 0 END) as attacks_lost,
+                SUM(CASE WHEN defender_id = ? AND status = "victory" THEN 1 ELSE 0 END) as defenses_won,
+                SUM(CASE WHEN defender_id = ? AND status = "defeat" THEN 1 ELSE 0 END) as defenses_lost,
+                COUNT(*) as total_battles
+            ', [$this->player->id, $this->player->id, $this->player->id, $this->player->id])
+            ->first();
+
+        $totalBattles = $battleStats->total_battles;
+        $wins = $battleStats->attacks_won + $battleStats->defenses_won;
+
         $this->battleStats = [
-            'attacks_won' => $this->getAttackWins(),
-            'attacks_lost' => $this->getAttackLosses(),
-            'defenses_won' => $this->getDefenseWins(),
-            'defenses_lost' => $this->getDefenseLosses(),
-            'total_battles' => $this->getTotalBattles(),
-            'win_rate' => $this->getWinRate(),
+            'attacks_won' => $battleStats->attacks_won,
+            'attacks_lost' => $battleStats->attacks_lost,
+            'defenses_won' => $battleStats->defenses_won,
+            'defenses_lost' => $battleStats->defenses_lost,
+            'total_battles' => $totalBattles,
+            'win_rate' => $totalBattles > 0 ? round(($wins / $totalBattles) * 100, 2) : 0,
         ];
 
         $this->resourceStats = [
-            'total_wood' => $this->getTotalResource('wood'),
-            'total_clay' => $this->getTotalResource('clay'),
-            'total_iron' => $this->getTotalResource('iron'),
-            'total_crop' => $this->getTotalResource('crop'),
-            'production_rate' => $this->getProductionRate(),
+            'total_wood' => $playerStats->villages->first()->total_wood ?? 0,
+            'total_clay' => $playerStats->villages->first()->total_clay ?? 0,
+            'total_iron' => $playerStats->villages->first()->total_iron ?? 0,
+            'total_crop' => $playerStats->villages->first()->total_crop ?? 0,
+            'production_rate' => [
+                'wood' => $playerStats->villages->first()->wood_prod ?? 0,
+                'clay' => $playerStats->villages->first()->clay_prod ?? 0,
+                'iron' => $playerStats->villages->first()->iron_prod ?? 0,
+                'crop' => $playerStats->villages->first()->crop_prod ?? 0,
+            ],
         ];
 
         $this->buildingStats = [
@@ -190,22 +232,48 @@ class StatisticsViewer extends Component
             'upgrade_progress' => $this->getUpgradeProgress(),
         ];
 
+        // Use optimized troop stats method
+        $troopStats = $this->getTroopStatsOptimized();
         $this->troopStats = [
-            'total_troops' => $this->getTotalTroops(),
-            'troop_types' => $this->getTroopTypes(),
-            'army_strength' => $this->getArmyStrength(),
+            'total_troops' => $troopStats->sum('total_count'),
+            'troop_types' => $troopStats,
+            'army_strength' => $troopStats->sum('attack_power'),
+            'defense_strength' => $troopStats->sum('defense_power'),
         ];
     }
 
     private function loadRankingStats()
     {
         $query = Player::where('world_id', $this->world->id)
-            ->with(['villages', 'alliance'])
-            ->orderBy('points', 'desc');
+            ->with(['villages' => function ($q) {
+                $q->selectRaw('player_id, COUNT(*) as village_count, SUM(population) as total_population')
+                  ->groupBy('player_id');
+            }, 'alliance:id,name']);
 
-        if ($this->searchQuery) {
-            $query->where('name', 'like', '%' . $this->searchQuery . '%');
-        }
+        // Use QueryOptimizationService for conditional filters
+        $filters = [
+            $this->searchQuery => function ($q) {
+                return $q->where('name', 'like', '%' . $this->searchQuery . '%');
+            },
+            $this->timeRange !== 'all' => function ($q) {
+                return $q->where('created_at', '>=', $this->getTimeRangeDate());
+            },
+            $this->statType === 'alliance' => function ($q) {
+                return $q->whereNotNull('alliance_id');
+            },
+            $this->statType === 'personal' => function ($q) {
+                return $q->where('id', $this->player->id);
+            },
+        ];
+
+        $query = QueryOptimizationService::applyConditionalFilters($query, $filters);
+
+        $query->selectRaw('
+                id, name, points, alliance_id, created_at, updated_at,
+                (SELECT COUNT(*) FROM villages WHERE player_id = players.id) as village_count,
+                (SELECT SUM(population) FROM villages WHERE player_id = players.id) as total_population
+            ')
+            ->orderBy('points', 'desc');
 
         $this->rankingStats = $query->get();
     }
@@ -274,6 +342,16 @@ class StatisticsViewer extends Component
             ->count() + 1;
     }
 
+    private function getTimeRangeDate()
+    {
+        return match ($this->timeRange) {
+            'today' => now()->startOfDay(),
+            'week' => now()->subWeek(),
+            'month' => now()->subMonth(),
+            default => now()->subYear(),
+        };
+    }
+
     private function getAttackWins()
     {
         return Report::where('world_id', $this->world->id)
@@ -315,10 +393,12 @@ class StatisticsViewer extends Component
     private function getWinRate()
     {
         $totalBattles = $this->getTotalBattles();
-        if ($totalBattles === 0)
+        if ($totalBattles === 0) {
             return 0;
+        }
 
         $wins = $this->getAttackWins() + $this->getDefenseWins();
+
         return round(($wins / $totalBattles) * 100, 2);
     }
 
@@ -347,7 +427,7 @@ class StatisticsViewer extends Component
     {
         return Building::whereIn('village_id', $this->player->villages->pluck('id'))
             ->groupBy('building_type_id')
-            ->selectRaw('building_type_id, AVG(level) as avg_level, MAX(level) as max_level')
+            ->selectRaw('building_type_id, AVG(level) as avg_level, MAX(level) as max_level, COUNT(*) as total_buildings')
             ->get();
     }
 
@@ -364,6 +444,33 @@ class StatisticsViewer extends Component
             ->sum('count');
     }
 
+    private function getTroopStatsOptimized()
+    {
+        // Get all troop stats in a single query with selectRaw
+        return Troop::whereIn('village_id', $this->player->villages->pluck('id'))
+            ->with('unitType:id,name,attack,defense')
+            ->selectRaw('
+                unit_type_id,
+                SUM(count) as total_count,
+                AVG(count) as avg_count,
+                MAX(count) as max_count,
+                COUNT(*) as village_count
+            ')
+            ->groupBy('unit_type_id')
+            ->get()
+            ->map(function ($troop) {
+                return [
+                    'type' => $troop->unitType->name ?? 'Unknown',
+                    'total_count' => $troop->total_count,
+                    'avg_count' => round($troop->avg_count, 2),
+                    'max_count' => $troop->max_count,
+                    'village_count' => $troop->village_count,
+                    'attack_power' => $troop->total_count * ($troop->unitType->attack ?? 0),
+                    'defense_power' => $troop->total_count * ($troop->unitType->defense ?? 0),
+                ];
+            });
+    }
+
     private function getTroopTypes()
     {
         return Troop::whereIn('village_id', $this->player->villages->pluck('id'))
@@ -373,7 +480,7 @@ class StatisticsViewer extends Component
             ->map(function ($troops) {
                 return [
                     'type' => $troops->first()->unitType->name ?? 'Unknown',
-                    'count' => $troops->sum('count')
+                    'count' => $troops->sum('count'),
                 ];
             });
     }
@@ -427,6 +534,7 @@ class StatisticsViewer extends Component
     {
         if (empty($this->searchQuery)) {
             $this->addNotification('Search cleared', 'info');
+
             return;
         }
 
@@ -449,7 +557,7 @@ class StatisticsViewer extends Component
     // Real-time features
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -458,7 +566,7 @@ class StatisticsViewer extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -528,7 +636,7 @@ class StatisticsViewer extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
     }
 
@@ -546,7 +654,7 @@ class StatisticsViewer extends Component
             'resources' => 'coins',
             'buildings' => 'home',
             'troops' => 'users',
-            'achievements' => 'star'
+            'achievements' => 'star',
         ];
 
         return $icons[$category] ?? 'chart-bar';
@@ -561,7 +669,7 @@ class StatisticsViewer extends Component
             'resources' => 'green',
             'buildings' => 'purple',
             'troops' => 'orange',
-            'achievements' => 'pink'
+            'achievements' => 'pink',
         ];
 
         return $colors[$category] ?? 'blue';
@@ -574,6 +682,7 @@ class StatisticsViewer extends Component
         } elseif ($number >= 1000) {
             return round($number / 1000, 1) . 'K';
         }
+
         return number_format($number);
     }
 

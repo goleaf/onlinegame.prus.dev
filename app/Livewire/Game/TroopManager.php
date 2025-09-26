@@ -4,7 +4,6 @@ namespace App\Livewire\Game;
 
 use App\Models\Game\Player;
 use App\Models\Game\TrainingQueue;
-use App\Models\Game\Troop;
 use App\Models\Game\UnitType;
 use App\Models\Game\Village;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +52,7 @@ class TroopManager extends Component
         'villageSelected',
         'gameTickProcessed',
         'troopTrained',
-        'troopDisbanded'
+        'troopDisbanded',
     ];
 
     public function mount($villageId = null)
@@ -80,7 +79,7 @@ class TroopManager extends Component
         $this->dispatch('initializeTroopRealTime', [
             'interval' => $this->refreshInterval * 1000,
             'autoRefresh' => $this->autoRefresh,
-            'realTimeUpdates' => $this->realTimeUpdates
+            'realTimeUpdates' => $this->realTimeUpdates,
         ]);
     }
 
@@ -112,7 +111,7 @@ class TroopManager extends Component
 
     public function calculateTrainingCost()
     {
-        if (!$this->selectedUnitType) {
+        if (! $this->selectedUnitType) {
             return;
         }
 
@@ -148,6 +147,7 @@ class TroopManager extends Component
 
             if ($resourceAmount < $cost) {
                 $this->canTrain = false;
+
                 break;
             }
         }
@@ -165,8 +165,9 @@ class TroopManager extends Component
                     })
                     ->first();
 
-                if (!$building || $building->level < $level) {
+                if (! $building || $building->level < $level) {
                     $this->canTrain = false;
+
                     break;
                 }
             }
@@ -175,7 +176,7 @@ class TroopManager extends Component
 
     public function startTraining()
     {
-        if (!$this->canTrain || !$this->selectedUnitType) {
+        if (! $this->canTrain || ! $this->selectedUnitType) {
             return;
         }
 
@@ -189,7 +190,7 @@ class TroopManager extends Component
                 'started_at' => now(),
                 'completed_at' => now()->addSeconds($this->calculateTrainingTime()),
                 'costs' => $this->trainingCost,
-                'status' => 'in_progress'
+                'status' => 'in_progress',
             ]);
 
             // Deduct resources
@@ -208,7 +209,7 @@ class TroopManager extends Component
 
             $this->dispatch('trainingStarted', [
                 'unit_name' => $this->selectedUnitType->name,
-                'quantity' => $this->trainingQuantity
+                'quantity' => $this->trainingQuantity,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Training failed: ' . $e->getMessage(), 'error');
@@ -217,7 +218,7 @@ class TroopManager extends Component
 
     public function calculateTrainingTime()
     {
-        if (!$this->selectedUnitType) {
+        if (! $this->selectedUnitType) {
             return 0;
         }
 
@@ -245,6 +246,7 @@ class TroopManager extends Component
     public function getTroopQuantity($unitTypeId)
     {
         $troop = $this->troops->where('unit_type_id', $unitTypeId)->first();
+
         return $troop ? $troop->quantity : 0;
     }
 
@@ -285,7 +287,7 @@ class TroopManager extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         // Keep only last 10 notifications
@@ -328,7 +330,7 @@ class TroopManager extends Component
                     'progress' => $progress,
                     'remaining' => $endTime->diffInSeconds($now),
                     'unit_name' => $queue['unit_type'],
-                    'quantity' => $queue['quantity']
+                    'quantity' => $queue['quantity'],
                 ];
             }
         }
@@ -341,7 +343,7 @@ class TroopManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -350,7 +352,7 @@ class TroopManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -377,7 +379,7 @@ class TroopManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function filterByType($type)
@@ -411,6 +413,7 @@ class TroopManager extends Component
     {
         if (empty($this->searchQuery)) {
             $this->addNotification('Search cleared', 'info');
+
             return;
         }
 
@@ -419,7 +422,7 @@ class TroopManager extends Component
 
     public function toggleAvailableFilter()
     {
-        $this->showOnlyAvailable = !$this->showOnlyAvailable;
+        $this->showOnlyAvailable = ! $this->showOnlyAvailable;
         $this->addNotification(
             $this->showOnlyAvailable ? 'Showing only available troops' : 'Showing all troops',
             'info'
@@ -428,7 +431,7 @@ class TroopManager extends Component
 
     public function toggleTrainingFilter()
     {
-        $this->showOnlyTraining = !$this->showOnlyTraining;
+        $this->showOnlyTraining = ! $this->showOnlyTraining;
         $this->addNotification(
             $this->showOnlyTraining ? 'Showing only training troops' : 'Showing all troops',
             'info'
@@ -449,7 +452,7 @@ class TroopManager extends Component
 
     public function toggleContinuousTraining()
     {
-        $this->continuousTraining = !$this->continuousTraining;
+        $this->continuousTraining = ! $this->continuousTraining;
         $this->addNotification(
             $this->continuousTraining ? 'Continuous training enabled' : 'Continuous training disabled',
             'info'
@@ -488,8 +491,9 @@ class TroopManager extends Component
             'ram' => '🐏',
             'trebuchet' => '💥',
             'chieftain' => '👑',
-            'settler' => '🏘️'
+            'settler' => '🏘️',
         ];
+
         return $icons[$type] ?? '⚔️';
     }
 
@@ -531,7 +535,7 @@ class TroopManager extends Component
     public function getTrainingCost($unitType, $quantity)
     {
         $unit = $this->unitTypes[$unitType] ?? null;
-        if (!$unit) {
+        if (! $unit) {
             return [];
         }
 
@@ -539,7 +543,7 @@ class TroopManager extends Component
             'wood' => ($unit['wood_cost'] ?? 0) * $quantity,
             'clay' => ($unit['clay_cost'] ?? 0) * $quantity,
             'iron' => ($unit['iron_cost'] ?? 0) * $quantity,
-            'crop' => ($unit['crop_cost'] ?? 0) * $quantity
+            'crop' => ($unit['crop_cost'] ?? 0) * $quantity,
         ];
     }
 
@@ -550,7 +554,7 @@ class TroopManager extends Component
 
         foreach ($cost as $resource => $amount) {
             $resourceModel = $resources->where('type', $resource)->first();
-            if (!$resourceModel || $resourceModel->amount < $amount) {
+            if (! $resourceModel || $resourceModel->amount < $amount) {
                 return false;
             }
         }
@@ -562,6 +566,7 @@ class TroopManager extends Component
     {
         if ($this->trainingMode !== 'batch') {
             $this->addNotification('Batch training mode not enabled', 'error');
+
             return;
         }
 
@@ -570,8 +575,9 @@ class TroopManager extends Component
 
     public function startContinuousTraining()
     {
-        if (!$this->continuousTraining) {
+        if (! $this->continuousTraining) {
             $this->addNotification('Continuous training not enabled', 'error');
+
             return;
         }
 
@@ -588,12 +594,14 @@ class TroopManager extends Component
     {
         if ($quantity <= 0) {
             $this->addNotification('Invalid quantity for disbanding', 'error');
+
             return;
         }
 
         $troop = $this->troops->where('unit_type', $unitType)->first();
-        if (!$troop || $troop->count < $quantity) {
+        if (! $troop || $troop->count < $quantity) {
             $this->addNotification('Not enough troops to disband', 'error');
+
             return;
         }
 
@@ -603,7 +611,7 @@ class TroopManager extends Component
 
         $this->dispatch('troopDisbanded', [
             'unit_type' => $unitType,
-            'quantity' => $quantity
+            'quantity' => $quantity,
         ]);
     }
 
@@ -667,7 +675,7 @@ class TroopManager extends Component
             'showOnlyTraining' => $this->showOnlyTraining,
             'trainingMode' => $this->trainingMode,
             'batchSize' => $this->batchSize,
-            'continuousTraining' => $this->continuousTraining
+            'continuousTraining' => $this->continuousTraining,
         ]);
     }
 }

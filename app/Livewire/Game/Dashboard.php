@@ -17,7 +17,7 @@ class Dashboard extends Component
         'wood' => 1000,
         'clay' => 1000,
         'iron' => 1000,
-        'crop' => 1000
+        'crop' => 1000,
     ];
 
     public function mount()
@@ -32,8 +32,9 @@ class Dashboard extends Component
 
     public function createVillage()
     {
-        if ($this->villages->count() >= 1 && !$this->player->hasRole('premium')) {
+        if ($this->villages->count() >= 1 && ! $this->player->hasRole('premium')) {
             session()->flash('error', 'You need premium to create more villages!');
+
             return;
         }
 
@@ -45,7 +46,7 @@ class Dashboard extends Component
             'y_coordinate' => rand(1, 100),
             'population' => 2,
             'is_capital' => $this->villages->count() === 0,
-            'is_active' => true
+            'is_active' => true,
         ]);
 
         // Create initial resources
@@ -73,15 +74,19 @@ class Dashboard extends Component
                 switch ($resource->type) {
                     case 'wood':
                         $totalWood += $resource->amount;
+
                         break;
                     case 'clay':
                         $totalClay += $resource->amount;
+
                         break;
                     case 'iron':
                         $totalIron += $resource->amount;
+
                         break;
                     case 'crop':
                         $totalCrop += $resource->amount;
+
                         break;
                 }
             }
@@ -91,7 +96,7 @@ class Dashboard extends Component
             'wood' => $totalWood,
             'clay' => $totalClay,
             'iron' => $totalIron,
-            'crop' => $totalCrop
+            'crop' => $totalCrop,
         ];
     }
 
@@ -105,7 +110,7 @@ class Dashboard extends Component
                 'type' => $type,
                 'amount' => 1000,
                 'production_rate' => 10,
-                'storage_capacity' => 10000
+                'storage_capacity' => 10000,
             ]);
         }
     }

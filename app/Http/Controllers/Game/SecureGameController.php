@@ -23,12 +23,12 @@ class SecureGameController extends Controller
     {
         try {
             $user = Auth::user();
-            if (!$user) {
+            if (! $user) {
                 return redirect()->route('login');
             }
 
             $player = Player::where('user_id', $user->id)->first();
-            if (!$player) {
+            if (! $player) {
                 return view('game.no-player', compact('user'));
             }
 
@@ -43,7 +43,7 @@ class SecureGameController extends Controller
         $validator = Validator::make($request->all(), [
             'village_id' => 'required|integer|exists:villages,id',
             'building_id' => 'required|integer|exists:buildings,id',
-            'target_level' => 'required|integer|min:1|max:20'
+            'target_level' => 'required|integer|min:1|max:20',
         ]);
 
         if ($validator->fails()) {
@@ -51,7 +51,7 @@ class SecureGameController extends Controller
         }
 
         // Check security
-        if (!$this->securityService->validateGameAction($request, 'building_upgrade', $request->all())) {
+        if (! $this->securityService->validateGameAction($request, 'building_upgrade', $request->all())) {
             return response()->json(['error' => 'Unauthorized action'], 403);
         }
 
@@ -64,7 +64,7 @@ class SecureGameController extends Controller
             $village = $request->get('village');
             $building = $village->buildings()->find($request->building_id);
 
-            if (!$building) {
+            if (! $building) {
                 return response()->json(['error' => 'Building not found'], 404);
             }
 
@@ -87,7 +87,7 @@ class SecureGameController extends Controller
         $validator = Validator::make($request->all(), [
             'village_id' => 'required|integer|exists:villages,id',
             'unit_type_id' => 'required|integer|exists:unit_types,id',
-            'quantity' => 'required|integer|min:1|max:1000'
+            'quantity' => 'required|integer|min:1|max:1000',
         ]);
 
         if ($validator->fails()) {
@@ -95,7 +95,7 @@ class SecureGameController extends Controller
         }
 
         // Check security
-        if (!$this->securityService->validateGameAction($request, 'troop_training', $request->all())) {
+        if (! $this->securityService->validateGameAction($request, 'troop_training', $request->all())) {
             return response()->json(['error' => 'Unauthorized action'], 403);
         }
 
@@ -124,7 +124,7 @@ class SecureGameController extends Controller
             'costs.wood' => 'integer|min:0',
             'costs.clay' => 'integer|min:0',
             'costs.iron' => 'integer|min:0',
-            'costs.crop' => 'integer|min:0'
+            'costs.crop' => 'integer|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -132,7 +132,7 @@ class SecureGameController extends Controller
         }
 
         // Check security
-        if (!$this->securityService->validateGameAction($request, 'resource_spend', $request->all())) {
+        if (! $this->securityService->validateGameAction($request, 'resource_spend', $request->all())) {
             return response()->json(['error' => 'Unauthorized action'], 403);
         }
 
@@ -156,7 +156,7 @@ class SecureGameController extends Controller
     public function getVillageData(Request $request, $villageId)
     {
         // Check security
-        if (!$this->securityService->validateGameAction($request, 'village_management', ['village_id' => $villageId])) {
+        if (! $this->securityService->validateGameAction($request, 'village_management', ['village_id' => $villageId])) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 
@@ -168,7 +168,7 @@ class SecureGameController extends Controller
                 'village' => $village,
                 'buildings' => $village->buildings,
                 'resources' => $village->resources,
-                'troops' => $village->troops
+                'troops' => $village->troops,
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to load village data'], 500);
@@ -180,7 +180,7 @@ class SecureGameController extends Controller
         // Implementation for building upgrade
         $building->update([
             'level' => $targetLevel,
-            'upgrade_started_at' => now()
+            'upgrade_started_at' => now(),
         ]);
     }
 
@@ -189,7 +189,7 @@ class SecureGameController extends Controller
         // Implementation for troop training
         $village->troops()->create([
             'unit_type_id' => $unitTypeId,
-            'quantity' => $quantity
+            'quantity' => $quantity,
         ]);
     }
 
@@ -204,4 +204,3 @@ class SecureGameController extends Controller
         }
     }
 }
-

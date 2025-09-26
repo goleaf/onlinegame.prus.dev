@@ -2,13 +2,8 @@
 
 namespace Tests\Unit\Services;
 
-use App\Models\Game\Building;
-use App\Models\Game\BuildingQueue;
-use App\Models\Game\GameEvent;
-use App\Models\Game\Movement;
 use App\Models\Game\Player;
 use App\Models\Game\Resource;
-use App\Models\Game\TrainingQueue;
 use App\Models\Game\Village;
 use App\Models\User;
 use App\Services\GameTickService;
@@ -106,7 +101,7 @@ class GameTickServiceSimpleTest extends TestCase
             'production_rate' => 10,
             'storage_capacity' => 10000,
             'level' => 1,
-            'last_updated' => $pastTime
+            'last_updated' => $pastTime,
         ]);
 
         // Debug: Check if buildings exist
@@ -140,7 +135,7 @@ class GameTickServiceSimpleTest extends TestCase
             'production_rate' => 10,
             'storage_capacity' => 10000,
             'level' => 1,
-            'last_updated' => $pastTime
+            'last_updated' => $pastTime,
         ]);
 
         // Debug: Check time calculation
@@ -189,7 +184,7 @@ class GameTickServiceSimpleTest extends TestCase
             'player_id' => $this->player->id,
             'village_id' => $this->village->id,
             'event_type' => 'test_event',
-            'description' => 'Test Event'
+            'description' => 'Test Event',
         ]);
     }
 
@@ -205,7 +200,7 @@ class GameTickServiceSimpleTest extends TestCase
             'village_id' => $this->village->id,
             'type' => 'wood',
             'amount_produced' => 100,
-            'final_amount' => 1100
+            'final_amount' => 1100,
         ]);
     }
 

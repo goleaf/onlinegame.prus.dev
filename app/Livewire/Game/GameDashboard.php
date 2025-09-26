@@ -4,11 +4,8 @@ namespace App\Livewire\Game;
 
 use App\Models\Game\GameEvent;
 use App\Models\Game\Player;
-use App\Models\Game\Village;
-use App\Services\GameTickService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -50,12 +47,12 @@ class GameDashboard extends Component
         'gameTickError',
         'buildingCompleted',
         'resourceUpdated',
-        'villageUpdated'
+        'villageUpdated',
     ];
 
     public function mount()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect('/login');
         }
 
@@ -75,7 +72,7 @@ class GameDashboard extends Component
         $this->dispatch('initializeRealTime', [
             'interval' => $this->refreshInterval * 1000,
             'autoRefresh' => $this->autoRefresh,
-            'realTimeUpdates' => $this->realTimeUpdates
+            'realTimeUpdates' => $this->realTimeUpdates,
         ]);
     }
 
@@ -85,9 +82,10 @@ class GameDashboard extends Component
 
         try {
             $user = Auth::user();
-            if (!$user) {
+            if (! $user) {
                 $this->loadGameStats();  // Load default stats even when no user
                 $this->isLoading = false;
+
                 return;
             }
             $this->player = Player::where('user_id', $user->id)->first();
@@ -149,7 +147,7 @@ class GameDashboard extends Component
     #[On('tick')]
     public function processGameTick()
     {
-        if (!$this->autoRefresh) {
+        if (! $this->autoRefresh) {
             return;
         }
 
@@ -177,7 +175,7 @@ class GameDashboard extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -202,7 +200,7 @@ class GameDashboard extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         // Keep only last 10 notifications
@@ -267,7 +265,7 @@ class GameDashboard extends Component
 
     public function calculateResourceProductionRates()
     {
-        if (!$this->currentVillage) {
+        if (! $this->currentVillage) {
             return;
         }
 
@@ -277,14 +275,14 @@ class GameDashboard extends Component
                 'current' => $resource->amount,
                 'production' => $resource->production_rate,
                 'capacity' => $resource->storage_capacity,
-                'percentage' => min(100, ($resource->amount / $resource->storage_capacity) * 100)
+                'percentage' => min(100, ($resource->amount / $resource->storage_capacity) * 100),
             ];
         }
     }
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -293,7 +291,7 @@ class GameDashboard extends Component
 
     public function toggleNotifications()
     {
-        $this->showNotifications = !$this->showNotifications;
+        $this->showNotifications = ! $this->showNotifications;
         $this->addNotification(
             $this->showNotifications ? 'Notifications enabled' : 'Notifications disabled',
             'info'
@@ -312,8 +310,9 @@ class GameDashboard extends Component
             'wood' => '🌲',
             'clay' => '🏺',
             'iron' => '⚒️',
-            'crop' => '🌾'
+            'crop' => '🌾',
         ];
+
         return $icons[$type] ?? '📦';
     }
 
@@ -355,8 +354,9 @@ class GameDashboard extends Component
             'iron_mine' => '⛏️',
             'crop_field' => '🌾',
             'warehouse' => '📦',
-            'granary' => '🌾'
+            'granary' => '🌾',
         ];
+
         return $icons[$buildingType] ?? '🏗️';
     }
 
@@ -372,7 +372,7 @@ class GameDashboard extends Component
             'isLoading' => $this->isLoading,
             'resourceProductionRates' => $this->resourceProductionRates,
             'worldTime' => $this->worldTime,
-            'gameSpeed' => $this->gameSpeed
+            'gameSpeed' => $this->gameSpeed,
         ]);
     }
 }

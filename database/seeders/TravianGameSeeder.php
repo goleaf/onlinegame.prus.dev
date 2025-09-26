@@ -7,7 +7,6 @@ use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class TravianGameSeeder extends Seeder

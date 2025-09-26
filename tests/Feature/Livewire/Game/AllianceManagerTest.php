@@ -24,7 +24,7 @@ class AllianceManagerTest extends TestCase
         $world = World::factory()->create();
         $player = Player::factory()->create([
             'user_id' => $user->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $this->actingAs($user);

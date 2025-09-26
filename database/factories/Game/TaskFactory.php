@@ -15,7 +15,7 @@ class TaskFactory extends Factory
     {
         $startedAt = $this->faker->boolean(30) ? $this->faker->dateTimeBetween('-1 day', 'now') : null;
         $completedAt = $startedAt && $this->faker->boolean(50) ? $this->faker->dateTimeBetween($startedAt, 'now') : null;
-        
+
         $status = $completedAt ? 'completed' : ($startedAt ? 'active' : 'available');
 
         return [
@@ -34,7 +34,7 @@ class TaskFactory extends Factory
                     'clay' => $this->faker->numberBetween(100, 5000),
                     'iron' => $this->faker->numberBetween(100, 5000),
                     'crop' => $this->faker->numberBetween(100, 5000),
-                ]
+                ],
             ],
             'deadline' => $this->faker->boolean(20) ? $this->faker->dateTimeBetween('now', '+7 days') : null,
             'started_at' => $startedAt,

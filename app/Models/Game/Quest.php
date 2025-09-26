@@ -4,71 +4,140 @@ namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Quest extends Model
 {
     use HasFactory;
 
-    protected $table = 'player_quests';
-
     protected $fillable = [
-        'world_id',
-        'player_id',
-        'title',
+        'name',
+        'key',
         'description',
-        'type',
-        'status',
-        'progress',
-        'target',
-        'rewards',
+        'instructions',
+        'category',
+        'difficulty',
         'requirements',
-        'started_at',
-        'completed_at',
-        'created_at',
-        'updated_at',
+        'rewards',
+        'experience_reward',
+        'gold_reward',
+        'resource_rewards',
+        'is_repeatable',
+        'is_active',
     ];
 
     protected $casts = [
-        'rewards' => 'array',
         'requirements' => 'array',
-        'started_at' => 'datetime',
-        'completed_at' => 'datetime',
+        'rewards' => 'array',
+        'resource_rewards' => 'array',
+        'is_repeatable' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
-    public function world(): BelongsTo
+    public function players(): BelongsToMany
     {
-        return $this->belongsTo(World::class);
-    }
-
-    public function player(): BelongsTo
-    {
-        return $this->belongsTo(Player::class);
+        return $this
+            ->belongsToMany(Player::class, 'player_quests')
+            ->withPivot(['status', 'progress', 'progress_data', 'started_at', 'completed_at', 'expires_at'])
+            ->withTimestamps();
     }
 
     // Scopes
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('is_active', true);
     }
 
-    public function scopeCompleted($query)
+    public function scopeByCategory($query, $category)
     {
-        return $query->where('status', 'completed');
+        return $query->where('category', $category);
     }
 
-    public function scopeAvailable($query)
+    public function scopeByDifficulty($query, $difficulty)
     {
-        return $query->where('status', 'available');
+        return $query->where('difficulty', $difficulty);
     }
 
-    public function scopeByType($query, $type)
+    public function scopeRepeatable($query)
     {
-        return $query->where('type', $type);
+        return $query->where('is_repeatable', true);
     }
 
-    public function scopeByStatus($query, $status)
+    public function scopeTutorial($query)
     {
-        return $query->where('status', $status);
+        return $query->where('category', 'tutorial');
+    }
+
+    public function scopeBuilding($query)
+    {
+        return $query->where('category', 'building');
+    }
+
+    public function scopeCombat($query)
+    {
+        return $query->where('category', 'combat');
+    }
+
+    // Optimized query scopes using when() and selectRaw
+    public function scopeWithPlayerStats($query, $playerId = null)
+    {
+        return $query->selectRaw('
+            quests.*,
+            (SELECT COUNT(*) FROM player_quests WHERE quest_id = quests.id) as total_players,
+            (SELECT COUNT(*) FROM player_quests WHERE quest_id = quests.id AND status = "completed") as completed_count,
+            (SELECT AVG(progress) FROM player_quests WHERE quest_id = quests.id) as avg_progress
+        ')->when($playerId, function ($q) use ($playerId) {
+            return $q->addSelect([
+                'player_status' => \DB::table('player_quests')
+                    ->select('status')
+                    ->whereColumn('quest_id', 'quests.id')
+                    ->where('player_id', $playerId)
+                    ->limit(1),
+                'player_progress' => \DB::table('player_quests')
+                    ->select('progress')
+                    ->whereColumn('quest_id', 'quests.id')
+                    ->where('player_id', $playerId)
+                    ->limit(1),
+            ]);
+        });
+    }
+
+    public function scopeByDifficultyFilter($query, $difficulty = null)
+    {
+        return $query->when($difficulty, function ($q) use ($difficulty) {
+            return $q->where('difficulty', $difficulty);
+        });
+    }
+
+    public function scopeAvailableForPlayer($query, $playerId)
+    {
+        return $query->where('is_active', true)
+            ->whereNotIn('id', function ($q) use ($playerId) {
+                $q->select('quest_id')
+                  ->from('player_quests')
+                  ->where('player_id', $playerId)
+                  ->where('status', 'in_progress');
+            });
+    }
+
+    public function scopeCompletedByPlayer($query, $playerId)
+    {
+        return $query->whereIn('id', function ($q) use ($playerId) {
+            $q->select('quest_id')
+              ->from('player_quests')
+              ->where('player_id', $playerId)
+              ->where('status', 'completed');
+        });
+    }
+
+    public function scopeSearch($query, $searchTerm)
+    {
+        return $query->when($searchTerm, function ($q) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm) {
+                $subQ->where('name', 'like', '%' . $searchTerm . '%')
+                     ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                     ->orWhere('category', 'like', '%' . $searchTerm . '%');
+            });
+        });
     }
 }

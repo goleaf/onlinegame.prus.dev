@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -22,7 +21,7 @@ return new class extends Migration
             $table->timestamp('finish_time');
             $table->boolean('is_completed')->default(false);
             $table->timestamps();
-            
+
             // Indexes
             $table->index('village_id');
             $table->index('finish_time');

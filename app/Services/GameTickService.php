@@ -16,30 +16,31 @@ class GameTickService
     public function processGameTick()
     {
         DB::beginTransaction();
-        
+
         try {
             // Process resource production
             $this->processResourceProduction();
-            
+
             // Process building queues
             $this->processBuildingQueues();
-            
+
             // Process training queues
             $this->processTrainingQueues();
-            
+
             // Process game events
             $this->processGameEvents();
-            
+
             // Update player statistics
             $this->updatePlayerStatistics();
-            
+
             DB::commit();
-            
+
             Log::info('Game tick processed successfully');
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Game tick failed: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -47,27 +48,27 @@ class GameTickService
     private function processResourceProduction()
     {
         $villages = Village::with('resources')->get();
-        
+
         foreach ($villages as $village) {
             $resources = $village->resources;
-            
+
             foreach ($resources as $resource) {
                 $timeSinceLastUpdate = now()->diffInSeconds($resource->last_updated);
-                
+
                 // Calculate production rate based on buildings
                 $productionRate = $this->calculateResourceProduction($village, $resource->type);
                 $production = $productionRate * $timeSinceLastUpdate;
-                
+
                 $newAmount = min(
                     $resource->amount + $production,
                     $resource->storage_capacity
                 );
-                
+
                 if ($newAmount !== $resource->amount) {
                     $resource->update([
                         'amount' => $newAmount,
                         'production_rate' => $productionRate,
-                        'last_updated' => now()
+                        'last_updated' => now(),
                     ]);
                 }
             }
@@ -110,17 +111,17 @@ class GameTickService
     private function updatePlayerStatistics()
     {
         $players = Player::with(['villages.troops'])->get();
-        
+
         foreach ($players as $player) {
             $totalPopulation = $player->villages->sum('population');
-            $totalTroops = $player->villages->sum(function($village) {
+            $totalTroops = $player->villages->sum(function ($village) {
                 return $village->troops->sum('quantity');
             });
-            
+
             $player->update([
                 'population' => $totalPopulation,
                 'villages_count' => $player->villages->count(),
-                'last_active_at' => now()
+                'last_active_at' => now(),
             ]);
         }
     }
@@ -129,7 +130,7 @@ class GameTickService
     {
         try {
             $building->update(['is_completed' => true]);
-            
+
             // Update village building
             $villageBuilding = $building->village->buildings()
                 ->where('building_type_id', $building->building_type_id)
@@ -149,10 +150,10 @@ class GameTickService
                 'data' => [
                     'building_name' => $building->buildingType->name,
                     'level' => $building->target_level,
-                    'village_id' => $building->village_id
+                    'village_id' => $building->village_id,
                 ],
                 'triggered_at' => now(),
-                'is_completed' => true
+                'is_completed' => true,
             ]);
 
         } catch (\Exception $e) {
@@ -164,7 +165,7 @@ class GameTickService
     {
         try {
             $training->update(['is_completed' => true]);
-            
+
             // Add troops to village
             $village = $training->village;
             $troop = $village->troops()
@@ -176,7 +177,7 @@ class GameTickService
             } else {
                 $village->troops()->create([
                     'unit_type_id' => $training->unit_type_id,
-                    'quantity' => $training->quantity
+                    'quantity' => $training->quantity,
                 ]);
             }
 
@@ -190,10 +191,10 @@ class GameTickService
                 'data' => [
                     'unit_name' => $training->unitType->name,
                     'quantity' => $training->quantity,
-                    'village_id' => $training->village_id
+                    'village_id' => $training->village_id,
                 ],
                 'triggered_at' => now(),
-                'is_completed' => true
+                'is_completed' => true,
             ]);
 
         } catch (\Exception $e) {
@@ -205,7 +206,7 @@ class GameTickService
     {
         try {
             $event->update(['is_completed' => true]);
-            
+
             // Process event rewards if any
             if ($event->rewards) {
                 $this->processEventRewards($event);
@@ -219,10 +220,10 @@ class GameTickService
     private function processEventRewards($event)
     {
         $rewards = $event->rewards;
-        
+
         if (isset($rewards['resources'])) {
             $village = $event->village;
-            
+
             foreach ($rewards['resources'] as $resource => $amount) {
                 $resourceModel = $village->resources()->where('type', $resource)->first();
                 if ($resourceModel) {
@@ -278,7 +279,7 @@ class GameTickService
         ];
 
         $buildingTypes = $buildingTypeMap[$resourceType] ?? [];
-        
+
         if (empty($buildingTypes)) {
             return [];
         }
@@ -286,7 +287,7 @@ class GameTickService
         $levels = [];
         foreach ($buildingTypes as $buildingType) {
             $building = $village->buildings()
-                ->whereHas('buildingType', function($query) use ($buildingType) {
+                ->whereHas('buildingType', function ($query) use ($buildingType) {
                     $query->where('key', $buildingType);
                 })
                 ->first();

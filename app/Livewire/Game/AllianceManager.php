@@ -55,7 +55,7 @@ class AllianceManager extends Component
         'applicationAccepted',
         'applicationDeclined',
         'villageSelected',
-        'gameTickProcessed'
+        'gameTickProcessed',
     ];
 
     public function mount($worldId = null)
@@ -83,7 +83,7 @@ class AllianceManager extends Component
         $this->dispatch('initializeAllianceRealTime', [
             'interval' => $this->refreshInterval * 1000,
             'autoRefresh' => $this->autoRefresh,
-            'realTimeUpdates' => $this->realTimeUpdates
+            'realTimeUpdates' => $this->realTimeUpdates,
         ]);
     }
 
@@ -122,7 +122,7 @@ class AllianceManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function selectMember($memberId)
@@ -163,6 +163,7 @@ class AllianceManager extends Component
     {
         if (empty($this->searchQuery)) {
             $this->addNotification('Search cleared', 'info');
+
             return;
         }
 
@@ -171,7 +172,7 @@ class AllianceManager extends Component
 
     public function toggleActiveFilter()
     {
-        $this->showOnlyActive = !$this->showOnlyActive;
+        $this->showOnlyActive = ! $this->showOnlyActive;
         $this->addNotification(
             $this->showOnlyActive ? 'Showing only active alliances' : 'Showing all alliances',
             'info'
@@ -180,7 +181,7 @@ class AllianceManager extends Component
 
     public function toggleInvitesFilter()
     {
-        $this->showOnlyInvites = !$this->showOnlyInvites;
+        $this->showOnlyInvites = ! $this->showOnlyInvites;
         $this->addNotification(
             $this->showOnlyInvites ? 'Showing only invites' : 'Showing all data',
             'info'
@@ -189,7 +190,7 @@ class AllianceManager extends Component
 
     public function toggleApplicationsFilter()
     {
-        $this->showOnlyApplications = !$this->showOnlyApplications;
+        $this->showOnlyApplications = ! $this->showOnlyApplications;
         $this->addNotification(
             $this->showOnlyApplications ? 'Showing only applications' : 'Showing all data',
             'info'
@@ -200,12 +201,14 @@ class AllianceManager extends Component
     {
         if (empty($name) || empty($tag)) {
             $this->addNotification('Alliance name and tag are required', 'error');
+
             return;
         }
 
         $player = Player::where('user_id', Auth::id())->first();
         if ($player->alliance) {
             $this->addNotification('You are already in an alliance', 'error');
+
             return;
         }
 
@@ -216,7 +219,7 @@ class AllianceManager extends Component
                 'description' => $description,
                 'world_id' => $this->world->id,
                 'leader_id' => $player->id,
-                'created_at' => now()
+                'created_at' => now(),
             ]);
 
             $player->update(['alliance_id' => $alliance->id, 'alliance_rank' => 'leader']);
@@ -226,7 +229,7 @@ class AllianceManager extends Component
 
             $this->dispatch('allianceCreated', [
                 'alliance_id' => $alliance->id,
-                'alliance_name' => $alliance->name
+                'alliance_name' => $alliance->name,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to create alliance: ' . $e->getMessage(), 'error');
@@ -238,17 +241,20 @@ class AllianceManager extends Component
         $player = Player::where('user_id', Auth::id())->first();
         if ($player->alliance) {
             $this->addNotification('You are already in an alliance', 'error');
+
             return;
         }
 
         $alliance = Alliance::find($allianceId);
-        if (!$alliance) {
+        if (! $alliance) {
             $this->addNotification('Alliance not found', 'error');
+
             return;
         }
 
         if ($alliance->members->count() >= $alliance->max_members) {
             $this->addNotification('Alliance is full', 'error');
+
             return;
         }
 
@@ -259,7 +265,7 @@ class AllianceManager extends Component
 
             $this->dispatch('memberJoined', [
                 'alliance_id' => $allianceId,
-                'player_id' => $player->id
+                'player_id' => $player->id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to join alliance: ' . $e->getMessage(), 'error');
@@ -269,14 +275,16 @@ class AllianceManager extends Component
     public function leaveAlliance()
     {
         $player = Player::where('user_id', Auth::id())->first();
-        if (!$player->alliance) {
+        if (! $player->alliance) {
             $this->addNotification('You are not in an alliance', 'error');
+
             return;
         }
 
         $alliance = $player->alliance;
         if ($player->alliance_rank === 'leader' && $alliance->members->count() > 1) {
             $this->addNotification('You cannot leave as leader with other members', 'error');
+
             return;
         }
 
@@ -294,7 +302,7 @@ class AllianceManager extends Component
 
             $this->dispatch('memberLeft', [
                 'alliance_id' => $alliance->id,
-                'player_id' => $player->id
+                'player_id' => $player->id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to leave alliance: ' . $e->getMessage(), 'error');
@@ -304,19 +312,22 @@ class AllianceManager extends Component
     public function invitePlayer($playerId)
     {
         $player = Player::where('user_id', Auth::id())->first();
-        if (!$player->alliance || !in_array($player->alliance_rank, ['leader', 'co_leader'])) {
+        if (! $player->alliance || ! in_array($player->alliance_rank, ['leader', 'co_leader'])) {
             $this->addNotification('You do not have permission to invite players', 'error');
+
             return;
         }
 
         $targetPlayer = Player::find($playerId);
-        if (!$targetPlayer) {
+        if (! $targetPlayer) {
             $this->addNotification('Player not found', 'error');
+
             return;
         }
 
         if ($targetPlayer->alliance) {
             $this->addNotification('Player is already in an alliance', 'error');
+
             return;
         }
 
@@ -326,14 +337,14 @@ class AllianceManager extends Component
                 'player_id' => $playerId,
                 'invited_by' => $player->id,
                 'status' => 'pending',
-                'created_at' => now()
+                'created_at' => now(),
             ]);
 
             $this->addNotification("Invitation sent to {$targetPlayer->name}", 'success');
 
             $this->dispatch('inviteSent', [
                 'alliance_id' => $alliance->id,
-                'player_id' => $playerId
+                'player_id' => $playerId,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to send invitation: ' . $e->getMessage(), 'error');
@@ -345,13 +356,15 @@ class AllianceManager extends Component
         $player = Player::where('user_id', Auth::id())->first();
         $invite = $player->allianceInvites()->find($inviteId);
 
-        if (!$invite) {
+        if (! $invite) {
             $this->addNotification('Invitation not found', 'error');
+
             return;
         }
 
         if ($invite->status !== 'pending') {
             $this->addNotification('Invitation is no longer valid', 'error');
+
             return;
         }
 
@@ -359,6 +372,7 @@ class AllianceManager extends Component
             $alliance = $invite->alliance;
             if ($alliance->members->count() >= $alliance->max_members) {
                 $this->addNotification('Alliance is full', 'error');
+
                 return;
             }
 
@@ -370,7 +384,7 @@ class AllianceManager extends Component
 
             $this->dispatch('inviteAccepted', [
                 'alliance_id' => $alliance->id,
-                'player_id' => $player->id
+                'player_id' => $player->id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to accept invitation: ' . $e->getMessage(), 'error');
@@ -382,8 +396,9 @@ class AllianceManager extends Component
         $player = Player::where('user_id', Auth::id())->first();
         $invite = $player->allianceInvites()->find($inviteId);
 
-        if (!$invite) {
+        if (! $invite) {
             $this->addNotification('Invitation not found', 'error');
+
             return;
         }
 
@@ -393,7 +408,7 @@ class AllianceManager extends Component
 
             $this->dispatch('inviteDeclined', [
                 'alliance_id' => $invite->alliance_id,
-                'player_id' => $player->id
+                'player_id' => $player->id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to decline invitation: ' . $e->getMessage(), 'error');
@@ -405,12 +420,14 @@ class AllianceManager extends Component
         $player = Player::where('user_id', Auth::id())->first();
         if ($player->alliance) {
             $this->addNotification('You are already in an alliance', 'error');
+
             return;
         }
 
         $alliance = Alliance::find($allianceId);
-        if (!$alliance) {
+        if (! $alliance) {
             $this->addNotification('Alliance not found', 'error');
+
             return;
         }
 
@@ -418,14 +435,14 @@ class AllianceManager extends Component
             $alliance->applications()->create([
                 'player_id' => $player->id,
                 'status' => 'pending',
-                'created_at' => now()
+                'created_at' => now(),
             ]);
 
             $this->addNotification("Application sent to '{$alliance->name}'", 'success');
 
             $this->dispatch('applicationSubmitted', [
                 'alliance_id' => $allianceId,
-                'player_id' => $player->id
+                'player_id' => $player->id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to submit application: ' . $e->getMessage(), 'error');
@@ -435,19 +452,22 @@ class AllianceManager extends Component
     public function acceptApplication($applicationId)
     {
         $player = Player::where('user_id', Auth::id())->first();
-        if (!$player->alliance || !in_array($player->alliance_rank, ['leader', 'co_leader'])) {
+        if (! $player->alliance || ! in_array($player->alliance_rank, ['leader', 'co_leader'])) {
             $this->addNotification('You do not have permission to accept applications', 'error');
+
             return;
         }
 
         $application = $player->alliance->applications()->find($applicationId);
-        if (!$application) {
+        if (! $application) {
             $this->addNotification('Application not found', 'error');
+
             return;
         }
 
         if ($application->status !== 'pending') {
             $this->addNotification('Application is no longer valid', 'error');
+
             return;
         }
 
@@ -455,6 +475,7 @@ class AllianceManager extends Component
             $alliance = $player->alliance;
             if ($alliance->members->count() >= $alliance->max_members) {
                 $this->addNotification('Alliance is full', 'error');
+
                 return;
             }
 
@@ -467,7 +488,7 @@ class AllianceManager extends Component
 
             $this->dispatch('applicationAccepted', [
                 'alliance_id' => $alliance->id,
-                'player_id' => $applicant->id
+                'player_id' => $applicant->id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to accept application: ' . $e->getMessage(), 'error');
@@ -477,14 +498,16 @@ class AllianceManager extends Component
     public function declineApplication($applicationId)
     {
         $player = Player::where('user_id', Auth::id())->first();
-        if (!$player->alliance || !in_array($player->alliance_rank, ['leader', 'co_leader'])) {
+        if (! $player->alliance || ! in_array($player->alliance_rank, ['leader', 'co_leader'])) {
             $this->addNotification('You do not have permission to decline applications', 'error');
+
             return;
         }
 
         $application = $player->alliance->applications()->find($applicationId);
-        if (!$application) {
+        if (! $application) {
             $this->addNotification('Application not found', 'error');
+
             return;
         }
 
@@ -494,7 +517,7 @@ class AllianceManager extends Component
 
             $this->dispatch('applicationDeclined', [
                 'alliance_id' => $player->alliance->id,
-                'player_id' => $application->player_id
+                'player_id' => $application->player_id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to decline application: ' . $e->getMessage(), 'error');
@@ -504,14 +527,16 @@ class AllianceManager extends Component
     public function promoteMember($memberId, $newRank)
     {
         $player = Player::where('user_id', Auth::id())->first();
-        if (!$player->alliance || $player->alliance_rank !== 'leader') {
+        if (! $player->alliance || $player->alliance_rank !== 'leader') {
             $this->addNotification('Only the leader can promote members', 'error');
+
             return;
         }
 
         $member = Player::find($memberId);
-        if (!$member || $member->alliance_id !== $player->alliance_id) {
+        if (! $member || $member->alliance_id !== $player->alliance_id) {
             $this->addNotification('Member not found', 'error');
+
             return;
         }
 
@@ -527,19 +552,22 @@ class AllianceManager extends Component
     public function demoteMember($memberId, $newRank)
     {
         $player = Player::where('user_id', Auth::id())->first();
-        if (!$player->alliance || !in_array($player->alliance_rank, ['leader', 'co_leader'])) {
+        if (! $player->alliance || ! in_array($player->alliance_rank, ['leader', 'co_leader'])) {
             $this->addNotification('You do not have permission to demote members', 'error');
+
             return;
         }
 
         $member = Player::find($memberId);
-        if (!$member || $member->alliance_id !== $player->alliance_id) {
+        if (! $member || $member->alliance_id !== $player->alliance_id) {
             $this->addNotification('Member not found', 'error');
+
             return;
         }
 
         if ($member->alliance_rank === 'leader') {
             $this->addNotification('Cannot demote the leader', 'error');
+
             return;
         }
 
@@ -555,19 +583,22 @@ class AllianceManager extends Component
     public function kickMember($memberId)
     {
         $player = Player::where('user_id', Auth::id())->first();
-        if (!$player->alliance || !in_array($player->alliance_rank, ['leader', 'co_leader'])) {
+        if (! $player->alliance || ! in_array($player->alliance_rank, ['leader', 'co_leader'])) {
             $this->addNotification('You do not have permission to kick members', 'error');
+
             return;
         }
 
         $member = Player::find($memberId);
-        if (!$member || $member->alliance_id !== $player->alliance_id) {
+        if (! $member || $member->alliance_id !== $player->alliance_id) {
             $this->addNotification('Member not found', 'error');
+
             return;
         }
 
         if ($member->alliance_rank === 'leader') {
             $this->addNotification('Cannot kick the leader', 'error');
+
             return;
         }
 
@@ -578,7 +609,7 @@ class AllianceManager extends Component
 
             $this->dispatch('memberLeft', [
                 'alliance_id' => $player->alliance->id,
-                'player_id' => $memberId
+                'player_id' => $memberId,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to kick member: ' . $e->getMessage(), 'error');
@@ -593,14 +624,15 @@ class AllianceManager extends Component
             'total_members' => Player::where('world_id', $this->world->id)->whereNotNull('alliance_id')->count(),
             'average_members' => Alliance::where('world_id', $this->world->id)->withCount('members')->avg('members_count'),
             'largest_alliance' => Alliance::where('world_id', $this->world->id)->withCount('members')->orderBy('members_count', 'desc')->first(),
-            'newest_alliance' => Alliance::where('world_id', $this->world->id)->orderBy('created_at', 'desc')->first()
+            'newest_alliance' => Alliance::where('world_id', $this->world->id)->orderBy('created_at', 'desc')->first(),
         ];
     }
 
     public function calculateMemberStats()
     {
-        if (!$this->myAlliance) {
+        if (! $this->myAlliance) {
             $this->memberStats = [];
+
             return;
         }
 
@@ -610,14 +642,15 @@ class AllianceManager extends Component
             'co_leaders' => $this->myAlliance->members->where('alliance_rank', 'co_leader')->count(),
             'members' => $this->myAlliance->members->where('alliance_rank', 'member')->count(),
             'average_population' => $this->myAlliance->members->avg('population'),
-            'total_population' => $this->myAlliance->members->sum('population')
+            'total_population' => $this->myAlliance->members->sum('population'),
         ];
     }
 
     public function calculateInviteStats()
     {
-        if (!$this->myAlliance) {
+        if (! $this->myAlliance) {
             $this->inviteStats = [];
+
             return;
         }
 
@@ -625,14 +658,15 @@ class AllianceManager extends Component
             'total_invites' => $this->myAlliance->invites->count(),
             'pending_invites' => $this->myAlliance->invites->where('status', 'pending')->count(),
             'accepted_invites' => $this->myAlliance->invites->where('status', 'accepted')->count(),
-            'declined_invites' => $this->myAlliance->invites->where('status', 'declined')->count()
+            'declined_invites' => $this->myAlliance->invites->where('status', 'declined')->count(),
         ];
     }
 
     public function calculateApplicationStats()
     {
-        if (!$this->myAlliance) {
+        if (! $this->myAlliance) {
             $this->applicationStats = [];
+
             return;
         }
 
@@ -640,13 +674,13 @@ class AllianceManager extends Component
             'total_applications' => $this->myAlliance->applications->count(),
             'pending_applications' => $this->myAlliance->applications->where('status', 'pending')->count(),
             'accepted_applications' => $this->myAlliance->applications->where('status', 'accepted')->count(),
-            'declined_applications' => $this->myAlliance->applications->where('status', 'declined')->count()
+            'declined_applications' => $this->myAlliance->applications->where('status', 'declined')->count(),
         ];
     }
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -655,7 +689,7 @@ class AllianceManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -679,8 +713,9 @@ class AllianceManager extends Component
         $icons = [
             'leader' => '👑',
             'co_leader' => '⭐',
-            'member' => '👤'
+            'member' => '👤',
         ];
+
         return $icons[$alliance['rank']] ?? '🏰';
     }
 
@@ -699,7 +734,7 @@ class AllianceManager extends Component
 
     public function getAllianceStatus($alliance)
     {
-        if (!$alliance['is_active']) {
+        if (! $alliance['is_active']) {
             return 'Inactive';
         }
 
@@ -716,7 +751,7 @@ class AllianceManager extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         // Keep only last 10 notifications
@@ -845,7 +880,7 @@ class AllianceManager extends Component
             'allianceStats' => $this->allianceStats,
             'memberStats' => $this->memberStats,
             'inviteStats' => $this->inviteStats,
-            'applicationStats' => $this->applicationStats
+            'applicationStats' => $this->applicationStats,
         ]);
     }
 }

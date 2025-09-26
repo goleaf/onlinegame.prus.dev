@@ -158,4 +158,3 @@ class GameDashboardTest extends DuskTestCase
         });
     }
 }
-

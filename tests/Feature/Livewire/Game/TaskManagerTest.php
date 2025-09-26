@@ -4,11 +4,11 @@ namespace Tests\Feature\Livewire\Game;
 
 use App\Livewire\Game\TaskManager;
 use App\Models\Game\Player;
+use App\Models\Game\PlayerAchievement;
+use App\Models\Game\PlayerQuest;
+use App\Models\Game\Task;
 use App\Models\Game\Village;
 use App\Models\Game\World;
-use App\Models\Game\Task;
-use App\Models\Game\Quest;
-use App\Models\Game\Achievement;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -34,7 +34,7 @@ class TaskManagerTest extends TestCase
         $this->world = World::factory()->create([
             'name' => 'Test World',
             'speed' => 1.0,
-            'is_active' => true
+            'is_active' => true,
         ]);
 
         // Create test player
@@ -42,7 +42,7 @@ class TaskManagerTest extends TestCase
             'user_id' => $this->user->id,
             'world_id' => $this->world->id,
             'name' => 'Test Player',
-            'points' => 1000
+            'points' => 1000,
         ]);
 
         // Create test village
@@ -52,7 +52,7 @@ class TaskManagerTest extends TestCase
             'name' => 'Test Village',
             'x_coordinate' => 100,
             'y_coordinate' => 100,
-            'population' => 100
+            'population' => 100,
         ]);
     }
 
@@ -250,7 +250,7 @@ class TaskManagerTest extends TestCase
         $task = Task::factory()->create([
             'world_id' => $this->world->id,
             'player_id' => $this->player->id,
-            'status' => 'available'
+            'status' => 'available',
         ]);
 
         $component = Livewire::test(TaskManager::class, ['world' => $this->world]);
@@ -269,7 +269,7 @@ class TaskManagerTest extends TestCase
         $task = Task::factory()->create([
             'world_id' => $this->world->id,
             'player_id' => $this->player->id,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $component = Livewire::test(TaskManager::class, ['world' => $this->world]);
@@ -288,7 +288,7 @@ class TaskManagerTest extends TestCase
         $task = Task::factory()->create([
             'world_id' => $this->world->id,
             'player_id' => $this->player->id,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $component = Livewire::test(TaskManager::class, ['world' => $this->world]);
@@ -304,10 +304,9 @@ class TaskManagerTest extends TestCase
         $this->actingAs($this->user);
 
         // Create a test quest
-        $quest = Quest::factory()->create([
-            'world_id' => $this->world->id,
+        $quest = PlayerQuest::factory()->create([
             'player_id' => $this->player->id,
-            'status' => 'available'
+            'status' => 'available',
         ]);
 
         $component = Livewire::test(TaskManager::class, ['world' => $this->world]);
@@ -315,7 +314,7 @@ class TaskManagerTest extends TestCase
         $component->call('startQuest', $quest->id);
 
         $quest->refresh();
-        $this->assertEquals('active', $quest->status);
+        $this->assertEquals('in_progress', $quest->status);
     }
 
     public function test_can_complete_quest()
@@ -323,10 +322,9 @@ class TaskManagerTest extends TestCase
         $this->actingAs($this->user);
 
         // Create a test quest
-        $quest = Quest::factory()->create([
-            'world_id' => $this->world->id,
+        $quest = PlayerQuest::factory()->create([
             'player_id' => $this->player->id,
-            'status' => 'active'
+            'status' => 'in_progress',
         ]);
 
         $component = Livewire::test(TaskManager::class, ['world' => $this->world]);
@@ -342,10 +340,9 @@ class TaskManagerTest extends TestCase
         $this->actingAs($this->user);
 
         // Create a test quest
-        $quest = Quest::factory()->create([
-            'world_id' => $this->world->id,
+        $quest = PlayerQuest::factory()->create([
             'player_id' => $this->player->id,
-            'status' => 'active'
+            'status' => 'in_progress',
         ]);
 
         $component = Livewire::test(TaskManager::class, ['world' => $this->world]);
@@ -361,10 +358,8 @@ class TaskManagerTest extends TestCase
         $this->actingAs($this->user);
 
         // Create a test achievement
-        $achievement = Achievement::factory()->create([
-            'world_id' => $this->world->id,
+        $achievement = PlayerAchievement::factory()->create([
             'player_id' => $this->player->id,
-            'status' => 'available'
         ]);
 
         $component = Livewire::test(TaskManager::class, ['world' => $this->world]);
@@ -372,7 +367,7 @@ class TaskManagerTest extends TestCase
         $component->call('claimAchievement', $achievement->id);
 
         $achievement->refresh();
-        $this->assertEquals('unlocked', $achievement->status);
+        $this->assertNotNull($achievement->unlocked_at);
     }
 
     public function test_handles_missing_world()
@@ -576,7 +571,7 @@ class TaskManagerTest extends TestCase
 
         $component = Livewire::test(TaskManager::class, ['world' => $this->world]);
 
-        $timeAgo = $component->instance()->formatTimeRemaining(now()->addHour());
+        $timeAgo = $component->instance()->formatTimeRemaining(now()->addSeconds(3600));
         $this->assertStringContainsString('h', $timeAgo);
     }
 }

@@ -2,11 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Game\Building;
-use App\Models\Game\Resource;
-use App\Models\Game\Village;
-use Illuminate\Support\Facades\Log;
-
 class ResourceProductionService
 {
     public function calculateResourceProduction($village)
@@ -18,7 +13,7 @@ class ResourceProductionService
             'wood' => 0,
             'clay' => 0,
             'iron' => 0,
-            'crop' => 0
+            'crop' => 0,
         ];
 
         foreach ($buildings as $building) {
@@ -26,8 +21,14 @@ class ResourceProductionService
             $level = $building->level;
 
             if ($buildingType->production) {
-                foreach ($buildingType->production as $resource => $baseRate) {
-                    $productionRates[$resource] += $this->calculateProductionRate($baseRate, $level);
+                $production = is_string($buildingType->production)
+                    ? json_decode($buildingType->production, true)
+                    : $buildingType->production;
+
+                if (is_array($production)) {
+                    foreach ($production as $resource => $baseRate) {
+                        $productionRates[$resource] += $this->calculateProductionRate($baseRate, $level);
+                    }
                 }
             }
         }
@@ -58,7 +59,7 @@ class ResourceProductionService
             if ($newAmount !== $resource->amount) {
                 $resource->update([
                     'amount' => $newAmount,
-                    'last_updated' => now()
+                    'last_updated' => now(),
                 ]);
             }
         }
@@ -71,7 +72,7 @@ class ResourceProductionService
             'wood' => 1000,
             'clay' => 1000,
             'iron' => 1000,
-            'crop' => 1000
+            'crop' => 1000,
         ];
 
         foreach ($buildings as $building) {
@@ -103,7 +104,7 @@ class ResourceProductionService
 
         foreach ($resources as $resource) {
             $resource->update([
-                'storage_capacity' => $capacities[$resource->type]
+                'storage_capacity' => $capacities[$resource->type],
             ]);
         }
     }
@@ -114,7 +115,7 @@ class ResourceProductionService
 
         foreach ($costs as $resource => $amount) {
             $resourceModel = $resources->where('type', $resource)->first();
-            if (!$resourceModel || $resourceModel->amount < $amount) {
+            if (! $resourceModel || $resourceModel->amount < $amount) {
                 return false;
             }
         }
@@ -124,7 +125,7 @@ class ResourceProductionService
 
     public function spendResources($village, $costs)
     {
-        if (!$this->canAfford($village, $costs)) {
+        if (! $this->canAfford($village, $costs)) {
             return false;
         }
 

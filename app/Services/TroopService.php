@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Models\Game\TrainingQueue;
-use App\Models\Game\Troop;
-use App\Models\Game\UnitType;
 use App\Models\Game\Village;
 use Illuminate\Support\Facades\Log;
 
@@ -16,7 +14,7 @@ class TroopService
         $costs = $this->calculateTrainingCost($unitType, $quantity);
         $resourceService = new ResourceProductionService();
 
-        if (!$resourceService->canAfford($village, $costs)) {
+        if (! $resourceService->canAfford($village, $costs)) {
             return false;
         }
 
@@ -31,7 +29,7 @@ class TroopService
                 })
                 ->first();
 
-            if (!$building || $building->level < $requiredLevel) {
+            if (! $building || $building->level < $requiredLevel) {
                 return false;
             }
         }
@@ -61,7 +59,7 @@ class TroopService
 
     public function startTraining($village, $unitType, $quantity = 1)
     {
-        if (!$this->canTrain($village, $unitType, $quantity)) {
+        if (! $this->canTrain($village, $unitType, $quantity)) {
             return false;
         }
 
@@ -82,12 +80,13 @@ class TroopService
                 'started_at' => now(),
                 'completed_at' => now()->addSeconds($trainingTime),
                 'costs' => $costs,
-                'status' => 'in_progress'
+                'status' => 'in_progress',
             ]);
 
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to start troop training: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -109,13 +108,14 @@ class TroopService
             } else {
                 $village->troops()->create([
                     'unit_type_id' => $training->unit_type_id,
-                    'quantity' => $training->quantity
+                    'quantity' => $training->quantity,
                 ]);
             }
 
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to complete troop training: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -139,6 +139,7 @@ class TroopService
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to cancel troop training: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -159,7 +160,7 @@ class TroopService
             'defense_infantry' => $unitType->defense_infantry,
             'defense_cavalry' => $unitType->defense_cavalry,
             'speed' => $unitType->speed,
-            'carry_capacity' => $unitType->carry_capacity
+            'carry_capacity' => $unitType->carry_capacity,
         ];
 
         return $info;
@@ -174,7 +175,7 @@ class TroopService
             'total_attack' => 0,
             'total_defense' => 0,
             'total_carry_capacity' => 0,
-            'troop_types' => $troops->count()
+            'troop_types' => $troops->count(),
         ];
 
         foreach ($troops as $troop) {
@@ -233,8 +234,7 @@ class TroopService
             'attacker_losses' => $attackerLosses,
             'defender_losses' => $defenderLosses,
             'attacker_power' => $attackerPower,
-            'defender_power' => $defenderPower
+            'defender_power' => $defenderPower,
         ];
     }
 }
-

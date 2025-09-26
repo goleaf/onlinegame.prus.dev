@@ -25,7 +25,7 @@ class QuestManagerTest extends TestCase
         $world = World::factory()->create();
         $player = Player::factory()->create([
             'user_id' => $user->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $this->actingAs($user);
@@ -148,7 +148,7 @@ class QuestManagerTest extends TestCase
         $world = World::first();
         $quest = Quest::factory()->create([
             'world_id' => $world->id,
-            'min_level' => 1
+            'min_level' => 1,
         ]);
 
         Livewire::test(QuestManager::class, ['world' => $world])
@@ -163,7 +163,7 @@ class QuestManagerTest extends TestCase
         $world = World::first();
         $quest = Quest::factory()->create([
             'world_id' => $world->id,
-            'min_level' => 10
+            'min_level' => 10,
         ]);
 
         Livewire::test(QuestManager::class, ['world' => $world])
@@ -190,7 +190,7 @@ class QuestManagerTest extends TestCase
         $player = Player::first();
         $quest = Quest::factory()->create([
             'world_id' => $world->id,
-            'target_value' => 100
+            'target_value' => 100,
         ]);
 
         // Create quest progress
@@ -198,7 +198,7 @@ class QuestManagerTest extends TestCase
             'quest_id' => $quest->id,
             'status' => 'active',
             'progress' => 100,
-            'started_at' => now()
+            'started_at' => now(),
         ]);
 
         Livewire::test(QuestManager::class, ['world' => $world])
@@ -214,7 +214,7 @@ class QuestManagerTest extends TestCase
         $player = Player::first();
         $quest = Quest::factory()->create([
             'world_id' => $world->id,
-            'target_value' => 100
+            'target_value' => 100,
         ]);
 
         // Create quest progress with insufficient progress
@@ -222,7 +222,7 @@ class QuestManagerTest extends TestCase
             'quest_id' => $quest->id,
             'status' => 'active',
             'progress' => 50,
-            'started_at' => now()
+            'started_at' => now(),
         ]);
 
         Livewire::test(QuestManager::class, ['world' => $world])
@@ -243,7 +243,7 @@ class QuestManagerTest extends TestCase
             'quest_id' => $quest->id,
             'status' => 'active',
             'progress' => 50,
-            'started_at' => now()
+            'started_at' => now(),
         ]);
 
         Livewire::test(QuestManager::class, ['world' => $world])
@@ -258,7 +258,7 @@ class QuestManagerTest extends TestCase
         $world = World::first();
         $achievement = Achievement::factory()->create([
             'world_id' => $world->id,
-            'requirements' => json_encode([['type' => 'level', 'value' => 1]])
+            'requirements' => json_encode([['type' => 'level', 'value' => 1]]),
         ]);
 
         Livewire::test(QuestManager::class, ['world' => $world])
@@ -273,7 +273,7 @@ class QuestManagerTest extends TestCase
         $world = World::first();
         $achievement = Achievement::factory()->create([
             'world_id' => $world->id,
-            'requirements' => json_encode([['type' => 'level', 'value' => 10]])
+            'requirements' => json_encode([['type' => 'level', 'value' => 10]]),
         ]);
 
         Livewire::test(QuestManager::class, ['world' => $world])
@@ -301,7 +301,7 @@ class QuestManagerTest extends TestCase
         $reward = $player->rewards()->create([
             'type' => 'experience',
             'value' => 100,
-            'claimed_at' => null
+            'claimed_at' => null,
         ]);
 
         Livewire::test(QuestManager::class, ['world' => $world])
@@ -318,7 +318,7 @@ class QuestManagerTest extends TestCase
         $reward = $player->rewards()->create([
             'type' => 'experience',
             'value' => 100,
-            'claimed_at' => now()
+            'claimed_at' => now(),
         ]);
 
         Livewire::test(QuestManager::class, ['world' => $world])

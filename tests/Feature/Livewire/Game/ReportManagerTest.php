@@ -5,7 +5,6 @@ namespace Tests\Feature\Livewire\Game;
 use App\Livewire\Game\ReportManager;
 use App\Models\Game\Player;
 use App\Models\Game\Report;
-use App\Models\Game\UnitType;
 use App\Models\Game\Village;
 use App\Models\Game\World;
 use App\Models\User;
@@ -699,7 +698,7 @@ class ReportManagerTest extends TestCase
             'type' => 'attack',
             'status' => 'victory',
             'is_read' => false,
-            'is_important' => true
+            'is_important' => true,
         ];
 
         $icon = $component->instance()->getReportIcon($report);

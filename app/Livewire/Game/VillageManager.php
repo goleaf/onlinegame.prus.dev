@@ -7,10 +7,7 @@ use App\Models\Game\BuildingQueue;
 use App\Models\Game\BuildingType;
 use App\Models\Game\Resource;
 use App\Models\Game\Village;
-use App\Services\GameTickService;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -63,7 +60,7 @@ class VillageManager extends Component
         'buildingCompleted',
         'villageSelected',
         'gameTickProcessed',
-        'buildingProgressUpdated'
+        'buildingProgressUpdated',
     ];
 
     public function mount($village)
@@ -85,7 +82,7 @@ class VillageManager extends Component
         $this->dispatch('initializeVillageRealTime', [
             'interval' => $this->refreshInterval * 1000,
             'autoRefresh' => $this->autoRefresh,
-            'realTimeUpdates' => $this->realTimeUpdates
+            'realTimeUpdates' => $this->realTimeUpdates,
         ]);
     }
 
@@ -117,8 +114,9 @@ class VillageManager extends Component
 
     public function calculateUpgradeCost()
     {
-        if (!$this->selectedBuilding)
+        if (! $this->selectedBuilding) {
             return;
+        }
 
         $currentLevel = $this->selectedBuilding->level;
         $this->upgradeLevel = $currentLevel + 1;
@@ -148,6 +146,7 @@ class VillageManager extends Component
             $resourceAmount = $this->resources->where('type', $resource)->first()->amount ?? 0;
             if ($resourceAmount < $cost) {
                 $this->canUpgrade = false;
+
                 break;
             }
         }
@@ -155,8 +154,9 @@ class VillageManager extends Component
 
     public function upgradeBuilding()
     {
-        if (!$this->canUpgrade || !$this->selectedBuilding)
+        if (! $this->canUpgrade || ! $this->selectedBuilding) {
             return;
+        }
 
         try {
             // Create building queue
@@ -167,7 +167,7 @@ class VillageManager extends Component
                 'started_at' => now(),
                 'completed_at' => now()->addSeconds($this->calculateUpgradeTime()),
                 'costs' => $this->upgradeCost,
-                'status' => 'in_progress'
+                'status' => 'in_progress',
             ]);
 
             // Deduct resources
@@ -180,7 +180,7 @@ class VillageManager extends Component
 
             // Update building
             $this->selectedBuilding->update([
-                'upgrade_started_at' => now()
+                'upgrade_started_at' => now(),
             ]);
 
             $this->showUpgradeModal = false;
@@ -188,7 +188,7 @@ class VillageManager extends Component
 
             $this->dispatch('buildingUpgradeStarted', [
                 'building' => $this->selectedBuilding->name,
-                'level' => $this->upgradeLevel
+                'level' => $this->upgradeLevel,
             ]);
         } catch (\Exception $e) {
             $this->dispatch('buildingUpgradeError', ['message' => $e->getMessage()]);
@@ -197,8 +197,9 @@ class VillageManager extends Component
 
     public function calculateUpgradeTime()
     {
-        if (!$this->selectedBuilding)
+        if (! $this->selectedBuilding) {
             return 0;
+        }
 
         $baseTime = 60;  // Base time in seconds
         $levelMultiplier = pow(1.5, $this->selectedBuilding->level);
@@ -244,7 +245,7 @@ class VillageManager extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         // Keep only last 10 notifications
@@ -296,7 +297,7 @@ class VillageManager extends Component
 
     public function calculateResourceProductionRates()
     {
-        if (!$this->village) {
+        if (! $this->village) {
             return;
         }
 
@@ -306,7 +307,7 @@ class VillageManager extends Component
                 'current' => $resource->amount,
                 'production' => $resource->production_rate,
                 'capacity' => $resource->storage_capacity,
-                'percentage' => min(100, ($resource->amount / $resource->storage_capacity) * 100)
+                'percentage' => min(100, ($resource->amount / $resource->storage_capacity) * 100),
             ];
         }
     }
@@ -329,7 +330,7 @@ class VillageManager extends Component
                     'progress' => $progress,
                     'remaining' => $endTime->diffInSeconds($now),
                     'building_name' => $queue->buildingType->name,
-                    'target_level' => $queue->target_level
+                    'target_level' => $queue->target_level,
                 ];
             }
         }
@@ -337,7 +338,7 @@ class VillageManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -346,7 +347,7 @@ class VillageManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -371,8 +372,9 @@ class VillageManager extends Component
             'wood' => '🌲',
             'clay' => '🏺',
             'iron' => '⚒️',
-            'crop' => '🌾'
+            'crop' => '🌾',
         ];
+
         return $icons[$type] ?? '📦';
     }
 
@@ -392,34 +394,10 @@ class VillageManager extends Component
             'treasury' => '💰',
             'trade_office' => '📊',
             'warehouse' => '📦',
-            'granary' => '🌾'
+            'granary' => '🌾',
         ];
+
         return $icons[$buildingType] ?? '🏗️';
-    }
-
-    public function addNotification($message, $type = 'info')
-    {
-        $this->notifications[] = [
-            'id' => uniqid(),
-            'message' => $message,
-            'type' => $type,
-            'timestamp' => now()
-        ];
-
-        // Keep only last 10 notifications
-        $this->notifications = array_slice($this->notifications, -10);
-    }
-
-    public function removeNotification($notificationId)
-    {
-        $this->notifications = array_filter($this->notifications, function ($notification) use ($notificationId) {
-            return $notification['id'] !== $notificationId;
-        });
-    }
-
-    public function clearNotifications()
-    {
-        $this->notifications = [];
     }
 
     #[On('buildingProgressUpdated')]
@@ -455,7 +433,7 @@ class VillageManager extends Component
             'autoRefresh' => $this->autoRefresh,
             'refreshInterval' => $this->refreshInterval,
             'realTimeUpdates' => $this->realTimeUpdates,
-            'gameSpeed' => $this->gameSpeed
+            'gameSpeed' => $this->gameSpeed,
         ]);
     }
 }

@@ -6,7 +6,6 @@ use App\Models\Game\Player;
 use App\Models\Game\Village;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
 use Livewire\Component;
 
 class ResourceManager extends Component
@@ -17,21 +16,21 @@ class ResourceManager extends Component
         'wood' => 0,
         'clay' => 0,
         'iron' => 0,
-        'crop' => 0
+        'crop' => 0,
     ];
 
     public $productionRates = [
         'wood' => 0,
         'clay' => 0,
         'iron' => 0,
-        'crop' => 0
+        'crop' => 0,
     ];
 
     public $capacities = [
         'wood' => 0,
         'clay' => 0,
         'iron' => 0,
-        'crop' => 0
+        'crop' => 0,
     ];
 
     public $lastUpdate;
@@ -52,7 +51,7 @@ class ResourceManager extends Component
         'resources-updated',
         'gameTickProcessed',
         'buildingUpgraded',
-        'villageSelected'
+        'villageSelected',
     ];
 
     public function mount($villageId = null)
@@ -78,14 +77,15 @@ class ResourceManager extends Component
         $this->dispatch('initializeResourceRealTime', [
             'interval' => $this->updateInterval * 1000,
             'autoUpdate' => $this->autoUpdate,
-            'realTimeUpdates' => $this->realTimeUpdates
+            'realTimeUpdates' => $this->realTimeUpdates,
         ]);
     }
 
     public function loadResources()
     {
-        if (!$this->village)
+        if (! $this->village) {
             return;
+        }
 
         // Load resources from the relationship
         $villageResources = $this->village->resources;
@@ -94,7 +94,7 @@ class ResourceManager extends Component
             'wood' => $villageResources->where('type', 'wood')->first()->amount ?? 0,
             'clay' => $villageResources->where('type', 'clay')->first()->amount ?? 0,
             'iron' => $villageResources->where('type', 'iron')->first()->amount ?? 0,
-            'crop' => $villageResources->where('type', 'crop')->first()->amount ?? 0
+            'crop' => $villageResources->where('type', 'crop')->first()->amount ?? 0,
         ];
 
         // For now, set default capacities (these would come from buildings in a real game)
@@ -102,7 +102,7 @@ class ResourceManager extends Component
             'wood' => 800,
             'clay' => 800,
             'iron' => 800,
-            'crop' => 800
+            'crop' => 800,
         ];
 
         // Calculate production rates based on building levels
@@ -111,15 +111,16 @@ class ResourceManager extends Component
 
     public function calculateProductionRates()
     {
-        if (!$this->village)
+        if (! $this->village) {
             return;
+        }
 
         // Base production rates (would be calculated from building levels)
         $this->productionRates = [
             'wood' => 10,
             'clay' => 10,
             'iron' => 10,
-            'crop' => 10
+            'crop' => 10,
         ];
     }
 
@@ -146,8 +147,9 @@ class ResourceManager extends Component
     #[On('tick')]
     public function processTick()
     {
-        if (!$this->village || !$this->autoUpdate)
+        if (! $this->village || ! $this->autoUpdate) {
             return;
+        }
 
         $this->updateResourceProduction();
         $this->loadResources();
@@ -159,8 +161,9 @@ class ResourceManager extends Component
 
     public function updateResourceProduction()
     {
-        if (!$this->village)
+        if (! $this->village) {
             return;
+        }
 
         $timeSinceLastUpdate = now()->diffInSeconds($this->lastUpdate);
 
@@ -179,16 +182,18 @@ class ResourceManager extends Component
 
     public function spendResources($costs)
     {
-        if (!$this->village)
+        if (! $this->village) {
             return false;
+        }
 
         foreach ($costs as $resource => $amount) {
             if ($this->resources[$resource] < $amount) {
                 $this->dispatch('insufficient-resources', [
                     'resource' => $resource,
                     'required' => $amount,
-                    'available' => $this->resources[$resource]
+                    'available' => $this->resources[$resource],
                 ]);
+
                 return false;
             }
         }
@@ -203,13 +208,15 @@ class ResourceManager extends Component
 
         $this->loadResources();
         $this->dispatch('resources-updated');
+
         return true;
     }
 
     public function addResources($amounts)
     {
-        if (!$this->village)
+        if (! $this->village) {
             return;
+        }
 
         foreach ($amounts as $resource => $amount) {
             $resourceModel = $this->village->resources()->where('type', $resource)->first();
@@ -237,13 +244,13 @@ class ResourceManager extends Component
                 $this->storageWarnings[$type] = [
                     'level' => 'critical',
                     'message' => "{$type} storage is {$percentage}% full!",
-                    'percentage' => $percentage
+                    'percentage' => $percentage,
                 ];
             } elseif ($percentage >= 75) {
                 $this->storageWarnings[$type] = [
                     'level' => 'warning',
                     'message' => "{$type} storage is {$percentage}% full",
-                    'percentage' => $percentage
+                    'percentage' => $percentage,
                 ];
             }
         }
@@ -255,14 +262,14 @@ class ResourceManager extends Component
             'wood' => [],
             'clay' => [],
             'iron' => [],
-            'crop' => []
+            'crop' => [],
         ];
 
         $this->productionHistory = [
             'wood' => [],
             'clay' => [],
             'iron' => [],
-            'crop' => []
+            'crop' => [],
         ];
     }
 
@@ -273,7 +280,7 @@ class ResourceManager extends Component
         foreach ($this->resources as $type => $amount) {
             $this->resourceHistory[$type][] = [
                 'timestamp' => $timestamp,
-                'amount' => $amount
+                'amount' => $amount,
             ];
 
             // Keep only last 50 data points
@@ -283,7 +290,7 @@ class ResourceManager extends Component
         foreach ($this->productionRates as $type => $rate) {
             $this->productionHistory[$type][] = [
                 'timestamp' => $timestamp,
-                'rate' => $rate
+                'rate' => $rate,
             ];
 
             // Keep only last 50 data points
@@ -293,7 +300,7 @@ class ResourceManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -302,7 +309,7 @@ class ResourceManager extends Component
 
     public function toggleAutoUpdate()
     {
-        $this->autoUpdate = !$this->autoUpdate;
+        $this->autoUpdate = ! $this->autoUpdate;
 
         if ($this->autoUpdate) {
             $this->startResourcePolling();
@@ -342,7 +349,7 @@ class ResourceManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function getResourceIcon($type)
@@ -351,8 +358,9 @@ class ResourceManager extends Component
             'wood' => '🌲',
             'clay' => '🏺',
             'iron' => '⚒️',
-            'crop' => '🌾'
+            'crop' => '🌾',
         ];
+
         return $icons[$type] ?? '📦';
     }
 
@@ -362,8 +370,9 @@ class ResourceManager extends Component
             'wood' => 'green',
             'clay' => 'orange',
             'iron' => 'gray',
-            'crop' => 'yellow'
+            'crop' => 'yellow',
         ];
+
         return $colors[$type] ?? 'blue';
     }
 
@@ -371,6 +380,7 @@ class ResourceManager extends Component
     {
         $amount = $this->resources[$type];
         $capacity = $this->capacities[$type];
+
         return min(100, ($amount / $capacity) * 100);
     }
 
@@ -396,7 +406,7 @@ class ResourceManager extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         // Keep only last 10 notifications
@@ -461,7 +471,7 @@ class ResourceManager extends Component
             'storageWarnings' => $this->storageWarnings,
             'isLoading' => $this->isLoading,
             'showDetails' => $this->showDetails,
-            'selectedResource' => $this->selectedResource
+            'selectedResource' => $this->selectedResource,
         ]);
     }
 }

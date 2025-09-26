@@ -4,7 +4,6 @@ namespace App\Livewire\Game;
 
 use App\Models\Game\GameEvent;
 use App\Models\Game\Player;
-use App\Models\Game\Village;
 use App\Services\GameTickService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -63,7 +62,7 @@ class TravianDashboard extends Component
                 'total_points' => $this->player->points ?? 0,
                 'alliance_name' => $this->player->alliance?->name ?? 'No Alliance',
                 'online_status' => $this->player->is_online ? 'Online' : 'Offline',
-                'last_active' => $this->player->last_active_at?->diffForHumans() ?? 'Never'
+                'last_active' => $this->player->last_active_at?->diffForHumans() ?? 'Never',
             ];
         }
     }
@@ -88,7 +87,7 @@ class TravianDashboard extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
     }
 
     public function setRefreshInterval($interval)
@@ -126,7 +125,7 @@ class TravianDashboard extends Component
             'currentVillage' => $this->currentVillage,
             'villages' => $this->villages,
             'recentEvents' => $this->recentEvents,
-            'gameStats' => $this->gameStats
+            'gameStats' => $this->gameStats,
         ]);
     }
 }

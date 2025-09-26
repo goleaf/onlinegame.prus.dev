@@ -60,14 +60,15 @@ class BuildingManager extends Component
         $this->dispatch('initializeBuildingRealTime', [
             'interval' => $this->refreshInterval * 1000,
             'autoRefresh' => $this->autoRefresh,
-            'realTimeUpdates' => $this->realTimeUpdates
+            'realTimeUpdates' => $this->realTimeUpdates,
         ]);
     }
 
     public function loadBuildings()
     {
-        if (!$this->village)
+        if (! $this->village) {
             return;
+        }
 
         $this->buildings = $this
             ->village
@@ -85,38 +86,38 @@ class BuildingManager extends Component
                 'name' => 'Woodcutter',
                 'description' => 'Produces wood',
                 'base_cost' => ['wood' => 50, 'clay' => 30, 'iron' => 20, 'crop' => 10],
-                'production_bonus' => 10
+                'production_bonus' => 10,
             ],
             'clay' => [
                 'name' => 'Clay Pit',
                 'description' => 'Produces clay',
                 'base_cost' => ['wood' => 30, 'clay' => 50, 'iron' => 20, 'crop' => 10],
-                'production_bonus' => 10
+                'production_bonus' => 10,
             ],
             'iron' => [
                 'name' => 'Iron Mine',
                 'description' => 'Produces iron',
                 'base_cost' => ['wood' => 20, 'clay' => 30, 'iron' => 50, 'crop' => 10],
-                'production_bonus' => 10
+                'production_bonus' => 10,
             ],
             'crop' => [
                 'name' => 'Cropland',
                 'description' => 'Produces crop',
                 'base_cost' => ['wood' => 10, 'clay' => 20, 'iron' => 10, 'crop' => 50],
-                'production_bonus' => 10
+                'production_bonus' => 10,
             ],
             'warehouse' => [
                 'name' => 'Warehouse',
                 'description' => 'Increases storage capacity',
                 'base_cost' => ['wood' => 100, 'clay' => 80, 'iron' => 60, 'crop' => 40],
-                'storage_bonus' => 1000
+                'storage_bonus' => 1000,
             ],
             'granary' => [
                 'name' => 'Granary',
                 'description' => 'Increases crop storage',
                 'base_cost' => ['wood' => 80, 'clay' => 100, 'iron' => 40, 'crop' => 60],
-                'storage_bonus' => 1000
-            ]
+                'storage_bonus' => 1000,
+            ],
         ];
     }
 
@@ -129,8 +130,9 @@ class BuildingManager extends Component
 
     public function calculateUpgradeCosts()
     {
-        if (!$this->selectedBuilding || !$this->village)
+        if (! $this->selectedBuilding || ! $this->village) {
             return;
+        }
 
         $currentLevel = $this->buildings[$this->selectedBuilding]['level'] ?? 0;
         $baseCost = $this->availableBuildings[$this->selectedBuilding]['base_cost'] ?? [];
@@ -144,22 +146,25 @@ class BuildingManager extends Component
 
     public function upgradeBuilding()
     {
-        if (!$this->selectedBuilding || !$this->village)
+        if (! $this->selectedBuilding || ! $this->village) {
             return;
+        }
 
         // Check if player has enough resources
         $canAfford = true;
         foreach ($this->upgradeCosts as $resource => $cost) {
             if ($this->village->{$resource} < $cost) {
                 $canAfford = false;
+
                 break;
             }
         }
 
-        if (!$canAfford) {
+        if (! $canAfford) {
             $this->dispatch('insufficient-resources', [
-                'message' => 'Not enough resources to upgrade this building!'
+                'message' => 'Not enough resources to upgrade this building!',
             ]);
+
             return;
         }
 
@@ -172,12 +177,12 @@ class BuildingManager extends Component
         $building = Building::updateOrCreate(
             [
                 'village_id' => $this->village->id,
-                'type' => $this->selectedBuilding
+                'type' => $this->selectedBuilding,
             ],
             [
                 'level' => ($this->buildings[$this->selectedBuilding]['level'] ?? 0) + 1,
                 'name' => $this->availableBuildings[$this->selectedBuilding]['name'],
-                'is_active' => true
+                'is_active' => true,
             ]
         );
 
@@ -189,7 +194,7 @@ class BuildingManager extends Component
 
         $this->dispatch('building-upgraded', [
             'building' => $building->type,
-            'level' => $building->level
+            'level' => $building->level,
         ]);
 
         $this->dispatch('resources-updated');
@@ -197,8 +202,9 @@ class BuildingManager extends Component
 
     public function updateVillageStats($building)
     {
-        if (!$this->village)
+        if (! $this->village) {
             return;
+        }
 
         $buildingType = $building->type;
         $level = $building->level;
@@ -258,7 +264,7 @@ class BuildingManager extends Component
                     'progress' => $progress,
                     'remaining' => $endTime->diffInSeconds($now),
                     'building_name' => $queue['building_type'],
-                    'target_level' => $queue['target_level']
+                    'target_level' => $queue['target_level'],
                 ];
             }
         }
@@ -271,7 +277,7 @@ class BuildingManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -280,7 +286,7 @@ class BuildingManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -307,7 +313,7 @@ class BuildingManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function filterByType($type)
@@ -341,6 +347,7 @@ class BuildingManager extends Component
     {
         if (empty($this->searchQuery)) {
             $this->addNotification('Search cleared', 'info');
+
             return;
         }
 
@@ -349,7 +356,7 @@ class BuildingManager extends Component
 
     public function toggleUpgradeableFilter()
     {
-        $this->showOnlyUpgradeable = !$this->showOnlyUpgradeable;
+        $this->showOnlyUpgradeable = ! $this->showOnlyUpgradeable;
         $this->addNotification(
             $this->showOnlyUpgradeable ? 'Showing only upgradeable buildings' : 'Showing all buildings',
             'info'
@@ -358,7 +365,7 @@ class BuildingManager extends Component
 
     public function toggleMaxLevelFilter()
     {
-        $this->showOnlyMaxLevel = !$this->showOnlyMaxLevel;
+        $this->showOnlyMaxLevel = ! $this->showOnlyMaxLevel;
         $this->addNotification(
             $this->showOnlyMaxLevel ? 'Showing only max level buildings' : 'Showing all buildings',
             'info'
@@ -381,8 +388,9 @@ class BuildingManager extends Component
             'treasury' => '💰',
             'trade_office' => '📊',
             'warehouse' => '📦',
-            'granary' => '🌾'
+            'granary' => '🌾',
         ];
+
         return $icons[$type] ?? '🏗️';
     }
 
@@ -448,7 +456,7 @@ class BuildingManager extends Component
             'wood' => round($baseCost * $levelMultiplier),
             'clay' => round($baseCost * $levelMultiplier),
             'iron' => round($baseCost * $levelMultiplier),
-            'crop' => round($baseCost * $levelMultiplier)
+            'crop' => round($baseCost * $levelMultiplier),
         ];
     }
 
@@ -458,7 +466,7 @@ class BuildingManager extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         // Keep only last 10 notifications
@@ -527,7 +535,7 @@ class BuildingManager extends Component
             'sortOrder' => $this->sortOrder,
             'searchQuery' => $this->searchQuery,
             'showOnlyUpgradeable' => $this->showOnlyUpgradeable,
-            'showOnlyMaxLevel' => $this->showOnlyMaxLevel
+            'showOnlyMaxLevel' => $this->showOnlyMaxLevel,
         ]);
     }
 }

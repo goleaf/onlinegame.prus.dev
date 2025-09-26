@@ -11,8 +11,6 @@
  * |
  */
 
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Game\GameController;
 
 // Redirect root to login
@@ -52,12 +50,12 @@ Route::get('/debug-game', [GameController::class, 'index']);
 Route::get('/debug-game-dashboard', function () {
     try {
         $user = \Auth::user();
-        if (!$user) {
+        if (! $user) {
             return 'No authenticated user';
         }
 
         $player = \App\Models\Game\Player::where('user_id', $user->id)->first();
-        if (!$player) {
+        if (! $player) {
             return 'No player found for user: ' . $user->email;
         }
 

@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Game;
 
+use App\Models\Game\Achievement;
 use App\Models\Game\Player;
 use App\Models\Game\Quest;
-use App\Models\Game\Achievement;
 use App\Models\Game\World;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
@@ -62,7 +62,7 @@ class QuestManager extends Component
         "achievementUnlocked",
         "rewardClaimed",
         "villageSelected",
-        "gameTickProcessed"
+        "gameTickProcessed",
     ];
 
     public function mount($worldId = null)
@@ -88,21 +88,21 @@ class QuestManager extends Component
         $this->calculateQuestHistory();
         $this->calculateAchievementHistory();
         $this->calculateRewards();
-        
+
         $this->dispatch("initializeQuestRealTime", [
             "interval" => $this->refreshInterval * 1000,
             "autoRefresh" => $this->autoRefresh,
-            "realTimeUpdates" => $this->realTimeUpdates
+            "realTimeUpdates" => $this->realTimeUpdates,
         ]);
     }
 
     public function loadQuestData()
     {
         $this->isLoading = true;
-        
+
         try {
             $player = Player::where("user_id", Auth::id())->first();
-            
+
             // Load available quests
             $this->availableQuests = Quest::where("world_id", $this->world->id)
                 ->where("is_active", true)
@@ -163,26 +163,29 @@ class QuestManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function acceptQuest($questId)
     {
         $player = Player::where("user_id", Auth::id())->first();
         $quest = Quest::find($questId);
-        
-        if (!$quest) {
+
+        if (! $quest) {
             $this->addNotification("Quest not found", "error");
+
             return;
         }
 
         if ($player->level < $quest->min_level) {
             $this->addNotification("Quest requires higher level", "error");
+
             return;
         }
 
         if ($player->quests()->where("quest_id", $questId)->exists()) {
             $this->addNotification("Quest already accepted", "error");
+
             return;
         }
 
@@ -191,15 +194,15 @@ class QuestManager extends Component
                 "quest_id" => $questId,
                 "status" => "active",
                 "progress" => 0,
-                "started_at" => now()
+                "started_at" => now(),
             ]);
 
             $this->loadQuestData();
             $this->addNotification("Quest \"{$quest->title}\" accepted", "success");
-            
+
             $this->dispatch("questAccepted", [
                 "quest_id" => $questId,
-                "player_id" => $player->id
+                "player_id" => $player->id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification("Failed to accept quest: " . $e->getMessage(), "error");
@@ -210,27 +213,30 @@ class QuestManager extends Component
     {
         $player = Player::where("user_id", Auth::id())->first();
         $questProgress = $player->quests()->where("quest_id", $questId)->first();
-        
-        if (!$questProgress) {
+
+        if (! $questProgress) {
             $this->addNotification("Quest not found", "error");
+
             return;
         }
 
         if ($questProgress->status !== "active") {
             $this->addNotification("Quest is not active", "error");
+
             return;
         }
 
         $quest = $questProgress->quest;
         if ($questProgress->progress < $quest->target_value) {
             $this->addNotification("Quest not completed yet", "error");
+
             return;
         }
 
         try {
             $questProgress->update([
                 "status" => "completed",
-                "completed_at" => now()
+                "completed_at" => now(),
             ]);
 
             // Give rewards
@@ -238,11 +244,11 @@ class QuestManager extends Component
 
             $this->loadQuestData();
             $this->addNotification("Quest \"{$quest->title}\" completed!", "success");
-            
+
             $this->dispatch("questCompleted", [
                 "quest_id" => $questId,
                 "player_id" => $player->id,
-                "rewards" => $quest->rewards
+                "rewards" => $quest->rewards,
             ]);
         } catch (\Exception $e) {
             $this->addNotification("Failed to complete quest: " . $e->getMessage(), "error");
@@ -253,27 +259,29 @@ class QuestManager extends Component
     {
         $player = Player::where("user_id", Auth::id())->first();
         $questProgress = $player->quests()->where("quest_id", $questId)->first();
-        
-        if (!$questProgress) {
+
+        if (! $questProgress) {
             $this->addNotification("Quest not found", "error");
+
             return;
         }
 
         if ($questProgress->status !== "active") {
             $this->addNotification("Quest is not active", "error");
+
             return;
         }
 
         try {
             $quest = $questProgress->quest;
             $questProgress->update(["status" => "abandoned"]);
-            
+
             $this->loadQuestData();
             $this->addNotification("Quest \"{$quest->title}\" abandoned", "info");
-            
+
             $this->dispatch("questAbandoned", [
                 "quest_id" => $questId,
-                "player_id" => $player->id
+                "player_id" => $player->id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification("Failed to abandon quest: " . $e->getMessage(), "error");
@@ -284,26 +292,29 @@ class QuestManager extends Component
     {
         $player = Player::where("user_id", Auth::id())->first();
         $achievement = Achievement::find($achievementId);
-        
-        if (!$achievement) {
+
+        if (! $achievement) {
             $this->addNotification("Achievement not found", "error");
+
             return;
         }
 
         if ($player->achievements()->where("achievement_id", $achievementId)->exists()) {
             $this->addNotification("Achievement already claimed", "error");
+
             return;
         }
 
-        if (!$this->checkAchievementRequirements($achievement, $player)) {
+        if (! $this->checkAchievementRequirements($achievement, $player)) {
             $this->addNotification("Achievement requirements not met", "error");
+
             return;
         }
 
         try {
             $player->achievements()->create([
                 "achievement_id" => $achievementId,
-                "unlocked_at" => now()
+                "unlocked_at" => now(),
             ]);
 
             // Give rewards
@@ -311,11 +322,11 @@ class QuestManager extends Component
 
             $this->loadQuestData();
             $this->addNotification("Achievement \"{$achievement->title}\" unlocked!", "success");
-            
+
             $this->dispatch("achievementUnlocked", [
                 "achievement_id" => $achievementId,
                 "player_id" => $player->id,
-                "rewards" => $achievement->rewards
+                "rewards" => $achievement->rewards,
             ]);
         } catch (\Exception $e) {
             $this->addNotification("Failed to claim achievement: " . $e->getMessage(), "error");
@@ -326,14 +337,16 @@ class QuestManager extends Component
     {
         $player = Player::where("user_id", Auth::id())->first();
         $reward = $player->rewards()->find($rewardId);
-        
-        if (!$reward) {
+
+        if (! $reward) {
             $this->addNotification("Reward not found", "error");
+
             return;
         }
 
         if ($reward->claimed_at) {
             $this->addNotification("Reward already claimed", "error");
+
             return;
         }
 
@@ -341,10 +354,10 @@ class QuestManager extends Component
             $reward->update(["claimed_at" => now()]);
             $this->loadQuestData();
             $this->addNotification("Reward claimed successfully", "success");
-            
+
             $this->dispatch("rewardClaimed", [
                 "reward_id" => $rewardId,
-                "player_id" => $player->id
+                "player_id" => $player->id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification("Failed to claim reward: " . $e->getMessage(), "error");
@@ -354,7 +367,7 @@ class QuestManager extends Component
     private function giveQuestRewards($quest, $player)
     {
         $rewards = json_decode($quest->rewards, true) ?? [];
-        
+
         foreach ($rewards as $reward) {
             $this->giveReward($player, $reward);
         }
@@ -363,7 +376,7 @@ class QuestManager extends Component
     private function giveAchievementRewards($achievement, $player)
     {
         $rewards = json_decode($achievement->rewards, true) ?? [];
-        
+
         foreach ($rewards as $reward) {
             $this->giveReward($player, $reward);
         }
@@ -374,6 +387,7 @@ class QuestManager extends Component
         switch ($reward["type"]) {
             case "experience":
                 $player->increment("experience", $reward["amount"]);
+
                 break;
             case "resources":
                 foreach ($reward["resources"] as $resource => $amount) {
@@ -382,12 +396,14 @@ class QuestManager extends Component
                         $resourceModel->increment("amount", $amount);
                     }
                 }
+
                 break;
             case "items":
                 // Handle item rewards
                 break;
             case "currency":
                 $player->increment("currency", $reward["amount"]);
+
                 break;
         }
     }
@@ -395,13 +411,13 @@ class QuestManager extends Component
     private function checkAchievementRequirements($achievement, $player)
     {
         $requirements = json_decode($achievement->requirements, true) ?? [];
-        
+
         foreach ($requirements as $requirement) {
-            if (!$this->checkRequirement($requirement, $player)) {
+            if (! $this->checkRequirement($requirement, $player)) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -412,9 +428,11 @@ class QuestManager extends Component
                 return $player->level >= $requirement["value"];
             case "building_level":
                 $building = $player->villages()->first()->buildings()->where("type", $requirement["building"])->first();
+
                 return $building && $building->level >= $requirement["value"];
             case "resource_amount":
                 $resource = $player->villages()->first()->resources()->where("type", $requirement["resource"])->first();
+
                 return $resource && $resource->amount >= $requirement["value"];
             case "quests_completed":
                 return $player->quests()->where("status", "completed")->count() >= $requirement["value"];
@@ -464,7 +482,7 @@ class QuestManager extends Component
             $this->sortBy = $sortBy;
             $this->sortOrder = "desc";
         }
-        
+
         $this->addNotification("Sorted by {$sortBy} ({$this->sortOrder})", "info");
     }
 
@@ -472,15 +490,16 @@ class QuestManager extends Component
     {
         if (empty($this->searchQuery)) {
             $this->addNotification("Search cleared", "info");
+
             return;
         }
-        
+
         $this->addNotification("Searching for: {$this->searchQuery}", "info");
     }
 
     public function toggleAvailableFilter()
     {
-        $this->showOnlyAvailable = !$this->showOnlyAvailable;
+        $this->showOnlyAvailable = ! $this->showOnlyAvailable;
         $this->addNotification(
             $this->showOnlyAvailable ? "Showing only available quests" : "Showing all quests",
             "info"
@@ -489,7 +508,7 @@ class QuestManager extends Component
 
     public function toggleActiveFilter()
     {
-        $this->showOnlyActive = !$this->showOnlyActive;
+        $this->showOnlyActive = ! $this->showOnlyActive;
         $this->addNotification(
             $this->showOnlyActive ? "Showing only active quests" : "Showing all quests",
             "info"
@@ -498,7 +517,7 @@ class QuestManager extends Component
 
     public function toggleCompletedFilter()
     {
-        $this->showOnlyCompleted = !$this->showOnlyCompleted;
+        $this->showOnlyCompleted = ! $this->showOnlyCompleted;
         $this->addNotification(
             $this->showOnlyCompleted ? "Showing only completed quests" : "Showing all quests",
             "info"
@@ -507,7 +526,7 @@ class QuestManager extends Component
 
     public function toggleAchievementsFilter()
     {
-        $this->showOnlyAchievements = !$this->showOnlyAchievements;
+        $this->showOnlyAchievements = ! $this->showOnlyAchievements;
         $this->addNotification(
             $this->showOnlyAchievements ? "Showing only achievements" : "Showing all content",
             "info"
@@ -517,47 +536,47 @@ class QuestManager extends Component
     public function calculateQuestStats()
     {
         $player = Player::where("user_id", Auth::id())->first();
-        
+
         $this->questStats = [
             "total_quests" => Quest::where("world_id", $this->world->id)->count(),
             "available_quests" => count($this->availableQuests),
             "active_quests" => count($this->activeQuests),
             "completed_quests" => count($this->completedQuests),
             "completion_rate" => $player ? ($player->quests()->where("status", "completed")->count() / Quest::where("world_id", $this->world->id)->count()) * 100 : 0,
-            "total_rewards" => $player ? $player->rewards()->sum("value") : 0
+            "total_rewards" => $player ? $player->rewards()->sum("value") : 0,
         ];
     }
 
     public function calculateAchievementStats()
     {
         $player = Player::where("user_id", Auth::id())->first();
-        
+
         $this->achievementStats = [
             "total_achievements" => Achievement::where("world_id", $this->world->id)->count(),
             "unlocked_achievements" => count($this->playerAchievements),
             "unlock_rate" => $player ? (count($this->playerAchievements) / Achievement::where("world_id", $this->world->id)->count()) * 100 : 0,
-            "recent_achievements" => $player ? $player->achievements()->orderBy("unlocked_at", "desc")->limit(5)->get()->toArray() : []
+            "recent_achievements" => $player ? $player->achievements()->orderBy("unlocked_at", "desc")->limit(5)->get()->toArray() : [],
         ];
     }
 
     public function calculatePlayerProgress()
     {
         $player = Player::where("user_id", Auth::id())->first();
-        
+
         $this->playerProgress = [
             "level" => $player->level ?? 1,
             "experience" => $player->experience ?? 0,
             "next_level_exp" => $this->getNextLevelExp($player->level ?? 1),
             "quests_completed" => $player ? $player->quests()->where("status", "completed")->count() : 0,
             "achievements_unlocked" => count($this->playerAchievements),
-            "total_rewards" => $player ? $player->rewards()->sum("value") : 0
+            "total_rewards" => $player ? $player->rewards()->sum("value") : 0,
         ];
     }
 
     public function calculateQuestHistory()
     {
         $player = Player::where("user_id", Auth::id())->first();
-        
+
         $this->questHistory = $player ? $player->quests()
             ->with("quest")
             ->orderBy("completed_at", "desc")
@@ -569,7 +588,7 @@ class QuestManager extends Component
     public function calculateAchievementHistory()
     {
         $player = Player::where("user_id", Auth::id())->first();
-        
+
         $this->achievementHistory = $player ? $player->achievements()
             ->with("achievement")
             ->orderBy("unlocked_at", "desc")
@@ -581,7 +600,7 @@ class QuestManager extends Component
     public function calculateRewards()
     {
         $player = Player::where("user_id", Auth::id())->first();
-        
+
         $this->rewards = $player ? $player->rewards()
             ->whereNull("claimed_at")
             ->orderBy("created_at", "desc")
@@ -602,8 +621,9 @@ class QuestManager extends Component
             "resource" => "💰",
             "combat" => "⚔️",
             "alliance" => "🤝",
-            "special" => "⭐"
+            "special" => "⭐",
         ];
+
         return $icons[$quest["category"]] ?? "📋";
     }
 
@@ -613,8 +633,9 @@ class QuestManager extends Component
             "easy" => "green",
             "medium" => "yellow",
             "hard" => "red",
-            "expert" => "purple"
+            "expert" => "purple",
         ];
+
         return $colors[$quest["difficulty"]] ?? "blue";
     }
 
@@ -623,15 +644,15 @@ class QuestManager extends Component
         if ($quest["status"] === "active") {
             return "Active";
         }
-        
+
         if ($quest["status"] === "completed") {
             return "Completed";
         }
-        
+
         if ($quest["status"] === "abandoned") {
             return "Abandoned";
         }
-        
+
         return "Available";
     }
 
@@ -643,8 +664,9 @@ class QuestManager extends Component
             "alliance" => "🤝",
             "resource" => "💰",
             "special" => "⭐",
-            "milestone" => "🏆"
+            "milestone" => "🏆",
         ];
+
         return $icons[$achievement["category"]] ?? "🏅";
     }
 
@@ -654,39 +676,40 @@ class QuestManager extends Component
             "bronze" => "brown",
             "silver" => "gray",
             "gold" => "yellow",
-            "platinum" => "purple"
+            "platinum" => "purple",
         ];
+
         return $colors[$achievement["rarity"]] ?? "blue";
     }
 
     public function getProgressPercentage($quest)
     {
-        if (!isset($quest["progress"]) || !isset($quest["target_value"])) {
+        if (! isset($quest["progress"]) || ! isset($quest["target_value"])) {
             return 0;
         }
-        
+
         return min(100, ($quest["progress"] / $quest["target_value"]) * 100);
     }
 
     public function getTimeRemaining($quest)
     {
-        if (!isset($quest["expires_at"])) {
+        if (! isset($quest["expires_at"])) {
             return "No time limit";
         }
-        
+
         $expiresAt = $quest["expires_at"];
         $now = now();
-        
+
         if ($now->gt($expiresAt)) {
             return "Expired";
         }
-        
+
         return $now->diffForHumans($expiresAt, true);
     }
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? "Real-time updates enabled" : "Real-time updates disabled",
             "info"
@@ -695,7 +718,7 @@ class QuestManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? "Auto-refresh enabled" : "Auto-refresh disabled",
             "info"
@@ -720,7 +743,7 @@ class QuestManager extends Component
             "id" => uniqid(),
             "message" => $message,
             "type" => $type,
-            "timestamp" => now()
+            "timestamp" => now(),
         ];
 
         // Keep only last 10 notifications
@@ -833,7 +856,7 @@ class QuestManager extends Component
             "achievementHistory" => $this->achievementHistory,
             "rewards" => $this->rewards,
             "questCategories" => $this->questCategories,
-            "achievementCategories" => $this->achievementCategories
+            "achievementCategories" => $this->achievementCategories,
         ]);
     }
 }

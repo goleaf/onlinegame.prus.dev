@@ -5,7 +5,6 @@ namespace App\Livewire\Game;
 use App\Models\Game\BuildingQueue;
 use App\Models\Game\GameEvent;
 use App\Models\Game\Player;
-use App\Models\Game\Resource;
 use App\Models\Game\TrainingQueue;
 use App\Services\GameTickService;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +27,7 @@ class RealTimeUpdater extends Component
         'processTick',
         'updateResources',
         'updateBuildings',
-        'updateTroops'
+        'updateTroops',
     ];
 
     public function mount()
@@ -54,7 +53,7 @@ class RealTimeUpdater extends Component
     #[On('tick')]
     public function processTick()
     {
-        if (!$this->isActive || !$this->player) {
+        if (! $this->isActive || ! $this->player) {
             return;
         }
 
@@ -83,7 +82,7 @@ class RealTimeUpdater extends Component
             // Dispatch events to other components
             $this->dispatch('gameTickProcessed', [
                 'tickCount' => $this->tickCount,
-                'timestamp' => $this->lastTick
+                'timestamp' => $this->lastTick,
             ]);
 
         } catch (\Exception $e) {
@@ -94,28 +93,28 @@ class RealTimeUpdater extends Component
 
     public function updateResources()
     {
-        if (!$this->player) {
+        if (! $this->player) {
             return;
         }
 
         $villages = $this->player->villages()->with('resources')->get();
-        
+
         foreach ($villages as $village) {
             $resources = $village->resources;
-            
+
             foreach ($resources as $resource) {
                 $timeSinceLastUpdate = now()->diffInSeconds($resource->last_updated);
                 $production = $resource->production_rate * $timeSinceLastUpdate;
-                
+
                 $newAmount = min(
                     $resource->amount + $production,
                     $resource->storage_capacity
                 );
-                
+
                 if ($newAmount !== $resource->amount) {
                     $resource->update([
                         'amount' => $newAmount,
-                        'last_updated' => now()
+                        'last_updated' => now(),
                     ]);
                 }
             }
@@ -126,7 +125,7 @@ class RealTimeUpdater extends Component
 
     public function updateBuildingQueues()
     {
-        if (!$this->player) {
+        if (! $this->player) {
             return;
         }
 
@@ -142,7 +141,7 @@ class RealTimeUpdater extends Component
 
     public function updateTrainingQueues()
     {
-        if (!$this->player) {
+        if (! $this->player) {
             return;
         }
 
@@ -160,7 +159,7 @@ class RealTimeUpdater extends Component
     {
         try {
             $building->update(['is_completed' => true]);
-            
+
             // Update village building
             $villageBuilding = $building->village->buildings()
                 ->where('building_type_id', $building->building_type_id)
@@ -171,11 +170,11 @@ class RealTimeUpdater extends Component
             }
 
             $this->addUpdate("Building completed: {$building->buildingType->name} Level {$building->target_level}");
-            
+
             $this->dispatch('buildingCompleted', [
                 'building_name' => $building->buildingType->name,
                 'level' => $building->target_level,
-                'village_id' => $building->village_id
+                'village_id' => $building->village_id,
             ]);
 
         } catch (\Exception $e) {
@@ -187,7 +186,7 @@ class RealTimeUpdater extends Component
     {
         try {
             $training->update(['is_completed' => true]);
-            
+
             // Add troops to village
             $village = $training->village;
             $troop = $village->troops()
@@ -199,16 +198,16 @@ class RealTimeUpdater extends Component
             } else {
                 $village->troops()->create([
                     'unit_type_id' => $training->unit_type_id,
-                    'quantity' => $training->quantity
+                    'quantity' => $training->quantity,
                 ]);
             }
 
             $this->addUpdate("Training completed: {$training->unitType->name} x{$training->quantity}");
-            
+
             $this->dispatch('trainingCompleted', [
                 'unit_name' => $training->unitType->name,
                 'quantity' => $training->quantity,
-                'village_id' => $training->village_id
+                'village_id' => $training->village_id,
             ]);
 
         } catch (\Exception $e) {
@@ -218,7 +217,7 @@ class RealTimeUpdater extends Component
 
     private function checkCompletedEvents()
     {
-        if (!$this->player) {
+        if (! $this->player) {
             return;
         }
 
@@ -236,13 +235,13 @@ class RealTimeUpdater extends Component
     {
         try {
             $event->update(['is_completed' => true]);
-            
+
             $this->addUpdate("Event completed: {$event->title}");
-            
+
             $this->dispatch('eventCompleted', [
                 'event_id' => $event->id,
                 'title' => $event->title,
-                'description' => $event->description
+                'description' => $event->description,
             ]);
 
         } catch (\Exception $e) {
@@ -256,7 +255,7 @@ class RealTimeUpdater extends Component
             'id' => uniqid(),
             'message' => $message,
             'timestamp' => now(),
-            'type' => 'info'
+            'type' => 'info',
         ];
 
         // Keep only last 20 updates
@@ -269,7 +268,7 @@ class RealTimeUpdater extends Component
             'id' => uniqid(),
             'message' => $message,
             'timestamp' => now(),
-            'type' => 'error'
+            'type' => 'error',
         ];
 
         // Keep only last 10 errors
@@ -300,7 +299,7 @@ class RealTimeUpdater extends Component
             'lastTick' => $this->lastTick,
             'tickInterval' => $this->tickInterval,
             'updatesCount' => count($this->updates),
-            'errorsCount' => count($this->errors)
+            'errorsCount' => count($this->errors),
         ];
     }
 
@@ -312,7 +311,7 @@ class RealTimeUpdater extends Component
             'tickCount' => $this->tickCount,
             'lastTick' => $this->lastTick,
             'updates' => $this->updates,
-            'errors' => $this->errors
+            'errors' => $this->errors,
         ]);
     }
 }

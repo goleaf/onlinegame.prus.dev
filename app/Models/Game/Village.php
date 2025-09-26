@@ -3,9 +3,9 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Model;
 
 class Village extends Model
 {
@@ -21,7 +21,7 @@ class Village extends Model
         'is_capital',
         'is_active',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     protected $casts = [

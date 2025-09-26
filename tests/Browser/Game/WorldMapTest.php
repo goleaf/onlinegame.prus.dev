@@ -203,4 +203,3 @@ class WorldMapTest extends DuskTestCase
         });
     }
 }
-

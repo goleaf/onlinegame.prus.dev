@@ -4,7 +4,6 @@ namespace Tests\Feature\Livewire\Game;
 
 use App\Livewire\Game\StatisticsViewer;
 use App\Models\Game\Building;
-use App\Models\Game\Movement;
 use App\Models\Game\Player;
 use App\Models\Game\Report;
 use App\Models\Game\Troop;
@@ -36,7 +35,7 @@ class StatisticsViewerTest extends TestCase
         $this->world = World::factory()->create([
             'name' => 'Test World',
             'speed' => 1.0,
-            'is_active' => true
+            'is_active' => true,
         ]);
 
         // Create test player
@@ -44,7 +43,7 @@ class StatisticsViewerTest extends TestCase
             'user_id' => $this->user->id,
             'world_id' => $this->world->id,
             'name' => 'Test Player',
-            'points' => 1000
+            'points' => 1000,
         ]);
 
         // Create test village
@@ -54,7 +53,7 @@ class StatisticsViewerTest extends TestCase
             'name' => 'Test Village',
             'x_coordinate' => 100,
             'y_coordinate' => 100,
-            'population' => 100
+            'population' => 100,
         ]);
     }
 
@@ -239,11 +238,11 @@ class StatisticsViewerTest extends TestCase
         // Create additional players with higher points
         Player::factory()->create([
             'world_id' => $this->world->id,
-            'points' => 2000
+            'points' => 2000,
         ]);
         Player::factory()->create([
             'world_id' => $this->world->id,
-            'points' => 1500
+            'points' => 1500,
         ]);
 
         $component = Livewire::test(StatisticsViewer::class, ['world' => $this->world]);
@@ -260,12 +259,12 @@ class StatisticsViewerTest extends TestCase
         Report::factory()->create([
             'world_id' => $this->world->id,
             'attacker_id' => $this->player->id,
-            'status' => 'victory'
+            'status' => 'victory',
         ]);
         Report::factory()->create([
             'world_id' => $this->world->id,
             'attacker_id' => $this->player->id,
-            'status' => 'defeat'
+            'status' => 'defeat',
         ]);
 
         $component = Livewire::test(StatisticsViewer::class, ['world' => $this->world]);
@@ -284,7 +283,7 @@ class StatisticsViewerTest extends TestCase
             'wood' => 1000,
             'clay' => 2000,
             'iron' => 1500,
-            'crop' => 800
+            'crop' => 800,
         ]);
 
         $component = Livewire::test(StatisticsViewer::class, ['world' => $this->world]);
@@ -301,11 +300,11 @@ class StatisticsViewerTest extends TestCase
         // Create test buildings
         Building::factory()->create([
             'village_id' => $this->village->id,
-            'level' => 5
+            'level' => 5,
         ]);
         Building::factory()->create([
             'village_id' => $this->village->id,
-            'level' => 3
+            'level' => 3,
         ]);
 
         $component = Livewire::test(StatisticsViewer::class, ['world' => $this->world]);
@@ -323,7 +322,7 @@ class StatisticsViewerTest extends TestCase
         Troop::factory()->create([
             'village_id' => $this->village->id,
             'unit_type_id' => $unitType->id,
-            'count' => 100
+            'count' => 100,
         ]);
 
         $component = Livewire::test(StatisticsViewer::class, ['world' => $this->world]);

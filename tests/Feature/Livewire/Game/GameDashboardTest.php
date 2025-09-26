@@ -36,18 +36,18 @@ class GameDashboardTest extends TestCase
         $this->world = World::factory()->create();
         $this->player = Player::factory()->create([
             'user_id' => $this->user->id,
-            'world_id' => $this->world->id
+            'world_id' => $this->world->id,
         ]);
 
         $this->village = Village::factory()->create([
             'player_id' => $this->player->id,
-            'world_id' => $this->world->id
+            'world_id' => $this->world->id,
         ]);
 
         $this->buildingType = BuildingType::factory()->create();
         $this->building = Building::factory()->create([
             'village_id' => $this->village->id,
-            'building_type_id' => $this->buildingType->id
+            'building_type_id' => $this->buildingType->id,
         ]);
 
         // Create resources
@@ -58,7 +58,7 @@ class GameDashboardTest extends TestCase
                 'type' => $type,
                 'amount' => 1000,
                 'production_rate' => 10,
-                'storage_capacity' => 2000
+                'storage_capacity' => 2000,
             ]);
         }
     }
@@ -118,7 +118,7 @@ class GameDashboardTest extends TestCase
             'player_id' => $this->player->id,
             'village_id' => $this->village->id,
             'event_type' => 'test_event',
-            'description' => 'Test Event'
+            'description' => 'Test Event',
         ]);
 
         $component = Livewire::test(GameDashboard::class);
@@ -406,7 +406,7 @@ class GameDashboardTest extends TestCase
             'player_id' => $this->player->id,
             'village_id' => $this->village->id,
             'event_type' => 'test_event',
-            'description' => 'Test Event Description'
+            'description' => 'Test Event Description',
         ]);
 
         $component = Livewire::test(GameDashboard::class);

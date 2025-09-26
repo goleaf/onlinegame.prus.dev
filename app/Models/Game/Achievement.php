@@ -13,35 +13,25 @@ class Achievement extends Model
     protected $table = 'player_achievements';
 
     protected $fillable = [
-        'world_id',
         'player_id',
-        'title',
-        'description',
-        'type',
-        'status',
-        'progress',
-        'target',
-        'rewards',
-        'requirements',
+        'achievement_id',
         'unlocked_at',
-        'created_at',
-        'updated_at',
+        'progress_data',
     ];
 
     protected $casts = [
-        'rewards' => 'array',
-        'requirements' => 'array',
+        'progress_data' => 'array',
         'unlocked_at' => 'datetime',
     ];
-
-    public function world(): BelongsTo
-    {
-        return $this->belongsTo(World::class);
-    }
 
     public function player(): BelongsTo
     {
         return $this->belongsTo(Player::class);
+    }
+
+    public function achievement(): BelongsTo
+    {
+        return $this->belongsTo(Achievement::class);
     }
 
     // Scopes

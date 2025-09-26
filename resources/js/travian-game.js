@@ -1,4 +1,8 @@
 // Travian Game JavaScript - Real-time features and game mechanics
+// Enhanced with maximum Livewire capabilities and original Travian assets
+
+// Import real-time features
+import './travian-realtime.js';
 
 // Game state management
 window.TravianGame = {

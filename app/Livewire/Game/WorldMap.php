@@ -46,7 +46,7 @@ class WorldMap extends Component
         'centerOnVillage',
         'gameTickProcessed',
         'playerSelected',
-        'allianceSelected'
+        'allianceSelected',
     ];
 
     public function mount($worldId = null)
@@ -70,7 +70,7 @@ class WorldMap extends Component
         $this->dispatch('initializeMapRealTime', [
             'interval' => $this->refreshInterval * 1000,
             'autoRefresh' => $this->autoRefresh,
-            'realTimeUpdates' => $this->realTimeUpdates
+            'realTimeUpdates' => $this->realTimeUpdates,
         ]);
     }
 
@@ -137,7 +137,7 @@ class WorldMap extends Component
         if ($village) {
             $this->viewCenter = [
                 'x' => $village->x_coordinate,
-                'y' => $village->y_coordinate
+                'y' => $village->y_coordinate,
             ];
 
             $this->addNotification("Centered on village: {$village->name}", 'info');
@@ -151,15 +151,19 @@ class WorldMap extends Component
         switch ($direction) {
             case 'north':
                 $this->viewCenter['y'] = max(0, $this->viewCenter['y'] - $moveDistance);
+
                 break;
             case 'south':
                 $this->viewCenter['y'] = min($this->mapSize, $this->viewCenter['y'] + $moveDistance);
+
                 break;
             case 'east':
                 $this->viewCenter['x'] = min($this->mapSize, $this->viewCenter['x'] + $moveDistance);
+
                 break;
             case 'west':
                 $this->viewCenter['x'] = max(0, $this->viewCenter['x'] - $moveDistance);
+
                 break;
         }
     }
@@ -184,17 +188,17 @@ class WorldMap extends Component
 
     public function toggleCoordinates()
     {
-        $this->showCoordinates = !$this->showCoordinates;
+        $this->showCoordinates = ! $this->showCoordinates;
     }
 
     public function toggleVillageNames()
     {
-        $this->showVillageNames = !$this->showVillageNames;
+        $this->showVillageNames = ! $this->showVillageNames;
     }
 
     public function toggleAlliances()
     {
-        $this->showAlliances = !$this->showAlliances;
+        $this->showAlliances = ! $this->showAlliances;
     }
 
     public function setFilterAlliance($allianceId)
@@ -264,7 +268,7 @@ class WorldMap extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         // Keep only last 10 notifications
@@ -285,7 +289,7 @@ class WorldMap extends Component
 
     public function calculateMapStats()
     {
-        if (!$this->world) {
+        if (! $this->world) {
             return;
         }
 
@@ -301,7 +305,7 @@ class WorldMap extends Component
             'capital_villages' => $villages->where('is_capital', true)->count(),
             'average_population' => $villages->avg('population'),
             'largest_village' => $villages->max('population'),
-            'tribes' => $players->pluck('tribe')->unique()->values()->toArray()
+            'tribes' => $players->pluck('tribe')->unique()->values()->toArray(),
         ];
     }
 
@@ -309,6 +313,7 @@ class WorldMap extends Component
     {
         if (empty($this->searchQuery)) {
             $this->highlightedVillages = [];
+
             return;
         }
 
@@ -360,7 +365,7 @@ class WorldMap extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -369,7 +374,7 @@ class WorldMap extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -428,8 +433,9 @@ class WorldMap extends Component
         $icons = [
             'roman' => '🏛️',
             'teuton' => '⚔️',
-            'gaul' => '🌿'
+            'gaul' => '🌿',
         ];
+
         return $icons[$tribe] ?? '🏘️';
     }
 
@@ -468,7 +474,7 @@ class WorldMap extends Component
             'selectedPlayer' => $this->selectedPlayer,
             'mapMode' => $this->mapMode,
             'highlightedVillages' => $this->highlightedVillages,
-            'mapStats' => $this->mapStats
+            'mapStats' => $this->mapStats,
         ]);
     }
 }

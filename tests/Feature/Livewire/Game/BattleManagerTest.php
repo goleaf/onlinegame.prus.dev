@@ -3,7 +3,6 @@
 namespace Tests\Feature\Livewire\Game;
 
 use App\Livewire\Game\BattleManager;
-use App\Models\Game\Battle;
 use App\Models\Game\Movement;
 use App\Models\Game\Player;
 use App\Models\Game\Troop;
@@ -38,14 +37,14 @@ class BattleManagerTest extends TestCase
             'village_id' => $this->village->id,
             'unit_type_id' => $this->legionnaire->id,
             'in_village' => 100,
-            'in_attack' => 0
+            'in_attack' => 0,
         ]);
 
         $this->troop2 = Troop::factory()->create([
             'village_id' => $this->village->id,
             'unit_type_id' => $this->praetorian->id,
             'in_village' => 50,
-            'in_attack' => 0
+            'in_attack' => 0,
         ]);
     }
 
@@ -133,7 +132,7 @@ class BattleManagerTest extends TestCase
             'player_id' => $this->player->id,
             'from_village_id' => $this->village->id,
             'to_village_id' => $targetVillage->id,
-            'type' => 'attack'
+            'type' => 'attack',
         ]);
     }
 
@@ -168,7 +167,7 @@ class BattleManagerTest extends TestCase
         $targetVillage = Village::factory()->create([
             'world_id' => $this->world->id,
             'x_coordinate' => 10,
-            'y_coordinate' => 10
+            'y_coordinate' => 10,
         ]);
 
         $this->village->update(['x_coordinate' => 0, 'y_coordinate' => 0]);
@@ -198,11 +197,11 @@ class BattleManagerTest extends TestCase
         $this->actingAs($this->user);
 
         $attackerTroops = [
-            ['count' => 10, 'attack' => 40, 'defense_infantry' => 35, 'defense_cavalry' => 50]
+            ['count' => 10, 'attack' => 40, 'defense_infantry' => 35, 'defense_cavalry' => 50],
         ];
 
         $defenderTroops = [
-            ['count' => 5, 'attack' => 30, 'defense_infantry' => 65, 'defense_cavalry' => 35]
+            ['count' => 5, 'attack' => 30, 'defense_infantry' => 65, 'defense_cavalry' => 35],
         ];
 
         $component = Livewire::test(BattleManager::class);
@@ -432,7 +431,7 @@ class BattleManagerTest extends TestCase
         $targetVillage = Village::factory()->create([
             'world_id' => $this->world->id,
             'x_coordinate' => null,
-            'y_coordinate' => null
+            'y_coordinate' => null,
         ]);
 
         $component = Livewire::test(BattleManager::class);
@@ -465,7 +464,7 @@ class BattleManagerTest extends TestCase
             'village_id' => $this->village->id,
             'unit_type_id' => null,
             'in_village' => 100,
-            'in_attack' => 0
+            'in_attack' => 0,
         ]);
 
         $component = Livewire::test(BattleManager::class);

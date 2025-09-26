@@ -23,12 +23,12 @@ class VillageManagerTest extends TestCase
         $world = World::factory()->create();
         $player = Player::factory()->create([
             'user_id' => $user->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $this->actingAs($user);
@@ -44,18 +44,18 @@ class VillageManagerTest extends TestCase
         $world = World::factory()->create();
         $player = Player::factory()->create([
             'user_id' => $user->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $buildingType = BuildingType::factory()->create();
         $building = Building::factory()->create([
             'village_id' => $village->id,
-            'building_type_id' => $buildingType->id
+            'building_type_id' => $buildingType->id,
         ]);
 
         $this->actingAs($user);
@@ -70,18 +70,18 @@ class VillageManagerTest extends TestCase
         $world = World::factory()->create();
         $player = Player::factory()->create([
             'user_id' => $user->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $buildingType = BuildingType::factory()->create();
         $building = Building::factory()->create([
             'village_id' => $village->id,
-            'building_type_id' => $buildingType->id
+            'building_type_id' => $buildingType->id,
         ]);
 
         $this->actingAs($user);
@@ -97,22 +97,22 @@ class VillageManagerTest extends TestCase
         $world = World::factory()->create();
         $player = Player::factory()->create([
             'user_id' => $user->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $buildingType = BuildingType::factory()->create([
-            'costs' => ['wood' => 100, 'clay' => 100, 'iron' => 100, 'crop' => 100]
+            'costs' => ['wood' => 100, 'clay' => 100, 'iron' => 100, 'crop' => 100],
         ]);
 
         $building = Building::factory()->create([
             'village_id' => $village->id,
             'building_type_id' => $buildingType->id,
-            'level' => 1
+            'level' => 1,
         ]);
 
         $this->actingAs($user);
@@ -128,12 +128,12 @@ class VillageManagerTest extends TestCase
         $world = World::factory()->create();
         $player = Player::factory()->create([
             'user_id' => $user->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $this->actingAs($user);
@@ -143,4 +143,3 @@ class VillageManagerTest extends TestCase
             ->assertSee('Village data refreshed');
     }
 }
-

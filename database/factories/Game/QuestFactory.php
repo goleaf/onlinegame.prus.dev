@@ -3,55 +3,40 @@
 namespace Database\Factories\Game;
 
 use App\Models\Game\Player;
-use App\Models\Game\Quest;
-use App\Models\Game\World;
+use App\Models\Game\PlayerQuest;
+use App\Models\Game\QuestTemplate;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class QuestFactory extends Factory
 {
-    protected $model = Quest::class;
+    protected $model = PlayerQuest::class;
 
     public function definition(): array
     {
         $startedAt = $this->faker->boolean(30) ? $this->faker->dateTimeBetween('-1 day', 'now') : null;
         $completedAt = $startedAt && $this->faker->boolean(50) ? $this->faker->dateTimeBetween($startedAt, 'now') : null;
-        
+
         $status = $completedAt ? 'completed' : ($startedAt ? 'active' : 'available');
 
         return [
-            'world_id' => World::factory(),
             'player_id' => Player::factory(),
-            'title' => $this->faker->sentence(4),
-            'description' => $this->faker->paragraph(3),
-            'type' => $this->faker->randomElement(['main', 'side', 'daily', 'weekly', 'special']),
+            'quest_id' => QuestTemplate::factory(),
             'status' => $status,
             'progress' => $this->faker->numberBetween(0, 100),
-            'target' => $this->faker->numberBetween(1, 100),
-            'rewards' => [
-                'points' => $this->faker->numberBetween(50, 2000),
-                'resources' => [
-                    'wood' => $this->faker->numberBetween(500, 10000),
-                    'clay' => $this->faker->numberBetween(500, 10000),
-                    'iron' => $this->faker->numberBetween(500, 10000),
-                    'crop' => $this->faker->numberBetween(500, 10000),
-                ]
-            ],
-            'requirements' => [
-                'level' => $this->faker->numberBetween(1, 20),
-                'buildings' => [
-                    'warehouse' => $this->faker->numberBetween(1, 10),
-                    'granary' => $this->faker->numberBetween(1, 10),
-                ]
+            'progress_data' => [
+                'completed_objectives' => $this->faker->numberBetween(0, 5),
+                'total_objectives' => $this->faker->numberBetween(1, 10),
             ],
             'started_at' => $startedAt,
             'completed_at' => $completedAt,
+            'expires_at' => $this->faker->boolean(20) ? $this->faker->dateTimeBetween('now', '+7 days') : null,
         ];
     }
 
-    public function active(): static
+    public function inProgress(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => 'active',
+            'status' => 'in_progress',
             'started_at' => $this->faker->dateTimeBetween('-1 day', 'now'),
             'completed_at' => null,
         ]);
@@ -75,48 +60,22 @@ class QuestFactory extends Factory
         ]);
     }
 
-    public function main(): static
+    public function failed(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => 'main',
-            'title' => 'Main Quest: ' . $this->faker->sentence(3),
-            'description' => 'A crucial quest that advances the main storyline.',
+            'status' => 'failed',
+            'started_at' => $this->faker->dateTimeBetween('-2 days', '-1 day'),
+            'completed_at' => null,
         ]);
     }
 
-    public function side(): static
+    public function expired(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => 'side',
-            'title' => 'Side Quest: ' . $this->faker->sentence(3),
-            'description' => 'An optional quest that provides additional rewards.',
-        ]);
-    }
-
-    public function daily(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'type' => 'daily',
-            'title' => 'Daily Quest: ' . $this->faker->sentence(3),
-            'description' => 'A quest that can be completed once per day.',
-        ]);
-    }
-
-    public function weekly(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'type' => 'weekly',
-            'title' => 'Weekly Quest: ' . $this->faker->sentence(3),
-            'description' => 'A quest that can be completed once per week.',
-        ]);
-    }
-
-    public function special(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'type' => 'special',
-            'title' => 'Special Quest: ' . $this->faker->sentence(3),
-            'description' => 'A limited-time quest with special rewards.',
+            'status' => 'expired',
+            'started_at' => $this->faker->dateTimeBetween('-2 days', '-1 day'),
+            'completed_at' => null,
+            'expires_at' => $this->faker->dateTimeBetween('-1 day', 'now'),
         ]);
     }
 }

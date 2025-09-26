@@ -3,37 +3,25 @@
 namespace App\Http\Controllers\Game;
 
 use App\Http\Controllers\Controller;
-use App\Livewire\Game\AllianceManager;
-use App\Livewire\Game\MapViewer;
-use App\Livewire\Game\MovementManager;
-use App\Livewire\Game\QuestManager;
-use App\Livewire\Game\RealTimeUpdater;
-use App\Livewire\Game\ReportManager;
-use App\Livewire\Game\StatisticsViewer;
-use App\Livewire\Game\TechnologyManager;
-use App\Livewire\Game\TravianDashboard;
-use App\Livewire\Game\TroopManager;
-use App\Livewire\Game\VillageManager;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        // Middleware is applied in routes/game.php
     }
 
     public function dashboard()
     {
         try {
             $user = Auth::user();
-            if (!$user) {
+            if (! $user) {
                 return redirect()->route('login');
             }
 
             $player = \App\Models\Game\Player::where('user_id', $user->id)->first();
-            if (!$player) {
+            if (! $player) {
                 return view('game.no-player', compact('user'));
             }
 

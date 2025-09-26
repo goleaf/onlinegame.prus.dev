@@ -5,7 +5,7 @@ namespace App\Livewire\Game;
 use App\Models\Game\MarketOffer;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
-use App\Models\Game\World;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
@@ -60,7 +60,7 @@ class MarketManager extends Component
         'offerExpired',
         'tradeCompleted',
         'villageSelected',
-        'gameTickProcessed'
+        'gameTickProcessed',
     ];
 
     public function mount($villageId = null)
@@ -91,7 +91,7 @@ class MarketManager extends Component
         $this->dispatch('initializeMarketRealTime', [
             'interval' => $this->refreshInterval * 1000,
             'autoRefresh' => $this->autoRefresh,
-            'realTimeUpdates' => $this->realTimeUpdates
+            'realTimeUpdates' => $this->realTimeUpdates,
         ]);
     }
 
@@ -100,14 +100,55 @@ class MarketManager extends Component
         $this->isLoading = true;
 
         try {
-            $this->offers = MarketOffer::where('world_id', $this->village->world_id)
+            // Create base query for reuse
+            $baseQuery = MarketOffer::where('world_id', $this->village->world_id)
+                ->with(['seller:id,name', 'buyer:id,name', 'village:id,name']);
+
+            // Clone base query for active offers using QueryOptimizationService
+            $activeOffersQuery = QueryOptimizationService::cloneQuery($baseQuery);
+
+            $activeFilters = [
+                $this->filterByType => function ($q) {
+                    return $q->where('type', $this->filterByType);
+                },
+                $this->filterByResource => function ($q) {
+                    return $q->where('resource_type', $this->filterByResource);
+                },
+                $this->searchQuery => function ($q) {
+                    return $q->where(function ($subQ) {
+                        $subQ->where('resource_type', 'like', '%' . $this->searchQuery . '%')
+                            ->orWhereHas('seller', function ($sellerQ) {
+                                $sellerQ->where('name', 'like', '%' . $this->searchQuery . '%');
+                            });
+                    });
+                },
+            ];
+
+            $activeOffersQuery = QueryOptimizationService::applyConditionalFilters($activeOffersQuery, $activeFilters);
+            $activeOffersQuery = QueryOptimizationService::applyConditionalOrdering($activeOffersQuery, $this->sortBy, $this->sortOrder);
+
+            $this->offers = $activeOffersQuery
                 ->where('status', 'active')
-                ->with(['seller', 'buyer', 'village'])
                 ->get()
                 ->toArray();
 
-            $this->myOffers = MarketOffer::where('seller_id', $this->village->player_id)
-                ->with(['seller', 'buyer', 'village'])
+            // Clone base query for my offers using QueryOptimizationService
+            $myOffersQuery = QueryOptimizationService::cloneQuery($baseQuery);
+
+            $myFilters = [
+                $this->showOnlyActive => function ($q) {
+                    return $q->where('status', 'active');
+                },
+                $this->showOnlyExpired => function ($q) {
+                    return $q->where('status', 'expired');
+                },
+            ];
+
+            $myOffersQuery = QueryOptimizationService::applyConditionalFilters($myOffersQuery, $myFilters);
+            $myOffersQuery = QueryOptimizationService::applyConditionalOrdering($myOffersQuery, 'created_at', 'desc');
+
+            $this->myOffers = $myOffersQuery
+                ->where('seller_id', $this->village->player_id)
                 ->get()
                 ->toArray();
 
@@ -129,7 +170,7 @@ class MarketManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function setOfferType($type)
@@ -201,6 +242,7 @@ class MarketManager extends Component
     {
         if (empty($this->searchQuery)) {
             $this->addNotification('Search cleared', 'info');
+
             return;
         }
 
@@ -209,7 +251,7 @@ class MarketManager extends Component
 
     public function toggleActiveFilter()
     {
-        $this->showOnlyActive = !$this->showOnlyActive;
+        $this->showOnlyActive = ! $this->showOnlyActive;
         $this->addNotification(
             $this->showOnlyActive ? 'Showing only active offers' : 'Showing all offers',
             'info'
@@ -218,7 +260,7 @@ class MarketManager extends Component
 
     public function toggleMyOffersFilter()
     {
-        $this->showOnlyMyOffers = !$this->showOnlyMyOffers;
+        $this->showOnlyMyOffers = ! $this->showOnlyMyOffers;
         $this->addNotification(
             $this->showOnlyMyOffers ? 'Showing only my offers' : 'Showing all offers',
             'info'
@@ -227,7 +269,7 @@ class MarketManager extends Component
 
     public function toggleExpiredFilter()
     {
-        $this->showOnlyExpired = !$this->showOnlyExpired;
+        $this->showOnlyExpired = ! $this->showOnlyExpired;
         $this->addNotification(
             $this->showOnlyExpired ? 'Showing only expired offers' : 'Showing all offers',
             'info'
@@ -238,14 +280,16 @@ class MarketManager extends Component
     {
         if ($this->offerQuantity <= 0 || $this->offerPrice <= 0) {
             $this->addNotification('Invalid offer parameters', 'error');
+
             return;
         }
 
         if ($this->selectedType === 'sell') {
             // Check if player has enough resources
             $resource = $this->village->resources->where('type', $this->selectedResource)->first();
-            if (!$resource || $resource->amount < $this->offerQuantity) {
+            if (! $resource || $resource->amount < $this->offerQuantity) {
                 $this->addNotification('Insufficient resources to create offer', 'error');
+
                 return;
             }
         }
@@ -263,7 +307,7 @@ class MarketManager extends Component
                 'duration_hours' => $this->offerDuration,
                 'expires_at' => now()->addHours($this->offerDuration),
                 'status' => 'active',
-                'created_at' => now()
+                'created_at' => now(),
             ]);
 
             if ($this->selectedType === 'sell') {
@@ -279,7 +323,7 @@ class MarketManager extends Component
                 'offer_id' => $offer->id,
                 'type' => $offer->type,
                 'resource_type' => $offer->resource_type,
-                'quantity' => $offer->quantity
+                'quantity' => $offer->quantity,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to create offer: ' . $e->getMessage(), 'error');
@@ -289,18 +333,21 @@ class MarketManager extends Component
     public function acceptOffer($offerId)
     {
         $offer = MarketOffer::find($offerId);
-        if (!$offer) {
+        if (! $offer) {
             $this->addNotification('Offer not found', 'error');
+
             return;
         }
 
         if ($offer->status !== 'active') {
             $this->addNotification('Offer is no longer active', 'error');
+
             return;
         }
 
         if ($offer->seller_id === $this->village->player_id) {
             $this->addNotification('Cannot accept your own offer', 'error');
+
             return;
         }
 
@@ -328,14 +375,16 @@ class MarketManager extends Component
 
         foreach (['wood', 'clay', 'iron', 'crop'] as $resourceType) {
             $resource = $this->village->resources->where('type', $resourceType)->first();
-            if (!$resource || $resource->amount < $costPerResource) {
+            if (! $resource || $resource->amount < $costPerResource) {
                 $canAfford = false;
+
                 break;
             }
         }
 
-        if (!$canAfford) {
+        if (! $canAfford) {
             $this->addNotification('Insufficient resources to buy', 'error');
+
             return;
         }
 
@@ -353,7 +402,7 @@ class MarketManager extends Component
         $offer->update([
             'buyer_id' => $this->village->player_id,
             'status' => 'completed',
-            'completed_at' => now()
+            'completed_at' => now(),
         ]);
 
         $this->loadMarketData();
@@ -362,7 +411,7 @@ class MarketManager extends Component
         $this->dispatch('tradeCompleted', [
             'offer_id' => $offer->id,
             'buyer_id' => $this->village->player_id,
-            'seller_id' => $offer->seller_id
+            'seller_id' => $offer->seller_id,
         ]);
     }
 
@@ -370,8 +419,9 @@ class MarketManager extends Component
     {
         // Check if player has enough resources to sell
         $resource = $this->village->resources->where('type', $offer->resource_type)->first();
-        if (!$resource || $resource->amount < $offer->quantity) {
+        if (! $resource || $resource->amount < $offer->quantity) {
             $this->addNotification('Insufficient resources to sell', 'error');
+
             return;
         }
 
@@ -389,7 +439,7 @@ class MarketManager extends Component
         $offer->update([
             'buyer_id' => $this->village->player_id,
             'status' => 'completed',
-            'completed_at' => now()
+            'completed_at' => now(),
         ]);
 
         $this->loadMarketData();
@@ -398,25 +448,28 @@ class MarketManager extends Component
         $this->dispatch('tradeCompleted', [
             'offer_id' => $offer->id,
             'buyer_id' => $offer->buyer_id,
-            'seller_id' => $this->village->player_id
+            'seller_id' => $this->village->player_id,
         ]);
     }
 
     public function cancelOffer($offerId)
     {
         $offer = MarketOffer::find($offerId);
-        if (!$offer) {
+        if (! $offer) {
             $this->addNotification('Offer not found', 'error');
+
             return;
         }
 
         if ($offer->seller_id !== $this->village->player_id) {
             $this->addNotification("Cannot cancel someone else's offer", 'error');
+
             return;
         }
 
         if ($offer->status !== 'active') {
             $this->addNotification('Offer is no longer active', 'error');
+
             return;
         }
 
@@ -433,7 +486,7 @@ class MarketManager extends Component
 
             $this->dispatch('offerCancelled', [
                 'offer_id' => $offer->id,
-                'seller_id' => $offer->seller_id
+                'seller_id' => $offer->seller_id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to cancel offer: ' . $e->getMessage(), 'error');
@@ -442,15 +495,28 @@ class MarketManager extends Component
 
     public function calculateMarketStats()
     {
+        // Use single query with selectRaw to get all market stats at once
+        $stats = MarketOffer::where('world_id', $this->village->world_id)
+            ->selectRaw('
+                COUNT(*) as total_offers,
+                SUM(CASE WHEN status = "active" THEN 1 ELSE 0 END) as active_offers,
+                SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed_offers,
+                SUM(CASE WHEN status = "cancelled" THEN 1 ELSE 0 END) as cancelled_offers,
+                SUM(CASE WHEN status = "expired" THEN 1 ELSE 0 END) as expired_offers,
+                SUM(CASE WHEN status = "completed" THEN total_price ELSE 0 END) as total_volume,
+                AVG(CASE WHEN status = "completed" THEN price_per_unit ELSE NULL END) as average_price
+            ')
+            ->first();
+
         $this->marketStats = [
-            'total_offers' => MarketOffer::where('world_id', $this->village->world_id)->count(),
-            'active_offers' => MarketOffer::where('world_id', $this->village->world_id)->where('status', 'active')->count(),
-            'completed_offers' => MarketOffer::where('world_id', $this->village->world_id)->where('status', 'completed')->count(),
-            'cancelled_offers' => MarketOffer::where('world_id', $this->village->world_id)->where('status', 'cancelled')->count(),
-            'expired_offers' => MarketOffer::where('world_id', $this->village->world_id)->where('status', 'expired')->count(),
-            'total_volume' => MarketOffer::where('world_id', $this->village->world_id)->where('status', 'completed')->sum('total_price'),
-            'average_price' => MarketOffer::where('world_id', $this->village->world_id)->where('status', 'completed')->avg('price_per_unit'),
-            'most_traded_resource' => $this->getMostTradedResource()
+            'total_offers' => $stats->total_offers ?? 0,
+            'active_offers' => $stats->active_offers ?? 0,
+            'completed_offers' => $stats->completed_offers ?? 0,
+            'cancelled_offers' => $stats->cancelled_offers ?? 0,
+            'expired_offers' => $stats->expired_offers ?? 0,
+            'total_volume' => $stats->total_volume ?? 0,
+            'average_price' => $stats->average_price ?? 0,
+            'most_traded_resource' => $this->getMostTradedResource(),
         ];
     }
 
@@ -480,35 +546,66 @@ class MarketManager extends Component
 
     public function calculateOfferStats()
     {
+        // Use single query with selectRaw to get all offer stats at once
+        $stats = MarketOffer::where('seller_id', $this->village->player_id)
+            ->selectRaw('
+                SUM(CASE WHEN status = "active" THEN 1 ELSE 0 END) as my_active_offers,
+                SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as my_completed_offers,
+                SUM(CASE WHEN status = "cancelled" THEN 1 ELSE 0 END) as my_cancelled_offers,
+                SUM(CASE WHEN status = "completed" THEN total_price ELSE 0 END) as my_total_volume,
+                AVG(CASE WHEN status = "completed" THEN price_per_unit ELSE NULL END) as my_average_price
+            ')
+            ->first();
+
         $this->offerStats = [
-            'my_active_offers' => MarketOffer::where('seller_id', $this->village->player_id)->where('status', 'active')->count(),
-            'my_completed_offers' => MarketOffer::where('seller_id', $this->village->player_id)->where('status', 'completed')->count(),
-            'my_cancelled_offers' => MarketOffer::where('seller_id', $this->village->player_id)->where('status', 'cancelled')->count(),
-            'my_total_volume' => MarketOffer::where('seller_id', $this->village->player_id)->where('status', 'completed')->sum('total_price'),
-            'my_average_price' => MarketOffer::where('seller_id', $this->village->player_id)->where('status', 'completed')->avg('price_per_unit')
+            'my_active_offers' => $stats->my_active_offers ?? 0,
+            'my_completed_offers' => $stats->my_completed_offers ?? 0,
+            'my_cancelled_offers' => $stats->my_cancelled_offers ?? 0,
+            'my_total_volume' => $stats->my_total_volume ?? 0,
+            'my_average_price' => $stats->my_average_price ?? 0,
         ];
     }
 
     public function calculateTradingVolume()
     {
-        $this->tradingVolume = [];
-        foreach ($this->resourceTypes as $resource) {
-            $this->tradingVolume[$resource] = MarketOffer::where('world_id', $this->village->world_id)
-                ->where('resource_type', $resource)
-                ->where('status', 'completed')
-                ->sum('quantity');
-        }
+        // Use single query with selectRaw to get all trading volumes at once
+        $volumes = MarketOffer::where('world_id', $this->village->world_id)
+            ->where('status', 'completed')
+            ->selectRaw('
+                SUM(CASE WHEN resource_type = "wood" THEN quantity ELSE 0 END) as wood_volume,
+                SUM(CASE WHEN resource_type = "clay" THEN quantity ELSE 0 END) as clay_volume,
+                SUM(CASE WHEN resource_type = "iron" THEN quantity ELSE 0 END) as iron_volume,
+                SUM(CASE WHEN resource_type = "crop" THEN quantity ELSE 0 END) as crop_volume
+            ')
+            ->first();
+
+        $this->tradingVolume = [
+            'wood' => $volumes->wood_volume ?? 0,
+            'clay' => $volumes->clay_volume ?? 0,
+            'iron' => $volumes->iron_volume ?? 0,
+            'crop' => $volumes->crop_volume ?? 0,
+        ];
     }
 
     public function calculateAveragePrices()
     {
-        $this->averagePrices = [];
-        foreach ($this->resourceTypes as $resource) {
-            $this->averagePrices[$resource] = MarketOffer::where('world_id', $this->village->world_id)
-                ->where('resource_type', $resource)
-                ->where('status', 'completed')
-                ->avg('price_per_unit') ?? 0;
-        }
+        // Use single query with selectRaw to get all average prices at once
+        $prices = MarketOffer::where('world_id', $this->village->world_id)
+            ->where('status', 'completed')
+            ->selectRaw('
+                AVG(CASE WHEN resource_type = "wood" THEN price_per_unit ELSE NULL END) as wood_avg,
+                AVG(CASE WHEN resource_type = "clay" THEN price_per_unit ELSE NULL END) as clay_avg,
+                AVG(CASE WHEN resource_type = "iron" THEN price_per_unit ELSE NULL END) as iron_avg,
+                AVG(CASE WHEN resource_type = "crop" THEN price_per_unit ELSE NULL END) as crop_avg
+            ')
+            ->first();
+
+        $this->averagePrices = [
+            'wood' => $prices->wood_avg ?? 0,
+            'clay' => $prices->clay_avg ?? 0,
+            'iron' => $prices->iron_avg ?? 0,
+            'crop' => $prices->crop_avg ?? 0,
+        ];
     }
 
     public function calculateMarketTrends()
@@ -552,8 +649,9 @@ class MarketManager extends Component
             'wood' => '🪵',
             'clay' => '🏺',
             'iron' => '⛏️',
-            'crop' => '🌾'
+            'crop' => '🌾',
         ];
+
         return $icons[$resource] ?? '📦';
     }
 
@@ -563,8 +661,9 @@ class MarketManager extends Component
             'wood' => 'brown',
             'clay' => 'orange',
             'iron' => 'gray',
-            'crop' => 'green'
+            'crop' => 'green',
         ];
+
         return $colors[$resource] ?? 'blue';
     }
 
@@ -628,7 +727,7 @@ class MarketManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -637,7 +736,7 @@ class MarketManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -662,7 +761,7 @@ class MarketManager extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         // Keep only last 10 notifications
@@ -775,7 +874,7 @@ class MarketManager extends Component
             'offerStats' => $this->offerStats,
             'tradingVolume' => $this->tradingVolume,
             'averagePrices' => $this->averagePrices,
-            'marketTrends' => $this->marketTrends
+            'marketTrends' => $this->marketTrends,
         ]);
     }
 }

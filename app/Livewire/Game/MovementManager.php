@@ -6,10 +6,8 @@ use App\Models\Game\Movement;
 use App\Models\Game\Player;
 use App\Models\Game\Troop;
 use App\Models\Game\Village;
-use App\Models\Game\World;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -96,7 +94,7 @@ class MovementManager extends Component
         'movementReturned',
         'movementCancelled',
         'gameTickProcessed',
-        'villageSelected'
+        'villageSelected',
     ];
 
     public function mount(Village $village = null)
@@ -127,7 +125,7 @@ class MovementManager extends Component
         $this->dispatch('initializeMovementRealTime', [
             'interval' => $this->refreshInterval * 1000,
             'autoRefresh' => $this->autoRefresh,
-            'realTimeUpdates' => $this->realTimeUpdates
+            'realTimeUpdates' => $this->realTimeUpdates,
         ]);
     }
 
@@ -138,29 +136,38 @@ class MovementManager extends Component
         try {
             $query = Movement::where('from_village_id', $this->village->id)
                 ->orWhere('to_village_id', $this->village->id)
-                ->with(['fromVillage', 'toVillage', 'player']);
+                ->with(['fromVillage:id,name', 'toVillage:id,name', 'player:id,name']);
 
-            if ($this->filterByType) {
-                $query->where('type', $this->filterByType);
-            }
+            // Use QueryOptimizationService for conditional filters
+            $filters = [
+                $this->filterByType => function ($q) {
+                    return $q->where('type', $this->filterByType);
+                },
+                $this->filterByStatus => function ($q) {
+                    return $q->where('status', $this->filterByStatus);
+                },
+                $this->showOnlyMyMovements => function ($q) {
+                    return $q->where('player_id', $this->village->player_id);
+                },
+                $this->searchQuery => function ($q) {
+                    return $q->where(function ($subQ) {
+                        $subQ->whereIn('to_village_id', function ($villageQ) {
+                            $villageQ->select('id')
+                                ->from('villages')
+                                ->where('name', 'like', '%' . $this->searchQuery . '%');
+                        })->orWhereIn('from_village_id', function ($villageQ) {
+                            $villageQ->select('id')
+                                ->from('villages')
+                                ->where('name', 'like', '%' . $this->searchQuery . '%');
+                        });
+                    });
+                },
+            ];
 
-            if ($this->filterByStatus) {
-                $query->where('status', $this->filterByStatus);
-            }
+            $query = QueryOptimizationService::applyConditionalFilters($query, $filters);
+            $query = QueryOptimizationService::applyConditionalOrdering($query, $this->sortBy, $this->sortOrder);
 
-            if ($this->showOnlyMyMovements) {
-                $query->where('player_id', $this->village->player_id);
-            }
-
-            if ($this->searchQuery) {
-                $query->whereHas('toVillage', function ($q) {
-                    $q->where('name', 'like', '%' . $this->searchQuery . '%');
-                })->orWhereHas('fromVillage', function ($q) {
-                    $q->where('name', 'like', '%' . $this->searchQuery . '%');
-                });
-            }
-
-            $this->movements = $query->orderBy($this->sortBy, $this->sortOrder)->get();
+            $this->movements = $query->get();
         } catch (\Exception $e) {
             $this->addNotification('Error loading movement data: ' . $e->getMessage(), 'error');
             $this->movements = collect();
@@ -174,7 +181,13 @@ class MovementManager extends Component
     {
         $this->availableTroops = Troop::where('village_id', $this->village->id)
             ->where('quantity', '>', 0)
-            ->with('unitType')
+            ->with('unitType:id,name,attack_power,defense_power,speed')
+            ->selectRaw('
+                troops.*,
+                (quantity * unit_types.attack_power) as total_attack_power,
+                (quantity * unit_types.defense_power) as total_defense_power
+            ')
+            ->join('unit_types', 'troops.unit_type_id', '=', 'unit_types.id')
             ->get();
 
         $this->calculateTroopCapacity();
@@ -182,15 +195,10 @@ class MovementManager extends Component
 
     public function calculateTroopCapacity()
     {
-        $this->troopCapacity = 0;
-        $this->totalAttackPower = 0;
-        $this->totalDefensePower = 0;
-
-        foreach ($this->availableTroops as $troop) {
-            $this->troopCapacity += $troop->quantity;
-            $this->totalAttackPower += $troop->quantity * $troop->unitType->attack_power;
-            $this->totalDefensePower += $troop->quantity * $troop->unitType->defense_power;
-        }
+        // Use optimized calculation with pre-calculated values from selectRaw
+        $this->troopCapacity = $this->availableTroops->sum('quantity');
+        $this->totalAttackPower = $this->availableTroops->sum('total_attack_power');
+        $this->totalDefensePower = $this->availableTroops->sum('total_defense_power');
     }
 
     public function createMovement()
@@ -203,13 +211,15 @@ class MovementManager extends Component
         ]);
 
         $targetVillage = Village::find($this->targetVillageId);
-        if (!$targetVillage) {
+        if (! $targetVillage) {
             $this->addNotification('Target village not found.', 'error');
+
             return;
         }
 
         if ($targetVillage->id === $this->village->id) {
             $this->addNotification('Cannot move to the same village.', 'error');
+
             return;
         }
 
@@ -260,13 +270,15 @@ class MovementManager extends Component
     public function cancelMovement($movementId)
     {
         $movement = Movement::find($movementId);
-        if (!$movement || $movement->status !== 'travelling') {
+        if (! $movement || $movement->status !== 'travelling') {
             $this->addNotification('Movement not found or cannot be cancelled.', 'error');
+
             return;
         }
 
         if ($movement->player_id !== $this->village->player_id) {
             $this->addNotification('You can only cancel your own movements.', 'error');
+
             return;
         }
 
@@ -300,7 +312,7 @@ class MovementManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function setTargetVillage($villageId)
@@ -318,14 +330,16 @@ class MovementManager extends Component
     public function selectTroop($troopId, $quantity = 1)
     {
         $troop = Troop::find($troopId);
-        if (!$troop || $troop->village_id !== $this->village->id) {
+        if (! $troop || $troop->village_id !== $this->village->id) {
             $this->addNotification("Invalid troop ID: {$troopId}", 'error');
+
             return;
         }
 
         $quantity = (int) $quantity;
         if ($quantity <= 0) {
             $this->addNotification("Invalid troop quantity: {$quantity}", 'error');
+
             return;
         }
 
@@ -387,6 +401,7 @@ class MovementManager extends Component
     {
         if (empty($this->searchQuery)) {
             $this->addNotification('Search cleared', 'info');
+
             return;
         }
         $this->addNotification("Searching for: {$this->searchQuery}", 'info');
@@ -394,7 +409,7 @@ class MovementManager extends Component
 
     public function toggleMyMovementsFilter()
     {
-        $this->showOnlyMyMovements = !$this->showOnlyMyMovements;
+        $this->showOnlyMyMovements = ! $this->showOnlyMyMovements;
         $this->addNotification(
             $this->showOnlyMyMovements ? 'Showing only my movements' : 'Showing all movements',
             'info'
@@ -403,7 +418,7 @@ class MovementManager extends Component
 
     public function toggleTravellingFilter()
     {
-        $this->showOnlyTravelling = !$this->showOnlyTravelling;
+        $this->showOnlyTravelling = ! $this->showOnlyTravelling;
         $this->addNotification(
             $this->showOnlyTravelling ? 'Showing only travelling movements' : 'Showing all movements',
             'info'
@@ -412,7 +427,7 @@ class MovementManager extends Component
 
     public function toggleCompletedFilter()
     {
-        $this->showOnlyCompleted = !$this->showOnlyCompleted;
+        $this->showOnlyCompleted = ! $this->showOnlyCompleted;
         $this->addNotification(
             $this->showOnlyCompleted ? 'Showing only completed movements' : 'Showing all movements',
             'info'
@@ -421,19 +436,30 @@ class MovementManager extends Component
 
     public function calculateMovementStats()
     {
+        // Use single query with selectRaw to get all movement stats at once
+        $stats = Movement::where('from_village_id', $this->village->id)
+            ->orWhere('to_village_id', $this->village->id)
+            ->selectRaw('
+                COUNT(*) as total_movements,
+                SUM(CASE WHEN status = "travelling" THEN 1 ELSE 0 END) as travelling_movements,
+                SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed_movements,
+                SUM(CASE WHEN status = "cancelled" THEN 1 ELSE 0 END) as cancelled_movements,
+                SUM(CASE WHEN status = "arrived" THEN 1 ELSE 0 END) as arrived_movements,
+                AVG(travel_time) as avg_travel_time,
+                MAX(travel_time) as max_travel_time,
+                MIN(travel_time) as min_travel_time
+            ')
+            ->first();
+
         $this->movementStats = [
-            'total_movements' => Movement::where('from_village_id', $this->village->id)
-                ->orWhere('to_village_id', $this->village->id)
-                ->count(),
-            'travelling_movements' => Movement::where('from_village_id', $this->village->id)
-                ->where('status', 'travelling')
-                ->count(),
-            'completed_movements' => Movement::where('from_village_id', $this->village->id)
-                ->where('status', 'completed')
-                ->count(),
-            'cancelled_movements' => Movement::where('from_village_id', $this->village->id)
-                ->where('status', 'cancelled')
-                ->count(),
+            'total_movements' => $stats->total_movements ?? 0,
+            'travelling_movements' => $stats->travelling_movements ?? 0,
+            'completed_movements' => $stats->completed_movements ?? 0,
+            'cancelled_movements' => $stats->cancelled_movements ?? 0,
+            'arrived_movements' => $stats->arrived_movements ?? 0,
+            'avg_travel_time' => round($stats->avg_travel_time ?? 0, 2),
+            'max_travel_time' => $stats->max_travel_time ?? 0,
+            'min_travel_time' => $stats->min_travel_time ?? 0,
             'total_distance_travelled' => $this->calculateTotalDistance(),
         ];
     }
@@ -484,13 +510,16 @@ class MovementManager extends Component
                 $totalDistance += $this->calculateDistance($this->village, $movement->toVillage);
             }
         }
+
         return $totalDistance;
     }
 
     private function calculateAverageDistance()
     {
-        if ($this->movements->count() === 0)
+        if ($this->movements->count() === 0) {
             return 0;
+        }
+
         return $this->calculateTotalDistance() / $this->movements->count();
     }
 
@@ -503,6 +532,7 @@ class MovementManager extends Component
                 $longestDistance = max($longestDistance, $distance);
             }
         }
+
         return $longestDistance;
     }
 
@@ -515,14 +545,17 @@ class MovementManager extends Component
                 $shortestDistance = min($shortestDistance, $distance);
             }
         }
+
         return $shortestDistance === PHP_FLOAT_MAX ? 0 : $shortestDistance;
     }
 
     private function calculateAverageTravelTime()
     {
-        if ($this->movements->count() === 0)
+        if ($this->movements->count() === 0) {
             return 0;
+        }
         $totalTime = $this->movements->sum('travel_time');
+
         return $totalTime / $this->movements->count();
     }
 
@@ -540,6 +573,7 @@ class MovementManager extends Component
     {
         $dx = $village1->x - $village2->x;
         $dy = $village1->y - $village2->y;
+
         return sqrt($dx * $dx + $dy * $dy);
     }
 
@@ -637,7 +671,7 @@ class MovementManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -646,7 +680,7 @@ class MovementManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -671,7 +705,7 @@ class MovementManager extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         // Keep only last 10 notifications

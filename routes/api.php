@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\GameController;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use Illuminate\Http\Request;
@@ -27,7 +26,7 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         $user = $request->user();
         $player = Player::where('user_id', $user->id)->first();
 
-        if (!$player) {
+        if (! $player) {
             return response()->json(['villages' => []]);
         }
 
@@ -40,7 +39,7 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         $user = $request->user();
         $player = Player::where('user_id', $user->id)->first();
 
-        if (!$player) {
+        if (! $player) {
             return response()->json(['success' => false, 'message' => 'Player not found']);
         }
 
@@ -75,7 +74,7 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
 
         // Check if player owns this village
         $player = Player::where('user_id', $user->id)->first();
-        if (!$player || $village->player_id !== $player->id) {
+        if (! $player || $village->player_id !== $player->id) {
             return response()->json(['success' => false, 'message' => 'Unauthorized']);
         }
 

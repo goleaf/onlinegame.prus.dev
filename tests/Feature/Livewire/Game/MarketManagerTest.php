@@ -25,11 +25,11 @@ class MarketManagerTest extends TestCase
         $world = World::factory()->create();
         $player = Player::factory()->create([
             'user_id' => $user->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $this->actingAs($user);
@@ -329,7 +329,7 @@ class MarketManagerTest extends TestCase
         $offer = MarketOffer::factory()->create([
             'world_id' => $village->world_id,
             'seller_id' => $village->player_id + 1,  // Different player
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         Livewire::test(MarketManager::class, ['village' => $village])
@@ -356,7 +356,7 @@ class MarketManagerTest extends TestCase
         $offer = MarketOffer::factory()->create([
             'world_id' => $village->world_id,
             'seller_id' => $village->player_id,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         Livewire::test(MarketManager::class, ['village' => $village])
@@ -372,7 +372,7 @@ class MarketManagerTest extends TestCase
         $offer = MarketOffer::factory()->create([
             'world_id' => $village->world_id,
             'seller_id' => $village->player_id,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         Livewire::test(MarketManager::class, ['village' => $village])
@@ -388,7 +388,7 @@ class MarketManagerTest extends TestCase
         $offer = MarketOffer::factory()->create([
             'world_id' => $village->world_id,
             'seller_id' => $village->player_id + 1,  // Different player
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         Livewire::test(MarketManager::class, ['village' => $village])

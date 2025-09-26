@@ -24,15 +24,15 @@ class BuildingTypeFactory extends Factory
             'key' => $this->faker->slug(2),
             'description' => $this->faker->sentence(),
             'max_level' => $this->faker->numberBetween(5, 20),
-            'requirements' => [],
-            'costs' => [
+            'requirements' => json_encode([]),
+            'costs' => json_encode([
                 'wood' => $this->faker->numberBetween(50, 500),
                 'clay' => $this->faker->numberBetween(50, 500),
                 'iron' => $this->faker->numberBetween(50, 500),
                 'crop' => $this->faker->numberBetween(50, 500),
-            ],
-            'production' => [],
-            'population' => [],
+            ]),
+            'production' => json_encode([]),
+            'population' => json_encode([]),
             'is_special' => false,
             'is_active' => true,
         ];

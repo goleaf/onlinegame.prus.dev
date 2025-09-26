@@ -4,9 +4,7 @@ namespace App\Livewire\Game;
 
 use App\Models\Game\Player;
 use App\Models\Game\Technology;
-use App\Models\Game\TechnologyResearch;
 use App\Models\Game\Village;
-use App\Models\Game\World;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
@@ -57,7 +55,7 @@ class TechnologyManager extends Component
         'researchCancelled',
         'technologyUnlocked',
         'villageSelected',
-        'gameTickProcessed'
+        'gameTickProcessed',
     ];
 
     public function mount($villageId = null)
@@ -87,7 +85,7 @@ class TechnologyManager extends Component
         $this->dispatch('initializeTechnologyRealTime', [
             'interval' => $this->refreshInterval * 1000,
             'autoRefresh' => $this->autoRefresh,
-            'realTimeUpdates' => $this->realTimeUpdates
+            'realTimeUpdates' => $this->realTimeUpdates,
         ]);
     }
 
@@ -142,37 +140,42 @@ class TechnologyManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function startResearch($technologyId)
     {
         $technology = Technology::find($technologyId);
 
-        if (!$technology) {
+        if (! $technology) {
             $this->addNotification('Technology not found', 'error');
+
             return;
         }
 
         if ($this->village->player->level < $technology->min_level) {
             $this->addNotification('Technology requires higher level', 'error');
+
             return;
         }
 
         if ($this->village->player->technologies()->where('technology_id', $technologyId)->exists()) {
             $this->addNotification('Technology already researched or in progress', 'error');
+
             return;
         }
 
         // Check prerequisites
-        if (!$this->checkPrerequisites($technology)) {
+        if (! $this->checkPrerequisites($technology)) {
             $this->addNotification('Technology prerequisites not met', 'error');
+
             return;
         }
 
         // Check resources
-        if (!$this->checkResources($technology)) {
+        if (! $this->checkResources($technology)) {
             $this->addNotification('Insufficient resources for research', 'error');
+
             return;
         }
 
@@ -186,7 +189,7 @@ class TechnologyManager extends Component
                 'status' => 'researching',
                 'progress' => 0,
                 'started_at' => now(),
-                'estimated_completion' => now()->addSeconds($technology->research_time)
+                'estimated_completion' => now()->addSeconds($technology->research_time),
             ]);
 
             $this->loadTechnologyData();
@@ -194,7 +197,7 @@ class TechnologyManager extends Component
 
             $this->dispatch('researchStarted', [
                 'technology_id' => $technologyId,
-                'player_id' => $this->village->player_id
+                'player_id' => $this->village->player_id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to start research: ' . $e->getMessage(), 'error');
@@ -205,13 +208,15 @@ class TechnologyManager extends Component
     {
         $research = $this->village->player->technologies()->where('technology_id', $technologyId)->first();
 
-        if (!$research) {
+        if (! $research) {
             $this->addNotification('Research not found', 'error');
+
             return;
         }
 
         if ($research->status !== 'researching') {
             $this->addNotification('Research is not in progress', 'error');
+
             return;
         }
 
@@ -229,7 +234,7 @@ class TechnologyManager extends Component
 
             $this->dispatch('researchCancelled', [
                 'technology_id' => $technologyId,
-                'player_id' => $this->village->player_id
+                'player_id' => $this->village->player_id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to cancel research: ' . $e->getMessage(), 'error');
@@ -240,18 +245,21 @@ class TechnologyManager extends Component
     {
         $research = $this->village->player->technologies()->where('technology_id', $technologyId)->first();
 
-        if (!$research) {
+        if (! $research) {
             $this->addNotification('Research not found', 'error');
+
             return;
         }
 
         if ($research->status !== 'researching') {
             $this->addNotification('Research is not in progress', 'error');
+
             return;
         }
 
         if ($research->progress < 100) {
             $this->addNotification('Research not completed yet', 'error');
+
             return;
         }
 
@@ -261,7 +269,7 @@ class TechnologyManager extends Component
             // Complete research
             $research->update([
                 'status' => 'completed',
-                'completed_at' => now()
+                'completed_at' => now(),
             ]);
 
             // Apply technology benefits
@@ -272,7 +280,7 @@ class TechnologyManager extends Component
 
             $this->dispatch('researchCompleted', [
                 'technology_id' => $technologyId,
-                'player_id' => $this->village->player_id
+                'player_id' => $this->village->player_id,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Failed to complete research: ' . $e->getMessage(), 'error');
@@ -284,7 +292,7 @@ class TechnologyManager extends Component
         $prerequisites = json_decode($technology->prerequisites, true) ?? [];
 
         foreach ($prerequisites as $prerequisite) {
-            if (!$this->checkPrerequisite($prerequisite)) {
+            if (! $this->checkPrerequisite($prerequisite)) {
                 return false;
             }
         }
@@ -305,9 +313,11 @@ class TechnologyManager extends Component
                     ->exists();
             case 'building_level':
                 $building = $this->village->buildings()->where('type', $prerequisite['building'])->first();
+
                 return $building && $building->level >= $prerequisite['level'];
             case 'resource_amount':
                 $resource = $this->village->resources()->where('type', $prerequisite['resource'])->first();
+
                 return $resource && $resource->amount >= $prerequisite['amount'];
             default:
                 return false;
@@ -320,7 +330,7 @@ class TechnologyManager extends Component
 
         foreach ($costs as $resource => $amount) {
             $resourceModel = $this->village->resources()->where('type', $resource)->first();
-            if (!$resourceModel || $resourceModel->amount < $amount) {
+            if (! $resourceModel || $resourceModel->amount < $amount) {
                 return false;
             }
         }
@@ -373,6 +383,7 @@ class TechnologyManager extends Component
                         $resourceModel->increment('production_rate', $bonus);
                     }
                 }
+
                 break;
             case 'building_efficiency':
                 // Apply building efficiency bonuses
@@ -432,6 +443,7 @@ class TechnologyManager extends Component
     {
         if (empty($this->searchQuery)) {
             $this->addNotification('Search cleared', 'info');
+
             return;
         }
 
@@ -440,7 +452,7 @@ class TechnologyManager extends Component
 
     public function toggleAvailableFilter()
     {
-        $this->showOnlyAvailable = !$this->showOnlyAvailable;
+        $this->showOnlyAvailable = ! $this->showOnlyAvailable;
         $this->addNotification(
             $this->showOnlyAvailable ? 'Showing only available technologies' : 'Showing all technologies',
             'info'
@@ -449,7 +461,7 @@ class TechnologyManager extends Component
 
     public function toggleResearchedFilter()
     {
-        $this->showOnlyResearched = !$this->showOnlyResearched;
+        $this->showOnlyResearched = ! $this->showOnlyResearched;
         $this->addNotification(
             $this->showOnlyResearched ? 'Showing only researched technologies' : 'Showing all technologies',
             'info'
@@ -458,7 +470,7 @@ class TechnologyManager extends Component
 
     public function toggleResearchingFilter()
     {
-        $this->showOnlyResearching = !$this->showOnlyResearching;
+        $this->showOnlyResearching = ! $this->showOnlyResearching;
         $this->addNotification(
             $this->showOnlyResearching ? 'Showing only researching technologies' : 'Showing all technologies',
             'info'
@@ -473,7 +485,7 @@ class TechnologyManager extends Component
             'researched_technologies' => count($this->researchedTechnologies),
             'researching_technologies' => count($this->researchQueue),
             'research_progress' => $this->calculateOverallResearchProgress(),
-            'technology_level' => $this->calculateTechnologyLevel()
+            'technology_level' => $this->calculateTechnologyLevel(),
         ];
     }
 
@@ -486,7 +498,7 @@ class TechnologyManager extends Component
                 'technology_id' => $research['technology_id'],
                 'progress' => $research['progress'],
                 'time_remaining' => $this->calculateTimeRemaining($research),
-                'completion_percentage' => $research['progress']
+                'completion_percentage' => $research['progress'],
             ];
         }
     }
@@ -557,7 +569,7 @@ class TechnologyManager extends Component
 
     private function calculateTimeRemaining($research)
     {
-        if (!isset($research['estimated_completion'])) {
+        if (! isset($research['estimated_completion'])) {
             return 'Unknown';
         }
 
@@ -578,8 +590,9 @@ class TechnologyManager extends Component
             'economy' => '💰',
             'infrastructure' => '🏗️',
             'defense' => '🛡️',
-            'special' => '⭐'
+            'special' => '⭐',
         ];
+
         return $icons[$technology['category']] ?? '🔬';
     }
 
@@ -590,8 +603,9 @@ class TechnologyManager extends Component
             'economy' => 'green',
             'infrastructure' => 'blue',
             'defense' => 'purple',
-            'special' => 'gold'
+            'special' => 'gold',
         ];
+
         return $colors[$technology['category']] ?? 'gray';
     }
 
@@ -618,8 +632,9 @@ class TechnologyManager extends Component
             'low' => 'Low',
             'medium' => 'Medium',
             'high' => 'High',
-            'critical' => 'Critical'
+            'critical' => 'Critical',
         ];
+
         return $priorities[$technology['priority']] ?? 'Medium';
     }
 
@@ -650,7 +665,7 @@ class TechnologyManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -659,7 +674,7 @@ class TechnologyManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -684,7 +699,7 @@ class TechnologyManager extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         // Keep only last 10 notifications
@@ -786,7 +801,7 @@ class TechnologyManager extends Component
             'researchCosts' => $this->researchCosts,
             'researchBenefits' => $this->researchBenefits,
             'technologyCategories' => $this->technologyCategories,
-            'researchPriorities' => $this->researchPriorities
+            'researchPriorities' => $this->researchPriorities,
         ]);
     }
 }

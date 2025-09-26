@@ -9,7 +9,9 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/css/travian-game.css',
-                'resources/js/travian-game.js'
+                'resources/css/travian-assets.css',
+                'resources/js/travian-game.js',
+                'resources/js/travian-realtime.js'
             ],
             refresh: true,
         }),

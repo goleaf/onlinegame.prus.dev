@@ -25,11 +25,11 @@ class TechnologyManagerTest extends TestCase
         $world = World::factory()->create();
         $player = Player::factory()->create([
             'user_id' => $user->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $this->actingAs($user);
@@ -138,7 +138,7 @@ class TechnologyManagerTest extends TestCase
         $technology = Technology::factory()->create([
             'world_id' => $village->world_id,
             'min_level' => 1,
-            'costs' => json_encode(['wood' => 100, 'clay' => 100, 'iron' => 100, 'crop' => 100])
+            'costs' => json_encode(['wood' => 100, 'clay' => 100, 'iron' => 100, 'crop' => 100]),
         ]);
 
         Livewire::test(TechnologyManager::class, ['village' => $village])
@@ -153,7 +153,7 @@ class TechnologyManagerTest extends TestCase
         $village = Village::first();
         $technology = Technology::factory()->create([
             'world_id' => $village->world_id,
-            'min_level' => 10
+            'min_level' => 10,
         ]);
 
         Livewire::test(TechnologyManager::class, ['village' => $village])
@@ -169,7 +169,7 @@ class TechnologyManagerTest extends TestCase
         $technology = Technology::factory()->create([
             'world_id' => $village->world_id,
             'min_level' => 1,
-            'costs' => json_encode(['wood' => 10000, 'clay' => 10000, 'iron' => 10000, 'crop' => 10000])
+            'costs' => json_encode(['wood' => 10000, 'clay' => 10000, 'iron' => 10000, 'crop' => 10000]),
         ]);
 
         Livewire::test(TechnologyManager::class, ['village' => $village])
@@ -200,7 +200,7 @@ class TechnologyManagerTest extends TestCase
             'technology_id' => $technology->id,
             'status' => 'researching',
             'progress' => 50,
-            'started_at' => now()
+            'started_at' => now(),
         ]);
 
         Livewire::test(TechnologyManager::class, ['village' => $village])
@@ -231,7 +231,7 @@ class TechnologyManagerTest extends TestCase
             'technology_id' => $technology->id,
             'status' => 'researching',
             'progress' => 100,
-            'started_at' => now()
+            'started_at' => now(),
         ]);
 
         Livewire::test(TechnologyManager::class, ['village' => $village])
@@ -251,7 +251,7 @@ class TechnologyManagerTest extends TestCase
             'technology_id' => $technology->id,
             'status' => 'researching',
             'progress' => 50,
-            'started_at' => now()
+            'started_at' => now(),
         ]);
 
         Livewire::test(TechnologyManager::class, ['village' => $village])

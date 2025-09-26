@@ -2,11 +2,7 @@
 
 namespace Tests\Unit\Services;
 
-use App\Models\Game\GameEvent;
-use App\Models\Game\Player;
-use App\Models\Game\Resource;
 use App\Models\Game\Village;
-use App\Models\User;
 use App\Services\GameTickService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -109,7 +105,7 @@ class GameTickServiceBasicTest extends TestCase
             'player_id' => $player->id,
             'village_id' => $village->id,
             'event_type' => 'test_event',
-            'description' => 'Test Event'
+            'description' => 'Test Event',
         ]);
     }
 
@@ -163,7 +159,7 @@ class GameTickServiceBasicTest extends TestCase
             'village_id' => $village->id,
             'type' => 'wood',
             'amount_produced' => 100,
-            'final_amount' => 1100
+            'final_amount' => 1100,
         ]);
     }
 }

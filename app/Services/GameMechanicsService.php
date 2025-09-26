@@ -4,11 +4,9 @@ namespace App\Services;
 
 use App\Models\Game\Building;
 use App\Models\Game\BuildingQueue;
-use App\Models\Game\Player;
 use App\Models\Game\Resource;
 use App\Models\Game\Village;
 use App\Models\Game\World;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -57,6 +55,7 @@ class GameMechanicsService
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to process world mechanics: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -147,6 +146,7 @@ class GameMechanicsService
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to complete building: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -253,7 +253,7 @@ class GameMechanicsService
             $requirements = $building->buildingType->requirements ?? [];
 
             foreach ($requirements as $requirement) {
-                if (!$this->checkRequirement($village, $requirement)) {
+                if (! $this->checkRequirement($village, $requirement)) {
                     // Handle requirement not met
                     $this->handleRequirementNotMet($village, $building, $requirement);
                 }
@@ -431,4 +431,3 @@ class GameMechanicsService
         return $capacity;
     }
 }
-

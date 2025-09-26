@@ -3,7 +3,6 @@
 namespace App\Livewire\Game;
 
 use App\Models\Game\Player;
-use App\Models\Game\Village;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -42,7 +41,7 @@ class GameNavigation extends Component
                 'total_villages' => $this->player->villages()->count(),
                 'total_points' => $this->player->points ?? 0,
                 'alliance_name' => $this->player->alliance?->name ?? 'No Alliance',
-                'online_status' => $this->player->is_online ? 'Online' : 'Offline'
+                'online_status' => $this->player->is_online ? 'Online' : 'Offline',
             ];
         }
     }
@@ -54,7 +53,7 @@ class GameNavigation extends Component
             'new_messages' => 0,
             'battle_reports' => 0,
             'trade_offers' => 0,
-            'quest_updates' => 0
+            'quest_updates' => 0,
         ];
     }
 
@@ -76,7 +75,7 @@ class GameNavigation extends Component
             'currentVillage' => $this->currentVillage,
             'villages' => $this->villages,
             'gameStats' => $this->gameStats,
-            'notifications' => $this->notifications
+            'notifications' => $this->notifications,
         ]);
     }
 }

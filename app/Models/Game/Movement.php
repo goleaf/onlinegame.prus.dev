@@ -3,8 +3,8 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Movement extends Model
 {
@@ -45,5 +45,85 @@ class Movement extends Model
     public function toVillage(): BelongsTo
     {
         return $this->belongsTo(Village::class, 'to_village_id');
+    }
+
+    // Optimized query scopes using when() and selectRaw
+    public function scopeWithStats($query)
+    {
+        return $query->selectRaw('
+            movements.*,
+            (SELECT COUNT(*) FROM movements m2 WHERE m2.from_village_id = movements.from_village_id OR m2.to_village_id = movements.from_village_id) as total_movements_from_village,
+            (SELECT COUNT(*) FROM movements m3 WHERE m3.from_village_id = movements.to_village_id OR m3.to_village_id = movements.to_village_id) as total_movements_to_village,
+            (SELECT AVG(travel_time) FROM movements m4 WHERE m4.from_village_id = movements.from_village_id) as avg_travel_time_from,
+            (SELECT AVG(travel_time) FROM movements m5 WHERE m5.to_village_id = movements.to_village_id) as avg_travel_time_to
+        ');
+    }
+
+    public function scopeByVillage($query, $villageId)
+    {
+        return $query->where(function ($q) use ($villageId) {
+            $q->where('from_village_id', $villageId)
+              ->orWhere('to_village_id', $villageId);
+        });
+    }
+
+    public function scopeByPlayer($query, $playerId)
+    {
+        return $query->where('player_id', $playerId);
+    }
+
+    public function scopeByType($query, $type = null)
+    {
+        return $query->when($type, function ($q) use ($type) {
+            return $q->where('type', $type);
+        });
+    }
+
+    public function scopeByStatus($query, $status = null)
+    {
+        return $query->when($status, function ($q) use ($status) {
+            return $q->where('status', $status);
+        });
+    }
+
+    public function scopeTravelling($query)
+    {
+        return $query->where('status', 'travelling');
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'completed');
+    }
+
+    public function scopeRecent($query, $days = 7)
+    {
+        return $query->where('created_at', '>=', now()->subDays($days));
+    }
+
+    public function scopeSearch($query, $searchTerm)
+    {
+        return $query->when($searchTerm, function ($q) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm) {
+                $subQ->whereIn('to_village_id', function ($villageQ) use ($searchTerm) {
+                    $villageQ->select('id')
+                        ->from('villages')
+                        ->where('name', 'like', '%' . $searchTerm . '%');
+                })->orWhereIn('from_village_id', function ($villageQ) use ($searchTerm) {
+                    $villageQ->select('id')
+                        ->from('villages')
+                        ->where('name', 'like', '%' . $searchTerm . '%');
+                });
+            });
+        });
+    }
+
+    public function scopeWithVillageInfo($query)
+    {
+        return $query->with([
+            'fromVillage:id,name,x_coordinate,y_coordinate',
+            'toVillage:id,name,x_coordinate,y_coordinate',
+            'player:id,name'
+        ]);
     }
 }

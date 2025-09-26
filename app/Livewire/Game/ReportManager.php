@@ -4,11 +4,10 @@ namespace App\Livewire\Game;
 
 use App\Models\Game\Player;
 use App\Models\Game\Report;
-use App\Models\Game\Village;
 use App\Models\Game\World;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -89,7 +88,7 @@ class ReportManager extends Component
         'markAsImportant',
         'markAsUnimportant',
         'gameTickProcessed',
-        'villageSelected'
+        'villageSelected',
     ];
 
     public function mount($worldId = null, $world = null)
@@ -119,7 +118,7 @@ class ReportManager extends Component
         $this->dispatch('initializeReportRealTime', [
             'interval' => $this->refreshInterval * 1000,
             'autoRefresh' => $this->autoRefresh,
-            'realTimeUpdates' => $this->realTimeUpdates
+            'realTimeUpdates' => $this->realTimeUpdates,
         ]);
     }
 
@@ -129,51 +128,53 @@ class ReportManager extends Component
 
         try {
             $query = Report::where('world_id', $this->world->id)
-                ->with(['attacker', 'defender', 'fromVillage', 'toVillage']);
+                ->with(['attacker:id,name', 'defender:id,name', 'fromVillage:id,name', 'toVillage:id,name']);
 
-            if ($this->showOnlyMyReports) {
-                $query->where(function ($q) {
-                    $q
-                        ->where('attacker_id', Auth::id())
-                        ->orWhere('defender_id', Auth::id());
-                });
-            }
+            // Use QueryOptimizationService for conditional filters
+            $filters = [
+                $this->showOnlyMyReports => function ($q) {
+                    return $q->where(function ($subQ) {
+                        $subQ->where('attacker_id', Auth::id())
+                            ->orWhere('defender_id', Auth::id());
+                    });
+                },
+                $this->filterByType => function ($q) {
+                    return $q->where('type', $this->filterByType);
+                },
+                $this->filterByStatus => function ($q) {
+                    return $q->where('status', $this->filterByStatus);
+                },
+                $this->filterByDate => function ($q) {
+                    return $this->applyDateFilter($q);
+                },
+                $this->showOnlyUnread => function ($q) {
+                    return $q->where('is_read', false);
+                },
+                $this->showOnlyImportant => function ($q) {
+                    return $q->where('is_important', true);
+                },
+                $this->searchQuery => function ($q) {
+                    return $q->where(function ($subQ) {
+                        $subQ->where('title', 'like', '%' . $this->searchQuery . '%')
+                            ->orWhere('content', 'like', '%' . $this->searchQuery . '%')
+                            ->orWhereIn('attacker_id', function ($playerQ) {
+                                $playerQ->select('id')
+                                    ->from('players')
+                                    ->where('name', 'like', '%' . $this->searchQuery . '%');
+                            })
+                            ->orWhereIn('defender_id', function ($playerQ) {
+                                $playerQ->select('id')
+                                    ->from('players')
+                                    ->where('name', 'like', '%' . $this->searchQuery . '%');
+                            });
+                    });
+                },
+            ];
 
-            if ($this->filterByType) {
-                $query->where('type', $this->filterByType);
-            }
+            $query = QueryOptimizationService::applyConditionalFilters($query, $filters);
+            $query = QueryOptimizationService::applyConditionalOrdering($query, $this->sortBy, $this->sortOrder);
 
-            if ($this->filterByStatus) {
-                $query->where('status', $this->filterByStatus);
-            }
-
-            if ($this->filterByDate) {
-                $this->applyDateFilter($query);
-            }
-
-            if ($this->showOnlyUnread) {
-                $query->where('is_read', false);
-            }
-
-            if ($this->showOnlyImportant) {
-                $query->where('is_important', true);
-            }
-
-            if ($this->searchQuery) {
-                $query->where(function ($q) {
-                    $q
-                        ->where('title', 'like', '%' . $this->searchQuery . '%')
-                        ->orWhere('content', 'like', '%' . $this->searchQuery . '%')
-                        ->orWhereHas('attacker', function ($subQ) {
-                            $subQ->where('name', 'like', '%' . $this->searchQuery . '%');
-                        })
-                        ->orWhereHas('defender', function ($subQ) {
-                            $subQ->where('name', 'like', '%' . $this->searchQuery . '%');
-                        });
-                });
-            }
-
-            $this->reports = $query->orderBy($this->sortBy, $this->sortOrder)->get();
+            $this->reports = $query->get();
         } catch (\Exception $e) {
             $this->addNotification('Error loading report data: ' . $e->getMessage(), 'error');
             $this->reports = collect();
@@ -187,12 +188,15 @@ class ReportManager extends Component
         switch ($this->filterByDate) {
             case 'today':
                 $query->whereDate('created_at', today());
+
                 break;
             case 'week':
                 $query->where('created_at', '>=', now()->subWeek());
+
                 break;
             case 'month':
                 $query->where('created_at', '>=', now()->subMonth());
+
                 break;
             case 'all':
             default:
@@ -225,7 +229,7 @@ class ReportManager extends Component
             $reportId = $reportId['reportId'] ?? null;
         }
 
-        if (!$reportId) {
+        if (! $reportId) {
             return;
         }
 
@@ -245,7 +249,7 @@ class ReportManager extends Component
             $reportId = $reportId['reportId'] ?? null;
         }
 
-        if (!$reportId) {
+        if (! $reportId) {
             return;
         }
 
@@ -265,7 +269,7 @@ class ReportManager extends Component
             $reportId = $reportId['reportId'] ?? null;
         }
 
-        if (!$reportId) {
+        if (! $reportId) {
             return;
         }
 
@@ -285,7 +289,7 @@ class ReportManager extends Component
             $reportId = $reportId['reportId'] ?? null;
         }
 
-        if (!$reportId) {
+        if (! $reportId) {
             return;
         }
 
@@ -340,7 +344,7 @@ class ReportManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function filterByType($type)
@@ -388,6 +392,7 @@ class ReportManager extends Component
     {
         if (empty($this->searchQuery)) {
             $this->addNotification('Search cleared', 'info');
+
             return;
         }
         $this->addNotification("Searching for: {$this->searchQuery}", 'info');
@@ -395,7 +400,7 @@ class ReportManager extends Component
 
     public function toggleUnreadFilter()
     {
-        $this->showOnlyUnread = !$this->showOnlyUnread;
+        $this->showOnlyUnread = ! $this->showOnlyUnread;
         $this->addNotification(
             $this->showOnlyUnread ? 'Showing only unread reports' : 'Showing all reports',
             'info'
@@ -404,7 +409,7 @@ class ReportManager extends Component
 
     public function toggleImportantFilter()
     {
-        $this->showOnlyImportant = !$this->showOnlyImportant;
+        $this->showOnlyImportant = ! $this->showOnlyImportant;
         $this->addNotification(
             $this->showOnlyImportant ? 'Showing only important reports' : 'Showing all reports',
             'info'
@@ -413,7 +418,7 @@ class ReportManager extends Component
 
     public function toggleMyReportsFilter()
     {
-        $this->showOnlyMyReports = !$this->showOnlyMyReports;
+        $this->showOnlyMyReports = ! $this->showOnlyMyReports;
         $this->addNotification(
             $this->showOnlyMyReports ? 'Showing only my reports' : 'Showing all reports',
             'info'
@@ -422,66 +427,49 @@ class ReportManager extends Component
 
     public function calculateReportStats()
     {
+        // Use single query with selectRaw to get all stats at once
+        $stats = Report::where('world_id', $this->world->id)
+            ->where(function ($q) {
+                $q->where('attacker_id', Auth::id())
+                  ->orWhere('defender_id', Auth::id());
+            })
+            ->selectRaw('
+                COUNT(*) as total_reports,
+                SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) as unread_reports,
+                SUM(CASE WHEN is_important = 1 THEN 1 ELSE 0 END) as important_reports,
+                SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) as today_reports
+            ')
+            ->first();
+
         $this->reportStats = [
-            'total_reports' => Report::where('world_id', $this->world->id)
-                ->where(function ($q) {
-                    $q
-                        ->where('attacker_id', Auth::id())
-                        ->orWhere('defender_id', Auth::id());
-                })
-                ->count(),
-            'unread_reports' => Report::where('world_id', $this->world->id)
-                ->where(function ($q) {
-                    $q
-                        ->where('attacker_id', Auth::id())
-                        ->orWhere('defender_id', Auth::id());
-                })
-                ->where('is_read', false)
-                ->count(),
-            'important_reports' => Report::where('world_id', $this->world->id)
-                ->where(function ($q) {
-                    $q
-                        ->where('attacker_id', Auth::id())
-                        ->orWhere('defender_id', Auth::id());
-                })
-                ->where('is_important', true)
-                ->count(),
-            'today_reports' => Report::where('world_id', $this->world->id)
-                ->where(function ($q) {
-                    $q
-                        ->where('attacker_id', Auth::id())
-                        ->orWhere('defender_id', Auth::id());
-                })
-                ->whereDate('created_at', today())
-                ->count(),
+            'total_reports' => $stats->total_reports ?? 0,
+            'unread_reports' => $stats->unread_reports ?? 0,
+            'important_reports' => $stats->important_reports ?? 0,
+            'today_reports' => $stats->today_reports ?? 0,
         ];
     }
 
     public function calculateBattleStats()
     {
+        // Use single query with selectRaw to get all battle stats at once
+        $stats = Report::where('world_id', $this->world->id)
+            ->where(function ($q) {
+                $q->where('attacker_id', Auth::id())
+                  ->orWhere('defender_id', Auth::id());
+            })
+            ->selectRaw('
+                SUM(CASE WHEN type = "attack" THEN 1 ELSE 0 END) as total_battles,
+                SUM(CASE WHEN type = "attack" AND status = "victory" AND attacker_id = ? THEN 1 ELSE 0 END) as victories,
+                SUM(CASE WHEN type = "attack" AND status = "defeat" AND attacker_id = ? THEN 1 ELSE 0 END) as defeats,
+                SUM(CASE WHEN type = "defense" AND defender_id = ? THEN 1 ELSE 0 END) as defenses
+            ', [Auth::id(), Auth::id(), Auth::id()])
+            ->first();
+
         $this->battleStats = [
-            'total_battles' => Report::where('world_id', $this->world->id)
-                ->where('type', 'attack')
-                ->where(function ($q) {
-                    $q
-                        ->where('attacker_id', Auth::id())
-                        ->orWhere('defender_id', Auth::id());
-                })
-                ->count(),
-            'victories' => Report::where('world_id', $this->world->id)
-                ->where('type', 'attack')
-                ->where('status', 'victory')
-                ->where('attacker_id', Auth::id())
-                ->count(),
-            'defeats' => Report::where('world_id', $this->world->id)
-                ->where('type', 'attack')
-                ->where('status', 'defeat')
-                ->where('attacker_id', Auth::id())
-                ->count(),
-            'defenses' => Report::where('world_id', $this->world->id)
-                ->where('type', 'defense')
-                ->where('defender_id', Auth::id())
-                ->count(),
+            'total_battles' => $stats->total_battles ?? 0,
+            'victories' => $stats->victories ?? 0,
+            'defeats' => $stats->defeats ?? 0,
+            'defenses' => $stats->defenses ?? 0,
         ];
     }
 
@@ -531,9 +519,10 @@ class ReportManager extends Component
         if ($report['is_important']) {
             return 'red';
         }
-        if (!$report['is_read']) {
+        if (! $report['is_read']) {
             return 'blue';
         }
+
         return match ($report['status']) {
             'victory' => 'green',
             'defeat' => 'red',
@@ -560,7 +549,7 @@ class ReportManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -569,7 +558,7 @@ class ReportManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -594,7 +583,7 @@ class ReportManager extends Component
             'id' => uniqid(),
             'message' => $message,
             'type' => $type,
-            'timestamp' => now()
+            'timestamp' => now(),
         ];
 
         // Keep only last 10 notifications

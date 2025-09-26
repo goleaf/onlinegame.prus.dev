@@ -5,9 +5,7 @@ namespace App\Livewire\Game;
 use App\Models\Game\Battle;
 use App\Models\Game\Movement;
 use App\Models\Game\Troop;
-use App\Models\Game\UnitType;
 use App\Models\Game\Village;
-use App\Services\GameTickService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -75,7 +73,7 @@ class BattleManager extends Component
                 'attack' => $troop->unitType->attack,
                 'defense_infantry' => $troop->unitType->defense_infantry,
                 'defense_cavalry' => $troop->unitType->defense_cavalry,
-                'speed' => $troop->unitType->speed
+                'speed' => $troop->unitType->speed,
             ];
         }
     }
@@ -88,7 +86,7 @@ class BattleManager extends Component
 
     public function launchAttack()
     {
-        if (!$this->selectedTarget || empty($this->attackingTroops)) {
+        if (! $this->selectedTarget || empty($this->attackingTroops)) {
             return;
         }
 
@@ -106,7 +104,7 @@ class BattleManager extends Component
                 'troops' => $this->attackingTroops,
                 'started_at' => now(),
                 'arrives_at' => now()->addSeconds($travelTime),
-                'status' => 'travelling'
+                'status' => 'travelling',
             ]);
 
             // Update troop counts
@@ -124,7 +122,7 @@ class BattleManager extends Component
 
             $this->dispatch('attackLaunched', [
                 'target' => $this->selectedTarget->name,
-                'arrives_at' => $movement->arrives_at
+                'arrives_at' => $movement->arrives_at,
             ]);
         } catch (\Exception $e) {
             $this->dispatch('attackError', ['message' => $e->getMessage()]);
@@ -133,8 +131,9 @@ class BattleManager extends Component
 
     public function calculateDistance()
     {
-        if (!$this->selectedTarget)
+        if (! $this->selectedTarget) {
             return 0;
+        }
 
         $x1 = $this->village->x_coordinate;
         $y1 = $this->village->y_coordinate;
@@ -146,14 +145,16 @@ class BattleManager extends Component
 
     public function calculateTravelTime($distance)
     {
-        if (empty($this->attackingTroops))
+        if (empty($this->attackingTroops)) {
             return 0;
+        }
 
         // Find the slowest troop
         $slowestSpeed = min(array_column($this->attackingTroops, 'speed'));
 
         // Base travel time calculation
         $baseTime = 60;  // 1 minute per distance unit
+
         return ($distance * $baseTime) / $slowestSpeed;
     }
 
@@ -197,7 +198,7 @@ class BattleManager extends Component
             'availableTroops' => $this->availableTroops,
             'attackingTroops' => $this->attackingTroops,
             'selectedTarget' => $this->selectedTarget,
-            'recentBattles' => $this->recentBattles
+            'recentBattles' => $this->recentBattles,
         ]);
     }
 }

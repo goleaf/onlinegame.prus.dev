@@ -2,9 +2,7 @@
 
 namespace App\Livewire\Game;
 
-use App\Models\Game\Player;
 use App\Models\Game\Village;
-use App\Models\Game\World;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -36,8 +34,9 @@ class MapViewer extends Component
 
     public function loadMapData()
     {
-        if (!$this->world)
+        if (! $this->world) {
             return;
+        }
 
         $minX = $this->centerX - $this->mapSize;
         $maxX = $this->centerX + $this->mapSize;
@@ -58,7 +57,7 @@ class MapViewer extends Component
                     'player_name' => $village->player->name,
                     'population' => $village->population,
                     'is_capital' => $village->is_capital,
-                    'distance' => $this->calculateDistance($village->x_coordinate, $village->y_coordinate)
+                    'distance' => $this->calculateDistance($village->x_coordinate, $village->y_coordinate),
                 ];
             })
             ->sortBy('distance');
@@ -80,15 +79,19 @@ class MapViewer extends Component
         switch ($direction) {
             case 'north':
                 $this->centerY -= 5;
+
                 break;
             case 'south':
                 $this->centerY += 5;
+
                 break;
             case 'east':
                 $this->centerX += 5;
+
                 break;
             case 'west':
                 $this->centerX -= 5;
+
                 break;
         }
 
@@ -135,7 +138,7 @@ class MapViewer extends Component
             'selectedVillage' => $this->selectedVillage,
             'centerX' => $this->centerX,
             'centerY' => $this->centerY,
-            'mapSize' => $this->mapSize
+            'mapSize' => $this->mapSize,
         ]);
     }
 }

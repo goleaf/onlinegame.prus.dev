@@ -137,7 +137,7 @@ class MovementManagerTest extends TestCase
             'player_id' => $this->player->id,
             'from_village_id' => $this->village->id,
             'to_village_id' => $targetVillage->id,
-            'type' => 'attack'
+            'type' => 'attack',
         ]);
     }
 
@@ -152,7 +152,7 @@ class MovementManagerTest extends TestCase
 
         $this->assertDatabaseMissing('movements', [
             'player_id' => $this->player->id,
-            'type' => 'attack'
+            'type' => 'attack',
         ]);
     }
 
@@ -169,7 +169,7 @@ class MovementManagerTest extends TestCase
 
         $this->assertDatabaseMissing('movements', [
             'player_id' => $this->player->id,
-            'type' => 'attack'
+            'type' => 'attack',
         ]);
     }
 
@@ -185,7 +185,7 @@ class MovementManagerTest extends TestCase
 
         $this->assertDatabaseMissing('movements', [
             'player_id' => $this->player->id,
-            'type' => 'attack'
+            'type' => 'attack',
         ]);
     }
 
@@ -196,7 +196,7 @@ class MovementManagerTest extends TestCase
         $movement = Movement::factory()->create([
             'player_id' => $this->player->id,
             'from_village_id' => $this->village->id,
-            'status' => 'travelling'
+            'status' => 'travelling',
         ]);
 
         $component = Livewire::test(MovementManager::class, ['village' => $this->village]);
@@ -204,7 +204,7 @@ class MovementManagerTest extends TestCase
 
         $this->assertDatabaseHas('movements', [
             'id' => $movement->id,
-            'status' => 'cancelled'
+            'status' => 'cancelled',
         ]);
     }
 
@@ -215,7 +215,7 @@ class MovementManagerTest extends TestCase
         $movement = Movement::factory()->create([
             'player_id' => $this->player->id,
             'from_village_id' => $this->village->id,
-            'status' => 'completed'
+            'status' => 'completed',
         ]);
 
         $component = Livewire::test(MovementManager::class, ['village' => $this->village]);
@@ -223,7 +223,7 @@ class MovementManagerTest extends TestCase
 
         $this->assertDatabaseHas('movements', [
             'id' => $movement->id,
-            'status' => 'completed'
+            'status' => 'completed',
         ]);
     }
 
@@ -233,7 +233,7 @@ class MovementManagerTest extends TestCase
 
         $movement = Movement::factory()->create([
             'player_id' => $this->player->id,
-            'from_village_id' => $this->village->id
+            'from_village_id' => $this->village->id,
         ]);
 
         $component = Livewire::test(MovementManager::class, ['village' => $this->village]);
@@ -332,12 +332,12 @@ class MovementManagerTest extends TestCase
 
         Movement::factory()->create([
             'from_village_id' => $this->village->id,
-            'status' => 'travelling'
+            'status' => 'travelling',
         ]);
 
         Movement::factory()->create([
             'from_village_id' => $this->village->id,
-            'status' => 'completed'
+            'status' => 'completed',
         ]);
 
         $component = Livewire::test(MovementManager::class, ['village' => $this->village]);

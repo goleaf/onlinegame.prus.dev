@@ -22,17 +22,17 @@ class ResourceProductionServiceTest extends TestCase
         $player = Player::factory()->create(['world_id' => $world->id]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $buildingType = BuildingType::factory()->create([
-            'production' => ['wood' => 10]
+            'production' => ['wood' => 10],
         ]);
 
         $building = Building::factory()->create([
             'village_id' => $village->id,
             'building_type_id' => $buildingType->id,
-            'level' => 2
+            'level' => 2,
         ]);
 
         $service = new ResourceProductionService();
@@ -47,14 +47,14 @@ class ResourceProductionServiceTest extends TestCase
         $player = Player::factory()->create(['world_id' => $world->id]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $resource = Resource::factory()->create([
             'village_id' => $village->id,
             'type' => 'wood',
             'amount' => 1000,
-            'production_rate' => 10
+            'production_rate' => 10,
         ]);
 
         $service = new ResourceProductionService();
@@ -70,14 +70,14 @@ class ResourceProductionServiceTest extends TestCase
         $player = Player::factory()->create(['world_id' => $world->id]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $warehouseType = BuildingType::factory()->create(['key' => 'warehouse']);
         $warehouse = Building::factory()->create([
             'village_id' => $village->id,
             'building_type_id' => $warehouseType->id,
-            'level' => 2
+            'level' => 2,
         ]);
 
         $service = new ResourceProductionService();
@@ -92,13 +92,13 @@ class ResourceProductionServiceTest extends TestCase
         $player = Player::factory()->create(['world_id' => $world->id]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $resource = Resource::factory()->create([
             'village_id' => $village->id,
             'type' => 'wood',
-            'amount' => 1000
+            'amount' => 1000,
         ]);
 
         $service = new ResourceProductionService();
@@ -113,13 +113,13 @@ class ResourceProductionServiceTest extends TestCase
         $player = Player::factory()->create(['world_id' => $world->id]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $resource = Resource::factory()->create([
             'village_id' => $village->id,
             'type' => 'wood',
-            'amount' => 1000
+            'amount' => 1000,
         ]);
 
         $service = new ResourceProductionService();
@@ -136,14 +136,14 @@ class ResourceProductionServiceTest extends TestCase
         $player = Player::factory()->create(['world_id' => $world->id]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $resource = Resource::factory()->create([
             'village_id' => $village->id,
             'type' => 'wood',
             'amount' => 1000,
-            'storage_capacity' => 2000
+            'storage_capacity' => 2000,
         ]);
 
         $service = new ResourceProductionService();
@@ -153,4 +153,3 @@ class ResourceProductionServiceTest extends TestCase
         $this->assertEquals(1500, $resource->amount);
     }
 }
-

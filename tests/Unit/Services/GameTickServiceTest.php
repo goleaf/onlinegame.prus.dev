@@ -23,14 +23,14 @@ class GameTickServiceTest extends TestCase
         $player = Player::factory()->create(['world_id' => $world->id]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $resource = Resource::factory()->create([
             'village_id' => $village->id,
             'type' => 'wood',
             'amount' => 1000,
-            'production_rate' => 10
+            'production_rate' => 10,
         ]);
 
         $gameTickService = new GameTickService();
@@ -38,7 +38,7 @@ class GameTickServiceTest extends TestCase
 
         $this->assertDatabaseHas('resources', [
             'id' => $resource->id,
-            'amount' => 1010  // 1000 + 10 production
+            'amount' => 1010,  // 1000 + 10 production
         ]);
     }
 
@@ -48,13 +48,13 @@ class GameTickServiceTest extends TestCase
         $player = Player::factory()->create(['world_id' => $world->id]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $buildingQueue = BuildingQueue::factory()->create([
             'village_id' => $village->id,
             'completed_at' => now()->subMinute(),
-            'is_completed' => false
+            'is_completed' => false,
         ]);
 
         $gameTickService = new GameTickService();
@@ -62,7 +62,7 @@ class GameTickServiceTest extends TestCase
 
         $this->assertDatabaseHas('building_queues', [
             'id' => $buildingQueue->id,
-            'is_completed' => true
+            'is_completed' => true,
         ]);
     }
 
@@ -72,13 +72,13 @@ class GameTickServiceTest extends TestCase
         $player = Player::factory()->create(['world_id' => $world->id]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $trainingQueue = TrainingQueue::factory()->create([
             'village_id' => $village->id,
             'completed_at' => now()->subMinute(),
-            'is_completed' => false
+            'is_completed' => false,
         ]);
 
         $gameTickService = new GameTickService();
@@ -86,7 +86,7 @@ class GameTickServiceTest extends TestCase
 
         $this->assertDatabaseHas('training_queues', [
             'id' => $trainingQueue->id,
-            'is_completed' => true
+            'is_completed' => true,
         ]);
     }
 
@@ -96,14 +96,14 @@ class GameTickServiceTest extends TestCase
         $player = Player::factory()->create(['world_id' => $world->id]);
         $village = Village::factory()->create([
             'player_id' => $player->id,
-            'world_id' => $world->id
+            'world_id' => $world->id,
         ]);
 
         $event = GameEvent::factory()->create([
             'player_id' => $player->id,
             'village_id' => $village->id,
             'triggered_at' => now()->subMinute(),
-            'is_completed' => false
+            'is_completed' => false,
         ]);
 
         $gameTickService = new GameTickService();
@@ -111,7 +111,7 @@ class GameTickServiceTest extends TestCase
 
         $this->assertDatabaseHas('game_events', [
             'id' => $event->id,
-            'is_completed' => true
+            'is_completed' => true,
         ]);
     }
 
@@ -122,7 +122,7 @@ class GameTickServiceTest extends TestCase
         $village = Village::factory()->create([
             'player_id' => $player->id,
             'world_id' => $world->id,
-            'population' => 1000
+            'population' => 1000,
         ]);
 
         $gameTickService = new GameTickService();

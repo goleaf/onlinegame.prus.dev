@@ -4,8 +4,6 @@ namespace App\Services;
 
 use App\Models\Game\Building;
 use App\Models\Game\BuildingQueue;
-use App\Models\Game\BuildingType;
-use App\Models\Game\Village;
 use Illuminate\Support\Facades\Log;
 
 class BuildingService
@@ -31,7 +29,7 @@ class BuildingService
         }
 
         // Check requirements
-        if (!$this->checkRequirements($village, $buildingType, $level)) {
+        if (! $this->checkRequirements($village, $buildingType, $level)) {
             return false;
         }
 
@@ -54,7 +52,7 @@ class BuildingService
                 })
                 ->first();
 
-            if (!$building || $building->level < $requiredLevel) {
+            if (! $building || $building->level < $requiredLevel) {
                 return false;
             }
         }
@@ -85,7 +83,7 @@ class BuildingService
 
     public function startUpgrade($village, $buildingType, $level = 1)
     {
-        if (!$this->canBuild($village, $buildingType, $level)) {
+        if (! $this->canBuild($village, $buildingType, $level)) {
             return false;
         }
 
@@ -106,7 +104,7 @@ class BuildingService
             if ($building) {
                 $building->update([
                     'level' => $level,
-                    'upgrade_started_at' => now()
+                    'upgrade_started_at' => now(),
                 ]);
             } else {
                 $building = $village->buildings()->create([
@@ -115,7 +113,7 @@ class BuildingService
                     'level' => $level,
                     'x' => 0,
                     'y' => 0,
-                    'upgrade_started_at' => now()
+                    'upgrade_started_at' => now(),
                 ]);
             }
 
@@ -128,12 +126,13 @@ class BuildingService
                 'started_at' => now(),
                 'completed_at' => now()->addSeconds($upgradeTime),
                 'costs' => $costs,
-                'status' => 'in_progress'
+                'status' => 'in_progress',
             ]);
 
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to start building upgrade: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -143,7 +142,7 @@ class BuildingService
         try {
             $building->update([
                 'level' => $building->target_level,
-                'upgrade_started_at' => null
+                'upgrade_started_at' => null,
             ]);
 
             // Update storage capacities if needed
@@ -155,6 +154,7 @@ class BuildingService
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to complete building upgrade: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -178,6 +178,7 @@ class BuildingService
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to cancel building upgrade: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -199,7 +200,7 @@ class BuildingService
             'is_upgrading' => $building && $building->upgrade_started_at,
             'upgrade_progress' => $building && $building->upgrade_started_at
                 ? $this->calculateUpgradeProgress($building)
-                : 0
+                : 0,
         ];
 
         return $info;
@@ -207,7 +208,7 @@ class BuildingService
 
     private function calculateUpgradeProgress($building)
     {
-        if (!$building->upgrade_started_at) {
+        if (! $building->upgrade_started_at) {
             return 0;
         }
 
@@ -218,4 +219,3 @@ class BuildingService
         return min(100, ($elapsedTime / $totalTime) * 100);
     }
 }
-
