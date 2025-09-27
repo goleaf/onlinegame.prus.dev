@@ -170,10 +170,11 @@ class MarketManager extends Component
             // Apply sorting
             $myOffersQuery = $myOffersQuery->orderBy('created_at', 'desc');
 
-            $this->myOffers = $myOffersQuery
-                ->where('seller_id', $this->village->player_id)
-                ->get()
-                ->toArray();
+            // Add seller filter for my offers
+            $myFilters[] = ['target' => 'player_id', 'type' => '$eq', 'value' => $this->village->player_id];
+            $myOffersQuery = $myOffersQuery->filter($myFilters);
+
+            $this->myOffers = $myOffersQuery->get()->toArray();
 
             $this->addNotification('Market data loaded successfully', 'success');
         } catch (\Exception $e) {

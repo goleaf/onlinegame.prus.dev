@@ -66,7 +66,7 @@ class ChatController extends Controller
         $validator = Validator::make($request->all(), [
             'channel_id' => 'nullable|exists:chat_channels,id',
             'channel_type' => 'required|in:global,alliance,private,trade,diplomacy',
-            'message' => 'required|string|max:1000',
+            'message' => ['required', 'string', 'max:1000', new Clean],
             'message_type' => 'required|in:text,system,announcement,emote,command',
         ]);
 

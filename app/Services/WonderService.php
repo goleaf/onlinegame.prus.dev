@@ -87,7 +87,6 @@ class WonderService
             ]);
             throw $e;
         }
-        }, 'WonderService::startConstruction');
     }
 
     /**
@@ -376,5 +375,92 @@ class WonderService
                 'can_construct' => $wonder->canUpgrade(),
             ];
         });
+    }
+
+    /**
+     * Start wonder construction with integration notifications
+     */
+    public function startConstructionWithIntegration(Alliance $alliance, Wonder $wonder, int $targetLevel): WonderConstruction
+    {
+        try {
+            $construction = $this->startConstruction($alliance, $wonder, $targetLevel);
+
+            // Send notification to alliance members
+            $memberIds = $alliance->members()->pluck('user_id')->toArray();
+            GameNotificationService::sendAllianceNotification(
+                $alliance->id,
+                'wonder_construction_started',
+                [
+                    'wonder_id' => $wonder->id,
+                    'wonder_name' => $wonder->name,
+                    'target_level' => $targetLevel,
+                    'construction_id' => $construction->id,
+                    'estimated_completion' => $construction->estimated_completion,
+                ]
+            );
+
+            // Send real-time update
+            GameIntegrationService::sendSystemAnnouncement(
+                "Wonder Construction Started",
+                "Alliance {$alliance->name} has started constructing {$wonder->name} to level {$targetLevel}",
+                'high'
+            );
+
+            return $construction;
+
+        } catch (\Exception $e) {
+            GameNotificationService::sendNotification(
+                $alliance->members()->pluck('user_id')->toArray(),
+                'wonder_construction_failed',
+                [
+                    'wonder_id' => $wonder->id,
+                    'wonder_name' => $wonder->name,
+                    'error' => $e->getMessage(),
+                ],
+                'high'
+            );
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Complete wonder construction with integration notifications
+     */
+    public function completeConstructionWithIntegration(WonderConstruction $construction): void
+    {
+        try {
+            $this->completeConstruction($construction);
+
+            // Send notification to alliance members
+            $alliance = $construction->alliance;
+            $wonder = $construction->wonder;
+            
+            GameNotificationService::sendAllianceNotification(
+                $alliance->id,
+                'wonder_construction_completed',
+                [
+                    'wonder_id' => $wonder->id,
+                    'wonder_name' => $wonder->name,
+                    'new_level' => $wonder->level,
+                    'construction_id' => $construction->id,
+                ]
+            );
+
+            // Send real-time update
+            GameIntegrationService::sendSystemAnnouncement(
+                "Wonder Construction Completed",
+                "Alliance {$alliance->name} has completed {$wonder->name} construction to level {$wonder->level}",
+                'high'
+            );
+
+        } catch (\Exception $e) {
+            Log::error('Failed to complete wonder construction with integration', [
+                'construction_id' => $construction->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
     }
 }

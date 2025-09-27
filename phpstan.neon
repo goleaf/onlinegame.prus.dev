@@ -23,8 +23,6 @@ parameters:
         - travian-source/*
         
     # Laravel-specific configurations
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
     
     # Ignore specific error patterns
     ignoreErrors:

@@ -15,6 +15,14 @@ class PerformanceMonitoringService
         $startTime = microtime(true);
         $startQueries = count(DB::getQueryLog());
         
+        ds('PerformanceMonitoringService: Starting query monitoring', [
+            'service' => 'PerformanceMonitoringService',
+            'method' => 'monitorQueries',
+            'component' => $component,
+            'initial_queries' => $startQueries,
+            'monitoring_time' => now()
+        ]);
+        
         DB::enableQueryLog();
         
         try {
@@ -26,11 +34,28 @@ class PerformanceMonitoringService
             $executionTime = ($endTime - $startTime) * 1000; // Convert to milliseconds
             $queryCount = $endQueries - $startQueries;
             
+            ds('PerformanceMonitoringService: Query monitoring completed', [
+                'component' => $component,
+                'execution_time_ms' => round($executionTime, 2),
+                'queries_executed' => $queryCount,
+                'final_query_count' => $endQueries,
+                'result_type' => gettype($result)
+            ]);
+            
             // Log performance metrics
             self::logPerformanceMetrics($component, $executionTime, $queryCount);
             
             return $result;
         } catch (\Exception $e) {
+            $errorTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            ds('PerformanceMonitoringService: Query monitoring failed', [
+                'component' => $component,
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+                'error_time_ms' => $errorTime
+            ]);
+            
             Log::error("Performance monitoring error in {$component}: " . $e->getMessage());
             throw $e;
         }
