@@ -21,6 +21,7 @@ class GameTask extends Model
         'started_at',
         'completed_at',
         'result_data',
+        'reference_number',
     ];
 
     protected $casts = [
