@@ -16,6 +16,7 @@ class World extends Model implements Auditable
 {
     use HasFactory, HasTaxonomy;
     use HasNotables;
+    use HasReference;
     use Lift;
     use AuditableTrait;
 
