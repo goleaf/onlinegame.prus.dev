@@ -52,63 +52,70 @@ class UserManagement extends Component
         $this->isLoading = true;
 
         try {
-            $query = User::withGamePlayers()
-                ->with(['player.world', 'player.alliance']);
+            // Use SmartCache for user data with automatic optimization
+            $cacheKey = "users_data_{$this->searchQuery}_{$this->filterByWorld}_{$this->filterByTribe}_{$this->filterByAlliance}_{$this->showOnlyOnline}_{$this->showOnlyActive}_{$this->filterByStatus}_{$this->sortBy}_{$this->sortOrder}";
+            
+            $this->users = SmartCache::remember($cacheKey, now()->addMinutes(3), function () {
+                $query = User::withGamePlayers()
+                    ->with(['player.world', 'player.alliance']);
 
-            // Apply search
-            if (!empty($this->searchQuery)) {
-                $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->searchQuery . '%')
-                      ->orWhere('email', 'like', '%' . $this->searchQuery . '%')
-                      ->orWhereHas('player', function ($playerQuery) {
-                          $playerQuery->where('name', 'like', '%' . $this->searchQuery . '%');
-                      });
+                // Apply search
+                if (!empty($this->searchQuery)) {
+                    $query->where(function ($q) {
+                        $q->where('name', 'like', '%' . $this->searchQuery . '%')
+                          ->orWhere('email', 'like', '%' . $this->searchQuery . '%')
+                          ->orWhereHas('player', function ($playerQuery) {
+                              $playerQuery->where('name', 'like', '%' . $this->searchQuery . '%');
+                          });
+                    });
+                }
+
+                // Apply filters
+                if (!empty($this->filterByWorld)) {
+                    $query->byWorld($this->filterByWorld);
+                }
+
+                if (!empty($this->filterByTribe)) {
+                    $query->byTribe($this->filterByTribe);
+                }
+
+                if (!empty($this->filterByAlliance)) {
+                    $query->byAlliance($this->filterByAlliance);
+                }
+
+                if ($this->showOnlyOnline) {
+                    $query->onlineUsers();
+                }
+
+                if ($this->showOnlyActive) {
+                    $query->activeGameUsers();
+                }
+
+                // Apply sorting
+                $query->orderBy($this->sortBy, $this->sortOrder);
+
+                $users = $query->get();
+
+                // Add game statistics to each user
+                $users->transform(function ($user) {
+                    $user->game_stats = $user->getGameStats();
+                    $user->is_online = $user->isOnline();
+                    $user->last_activity = $user->getLastActivity();
+                    return $user;
                 });
-            }
 
-            // Apply filters
-            if (!empty($this->filterByWorld)) {
-                $query->byWorld($this->filterByWorld);
-            }
+                // Apply additional filtering using FilteringUtil
+                if (!empty($this->filterByStatus)) {
+                    $users = FilteringUtil::filter(
+                        $users,
+                        'is_online',
+                        $this->filterByStatus === 'online' ? 'equals' : 'not_equals',
+                        true
+                    );
+                }
 
-            if (!empty($this->filterByTribe)) {
-                $query->byTribe($this->filterByTribe);
-            }
-
-            if (!empty($this->filterByAlliance)) {
-                $query->byAlliance($this->filterByAlliance);
-            }
-
-            if ($this->showOnlyOnline) {
-                $query->onlineUsers();
-            }
-
-            if ($this->showOnlyActive) {
-                $query->activeGameUsers();
-            }
-
-            // Apply sorting
-            $query->orderBy($this->sortBy, $this->sortOrder);
-
-            $this->users = $query->get();
-
-            // Add game statistics to each user
-            $this->users->transform(function ($user) {
-                $user->game_stats = $user->getGameStats();
-                $user->is_online = $user->isOnline();
-                $user->last_activity = $user->getLastActivity();
-                return $user;
+                return $users;
             });
-
-            // Apply additional filtering using FilteringUtil
-            if (!empty($this->filterByStatus)) {
-                $this->users = FilteringUtil::filter(
-                    $this->users,
-                    'is_online',
-                    $this->filterByStatus === 'online' ? 'equals' : 'not_equals',
-                    true
-                );
-            }
 
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading users', [

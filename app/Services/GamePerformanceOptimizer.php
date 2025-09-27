@@ -269,8 +269,8 @@ class GamePerformanceOptimizer
         $limit = $params['limit'] ?? 100;
         
         return DB::table('users')
-            ->select(['id', 'name', 'game_level', 'experience_points'])
-            ->orderBy('experience_points', 'desc')
+            ->select(['id', 'name', 'created_at'])
+            ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get()
             ->toArray();

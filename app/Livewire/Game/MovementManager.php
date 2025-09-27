@@ -242,10 +242,17 @@ class MovementManager extends Component
 
         $movement->update(['troops' => $troopsData]);
 
+        // Generate reference number for the movement
+        $movement->generateReference();
+
         $this->reset(['targetVillageId', 'selectedTroops', 'troopQuantities', 'movementTime', 'arrivalTime']);
         $this->loadMovementData();
         $this->addNotification('Movement created successfully!', 'success');
         $this->dispatch('movementCreated', ['movementId' => $movement->id]);
+        
+        // Track movement creation
+        $totalTroops = array_sum($this->troopQuantities);
+        $this->dispatch('fathom-track', name: 'movement created', value: $totalTroops);
     }
 
     public function cancelMovement($movementId)
