@@ -316,6 +316,16 @@ class GameTickService
         }
     }
 
+    private function addLootToAttacker($village, $loot)
+    {
+        foreach ($loot as $resourceType => $amount) {
+            $resource = $village->resources()->where('type', $resourceType)->first();
+            if ($resource && $amount > 0) {
+                $resource->increment('amount', $amount);
+            }
+        }
+    }
+
     private function createBattleReports(Battle $battle)
     {
         // Create detailed report for attacker

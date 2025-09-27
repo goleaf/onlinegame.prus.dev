@@ -85,23 +85,57 @@ class BattleManager extends Component
 
     public function selectTarget($villageId)
     {
-        $cacheKey = "village_{$villageId}_battle_target_data";
+        try {
+            // Validate input
+            if (!$villageId || !is_numeric($villageId)) {
+                $this->addNotification('Invalid village ID provided.', 'error');
+                return;
+            }
 
-        $this->selectedTarget = SmartCache::remember($cacheKey, now()->addMinutes(1), function () use ($villageId) {
-            return Village::with(['player:id,name', 'troops.unitType:id,name,attack_power,defense_power,speed'])
-                ->selectRaw('
-                    villages.*,
-                    (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as total_troops,
-                    (SELECT SUM(quantity * unit_types.attack_power) FROM troops JOIN unit_types ON troops.unit_type_id = unit_types.id WHERE village_id = villages.id) as total_attack_power,
-                    (SELECT SUM(quantity * unit_types.defense_power) FROM troops JOIN unit_types ON troops.unit_type_id = unit_types.id WHERE village_id = villages.id) as total_defense_power
-                ')
-                ->find($villageId);
-        });
+            // Check if target is the same as current village
+            if ($villageId == $this->village->id) {
+                $this->addNotification('Cannot attack your own village.', 'error');
+                return;
+            }
 
-        $this->showBattleModal = true;
-        
-        // Track target selection
-        $this->dispatch('fathom-track', name: 'battle target selected', value: $villageId);
+            $cacheKey = "village_{$villageId}_battle_target_data";
+            
+            $this->selectedTarget = SmartCache::remember($cacheKey, now()->addMinutes(1), function () use ($villageId) {
+                return Village::with(['player:id,name', 'troops.unitType:id,name,attack_power,defense_power,speed'])
+                    ->selectRaw('
+                        villages.*,
+                        (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as total_troops,
+                        (SELECT SUM(quantity * unit_types.attack_power) FROM troops JOIN unit_types ON troops.unit_type_id = unit_types.id WHERE village_id = villages.id) as total_attack_power,
+                        (SELECT SUM(quantity * unit_types.defense_power) FROM troops JOIN unit_types ON troops.unit_type_id = unit_types.id WHERE village_id = villages.id) as total_defense_power
+                    ')
+                    ->find($villageId);
+            });
+
+            if (!$this->selectedTarget) {
+                $this->addNotification('Target village not found.', 'error');
+                return;
+            }
+
+            $this->showBattleModal = true;
+            
+            // Track target selection
+            $this->dispatch('fathom-track', name: 'battle target selected', value: $villageId);
+
+            ds('Target selected successfully', [
+                'target_village_id' => $villageId,
+                'target_village_name' => $this->selectedTarget->name,
+                'target_player' => $this->selectedTarget->player->name ?? 'Unknown'
+            ])->label('BattleManager Target Selected');
+
+        } catch (\Exception $e) {
+            $this->addNotification('Error selecting target: ' . $e->getMessage(), 'error');
+            
+            ds('Target selection error', [
+                'village_id' => $villageId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ])->label('BattleManager Target Selection Error');
+        }
     }
 
     public function addTroopToAttack($troopId, $count)

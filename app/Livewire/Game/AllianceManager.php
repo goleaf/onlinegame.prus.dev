@@ -94,24 +94,31 @@ class AllianceManager extends Component
         $this->isLoading = true;
 
         try {
-            // Use optimized query with selectRaw for alliance stats
-            $this->alliances = Alliance::where('world_id', $this->world->id)
-                ->with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status'])
-                ->selectRaw('
-                    alliances.*,
-                    (SELECT COUNT(*) FROM players p WHERE p.alliance_id = alliances.id) as member_count,
-                    (SELECT SUM(points) FROM players p2 WHERE p2.alliance_id = alliances.id) as total_points,
-                    (SELECT AVG(points) FROM players p3 WHERE p3.alliance_id = alliances.id) as avg_points,
-                    (SELECT MAX(points) FROM players p4 WHERE p4.alliance_id = alliances.id) as max_points
-                ')
-                ->get()
-                ->toArray();
+            // Use SmartCache for alliance data with automatic optimization
+            $alliancesCacheKey = "world_{$this->world->id}_alliances_data";
+            $this->alliances = SmartCache::remember($alliancesCacheKey, now()->addMinutes(5), function () {
+                return Alliance::where('world_id', $this->world->id)
+                    ->with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status'])
+                    ->selectRaw('
+                        alliances.*,
+                        (SELECT COUNT(*) FROM players p WHERE p.alliance_id = alliances.id) as member_count,
+                        (SELECT SUM(points) FROM players p2 WHERE p2.alliance_id = alliances.id) as total_points,
+                        (SELECT AVG(points) FROM players p3 WHERE p3.alliance_id = alliances.id) as avg_points,
+                        (SELECT MAX(points) FROM players p4 WHERE p4.alliance_id = alliances.id) as max_points
+                    ')
+                    ->get()
+                    ->toArray();
+            });
 
-            $player = Player::where('user_id', Auth::id())
-                ->with(['alliance' => function ($query) {
-                    $query->with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status']);
-                }])
-                ->first();
+            // Use SmartCache for player alliance data with automatic optimization
+            $playerAllianceCacheKey = "player_" . Auth::id() . "_alliance_data";
+            $player = SmartCache::remember($playerAllianceCacheKey, now()->addMinutes(3), function () {
+                return Player::where('user_id', Auth::id())
+                    ->with(['alliance' => function ($query) {
+                        $query->with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status']);
+                    }])
+                    ->first();
+            });
 
             if ($player && $player->alliance) {
                 $this->myAlliance = $player->alliance;
