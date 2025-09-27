@@ -437,3 +437,79 @@ class Battle extends Model implements Auditable, IsFilterable
         );
     }
 }
+
+
+    /**
+     * Get battle distance between attacker and defender villages
+     */
+    public function getBattleDistanceAttribute(): ?float
+    {
+        if (!$this->attackerVillage || !$this->defenderVillage) {
+            return null;
+        }
+
+        $geoService = app(GeographicService::class);
+        return $geoService->calculateDistance(
+            $this->attackerVillage->latitude ?? 0,
+            $this->attackerVillage->longitude ?? 0,
+            $this->defenderVillage->latitude ?? 0,
+            $this->defenderVillage->longitude ?? 0
+        );
+    }
+
+    /**
+     * Get battle bearing from attacker to defender
+     */
+    public function getBattleBearingAttribute(): ?float
+    {
+        if (!$this->attackerVillage || !$this->defenderVillage) {
+            return null;
+        }
+
+        $geoService = app(GeographicService::class);
+        return $geoService->calculateBearing(
+            $this->attackerVillage->latitude ?? 0,
+            $this->attackerVillage->longitude ?? 0,
+            $this->defenderVillage->latitude ?? 0,
+            $this->defenderVillage->longitude ?? 0
+        );
+    }
+
+    /**
+     * Get battle travel time based on distance
+     */
+    public function getBattleTravelTimeAttribute(): ?int
+    {
+        $distance = $this->battle_distance;
+        if (!$distance) {
+            return null;
+        }
+
+        $geoService = app(GeographicService::class);
+        return $geoService->calculateTravelTimeFromDistance($distance);
+    }
+
+    /**
+     * Scope for battles within a certain distance
+     */
+    public function scopeWithinDistance($query, $latitude, $longitude, $maxDistance)
+    {
+        return $query->whereHas('village', function ($q) use ($latitude, $longitude, $maxDistance) {
+            $q->whereRaw("ST_Distance_Sphere(
+                POINT(longitude, latitude), 
+                POINT(?, ?)
+            ) <= ?", [$longitude, $latitude, $maxDistance * 1000]);
+        });
+    }
+
+    /**
+     * Scope for battles by geographic region
+     */
+    public function scopeInGeographicRegion($query, $minLat, $maxLat, $minLon, $maxLon)
+    {
+        return $query->whereHas('village', function ($q) use ($minLat, $maxLat, $minLon, $maxLon) {
+            $q->whereBetween('latitude', [$minLat, $maxLat])
+              ->whereBetween('longitude', [$minLon, $maxLon]);
+        });
+    }
+}

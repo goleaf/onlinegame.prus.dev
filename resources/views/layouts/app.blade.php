@@ -70,6 +70,9 @@
                     <div class="flex items-center">
                         <div class="flex items-center space-x-4">
                             @auth
+                                <a href="{{ route('game.dashboard') }}" class="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                                    Game Dashboard
+                                </a>
                                 <span class="text-sm text-gray-700 dark:text-gray-300">
                                     Welcome, {{ Auth::user()->name }}
                                 </span>
