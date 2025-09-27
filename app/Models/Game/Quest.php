@@ -244,12 +244,52 @@ class Quest extends Model implements Auditable
         );
     }
 
-    public function scopeWithPlayerStats($query, $playerId = null)
+    // Static methods for quest generation
+    public static function generateTutorialQuest(string $key, string $name, string $description): self
     {
-        $selectColumns = [
-            'quests.*',
-            QE::select(QE::count(c('id')))
-                ->from('player_quests')
+        return self::create([
+            'key' => $key,
+            'name' => $name,
+            'description' => $description,
+            'category' => 'tutorial',
+            'difficulty' => 'easy',
+            'is_repeatable' => false,
+            'is_active' => true,
+            'experience_reward' => 100,
+            'gold_reward' => 50,
+        ]);
+    }
+
+    public static function generateDailyQuest(string $key, string $name, string $description): self
+    {
+        return self::create([
+            'key' => $key,
+            'name' => $name,
+            'description' => $description,
+            'category' => 'daily',
+            'difficulty' => 'medium',
+            'is_repeatable' => true,
+            'is_active' => true,
+            'experience_reward' => 200,
+            'gold_reward' => 100,
+        ]);
+    }
+
+    public static function generateWeeklyQuest(string $key, string $name, string $description): self
+    {
+        return self::create([
+            'key' => $key,
+            'name' => $name,
+            'description' => $description,
+            'category' => 'weekly',
+            'difficulty' => 'hard',
+            'is_repeatable' => true,
+            'is_active' => true,
+            'experience_reward' => 500,
+            'gold_reward' => 250,
+        ]);
+    }
+}
                 ->whereColumn('quest_id', c('quests.id'))
                 ->as('total_players'),
             QE::select(QE::count(c('id')))
