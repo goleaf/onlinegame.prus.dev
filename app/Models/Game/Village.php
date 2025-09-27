@@ -4,8 +4,8 @@ namespace App\Models\Game;
 
 use App\Services\GeographicService;
 use App\ValueObjects\Coordinates;
-// use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-// use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
+use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
 use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
 use IndexZer0\EloquentFiltering\Filter\Types\Types;
@@ -391,23 +391,23 @@ class Village extends Model implements Auditable
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
-            Filter::field('name', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::field('population', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('x_coordinate', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('y_coordinate', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('latitude', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('longitude', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('elevation', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('is_capital', [FilterType::EQUAL]),
-            Filter::field('is_active', [FilterType::EQUAL]),
-            Filter::field('player_id', [FilterType::EQUAL]),
-            Filter::field('world_id', [FilterType::EQUAL]),
-            Filter::field('geohash', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::relation('player', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('world', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('buildings', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('resources', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('troops', [FilterType::HAS])->includeRelationFields()
+            Filter::field('name', ['$eq', '$contains']),
+            Filter::field('population', ['$eq', '$gt', '$lt']),
+            Filter::field('x_coordinate', ['$eq', '$gt', '$lt']),
+            Filter::field('y_coordinate', ['$eq', '$gt', '$lt']),
+            Filter::field('latitude', ['$eq', '$gt', '$lt']),
+            Filter::field('longitude', ['$eq', '$gt', '$lt']),
+            Filter::field('elevation', ['$eq', '$gt', '$lt']),
+            Filter::field('is_capital', ['$eq']),
+            Filter::field('is_active', ['$eq']),
+            Filter::field('player_id', ['$eq']),
+            Filter::field('world_id', ['$eq']),
+            Filter::field('geohash', ['$eq', '$contains']),
+            Filter::relation('player', ['$has']),
+            Filter::relation('world', ['$has']),
+            Filter::relation('buildings', ['$has']),
+            Filter::relation('resources', ['$has']),
+            Filter::relation('troops', ['$has'])
         );
     }
 }
