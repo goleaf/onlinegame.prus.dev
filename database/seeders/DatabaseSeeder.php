@@ -35,5 +35,6 @@ class DatabaseSeeder extends Seeder
         $this->call(\GameEvents::class);
         $this->call(\Database\Seeders\Tables\GameNotificationsSeeder::class);
         $this->call(\Database\Seeders\Tables\GameTasksSeeder::class);
+        $this->call(\Database\Seeders\Tables\PlayerQuestsSeeder::class);
     }
 }

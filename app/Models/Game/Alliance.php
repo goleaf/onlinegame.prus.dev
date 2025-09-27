@@ -16,7 +16,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
 
-class Alliance extends Model implements Auditable
+class Alliance extends Model implements Auditable, IsFilterable
 {
     use HasNotables, HasReference;
     use AuditableTrait;

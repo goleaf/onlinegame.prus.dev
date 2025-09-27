@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use SmartCache\Facades\SmartCache;
+use sbamtr\LaravelQueryEnrich\QE;
+use function sbamtr\LaravelQueryEnrich\c;
 
 class Quest extends Model
 {
@@ -95,28 +97,43 @@ class Quest extends Model
         return $query->where('category', 'combat');
     }
 
-    // Optimized query scopes using when() and selectRaw
+    // Enhanced query scopes using Query Enrich
     public function scopeWithPlayerStats($query, $playerId = null)
     {
-        return $query->selectRaw('
-            quests.*,
-            (SELECT COUNT(*) FROM player_quests WHERE quest_id = quests.id) as total_players,
-            (SELECT COUNT(*) FROM player_quests WHERE quest_id = quests.id AND status = "completed") as completed_count,
-            (SELECT AVG(progress) FROM player_quests WHERE quest_id = quests.id) as avg_progress
-        ')->when($playerId, function ($q) use ($playerId) {
-            return $q->addSelect([
-                'player_status' => \DB::table('player_quests')
-                    ->select('status')
-                    ->whereColumn('quest_id', 'quests.id')
-                    ->where('player_id', $playerId)
-                    ->limit(1),
-                'player_progress' => \DB::table('player_quests')
-                    ->select('progress')
-                    ->whereColumn('quest_id', 'quests.id')
-                    ->where('player_id', $playerId)
-                    ->limit(1),
-            ]);
-        });
+        $selectColumns = [
+            'quests.*',
+            QE::select(QE::count(c('id')))
+                ->from('player_quests')
+                ->whereColumn('quest_id', c('quests.id'))
+                ->as('total_players'),
+            QE::select(QE::count(c('id')))
+                ->from('player_quests')
+                ->whereColumn('quest_id', c('quests.id'))
+                ->where(c('status'), '=', 'completed')
+                ->as('completed_count'),
+            QE::select(QE::avg(c('progress')))
+                ->from('player_quests')
+                ->whereColumn('quest_id', c('quests.id'))
+                ->as('avg_progress')
+        ];
+
+        if ($playerId) {
+            $selectColumns[] = QE::select(c('status'))
+                ->from('player_quests')
+                ->whereColumn('quest_id', c('quests.id'))
+                ->where('player_id', $playerId)
+                ->limit(1)
+                ->as('player_status');
+                
+            $selectColumns[] = QE::select(c('progress'))
+                ->from('player_quests')
+                ->whereColumn('quest_id', c('quests.id'))
+                ->where('player_id', $playerId)
+                ->limit(1)
+                ->as('player_progress');
+        }
+
+        return $query->select($selectColumns);
     }
 
     public function scopeByDifficultyFilter($query, $difficulty = null)

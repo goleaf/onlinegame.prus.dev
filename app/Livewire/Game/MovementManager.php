@@ -593,9 +593,13 @@ class MovementManager extends Component
 
     private function calculateTravelTime($distance)
     {
-        // Base travel time calculation (simplified)
-        // In real Travian, this would depend on troop types and speeds
-        return max(60, $distance * 30);  // Minimum 1 minute, 30 seconds per distance unit
+        $geoService = app(GeographicService::class);
+        
+        // Use realistic travel time based on distance
+        // Assuming average troop speed of 20 km/h
+        $averageSpeed = 20; // km/h
+        
+        return $geoService->calculateTravelTime($distance, $averageSpeed);
     }
 
     public function getMovementIcon($movement)

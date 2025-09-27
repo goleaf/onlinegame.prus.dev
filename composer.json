@@ -57,6 +57,7 @@
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.16",
         "bottelet/translation-checker": "^1.2",
+        "dedoc/scramble": "*",
         "fakerphp/faker": "^1.23",
         "jasonmccreary/laravel-test-assertions": "^2.8",
         "laradumps/laradumps": "^4.5",

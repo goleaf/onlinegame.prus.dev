@@ -27,6 +27,7 @@ class User extends Authenticatable implements Auditable
     use HasNotables;
     use AuditableTrait;
     use Lift;
+    use HasReference;
 
     // Laravel Lift typed properties
     public int $id;
@@ -59,6 +60,7 @@ class User extends Authenticatable implements Auditable
         'password',
         'phone',
         'phone_country',
+        'reference_number',
     ];
 
     /**
