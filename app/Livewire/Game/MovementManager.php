@@ -6,6 +6,7 @@ use App\Models\Game\Movement;
 use App\Models\Game\Player;
 use App\Models\Game\Troop;
 use App\Models\Game\Village;
+use App\Services\GeographicService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
