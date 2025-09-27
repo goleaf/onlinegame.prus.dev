@@ -64,10 +64,6 @@ class AllianceMember extends Model
         return $query->where('player_id', $playerId);
     }
 
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
 
     public function scopeByRank($query, $rank = null)
     {
