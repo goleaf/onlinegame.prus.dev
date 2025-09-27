@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "aliziodev/laravel-taxonomy": "^2.6",
+        "backpack/basset": "^1.3",
         "edulazaro/laratext": "*",
         "eg-mohamed/notable": "^1.4",
         "eg-mohamed/referenceable": "^2.0",

@@ -2,16 +2,22 @@
 
 namespace App\Models\Game;
 
+use EloquentFiltering\Filterable;
+use EloquentFiltering\Contracts\IsFilterable;
+use EloquentFiltering\AllowedFilterList;
+use EloquentFiltering\Filter;
+use EloquentFiltering\FilterType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Battle extends Model implements Auditable
+class Battle extends Model implements Auditable, IsFilterable
 {
     use HasReference;
     use AuditableTrait;
+    use Filterable;
 
     protected $fillable = [
         'attacker_id',
@@ -167,5 +173,23 @@ class Battle extends Model implements Auditable
             'defender:id,name',
             'village:id,name'
         ]);
+    }
+
+    /**
+     * Define allowed filters for the Battle model
+     */
+    public function allowedFilters(): AllowedFilterList
+    {
+        return Filter::only(
+            Filter::field('result', [FilterType::EQUAL]),
+            Filter::field('attacker_id', [FilterType::EQUAL]),
+            Filter::field('defender_id', [FilterType::EQUAL]),
+            Filter::field('village_id', [FilterType::EQUAL]),
+            Filter::field('occurred_at', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('reference_number', [FilterType::EQUAL, FilterType::CONTAINS]),
+            Filter::relation('attacker', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('defender', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('village', [FilterType::HAS])->includeRelationFields()
+        );
     }
 }

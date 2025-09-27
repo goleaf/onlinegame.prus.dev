@@ -59,7 +59,22 @@
             "larautilx",
             "util",
             "utils",
-            "utilx"
+            "utilx",
+            "amqp",
+            "seo",
+            "warmup",
+            "geohash",
+            "upgradeable",
+            "travelling",
+            "natarian",
+            "js",
+            "ld",
+            "haversine",
+            "kmh",
+            "codebase",
+            "paginator",
+            "subquery",
+            "subqueries"
         ],
         "paths": [
             "vendor/",

@@ -23,7 +23,6 @@ class Player extends Model implements Auditable, IsFilterable
     use HasFactory;
     use HasNotables;
     use AuditableTrait;
-    use Filterable;
 
     protected $fillable = [
         'user_id',
@@ -205,6 +204,40 @@ class Player extends Model implements Auditable, IsFilterable
     public function playerQuests(): HasMany
     {
         return $this->hasMany(PlayerQuest::class);
+    }
+
+    /**
+     * Get players with SmartCache optimization
+     */
+    public static function getCachedPlayers($worldId = null, $filters = [])
+    {
+        $cacheKey = "players_{$worldId}_" . md5(serialize($filters));
+        
+        return SmartCache::remember($cacheKey, now()->addMinutes(10), function () use ($worldId, $filters) {
+            $query = static::active()->withStats();
+            
+            if ($worldId) {
+                $query->byWorld($worldId);
+            }
+            
+            if (isset($filters['tribe'])) {
+                $query->byTribe($filters['tribe']);
+            }
+            
+            if (isset($filters['alliance'])) {
+                $query->byAlliance($filters['alliance']);
+            }
+            
+            if (isset($filters['online'])) {
+                $query->online();
+            }
+            
+            if (isset($filters['search'])) {
+                $query->search($filters['search']);
+            }
+            
+            return $query->get();
+        });
     }
 
     public function notes()

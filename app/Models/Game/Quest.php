@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
+use SmartCache\Facades\SmartCache;
 
 class Quest extends Model
 {
@@ -157,6 +158,36 @@ class Quest extends Model
                     ->orWhere('description', 'like', '%' . $searchTerm . '%')
                     ->orWhere('category', 'like', '%' . $searchTerm . '%');
             });
+        });
+    }
+
+    /**
+     * Get quests with SmartCache optimization
+     */
+    public static function getCachedQuests($playerId = null, $filters = [])
+    {
+        $cacheKey = "quests_{$playerId}_" . md5(serialize($filters));
+        
+        return SmartCache::remember($cacheKey, now()->addMinutes(20), function () use ($playerId, $filters) {
+            $query = static::active()->withPlayerStats($playerId);
+            
+            if (isset($filters['category'])) {
+                $query->where('category', $filters['category']);
+            }
+            
+            if (isset($filters['difficulty'])) {
+                $query->byDifficultyFilter($filters['difficulty']);
+            }
+            
+            if (isset($filters['repeatable'])) {
+                $query->repeatable();
+            }
+            
+            if (isset($filters['search'])) {
+                $query->search($filters['search']);
+            }
+            
+            return $query->get();
         });
     }
 }

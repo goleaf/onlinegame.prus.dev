@@ -385,4 +385,30 @@ class Village extends Model implements Auditable, IsFilterable
             $centerX, $centerY
         ]);
     }
+
+    /**
+     * Define allowed filters for the Village model
+     */
+    public function allowedFilters(): AllowedFilterList
+    {
+        return Filter::only(
+            Filter::field('name', [FilterType::EQUAL, FilterType::CONTAINS]),
+            Filter::field('population', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('x_coordinate', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('y_coordinate', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('latitude', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('longitude', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('elevation', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('is_capital', [FilterType::EQUAL]),
+            Filter::field('is_active', [FilterType::EQUAL]),
+            Filter::field('player_id', [FilterType::EQUAL]),
+            Filter::field('world_id', [FilterType::EQUAL]),
+            Filter::field('geohash', [FilterType::EQUAL, FilterType::CONTAINS]),
+            Filter::relation('player', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('world', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('buildings', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('resources', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('troops', [FilterType::HAS])->includeRelationFields()
+        );
+    }
 }
