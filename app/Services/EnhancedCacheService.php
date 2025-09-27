@@ -84,17 +84,44 @@ class EnhancedCacheService
      */
     public function getStats(): array
     {
+        $startTime = microtime(true);
+        
+        ds('EnhancedCacheService: Getting cache statistics', [
+            'service' => 'EnhancedCacheService',
+            'method' => 'getStats',
+            'stats_time' => now()
+        ]);
+        
         try {
             $redis = Redis::connection('cache');
             $info = $redis->info();
 
-            return [
+            $stats = [
                 'memory_used' => $info['used_memory_human'] ?? 'N/A',
                 'keys_count' => $redis->dbsize(),
                 'hit_rate' => $this->calculateHitRate(),
                 'compression_enabled' => true,
             ];
+            
+            $statsTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            ds('EnhancedCacheService: Cache statistics retrieved', [
+                'memory_used' => $stats['memory_used'],
+                'keys_count' => $stats['keys_count'],
+                'hit_rate' => $stats['hit_rate'],
+                'stats_time_ms' => $statsTime
+            ]);
+
+            return $stats;
         } catch (\Exception $e) {
+            $statsTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            ds('EnhancedCacheService: Cache statistics failed', [
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+                'stats_time_ms' => $statsTime
+            ]);
+            
             return [
                 'error' => 'Unable to retrieve cache statistics',
                 'message' => $e->getMessage(),
