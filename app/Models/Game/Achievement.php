@@ -10,7 +10,7 @@ class Achievement extends Model
 {
     use HasFactory;
 
-    protected $table = 'player_achievements';
+    protected $table = 'achievements';
 
     protected $fillable = [
         'player_id',

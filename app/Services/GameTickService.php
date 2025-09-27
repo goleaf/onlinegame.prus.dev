@@ -182,7 +182,7 @@ class GameTickService
             ->toArray();
 
         // Calculate battle result
-        $battleResult = $this->calculateBattleResult($attackingTroops, $defendingTroops);
+        $battleResult = $this->calculateBattleResult($attackingTroops, $defendingTroops, $defenderVillage);
 
         // Create battle record
         $battle = Battle::create([
