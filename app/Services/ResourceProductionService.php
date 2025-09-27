@@ -6,6 +6,15 @@ class ResourceProductionService
 {
     public function calculateResourceProduction($village)
     {
+        $startTime = microtime(true);
+        
+        ds('ResourceProductionService: Calculating resource production', [
+            'service' => 'ResourceProductionService',
+            'village_id' => $village->id,
+            'village_name' => $village->name,
+            'calculation_time' => now()
+        ]);
+        
         $resources = $village->resources;
         $buildings = $village->buildings;
 
@@ -32,6 +41,15 @@ class ResourceProductionService
                 }
             }
         }
+
+        $calculationTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ds('ResourceProductionService: Resource production calculated', [
+            'village_id' => $village->id,
+            'production_rates' => $productionRates,
+            'buildings_count' => $buildings->count(),
+            'calculation_time_ms' => $calculationTime
+        ]);
 
         return $productionRates;
     }
