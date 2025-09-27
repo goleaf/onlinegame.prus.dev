@@ -47,11 +47,37 @@ class FileUploadManager extends Component
 
     public function loadUploadedFiles()
     {
+        // Load existing files for the player with optimized query
+        $playerId = $this->player?->id;
+        
+        if ($playerId) {
+            // Use optimized query to get file statistics
+            $fileStats = \DB::table('player_files')
+                ->where('player_id', $playerId)
+                ->selectRaw('
+                    COUNT(*) as total_files,
+                    SUM(CASE WHEN file_type = "avatar" THEN 1 ELSE 0 END) as avatar_count,
+                    SUM(CASE WHEN file_type = "screenshot" THEN 1 ELSE 0 END) as screenshot_count,
+                    SUM(CASE WHEN file_type = "document" THEN 1 ELSE 0 END) as document_count,
+                    SUM(file_size) as total_size,
+                    MAX(created_at) as last_upload
+                ')
+                ->first();
+        }
+
         // Load existing files for the player
         $this->uploadedFiles = [
             'avatar' => $this->getFile('avatar.jpg', 'player_uploads'),
             'screenshots' => $this->getFile('screenshots.json', 'player_uploads'),
             'documents' => $this->getFile('documents.json', 'player_uploads'),
+            'stats' => $fileStats ?? (object) [
+                'total_files' => 0,
+                'avatar_count' => 0,
+                'screenshot_count' => 0,
+                'document_count' => 0,
+                'total_size' => 0,
+                'last_upload' => null
+            ]
         ];
     }
 

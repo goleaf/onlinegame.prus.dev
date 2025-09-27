@@ -18,6 +18,7 @@ class GameEvent extends Model
         'event_data',
         'occurred_at',
         'is_read',
+        'reference_number',
     ];
 
     protected $casts = [

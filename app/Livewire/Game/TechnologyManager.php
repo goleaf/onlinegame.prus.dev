@@ -48,7 +48,7 @@ class TechnologyManager extends Component
     public $technologyTree = [];
     public $researchCosts = [];
     public $researchBenefits = [];
-    public $technologyCategories = ['military', 'economy', 'infrastructure', 'defense', 'special'];
+    public $technologyCategories = [];
     public $researchPriorities = ['low', 'medium', 'high', 'critical'];
 
     protected $listeners = [
