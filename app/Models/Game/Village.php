@@ -17,18 +17,11 @@ use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use WendellAdriel\Lift\Lift;
-
 class Village extends Model implements Auditable
 {
     use HasFactory;
     use HasNotables;
     use AuditableTrait;
-    use Lift;
-
-    protected $auditExclude = [
-        'auditingDisabled'
-    ];
 
     protected $fillable = [
         'player_id',

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Game\AIController;
 use App\Http\Controllers\Game\GameController;
 use App\Http\Controllers\Game\LarautilxController;
+use App\Http\Controllers\Game\LarautilxDashboardController;
 use App\Http\Controllers\Game\PlayerController;
 use App\Http\Controllers\Game\SecureGameController;
 use App\Http\Controllers\Game\SystemController;

@@ -102,13 +102,16 @@ class GamePerformanceMonitor
     }
 
     /**
-     * Get performance statistics
+     * Get performance statistics with SmartCache optimization
      */
     public static function getPerformanceStats(): array
     {
-        $queryStats = Cache::get('query_stats', []);
-        $responseStats = Cache::get('response_stats', []);
-        $memoryStats = Cache::get('memory_stats', []);
+        $cacheKey = "performance_stats_" . now()->format('Y-m-d-H');
+        
+        return SmartCache::remember($cacheKey, now()->addMinutes(30), function () {
+            $queryStats = Cache::get('query_stats', []);
+            $responseStats = Cache::get('response_stats', []);
+            $memoryStats = Cache::get('memory_stats', []);
 
         return [
             'queries' => [

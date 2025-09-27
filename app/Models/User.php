@@ -237,7 +237,21 @@ class User extends Authenticatable implements Auditable
      */
     public function getCapitalVillage()
     {
-        return $this->player ? $this->player->villages->where('is_capital', true)->first() : null;
+        $startTime = microtime(true);
+        
+        $capitalVillage = $this->player ? $this->player->villages->where('is_capital', true)->first() : null;
+        
+        ds('User capital village retrieved', [
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'has_player' => (bool) $this->player,
+            'has_capital' => (bool) $capitalVillage,
+            'capital_village_id' => $capitalVillage ? $capitalVillage->id : null,
+            'capital_village_name' => $capitalVillage ? $capitalVillage->name : null,
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Capital Village');
+
+        return $capitalVillage;
     }
 
     /**

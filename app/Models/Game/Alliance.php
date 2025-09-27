@@ -16,12 +16,12 @@ use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
 
-class Alliance extends Model implements Auditable, IsFilterable
+class Alliance extends Model implements Auditable
 {
     use HasNotables, HasReference;
     use AuditableTrait;
     use Lift;
-    use Filterable;
+    // use Filterable;
 
     // Laravel Lift typed properties
     public int $id;

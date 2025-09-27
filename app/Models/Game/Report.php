@@ -163,24 +163,24 @@ class Report extends Model implements Auditable
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
-            Filter::field('title', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::field('content', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::field('type', [FilterType::EQUAL]),
-            Filter::field('status', [FilterType::EQUAL]),
-            Filter::field('is_read', [FilterType::EQUAL]),
-            Filter::field('is_important', [FilterType::EQUAL]),
-            Filter::field('world_id', [FilterType::EQUAL]),
-            Filter::field('attacker_id', [FilterType::EQUAL]),
-            Filter::field('defender_id', [FilterType::EQUAL]),
-            Filter::field('from_village_id', [FilterType::EQUAL]),
-            Filter::field('to_village_id', [FilterType::EQUAL]),
-            Filter::field('read_at', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('reference_number', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::relation('world', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('attacker', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('defender', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('fromVillage', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('toVillage', [FilterType::HAS])->includeRelationFields()
+            Filter::field('title', ['$eq', '$contains']),
+            Filter::field('content', ['$eq', '$contains']),
+            Filter::field('type', ['$eq']),
+            Filter::field('status', ['$eq']),
+            Filter::field('is_read', ['$eq']),
+            Filter::field('is_important', ['$eq']),
+            Filter::field('world_id', ['$eq']),
+            Filter::field('attacker_id', ['$eq']),
+            Filter::field('defender_id', ['$eq']),
+            Filter::field('from_village_id', ['$eq']),
+            Filter::field('to_village_id', ['$eq']),
+            Filter::field('read_at', ['$eq', '$gt', '$lt']),
+            Filter::field('reference_number', ['$eq', '$contains']),
+            Filter::relation('world', ['$has']),
+            Filter::relation('attacker', ['$has']),
+            Filter::relation('defender', ['$has']),
+            Filter::relation('fromVillage', ['$has']),
+            Filter::relation('toVillage', ['$has'])
         );
     }
 }
