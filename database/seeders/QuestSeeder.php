@@ -158,7 +158,7 @@ class QuestSeeder extends Seeder
         foreach ($quests as $quest) {
             Quest::firstOrCreate(
                 ['key' => $quest['key']],
-                $quest
+                array_merge($quest, ['reference_number' => uniqid()])
             );
         }
     }
