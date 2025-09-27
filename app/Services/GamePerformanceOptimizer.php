@@ -149,8 +149,8 @@ class GamePerformanceOptimizer
         $startTime = microtime(true);
 
         try {
-            // Clean up expired cache entries
-            $this->cacheService->invalidateByTags(['expired']);
+            // Clean up expired cache entries using SmartCache
+            SmartCache::flush();
             
             // Clean up expired sessions
             $results['sessions_cleaned'] = $this->sessionService->cleanupExpiredSessions();
