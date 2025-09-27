@@ -24,6 +24,7 @@ class Achievement extends Model
         'icon',
         'is_hidden',
         'is_active',
+        'reference_number',
     ];
 
     protected $casts = [

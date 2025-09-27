@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
+use SmartCache\Facades\SmartCache;
 
 /**
  * Enhanced Cache Service for Laravel 12.29.0+ features

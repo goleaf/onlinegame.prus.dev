@@ -170,6 +170,10 @@ $playerStats = Player::where('id', $this->player->id)
 - **TechnologyManager**: Reduced from 7+ queries to 3-4 queries
 - **ResourceManager**: Reduced from 5+ queries to 2-3 queries
 - **FileUploadManager**: Reduced from 3+ queries to 1-2 queries
+- **AdvancedMapManager**: Reduced from 5+ queries to 2-3 queries
+- **AdvancedMapViewer**: Reduced from 4+ queries to 1-2 queries
+- **MapViewer**: Reduced from 3+ queries to 1-2 queries
+- **WorldMap**: Reduced from 6+ queries to 2-3 queries
 
 ### Memory Usage
 - Reduced memory footprint by eliminating redundant data loading
@@ -203,7 +207,11 @@ $playerStats = Player::where('id', $this->player->id)
 17. `app/Livewire/Game/TechnologyManager.php`
 18. `app/Livewire/Game/ResourceManager.php`
 19. `app/Livewire/Game/FileUploadManager.php`
-20. `app/Models/Game/Player.php`
+20. `app/Livewire/Game/AdvancedMapManager.php`
+21. `app/Livewire/Game/AdvancedMapViewer.php`
+22. `app/Livewire/Game/MapViewer.php`
+23. `app/Livewire/Game/WorldMap.php`
+24. `app/Models/Game/Player.php`
 21. `app/Models/Game/Quest.php`
 22. `app/Models/Game/Movement.php`
 23. `app/Models/Game/GameEvent.php`
