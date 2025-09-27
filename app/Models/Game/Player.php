@@ -18,6 +18,7 @@ use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use SmartCache\Facades\SmartCache;
+use WendellAdriel\Lift\Lift;
 
 class Player extends Model implements Auditable
 {
