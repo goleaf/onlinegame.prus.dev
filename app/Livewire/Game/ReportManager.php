@@ -213,6 +213,22 @@ class ReportManager extends Component
         $this->isLoading = false;
     }
 
+    private function getDateFilterValue()
+    {
+        switch ($this->filterByDate) {
+            case 'today':
+                return today()->startOfDay();
+            case 'week':
+                return now()->subWeek();
+            case 'month':
+                return now()->subMonth();
+            case 'year':
+                return now()->subYear();
+            default:
+                return null;
+        }
+    }
+
     private function applyDateFilter($query)
     {
         switch ($this->filterByDate) {

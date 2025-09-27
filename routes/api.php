@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\GameApiController;
 use App\Http\Controllers\Api\WebSocketController;
 use App\Http\Controllers\Game\AIController;
+use App\Http\Controllers\Game\AllianceController;
 use App\Http\Controllers\Game\APIDocumentationController;
 use App\Http\Controllers\Game\ArtifactController;
 use App\Http\Controllers\Game\LarautilxController;
