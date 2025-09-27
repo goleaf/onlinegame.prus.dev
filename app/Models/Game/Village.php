@@ -73,6 +73,17 @@ class Village extends Model implements Auditable
         'geographic_metadata' => 'array',
     ];
 
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+
+    protected $referenceTemplate = [
+        'format' => 'VIL-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+
+    protected $referencePrefix = 'VIL';
+
     /**
      * Get the coordinates as a value object
      */

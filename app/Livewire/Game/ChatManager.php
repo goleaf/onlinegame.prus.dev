@@ -142,7 +142,7 @@ class ChatManager extends Component
         $this->resetPage();
     }
 
-    private function getMessages()
+    protected function getMessages()
     {
         if ($this->searchQuery) {
             $result = $this->chatService->searchMessages(
