@@ -150,7 +150,8 @@
             "cdn",
             "preconnect",
             "taggables",
-            "taxonomables"
+            "taxonomables",
+            "uptime"
         ],
         "paths": [
             "vendor/",
