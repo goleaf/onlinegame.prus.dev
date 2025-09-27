@@ -55,6 +55,7 @@
                     <div class="flex justify-between items-center">
                         <span>{{ $notification['message'] }}</span>
                         <button wire:click="removeNotification('{{ $notification['id'] }}')"
+                                wire:confirm="Are you sure you want to dismiss this notification?"
                                 class="text-gray-500 hover:text-gray-700">
                             ✕
                         </button>
