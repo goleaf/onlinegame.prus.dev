@@ -13,7 +13,19 @@ return new class extends Migration
     {
         Schema::create('siege_weapons', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('village_id')->constrained('villages')->onDelete('cascade');
+            $table->string('type'); // ram, catapult, trebuchet
+            $table->string('name');
+            $table->integer('attack_power');
+            $table->integer('defense_power');
+            $table->integer('health');
+            $table->integer('max_health');
+            $table->json('cost')->nullable(); // resource costs
+            $table->text('description')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
+            
+            $table->index(['village_id', 'type', 'is_active']);
         });
     }
 
