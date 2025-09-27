@@ -196,11 +196,12 @@ class GamePerformanceOptimizer
     {
         // Check if villages table exists and has data
         try {
-            return DB::table('villages')
+            $villages = DB::table('villages')
                 ->select(['id', 'name', 'created_at'])
                 ->where('user_id', $userId)
-                ->get()
-                ->toArray();
+                ->get();
+                
+            return $villages ? $villages->toArray() : [];
         } catch (\Exception $e) {
             // Return empty array if table doesn't exist
             return [];
