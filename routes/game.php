@@ -193,6 +193,9 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::get('/larautilx/dashboard', [LarautilxDashboardController::class, 'getDashboardData'])->name('game.api.larautilx.dashboard');
     Route::get('/larautilx/integration-summary', [LarautilxDashboardController::class, 'getIntegrationSummary'])->name('game.api.larautilx.integration-summary');
     Route::post('/larautilx/test-components', [LarautilxDashboardController::class, 'testComponents'])->name('game.api.larautilx.test-components');
+
+    // API Documentation
+    Route::get('/docs/larautilx', [APIDocumentationController::class, 'getLarautilxAPIDocumentation'])->name('game.api.docs.larautilx');
 });
 
 // Error pages
