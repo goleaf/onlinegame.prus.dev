@@ -28,7 +28,7 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255', new Username(), new Clean],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => [
@@ -40,12 +40,28 @@ class RegisterController extends Controller
                     $request->name,
                 ]),
             ],
-        ]);
+            'phone' => ['nullable', 'string'],
+            'phone_country' => ['nullable', 'string', 'size:2'],
+        ];
+
+        // Add phone validation if phone number is provided
+        if (!empty($request->phone)) {
+            if ($request->phone_country) {
+                $rules['phone'][] = (new Phone)->country($request->phone_country);
+            } else {
+                $rules['phone'][] = new Phone;
+            }
+            $rules['phone_country'][] = 'required_with:phone';
+        }
+
+        $validated = $request->validate($rules);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'phone' => $validated['phone'] ?? null,
+            'phone_country' => $validated['phone_country'] ?? null,
         ]);
 
         Auth::login($user);
