@@ -409,9 +409,9 @@ class QuestController extends Controller
                 $player->increment('experience', $rewards['experience']);
             }
 
-            // Add resources (would need to implement resource addition logic)
+            // Add resources
             if (isset($rewards['resources'])) {
-                // Implementation would depend on your resource system
+                $this->addResourcesToPlayer($player, $rewards['resources']);
             }
 
             DB::commit();

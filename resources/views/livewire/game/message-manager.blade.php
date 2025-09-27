@@ -273,8 +273,8 @@
                                                 </button>
                                             @endif
                                             <button wire:click="deleteMessage({{ $message->id }})" 
-                                                    class="text-red-600 hover:text-red-800 text-sm"
-                                                    onclick="return confirm('Are you sure you want to delete this message?')">
+                                                    wire:confirm="Are you sure you want to delete this message? This action cannot be undone."
+                                                    class="text-red-600 hover:text-red-800 text-sm">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
