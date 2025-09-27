@@ -66,7 +66,7 @@ class UpdaterComponent extends Component
         try {
             $this->updateHistory = $this->updaterService->getUpdateHistory();
         } catch (\Exception $e) {
-            $this->alert('warning', 'Failed to load update history: ' . $e->getMessage());
+            session()->flash('error', 'Failed to load update history: ' . $e->getMessage());
         }
     }
 

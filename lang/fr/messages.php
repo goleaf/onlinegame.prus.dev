@@ -80,3 +80,4 @@ return [
     'title' => 'Titre',
     'content' => 'Contenu',
 ];
+

@@ -380,3 +380,4 @@ class AIManager extends Component
         ]);
     }
 }
+

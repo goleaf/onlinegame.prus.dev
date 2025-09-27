@@ -222,3 +222,4 @@ class IntrospectAnalyzeCommand extends Command
         };
     }
 }
+

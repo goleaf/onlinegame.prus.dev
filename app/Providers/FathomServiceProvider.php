@@ -25,3 +25,4 @@ class FathomServiceProvider extends ServiceProvider
         //
     }
 }
+

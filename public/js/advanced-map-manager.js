@@ -367,3 +367,4 @@ class AdvancedMapManager {
 
 // Make it globally available
 window.AdvancedMapManager = AdvancedMapManager;
+

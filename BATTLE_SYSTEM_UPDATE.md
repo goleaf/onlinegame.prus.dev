@@ -240,3 +240,4 @@ php artisan game:tick --force
 **Battle System Enhancement Complete!** ⚔️🎮
 
 The Laravel Travian game now features a comprehensive military system with realistic combat mechanics, troop movements, and detailed battle resolution. Players can launch attacks, defend their villages, and engage in strategic warfare with meaningful consequences and rewards.
+

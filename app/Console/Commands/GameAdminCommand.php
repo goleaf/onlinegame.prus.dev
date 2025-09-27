@@ -322,3 +322,4 @@ class GameAdminCommand extends Command
         $this->line('  php artisan game:admin reset-player --player=1');
     }
 }
+

@@ -808,3 +808,4 @@ class APIDocumentationController extends Controller
         ];
     }
 }
+

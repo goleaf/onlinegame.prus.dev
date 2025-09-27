@@ -26,3 +26,4 @@ The following images should be created and placed in this directory for optimal 
 ## Usage
 
 These images are referenced in the SEO metadata for better social media sharing and search engine optimization.
+

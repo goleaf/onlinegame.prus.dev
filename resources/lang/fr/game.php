@@ -69,3 +69,4 @@ return [
         'use_system' => 'Ou utilisez le système de création de joueurs s\'il est disponible',
     ],
 ];
+

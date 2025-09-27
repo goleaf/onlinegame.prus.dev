@@ -216,3 +216,4 @@ class BattleSimulationTest extends Command
         return 0;
     }
 }
+

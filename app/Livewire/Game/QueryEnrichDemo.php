@@ -146,3 +146,4 @@ class QueryEnrichDemo extends Component
         ]);
     }
 }
+

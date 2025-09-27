@@ -285,3 +285,4 @@ The monitoring adds minimal overhead:
 - [Laravel Debug Bar Documentation](https://github.com/barryvdh/laravel-debugbar)
 - [MySQL Performance Schema](https://dev.mysql.com/doc/refman/8.0/en/performance-schema.html)
 - [Percona Toolkit Documentation](https://www.percona.com/doc/percona-toolkit/LATEST/index.html)
+

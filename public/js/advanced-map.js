@@ -448,3 +448,4 @@ document.addEventListener('DOMContentLoaded', function() {
     const mapManager = new AdvancedMapManager();
     mapManager.init();
 });
+

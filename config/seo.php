@@ -150,3 +150,4 @@ return [
         'alt' => 'Travian Online Game',
     ],
 ];
+

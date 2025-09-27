@@ -197,3 +197,4 @@ class EloquentFilteringTest extends TestCase
         $this->assertEquals('TestUser', $results->first()->name);
     }
 }
+

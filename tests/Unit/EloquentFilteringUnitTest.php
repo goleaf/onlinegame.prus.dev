@@ -99,3 +99,4 @@ class EloquentFilteringUnitTest extends TestCase
         $this->assertTrue(class_exists('EloquentFiltering\FilterType'));
     }
 }
+

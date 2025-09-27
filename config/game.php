@@ -211,3 +211,4 @@ return [
         'retention' => env('GAME_LOG_RETENTION', 30), // days
     ],
 ];
+

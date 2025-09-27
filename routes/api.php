@@ -1,6 +1,15 @@
 <?php
 
 use App\Http\Controllers\Api\GameApiController;
+use App\Http\Controllers\Game\AIController;
+use App\Http\Controllers\Game\APIDocumentationController;
+use App\Http\Controllers\Game\LarautilxController;
+use App\Http\Controllers\Game\LarautilxDashboardController;
+use App\Http\Controllers\Game\PlayerController;
+use App\Http\Controllers\Game\SystemController;
+use App\Http\Controllers\Game\TaskController;
+use App\Http\Controllers\Game\UserController;
+use App\Http\Controllers\Game\VillageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

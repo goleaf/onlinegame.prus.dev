@@ -203,3 +203,4 @@ echo "   - Advanced Map: /game/advanced-map\n";
 echo "   - Demo Script: php demo_geographic_features.php\n";
 echo "   - Analysis: php artisan geographic:analyze\n";
 echo "   - Data Population: php artisan villages:populate-geographic-data\n\n";
+

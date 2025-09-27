@@ -86,3 +86,4 @@ The project now includes basic language files for:
 - `lang/fr/messages.php` - French translations
 - `test_translations.php` - Example usage file
 - `TRANSLATION_CHECKER_INTEGRATION.md` - This documentation
+

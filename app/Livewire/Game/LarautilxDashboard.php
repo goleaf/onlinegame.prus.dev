@@ -183,3 +183,4 @@ class LarautilxDashboard extends Component
         ]);
     }
 }
+

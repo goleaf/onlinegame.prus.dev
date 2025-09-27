@@ -213,3 +213,4 @@ composer peck:check
 **Status**: ✅ **FULLY INTEGRATED AND OPERATIONAL**
 
 PeckPHP is now successfully integrated and ready for use across the Laravel Travian game project.
+

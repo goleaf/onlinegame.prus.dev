@@ -228,3 +228,4 @@ $units = [
 **Unit Training System Complete!** ⚔️🎮
 
 The Laravel Travian game now features a comprehensive military system with 27 unique unit types, balanced combat mechanics, and strategic depth. Players can train, deploy, and manage diverse armies with meaningful tactical choices and competitive gameplay.
+

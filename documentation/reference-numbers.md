@@ -45,6 +45,14 @@ php artisan referenceable:install
 | PlayerStatistic | `PS-{YEAR}{MONTH}{SEQ}` | PS-2025090001 | Player statistics |
 | GameTask | `GT-{YEAR}{MONTH}{SEQ}` | GT-2025090001 | System game tasks |
 
+### Advanced Game Models
+
+| Model | Reference Format | Example | Description |
+|-------|------------------|---------|-------------|
+| AllianceWar | `WAR-{YEAR}{MONTH}{SEQ}` | WAR-2025090001 | Alliance wars |
+| Hero | `HERO-{YEAR}{MONTH}{SEQ}` | HERO-2025090001 | Player heroes |
+| SiegeWeapon | `SW-{YEAR}{MONTH}{SEQ}` | SW-2025090001 | Siege weapons |
+
 ## Database Schema
 
 All models have a `reference_number` column with:

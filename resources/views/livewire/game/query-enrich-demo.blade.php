@@ -328,3 +328,4 @@ $stats = DB::table('reports')
         </div>
     </div>
 </div>
+

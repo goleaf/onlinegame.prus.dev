@@ -206,3 +206,4 @@ class GameUtility
         return $totalScore;
     }
 }
+

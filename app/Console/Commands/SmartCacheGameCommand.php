@@ -233,3 +233,4 @@ class SmartCacheGameCommand extends Command
         return 0;
     }
 }
+

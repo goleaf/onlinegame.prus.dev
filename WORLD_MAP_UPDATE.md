@@ -386,3 +386,4 @@ public function filterVillages()
 **World Map System Enhanced!** 🗺️⚔️
 
 The Laravel Travian game now features a comprehensive world map system with interactive features, coordinate-based placement, multiple themes, and advanced filtering capabilities. Players can navigate the world strategically with enhanced visual feedback and intuitive controls.
+

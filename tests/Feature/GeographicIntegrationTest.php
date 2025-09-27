@@ -86,3 +86,4 @@ class GeographicIntegrationTest extends TestCase
         $this->assertTrue(in_array($response->status(), [200, 302, 401])); // 200 OK, 302 redirect, or 401 auth required
     }
 }
+

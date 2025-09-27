@@ -59,3 +59,4 @@ class BassetAssets extends Component
         return BassetHelper::getPreconnectTags();
     }
 }
+

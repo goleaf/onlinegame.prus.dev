@@ -258,3 +258,4 @@ private function addLootToAttacker($village, $loot)
 **Battle Reports System Enhanced!** 📊⚔️
 
 The Laravel Travian game now features comprehensive battle reports with detailed casualty tracking, realistic loot calculations, and strategic analysis. Players receive complete battle information to make informed decisions and improve their gameplay strategies.
+

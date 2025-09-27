@@ -158,3 +158,4 @@ class ValueObjectsTest extends TestCase
         $this->assertFalse($far->isWithinRadius($center, 10));
     }
 }
+

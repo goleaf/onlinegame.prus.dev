@@ -154,3 +154,4 @@ class VillageGeographicTest extends TestCase
         $this->assertEquals('array', $casts['geographic_metadata']);
     }
 }
+

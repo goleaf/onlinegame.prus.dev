@@ -423,3 +423,4 @@ class BattleSimulationService
         return $recommendations;
     }
 }
+

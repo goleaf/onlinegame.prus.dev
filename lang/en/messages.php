@@ -80,3 +80,4 @@ return [
     'title' => 'Title',
     'content' => 'Content',
 ];
+

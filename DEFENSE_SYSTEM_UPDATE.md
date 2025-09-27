@@ -255,3 +255,4 @@ CREATE TABLE buildings (
 **Defense System Complete!** 🛡️⚔️
 
 The Laravel Travian game now features a comprehensive defense system with wall bonuses, defensive buildings, and spy defense mechanics. Players can build strategic defenses to protect their villages and create meaningful choices between offense and defense investments.
+

@@ -194,3 +194,4 @@ class BattleSimulator extends Component
         return view('livewire.game.battle-simulator');
     }
 }
+

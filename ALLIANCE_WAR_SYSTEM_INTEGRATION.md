@@ -214,3 +214,4 @@ The Alliance War System provides:
 - ✅ **Strategic Depth** - Enhanced gameplay and player engagement
 
 This integration significantly enhances the strategic depth and multiplayer experience of the Travian game, enabling large-scale alliance warfare with comprehensive tracking and management systems.
+

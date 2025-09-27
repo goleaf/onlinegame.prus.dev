@@ -60,3 +60,4 @@ return [
         'log_errors' => env('AI_LOG_ERRORS', true),
     ],
 ];
+
