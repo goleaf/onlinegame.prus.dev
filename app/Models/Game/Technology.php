@@ -5,6 +5,7 @@ namespace App\Models\Game;
 use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
+use SmartCache\Facades\SmartCache;
 
 class Technology extends Model
 {
@@ -111,5 +112,35 @@ class Technology extends Model
         return $query->with([
             'players:id,name,level,points'
         ]);
+    }
+
+    /**
+     * Get technologies with SmartCache optimization
+     */
+    public static function getCachedTechnologies($playerId = null, $filters = [])
+    {
+        $cacheKey = "technologies_{$playerId}_" . md5(serialize($filters));
+        
+        return SmartCache::remember($cacheKey, now()->addMinutes(25), function () use ($playerId, $filters) {
+            $query = static::active()->withStats();
+            
+            if (isset($filters['category'])) {
+                $query->byCategory($filters['category']);
+            }
+            
+            if (isset($filters['max_level'])) {
+                $query->byMaxLevel($filters['max_level']);
+            }
+            
+            if (isset($filters['search'])) {
+                $query->search($filters['search']);
+            }
+            
+            if ($playerId) {
+                $query->withPlayerInfo();
+            }
+            
+            return $query->get();
+        });
     }
 }

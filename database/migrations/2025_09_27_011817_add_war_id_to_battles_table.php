@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('battles', function (Blueprint $table) {
-            //
+            $table->foreignId('war_id')->nullable()->constrained('alliance_wars')->onDelete('set null');
+            $table->index('war_id');
         });
     }
 
@@ -22,7 +23,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('battles', function (Blueprint $table) {
-            //
+            $table->dropForeign(['war_id']);
+            $table->dropIndex(['war_id']);
+            $table->dropColumn('war_id');
         });
     }
 };
