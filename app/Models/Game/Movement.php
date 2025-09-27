@@ -241,7 +241,7 @@ class Movement extends Model implements Auditable
             Filter::field('started_at', ['$eq', '$gt', '$lt']),
             Filter::field('arrives_at', ['$eq', '$gt', '$lt']),
             Filter::field('returned_at', ['$eq', '$gt', '$lt']),
-            Filter::field('reference_number', ['$eq', '$contains']),
+            Filter::field('reference_number', ['$eq', '$like']),
             Filter::relation('player', ['$has']),
             Filter::relation('fromVillage', ['$has']),
             Filter::relation('toVillage', ['$has'])

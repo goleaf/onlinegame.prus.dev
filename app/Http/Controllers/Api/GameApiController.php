@@ -383,7 +383,17 @@ class GameApiController extends Controller
     public function getVillage(Request $request, int $id): JsonResponse
     {
         $user = $request->user();
-        $village = Village::with(['buildings', 'resources', 'player'])->find($id);
+        $village = Village::with(['buildings', 'resources', 'player'])
+            ->selectRaw('
+                villages.*,
+                latitude,
+                longitude,
+                geohash,
+                elevation,
+                (SELECT COUNT(*) FROM buildings WHERE village_id = villages.id) as building_count,
+                (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as troop_count
+            ')
+            ->find($id);
 
         if (!$village) {
             return response()->json([
