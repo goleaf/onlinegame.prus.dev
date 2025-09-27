@@ -17,6 +17,13 @@ use Illuminate\Support\Facades\Log;
 
 class GameTickService
 {
+    protected $rabbitMQ;
+
+    public function __construct()
+    {
+        $this->rabbitMQ = new RabbitMQService();
+    }
+
     public function processGameTick()
     {
         DB::beginTransaction();
