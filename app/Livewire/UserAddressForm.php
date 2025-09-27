@@ -3,78 +3,74 @@
 namespace App\Livewire;
 
 use App\Models\User;
-use App\Traits\GameValidationTrait;
-use Illuminate\Support\Facades\Validator;
-use Intervention\Validation\Rules\Postalcode;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use JonPurvis\Squeaky\Rules\Clean;
+use Livewire\Attributes\Validate;
 
 class UserAddressForm extends Component
 {
-    use GameValidationTrait;
+    #[Validate('required|string|max:255')]
+    public $street = '';
 
-    public $user;
-    public $address_line_1 = '';
-    public $address_line_2 = '';
+    #[Validate('required|string|max:100')]
     public $city = '';
-    public $state = '';
+
+    #[Validate('required|string|max:20')]
     public $postal_code = '';
-    public $country = 'US';
 
-    protected $rules = [
-        'address_line_1' => ['nullable', 'string', 'max:255', new Clean],
-        'address_line_2' => ['nullable', 'string', 'max:255', new Clean],
-        'city' => ['nullable', 'string', 'max:100', new Clean],
-        'state' => ['nullable', 'string', 'max:100', new Clean],
-        'postal_code' => ['nullable', 'string', 'max:20'],
-        'country' => ['required', 'string', 'size:2'],
-    ];
+    #[Validate('required|string|max:100')]
+    public $state = '';
 
-    public function mount(User $user = null)
+    #[Validate('required|string|max:100')]
+    public $country = '';
+
+    #[Validate('nullable|string|max:20')]
+    public $phone = '';
+
+    public $isEditing = false;
+
+    public function mount()
     {
-        $this->user = $user ?? auth()->user();
-        
-        if ($this->user) {
-            $this->address_line_1 = $this->user->address_line_1 ?? '';
-            $this->address_line_2 = $this->user->address_line_2 ?? '';
-            $this->city = $this->user->city ?? '';
-            $this->state = $this->user->state ?? '';
-            $this->postal_code = $this->user->postal_code ?? '';
-            $this->country = $this->user->country ?? 'US';
+        $user = Auth::user();
+        if ($user) {
+            $this->street = $user->street ?? '';
+            $this->city = $user->city ?? '';
+            $this->postal_code = $user->postal_code ?? '';
+            $this->state = $user->state ?? '';
+            $this->country = $user->country ?? '';
+            $this->phone = $user->phone ?? '';
         }
     }
 
-    public function updated($propertyName)
+    public function toggleEdit()
     {
-        $this->validateOnly($propertyName);
-        
-        // Add postal code validation when country is available
-        if ($propertyName === 'postal_code' && !empty($this->postal_code) && !empty($this->country)) {
-            $this->rules['postal_code'][] = new Postalcode($this->country);
-        }
+        $this->isEditing = !$this->isEditing;
     }
 
     public function save()
     {
-        $rules = $this->rules;
-        
-        // Add postal code validation if postal code is provided
-        if (!empty($this->postal_code) && !empty($this->country)) {
-            $rules['postal_code'][] = new Postalcode($this->country);
+        $this->validate();
+
+        $user = Auth::user();
+        if ($user) {
+            $user->update([
+                'street' => $this->street,
+                'city' => $this->city,
+                'postal_code' => $this->postal_code,
+                'state' => $this->state,
+                'country' => $this->country,
+                'phone' => $this->phone,
+            ]);
+
+            $this->isEditing = false;
+            session()->flash('message', 'Address updated successfully!');
         }
+    }
 
-        $this->validate($rules);
-
-        $this->user->update([
-            'address_line_1' => $this->address_line_1,
-            'address_line_2' => $this->address_line_2,
-            'city' => $this->city,
-            'state' => $this->state,
-            'postal_code' => $this->postal_code,
-            'country' => $this->country,
-        ]);
-
-        session()->flash('message', 'Address updated successfully!');
+    public function cancel()
+    {
+        $this->mount(); // Reset to original values
+        $this->isEditing = false;
     }
 
     public function render()
