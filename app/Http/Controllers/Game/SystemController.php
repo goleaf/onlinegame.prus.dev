@@ -122,7 +122,7 @@ class SystemController extends Controller
     /**
      * Get scheduled tasks information
      */
-    public function getScheduledTasks()
+    public function scheduledTasks()
     {
         try {
             $scheduleSummary = $this->schedulerUtil->getScheduleSummary();

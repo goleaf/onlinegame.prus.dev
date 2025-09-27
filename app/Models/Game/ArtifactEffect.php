@@ -14,12 +14,10 @@ class ArtifactEffect extends Model
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
     protected $referenceStrategy = 'template';
-
     protected $referenceTemplate = [
         'format' => 'AE-{YEAR}{MONTH}{SEQ}',
         'sequence_length' => 4,
     ];
-
     protected $referencePrefix = 'AE';
 
     protected $fillable = [
@@ -44,15 +42,6 @@ class ArtifactEffect extends Model
         'expires_at' => 'datetime',
         'is_active' => 'boolean',
     ];
-
-    // Referenceable configuration
-    protected $referenceColumn = 'reference_number';
-    protected $referenceStrategy = 'template';
-    protected $referenceTemplate = [
-        'format' => 'AE-{YEAR}{MONTH}{SEQ}',
-        'sequence_length' => 4,
-    ];
-    protected $referencePrefix = 'AE';
 
     public function artifact(): BelongsTo
     {
