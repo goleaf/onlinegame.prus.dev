@@ -19,6 +19,14 @@ use LaraUtilX\Utilities\LoggingUtil;
  */
 class ArtifactEffectService
 {
+    protected CachingUtil $cachingUtil;
+    protected LoggingUtil $loggingUtil;
+
+    public function __construct()
+    {
+        $this->cachingUtil = new CachingUtil(1800, ['artifact_effects']);
+        $this->loggingUtil = new LoggingUtil();
+    }
     /**
      * Apply artifact effects to a target
      */

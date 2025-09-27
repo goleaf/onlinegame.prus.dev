@@ -341,4 +341,61 @@ class Player extends Model implements Auditable
             Filter::relation('user', ['$has'])
         );
     }
+
+    /**
+     * Initialize player with real-time integration
+     */
+    public function initializeWithIntegration(): void
+    {
+        try {
+            GameIntegrationService::initializeUserRealTime($this->user_id);
+            
+            // Send welcome notification
+            GameNotificationService::sendNotification(
+                [$this->user_id],
+                'player_welcome',
+                [
+                    'player_id' => $this->id,
+                    'player_name' => $this->name,
+                    'village_count' => $this->villages()->count(),
+                    'timestamp' => now()->toISOString(),
+                ]
+            );
+
+        } catch (\Exception $e) {
+            Log::error('Failed to initialize player with integration', [
+                'player_id' => $this->id,
+                'user_id' => $this->user_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Update player stats with real-time notifications
+     */
+    public function updateStatsWithIntegration(array $stats): void
+    {
+        try {
+            $this->update($stats);
+
+            // Send notification about stats update
+            GameNotificationService::sendNotification(
+                [$this->user_id],
+                'player_stats_updated',
+                [
+                    'player_id' => $this->id,
+                    'updated_stats' => array_keys($stats),
+                    'timestamp' => now()->toISOString(),
+                ]
+            );
+
+        } catch (\Exception $e) {
+            Log::error('Failed to update player stats with integration', [
+                'player_id' => $this->id,
+                'stats' => $stats,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
 }

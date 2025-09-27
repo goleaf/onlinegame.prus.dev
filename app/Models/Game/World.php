@@ -25,6 +25,7 @@ class World extends Model implements Auditable
     public string $name;
     public ?string $description;
     public bool $is_active;
+    public ?string $reference_number;
     public \Carbon\Carbon $created_at;
     public \Carbon\Carbon $updated_at;
 

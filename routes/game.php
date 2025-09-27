@@ -164,6 +164,26 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::get('/game/tasks/{task}', function ($task) {
         return view('livewire.game.task-detail', compact('task'));
     })->name('game.tasks.detail');
+    
+    // Alliance detail view
+    Route::get('/game/alliances/{alliance}', function ($alliance) {
+        return view('livewire.game.alliance-detail', compact('alliance'));
+    })->name('game.alliances.detail');
+    
+    // Village detail view
+    Route::get('/game/villages/{village}', function ($village) {
+        return view('livewire.game.village-detail', compact('village'));
+    })->name('game.villages.detail');
+    
+    // Player detail view
+    Route::get('/game/players/{player}', function ($player) {
+        return view('livewire.game.player-detail', compact('player'));
+    })->name('game.players.detail');
+    
+    // Battle detail view
+    Route::get('/game/battles/{battle}', function ($battle) {
+        return view('livewire.game.battle-detail', compact('battle'));
+    })->name('game.battles.detail');
 
     // Larautilx integration management
     Route::get('/larautilx/status', [LarautilxController::class, 'getStatus'])->name('game.api.larautilx.status');
