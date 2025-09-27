@@ -144,7 +144,8 @@
             "referenceable",
             "zxcvbn",
             "supervisord",
-            "pgsql"
+            "pgsql",
+            "configs"
         ],
         "paths": [
             "vendor/",
