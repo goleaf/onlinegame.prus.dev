@@ -205,6 +205,10 @@ class AllianceManager extends Component
                 $this->allianceMembers = $player->alliance->members;
                 $this->allianceInvites = $player->alliance->invites;
                 $this->allianceApplications = $player->alliance->applications;
+                $this->loadAllianceDiplomacy();
+                $this->loadAllianceWars();
+                $this->loadAllianceMessages();
+                $this->loadAllianceLogs();
             }
 
             $this->addNotification('Alliance data loaded successfully', 'success');

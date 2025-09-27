@@ -124,7 +124,39 @@ class GameApiController extends Controller
 
         $villages = Village::where('player_id', $player->id)
             ->with(['buildings', 'resources'])
-            ->get();
+            ->selectRaw('
+                villages.*,
+                latitude,
+                longitude,
+                geohash,
+                elevation,
+                (SELECT COUNT(*) FROM buildings WHERE village_id = villages.id) as building_count,
+                (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as troop_count
+            ')
+            ->get()
+            ->map(function ($village) {
+                return [
+                    'id' => $village->id,
+                    'player_id' => $village->player_id,
+                    'world_id' => $village->world_id,
+                    'name' => $village->name,
+                    'x_coordinate' => $village->x_coordinate,
+                    'y_coordinate' => $village->y_coordinate,
+                    'population' => $village->population,
+                    'is_capital' => $village->is_capital,
+                    'is_active' => $village->is_active,
+                    'latitude' => $village->latitude,
+                    'longitude' => $village->longitude,
+                    'geohash' => $village->geohash,
+                    'elevation' => $village->elevation,
+                    'building_count' => $village->building_count ?? 0,
+                    'troop_count' => $village->troop_count ?? 0,
+                    'buildings' => $village->buildings,
+                    'resources' => $village->resources,
+                    'created_at' => $village->created_at,
+                    'updated_at' => $village->updated_at,
+                ];
+            });
 
         $responseTime = round((microtime(true) - $startTime) * 1000, 2);
         
