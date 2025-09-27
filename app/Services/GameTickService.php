@@ -233,7 +233,7 @@ class GameTickService
         Log::info("Battle processed: {$battleResult['result']} at village {$defenderVillage->name}");
     }
 
-    private function calculateBattleResult($attackingTroops, $defendingTroops)
+    private function calculateBattleResult($attackingTroops, $defendingTroops, $defenderVillage)
     {
         $attackerPower = 0;
         $defenderPower = 0;
@@ -247,6 +247,10 @@ class GameTickService
         foreach ($defendingTroops as $troop) {
             $defenderPower += $troop['count'] * ($troop['defense_infantry'] + $troop['defense_cavalry']);
         }
+
+        // Apply defensive bonuses from buildings
+        $defensiveBonus = $this->calculateDefensiveBonus($defenderVillage);
+        $defenderPower *= (1 + $defensiveBonus);
 
         // Add randomness (80-120% of calculated power)
         $attackerPower *= (0.8 + (rand(0, 40) / 100));

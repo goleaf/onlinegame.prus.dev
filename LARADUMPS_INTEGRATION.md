@@ -329,6 +329,52 @@ $this->dispatch('fathom-track', name: 'task completed', value: $taskId);
 $this->dispatch('fathom-track', name: 'village selected', value: $villageId);
 ```
 
+### Error Handling Examples
+```php
+// Input validation
+if (!$villageId || !is_numeric($villageId)) {
+    $this->addNotification('Invalid village ID provided.', 'error');
+    return;
+}
+
+// Business logic validation
+if ($villageId == $this->village->id) {
+    $this->addNotification('Cannot attack your own village.', 'error');
+    return;
+}
+
+// Exception handling with detailed logging
+try {
+    $movement = Movement::create($movementData);
+    // ... success logic
+} catch (\Exception $e) {
+    $this->addNotification('Error launching attack: ' . $e->getMessage(), 'error');
+    
+    ds('Attack launch error', [
+        'error' => $e->getMessage(),
+        'trace' => $e->getTraceAsString()
+    ])->label('BattleManager Attack Error');
+}
+```
+
+### Performance Monitoring Examples
+```php
+// Component load time tracking
+public function mount()
+{
+    $startTime = microtime(true);
+    
+    // ... component initialization
+    
+    ds('Component mounted', [
+        'mount_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+    ])->label('Component Mount');
+    
+    // Track performance metrics
+    $this->dispatch('fathom-track', name: 'component_load_time', value: round((microtime(true) - $startTime) * 1000));
+}
+```
+
 ## Future Enhancements
 
 Potential improvements:
