@@ -181,13 +181,34 @@ class User extends Authenticatable implements Auditable
      */
     public function isOnline(): bool
     {
+        $startTime = microtime(true);
+        
         if (!$this->player) {
+            ds('User is not online - no player', [
+                'user_id' => $this->id,
+                'user_name' => $this->name,
+                'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            ])->label('User Online Check - No Player');
+            
             return false;
         }
 
-        return $this->player->is_online &&
+        $isOnline = $this->player->is_online &&
             $this->player->last_active_at &&
             $this->player->last_active_at->diffInMinutes(now()) <= 15;
+
+        ds('User online status check', [
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'player_id' => $this->player->id,
+            'player_online' => $this->player->is_online,
+            'last_active_at' => $this->player->last_active_at,
+            'minutes_since_active' => $this->player->last_active_at ? $this->player->last_active_at->diffInMinutes(now()) : null,
+            'is_online' => $isOnline,
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Online Check');
+
+        return $isOnline;
     }
 
     /**
