@@ -234,7 +234,7 @@ class GeographicService
     /**
      * Calculate travel time between two points based on distance and speed
      *
-     * @param float $distanceKm
+     * @param float $distance
      * @param float $speedKmh
      * @return int Travel time in seconds
      */
