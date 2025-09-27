@@ -14,7 +14,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Report extends Model implements Auditable, IsFilterable
+class Report extends Model implements Auditable
 {
     use HasFactory, HasReference, AuditableTrait, Filterable;
 
