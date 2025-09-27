@@ -40,6 +40,9 @@ Route::middleware(['auth', 'game.auth'])->group(function () {
 
     // Reports
     Route::get('/game/reports', [GameController::class, 'reports'])->name('game.reports');
+    Route::get('/game/reports/{report}', function ($report) {
+        return view('livewire.game.report-detail', compact('report'));
+    })->name('game.reports.detail');
 
     // Map
     Route::get('/game/map', [GameController::class, 'map'])->name('game.map');

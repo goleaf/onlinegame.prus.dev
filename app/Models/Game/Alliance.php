@@ -226,7 +226,7 @@ class Alliance extends Model implements Auditable
             Filter::field('is_active', ['$eq']),
             Filter::field('world_id', ['$eq']),
             Filter::field('leader_id', ['$eq']),
-            Filter::field('reference_number', ['$eq', '$contains']),
+            Filter::field('reference_number', ['$eq', '$like']),
             Filter::relation('world', ['$has']),
             Filter::relation('leader', ['$has']),
             Filter::relation('members', ['$has']),

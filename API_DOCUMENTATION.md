@@ -136,6 +136,20 @@ Authorization: Bearer your-token-here
 | GET | `/api/game/larautilx/integration-summary` | Get integration summary |
 | POST | `/api/game/larautilx/test-components` | Test Larautilx components |
 
+### Artifact System
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/game/artifacts` | List all artifacts |
+| POST | `/api/game/artifacts` | Create new artifact |
+| GET | `/api/game/artifacts/server-wide` | Get server-wide artifacts |
+| POST | `/api/game/artifacts/generate-random` | Generate random artifact |
+| GET | `/api/game/artifacts/{id}` | Get specific artifact |
+| PUT | `/api/game/artifacts/{id}` | Update artifact |
+| DELETE | `/api/game/artifacts/{id}` | Delete artifact |
+| POST | `/api/game/artifacts/{id}/activate` | Activate artifact |
+| POST | `/api/game/artifacts/{id}/deactivate` | Deactivate artifact |
+| GET | `/api/game/artifacts/{id}/effects` | Get artifact effects |
+
 ## Response Format
 
 ### Success Response

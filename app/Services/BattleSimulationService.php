@@ -128,6 +128,17 @@ class BattleSimulationService
         $results['defender_win_rate'] = ($results['defender_wins'] / $iterations) * 100;
         $results['draw_rate'] = ($results['draws'] / $iterations) * 100;
 
+        $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ds('BattleSimulationService: Battle simulation completed', [
+            'total_simulation_time_ms' => $totalTime,
+            'iterations_completed' => $iterations,
+            'attacker_win_rate' => $results['attacker_win_rate'],
+            'defender_win_rate' => $results['defender_win_rate'],
+            'draw_rate' => $results['draw_rate'],
+            'defensive_bonus' => $results['defensive_bonus']
+        ]);
+
         return $results;
     }
 
