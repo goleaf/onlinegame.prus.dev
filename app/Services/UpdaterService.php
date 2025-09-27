@@ -27,13 +27,17 @@ class UpdaterService
      */
     public function getCurrentVersion(): string
     {
-        try {
-            $result = Process::run('git describe --tags --abbrev=0');
-            return $result->successful() ? trim($result->output()) : '1.0.0';
-        } catch (\Exception $e) {
-            Log::warning('Could not get current version from git', ['error' => $e->getMessage()]);
-            return '1.0.0';
-        }
+        $cacheKey = 'updater_current_version_' . now()->format('Y-m-d-H');
+        
+        return SmartCache::remember($cacheKey, now()->addHours(1), function () {
+            try {
+                $result = Process::run('git describe --tags --abbrev=0');
+                return $result->successful() ? trim($result->output()) : '1.0.0';
+            } catch (\Exception $e) {
+                Log::warning('Could not get current version from git', ['error' => $e->getMessage()]);
+                return '1.0.0';
+            }
+        });
     }
 
     /**

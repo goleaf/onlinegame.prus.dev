@@ -157,7 +157,8 @@
             "ean",
             "hsv",
             "ds",
-            "deinitialize"
+            "deinitialize",
+            "krt"
         ],
         "paths": [
             "vendor/",

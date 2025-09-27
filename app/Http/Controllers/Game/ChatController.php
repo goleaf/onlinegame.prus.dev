@@ -23,100 +23,33 @@ class ChatController extends Controller
     /**
      * Get messages for a channel
      */
-    public function getChannelMessages(Request $request): JsonResponse
+    public function getChannelMessages(Request $request, int $channelId): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'channel_id' => 'required|integer',
-            'channel_type' => 'required|string|in:global,alliance,private,trade,diplomacy,custom',
-            'limit' => 'integer|min:1|max:100',
-            'offset' => 'integer|min:0',
+        $limit = $request->get('limit', 50);
+        $offset = $request->get('offset', 0);
+
+        $result = $this->chatService->getChannelMessages($channelId, $limit, $offset);
+
+        return response()->json([
+            'success' => true,
+            'data' => $result,
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
-        try {
-            $result = $this->chatService->getChannelMessages(
-                $request->channel_id,
-                $request->channel_type,
-                $request->get('limit', 50),
-                $request->get('offset', 0)
-            );
-
-            return response()->json([
-                'success' => true,
-                'data' => $result,
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get channel messages: ' . $e->getMessage(),
-            ], 500);
-        }
     }
 
     /**
-     * Get global messages
+     * Get messages by channel type
      */
-    public function getGlobalMessages(Request $request): JsonResponse
+    public function getMessagesByType(Request $request, string $channelType): JsonResponse
     {
-        try {
-            $result = $this->chatService->getGlobalMessages(
-                $request->get('limit', 50),
-                $request->get('offset', 0)
-            );
+        $limit = $request->get('limit', 50);
+        $offset = $request->get('offset', 0);
 
-            return response()->json([
-                'success' => true,
-                'data' => $result,
-            ]);
+        $result = $this->chatService->getMessagesByType($channelType, $limit, $offset);
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get global messages: ' . $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * Get alliance messages
-     */
-    public function getAllianceMessages(Request $request): JsonResponse
-    {
-        $player = Auth::user()->player;
-        
-        if (!$player || !$player->alliance_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Player is not in an alliance',
-            ], 400);
-        }
-
-        try {
-            $result = $this->chatService->getAllianceMessages(
-                $player->alliance_id,
-                $request->get('limit', 50),
-                $request->get('offset', 0)
-            );
-
-            return response()->json([
-                'success' => true,
-                'data' => $result,
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get alliance messages: ' . $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'data' => $result,
+        ]);
     }
 
     /**
@@ -125,10 +58,10 @@ class ChatController extends Controller
     public function sendMessage(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'channel_id' => 'required|integer',
-            'channel_type' => 'required|string|in:global,alliance,private,trade,diplomacy,custom',
-            'message' => 'required|string|max:500',
-            'message_type' => 'string|in:text,system,announcement,emote,command',
+            'channel_id' => 'nullable|exists:chat_channels,id',
+            'channel_type' => 'required|in:global,alliance,private,trade,diplomacy',
+            'message' => 'required|string|max:1000',
+            'message_type' => 'required|in:text,system,announcement,emote,command',
         ]);
 
         if ($validator->fails()) {
@@ -140,20 +73,12 @@ class ChatController extends Controller
         }
 
         try {
-            $player = Auth::user()->player;
-            if (!$player) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Player not found',
-                ], 404);
-            }
-
             $message = $this->chatService->sendMessage(
-                $player->id,
+                Auth::user()->player->id,
                 $request->channel_id,
                 $request->channel_type,
                 $request->message,
-                $request->get('message_type', 'text')
+                $request->message_type
             );
 
             return response()->json([
@@ -176,8 +101,8 @@ class ChatController extends Controller
     public function sendGlobalMessage(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'message' => 'required|string|max:500',
-            'message_type' => 'string|in:text,system,announcement,emote,command',
+            'message' => 'required|string|max:1000',
+            'message_type' => 'required|in:text,system,announcement,emote,command',
         ]);
 
         if ($validator->fails()) {
@@ -189,18 +114,10 @@ class ChatController extends Controller
         }
 
         try {
-            $player = Auth::user()->player;
-            if (!$player) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Player not found',
-                ], 404);
-            }
-
             $message = $this->chatService->sendGlobalMessage(
-                $player->id,
+                Auth::user()->player->id,
                 $request->message,
-                $request->get('message_type', 'text')
+                $request->message_type
             );
 
             return response()->json([
@@ -222,9 +139,18 @@ class ChatController extends Controller
      */
     public function sendAllianceMessage(Request $request): JsonResponse
     {
+        $player = Auth::user()->player;
+        
+        if (!$player->alliance_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Player is not in an alliance',
+            ], 400);
+        }
+
         $validator = Validator::make($request->all(), [
-            'message' => 'required|string|max:500',
-            'message_type' => 'string|in:text,system,announcement,emote,command',
+            'message' => 'required|string|max:1000',
+            'message_type' => 'required|in:text,system,announcement,emote,command',
         ]);
 
         if ($validator->fails()) {
@@ -236,19 +162,11 @@ class ChatController extends Controller
         }
 
         try {
-            $player = Auth::user()->player;
-            if (!$player || !$player->alliance_id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Player is not in an alliance',
-                ], 400);
-            }
-
             $message = $this->chatService->sendAllianceMessage(
                 $player->id,
                 $player->alliance_id,
                 $request->message,
-                $request->get('message_type', 'text')
+                $request->message_type
             );
 
             return response()->json([
@@ -266,20 +184,125 @@ class ChatController extends Controller
     }
 
     /**
+     * Send a private message
+     */
+    public function sendPrivateMessage(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'recipient_id' => 'required|exists:players,id',
+            'message' => 'required|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $message = $this->chatService->sendPrivateMessage(
+                Auth::user()->player->id,
+                $request->recipient_id,
+                $request->message
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Private message sent successfully',
+                'data' => $message,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send private message: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Send a trade message
+     */
+    public function sendTradeMessage(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'message' => 'required|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $message = $this->chatService->sendTradeMessage(
+                Auth::user()->player->id,
+                $request->message
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Trade message sent successfully',
+                'data' => $message,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send trade message: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Send a diplomacy message
+     */
+    public function sendDiplomacyMessage(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'message' => 'required|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $message = $this->chatService->sendDiplomacyMessage(
+                Auth::user()->player->id,
+                $request->message
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Diplomacy message sent successfully',
+                'data' => $message,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send diplomacy message: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
      * Delete a message
      */
     public function deleteMessage(int $messageId): JsonResponse
     {
         try {
-            $player = Auth::user()->player;
-            if (!$player) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Player not found',
-                ], 404);
-            }
-
-            $success = $this->chatService->deleteMessage($messageId, $player->id);
+            $success = $this->chatService->deleteMessage($messageId, Auth::user()->player->id);
 
             if ($success) {
                 return response()->json([
@@ -289,8 +312,8 @@ class ChatController extends Controller
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Cannot delete this message',
-                ], 403);
+                    'message' => 'Message not found or access denied',
+                ], 404);
             }
 
         } catch (\Exception $e) {
@@ -307,15 +330,7 @@ class ChatController extends Controller
     public function getAvailableChannels(): JsonResponse
     {
         try {
-            $player = Auth::user()->player;
-            if (!$player) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Player not found',
-                ], 404);
-            }
-
-            $channels = $this->chatService->getAvailableChannels($player->id);
+            $channels = $this->chatService->getAvailableChannels(Auth::user()->player->id);
 
             return response()->json([
                 'success' => true,
@@ -331,15 +346,35 @@ class ChatController extends Controller
     }
 
     /**
-     * Create a custom channel
+     * Get channel statistics
      */
-    public function createChannel(Request $request): JsonResponse
+    public function getChannelStats(int $channelId): JsonResponse
+    {
+        try {
+            $stats = $this->chatService->getChannelStats($channelId);
+
+            return response()->json([
+                'success' => true,
+                'data' => $stats,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get channel statistics: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Search messages
+     */
+    public function searchMessages(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:50',
-            'description' => 'string|max:255',
-            'is_public' => 'boolean',
-            'max_members' => 'integer|min:2|max:100',
+            'query' => 'required|string|min:3|max:100',
+            'channel_type' => 'nullable|in:global,alliance,private,trade,diplomacy',
+            'limit' => 'nullable|integer|min:1|max:100',
         ]);
 
         if ($validator->fails()) {
@@ -351,43 +386,32 @@ class ChatController extends Controller
         }
 
         try {
-            $player = Auth::user()->player;
-            if (!$player) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Player not found',
-                ], 404);
-            }
-
-            $channel = $this->chatService->createChannel(
-                $player->id,
-                $request->name,
-                $request->get('description', ''),
-                $request->get('is_public', true),
-                $request->get('max_members')
+            $result = $this->chatService->searchMessages(
+                $request->query,
+                $request->channel_type,
+                $request->get('limit', 50)
             );
 
             return response()->json([
                 'success' => true,
-                'message' => 'Channel created successfully',
-                'data' => $channel,
+                'data' => $result,
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create channel: ' . $e->getMessage(),
+                'message' => 'Failed to search messages: ' . $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Get chat statistics
+     * Get message statistics
      */
-    public function getChatStats(): JsonResponse
+    public function getMessageStats(): JsonResponse
     {
         try {
-            $stats = $this->chatService->getChatStats();
+            $stats = $this->chatService->getMessageStats();
 
             return response()->json([
                 'success' => true,
@@ -397,7 +421,7 @@ class ChatController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get chat statistics: ' . $e->getMessage(),
+                'message' => 'Failed to get message statistics: ' . $e->getMessage(),
             ], 500);
         }
     }

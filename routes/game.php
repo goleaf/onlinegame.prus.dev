@@ -237,6 +237,18 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::post('/messages/bulk-delete', [App\Http\Controllers\Game\MessageController::class, 'bulkDelete'])->name('game.api.messages.bulk-delete');
     Route::get('/messages/players', [App\Http\Controllers\Game\MessageController::class, 'getPlayers'])->name('game.api.messages.players');
     Route::get('/messages/{messageId}', [App\Http\Controllers\Game\MessageController::class, 'getMessage'])->name('game.api.messages.show');
+
+    // Chat management API
+    Route::get('/chat/channels', [App\Http\Controllers\Game\ChatController::class, 'getAvailableChannels'])->name('game.api.chat.channels');
+    Route::get('/chat/global', [App\Http\Controllers\Game\ChatController::class, 'getGlobalMessages'])->name('game.api.chat.global');
+    Route::get('/chat/alliance', [App\Http\Controllers\Game\ChatController::class, 'getAllianceMessages'])->name('game.api.chat.alliance');
+    Route::get('/chat/channel/{channelId}', [App\Http\Controllers\Game\ChatController::class, 'getChannelMessages'])->name('game.api.chat.channel');
+    Route::post('/chat/send', [App\Http\Controllers\Game\ChatController::class, 'sendMessage'])->name('game.api.chat.send');
+    Route::post('/chat/global/send', [App\Http\Controllers\Game\ChatController::class, 'sendGlobalMessage'])->name('game.api.chat.global.send');
+    Route::post('/chat/alliance/send', [App\Http\Controllers\Game\ChatController::class, 'sendAllianceMessage'])->name('game.api.chat.alliance.send');
+    Route::delete('/chat/messages/{messageId}', [App\Http\Controllers\Game\ChatController::class, 'deleteMessage'])->name('game.api.chat.delete');
+    Route::post('/chat/channels/create', [App\Http\Controllers\Game\ChatController::class, 'createChannel'])->name('game.api.chat.channels.create');
+    Route::get('/chat/stats', [App\Http\Controllers\Game\ChatController::class, 'getChatStats'])->name('game.api.chat.stats');
 });
 
 // Error pages

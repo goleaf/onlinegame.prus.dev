@@ -20,6 +20,10 @@ class UserProfileManager extends Component
     public $phone = '';
     public $phone_country = 'US';
     public $showPhoneForm = false;
+    public $showPasswordForm = false;
+    public $currentPassword = '';
+    public $newPassword = '';
+    public $newPasswordConfirmation = '';
 
     protected function rules()
     {
