@@ -26,7 +26,13 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->dropColumn([
+                'phone',
+                'phone_country',
+                'phone_normalized',
+                'phone_national',
+                'phone_e164'
+            ]);
         });
     }
 };
