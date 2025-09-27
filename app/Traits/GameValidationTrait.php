@@ -198,8 +198,8 @@ trait GameValidationTrait
     protected function validateAchievementData(array $data)
     {
         $rules = [
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
+            'name' => ['required', 'string', 'max:255', new Clean],
+            'description' => ['required', 'string', 'max:1000', new Clean],
             'category' => 'required|in:combat,building,resource,exploration,alliance,special',
             'points' => 'required|integer|min:1|max:1000',
             'requirements' => 'required|json',

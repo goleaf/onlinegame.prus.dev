@@ -4,6 +4,7 @@ use App\Http\Controllers\Game\GameController;
 use App\Http\Controllers\Game\LarautilxController;
 use App\Http\Controllers\Game\PlayerController;
 use App\Http\Controllers\Game\SecureGameController;
+use App\Http\Controllers\Game\SystemController;
 use App\Http\Controllers\Game\TaskController;
 use App\Http\Controllers\Game\UserController;
 use App\Http\Controllers\Game\VillageController;
