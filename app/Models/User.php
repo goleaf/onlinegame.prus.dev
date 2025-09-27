@@ -7,7 +7,7 @@ use App\Traits\Commenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use LaraUtilX\Traits\LarautilxAuditable;
+use LaraUtilX\Traits\Auditable as LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;

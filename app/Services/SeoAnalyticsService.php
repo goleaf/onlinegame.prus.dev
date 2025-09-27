@@ -216,7 +216,7 @@ class SeoAnalyticsService
             $currentDate = now();
             while ($currentDate->gte($cutoffDate)) {
                 $key = "seo_metrics_{$page}_" . $currentDate->format('Y-m-d');
-                Cache::forget($key);
+                $this->cachingUtil->forget($key);
                 $currentDate->subDay();
             }
         }
