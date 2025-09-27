@@ -2,6 +2,8 @@
 
 namespace App\Utilities;
 
+use App\Services\GeographicService;
+
 /**
  * Game Utility Functions
  * Common utility functions for game operations

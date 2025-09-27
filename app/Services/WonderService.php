@@ -356,17 +356,21 @@ class WonderService
             throw new \Exception('Target level must be higher than current level');
         }
 
-        return [
-            'wonder' => [
-                'id' => $wonder->id,
-                'name' => $wonder->name,
-                'current_level' => $wonder->current_level,
-                'target_level' => $targetLevel,
-            ],
-            'cost' => $wonder->getConstructionCost($targetLevel),
-            'time' => $wonder->getConstructionTime($targetLevel),
-            'bonuses' => $wonder->getBonusEffects($targetLevel),
-            'can_construct' => $wonder->canUpgrade(),
-        ];
+        $cacheKey = "wonder_requirements_{$wonder->id}_{$targetLevel}";
+        
+        return SmartCache::remember($cacheKey, now()->addMinutes(20), function () use ($wonder, $targetLevel) {
+            return [
+                'wonder' => [
+                    'id' => $wonder->id,
+                    'name' => $wonder->name,
+                    'current_level' => $wonder->current_level,
+                    'target_level' => $targetLevel,
+                ],
+                'cost' => $wonder->getConstructionCost($targetLevel),
+                'time' => $wonder->getConstructionTime($targetLevel),
+                'bonuses' => $wonder->getBonusEffects($targetLevel),
+                'can_construct' => $wonder->canUpgrade(),
+            ];
+        });
     }
 }
