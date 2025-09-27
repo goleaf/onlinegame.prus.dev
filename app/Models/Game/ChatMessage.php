@@ -249,4 +249,30 @@ class ChatMessage extends Model implements Auditable
 
         return $reference;
     }
+
+    /**
+     * Get chat messages with SmartCache optimization
+     */
+    public static function getCachedMessages($channelId = null, $filters = [])
+    {
+        $cacheKey = "chat_messages_{$channelId}_" . md5(serialize($filters));
+        
+        return SmartCache::remember($cacheKey, now()->addMinutes(3), function () use ($channelId, $filters) {
+            $query = static::with(['sender']);
+            
+            if ($channelId) {
+                $query->where('channel_id', $channelId);
+            }
+            
+            if (isset($filters['type'])) {
+                $query->where('message_type', $filters['type']);
+            }
+            
+            if (isset($filters['recent'])) {
+                $query->where('created_at', '>', now()->subHours($filters['recent']));
+            }
+            
+            return $query->orderBy('created_at', 'desc')->get();
+        });
+    }
 }

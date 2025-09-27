@@ -12,12 +12,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
+use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
+use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
 
-class User extends Authenticatable implements Auditable
+class User extends Authenticatable implements Auditable, IsFilterable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -27,7 +29,6 @@ class User extends Authenticatable implements Auditable
     use Lift;
     use HasReference;
     use Filterable;
-
     // Laravel Lift typed properties
     public int $id;
     public string $name;
@@ -241,6 +242,97 @@ class User extends Authenticatable implements Auditable
         $capitalVillage = $this->player ? $this->player->villages->where('is_capital', true)->first() : null;
 
         ds('User capital village retrieved', [
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'has_player' => (bool) $this->player,
+            'has_capital' => (bool) $capitalVillage,
+            'capital_village_id' => $capitalVillage ? $capitalVillage->id : null,
+            'capital_village_name' => $capitalVillage ? $capitalVillage->name : null,
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Capital Village');
+
+        return $capitalVillage;
+    }
+
+    /**
+     * Scope to get users with game players
+     */
+    public function scopeWithGamePlayers($query)
+    {
+        return $query->whereHas('player');
+    }
+
+    /**
+     * Scope to get active game users
+     */
+    public function scopeActiveGameUsers($query)
+    {
+        return $query->whereHas('player', function ($q) {
+            $q->where('is_active', true);
+        });
+    }
+
+    /**
+     * Scope to get online users
+     */
+    public function scopeOnlineUsers($query)
+    {
+        return $query->whereHas('player', function ($q) {
+            $q
+                ->where('is_online', true)
+                ->where('last_active_at', '>=', now()->subMinutes(15));
+        });
+    }
+
+    /**
+     * Scope to get users by world
+     */
+    public function scopeByWorld($query, $worldId)
+    {
+        return $query->whereHas('player', function ($q) use ($worldId) {
+            $q->where('world_id', $worldId);
+        });
+    }
+
+    /**
+     * Scope to get users by tribe
+     */
+    public function scopeByTribe($query, $tribe)
+    {
+        return $query->whereHas('player', function ($q) use ($tribe) {
+            $q->where('tribe', $tribe);
+        });
+    }
+
+    /**
+     * Scope to get users by alliance
+     */
+    public function scopeByAlliance($query, $allianceId)
+    {
+        return $query->whereHas('player', function ($q) use ($allianceId) {
+            $q->where('alliance_id', $allianceId);
+        });
+    }
+
+    /**
+     * Define allowed filters for the User model
+     */
+    public function allowedFilters(): AllowedFilterList
+    {
+        return Filter::only(
+            Filter::field('name', ['$eq', '$like']),
+            Filter::field('email', ['$eq', '$like']),
+            Filter::field('phone', ['$eq', '$like']),
+            Filter::field('phone_country', ['$eq']),
+            Filter::field('phone_normalized', ['$eq', '$like']),
+            Filter::field('phone_e164', ['$eq', '$like']),
+            Filter::field('email_verified_at', ['$eq', '$gt', '$lt']),
+            Filter::relation('players', ['$has']),
+            Filter::relation('player', ['$has'])
+        );
+    }
+}
+
             'user_id' => $this->id,
             'user_name' => $this->name,
             'has_player' => (bool) $this->player,

@@ -94,6 +94,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(\LaraUtilX\Utilities\LoggingUtil::class, function ($app) {
             return new \LaraUtilX\Utilities\LoggingUtil();
         });
+        
+        $this->app->bind(\App\Services\NotificationService::class, function ($app) {
+            return new \App\Services\NotificationService();
+        });
 
         // Register Basset helper
         $this->app->singleton(\App\Helpers\BassetHelper::class);

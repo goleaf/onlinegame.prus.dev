@@ -8,6 +8,7 @@ use JonPurvis\Squeaky\Rules\Clean;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Propaganistas\LaravelPhone\Rules\Phone;
+use Ziming\LaravelZxcvbn\Rules\ZxcvbnRule;
 
 class UserProfileManager extends Component
 {

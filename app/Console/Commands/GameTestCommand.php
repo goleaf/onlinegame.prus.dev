@@ -78,6 +78,8 @@ class GameTestCommand extends Command
             'security' => 'Security Features',
             'database' => 'Database Operations',
             'integration' => 'Integration Tests',
+            'error-handling' => 'Error Handling System',
+            'optimization' => 'Performance Optimization',
         ];
 
         $results = [];
