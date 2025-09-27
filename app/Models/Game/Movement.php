@@ -21,7 +21,7 @@ use WendellAdriel\Lift\Lift;
 
 class Movement extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait;
+    use HasFactory, HasReference, AuditableTrait, Lift;
 
     protected $fillable = [
         'player_id',
