@@ -3,6 +3,11 @@
 This index is automatically generated and lists all documentation files:
 
 * **app/**
+  * **Console/**
+    * **Commands/**
+      * [Documentation: FormatCodeCommand.php](app/Console/Commands/FormatCodeCommand.md)
+      * [Documentation: PopulateVillageGeographicData.php](app/Console/Commands/PopulateVillageGeographicData.md)
+      * [Documentation: ProcessGameTick.php](app/Console/Commands/ProcessGameTick.md)
   * **Http/**
     * **Controllers/**
       * **Auth/**
@@ -122,6 +127,7 @@ This index is automatically generated and lists all documentation files:
     * [Documentation: CachingUtil.php](app/Utilities/CachingUtil.md)
     * [Documentation: ConfigUtil.php](app/Utilities/ConfigUtil.md)
     * [Documentation: FilteringUtil.php](app/Utilities/FilteringUtil.md)
+    * [Documentation: LoggingUtil.php](app/Utilities/LoggingUtil.md)
     * [Documentation: PaginationUtil.php](app/Utilities/PaginationUtil.md)
     * [Documentation: QueryParameterUtil.php](app/Utilities/QueryParameterUtil.md)
     * [Documentation: RateLimiterUtil.php](app/Utilities/RateLimiterUtil.md)
