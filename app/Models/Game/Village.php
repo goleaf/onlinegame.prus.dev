@@ -3,6 +3,7 @@
 namespace App\Models\Game;
 
 use App\Services\GeographicService;
+use App\Traits\Commentable;
 use App\ValueObjects\Coordinates;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

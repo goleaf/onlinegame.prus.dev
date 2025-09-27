@@ -29,6 +29,7 @@ class Player extends Model implements Auditable
 {
     use HasFactory, Commentable;
     use HasNotables;
+    use HasReference;
     use AuditableTrait;
 
     protected $fillable = [

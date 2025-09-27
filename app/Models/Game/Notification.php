@@ -40,6 +40,15 @@ class Notification extends Model implements Auditable
         'is_auto_dismiss' => 'boolean',
     ];
 
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+    protected $referenceTemplate = [
+        'format' => 'NOT-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+    protected $referencePrefix = 'NOT';
+
     public function player(): BelongsTo
     {
         return $this->belongsTo(Player::class);
