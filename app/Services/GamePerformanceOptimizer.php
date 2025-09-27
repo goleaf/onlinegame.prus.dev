@@ -313,12 +313,13 @@ class GamePerformanceOptimizer
         $limit = $params['limit'] ?? 50;
         
         try {
-            return DB::table('battles')
+            $battles = DB::table('battles')
                 ->select(['id', 'created_at'])
                 ->orderBy('created_at', 'desc')
                 ->limit($limit)
-                ->get()
-                ->toArray();
+                ->get();
+                
+            return $battles ? $battles->toArray() : [];
         } catch (\Exception $e) {
             return [];
         }
