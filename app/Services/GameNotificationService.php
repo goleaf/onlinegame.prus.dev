@@ -21,7 +21,20 @@ class GameNotificationService
         array $data = [],
         string $priority = 'normal'
     ): bool {
+        $startTime = microtime(true);
+        
+        ds('GameNotificationService: Sending notification', [
+            'service' => 'GameNotificationService',
+            'method' => 'sendNotification',
+            'user_id' => $userId,
+            'type' => $type,
+            'priority' => $priority,
+            'data_size' => count($data),
+            'notification_time' => now()
+        ]);
+        
         try {
+            $createStart = microtime(true);
             $notification = GameNotification::create([
                 'user_id' => $userId,
                 'type' => $type,
@@ -30,9 +43,23 @@ class GameNotificationService
                 'is_read' => false,
                 'created_at' => now(),
             ]);
+            $createTime = round((microtime(true) - $createStart) * 1000, 2);
 
             // Invalidate user notification cache
+            $cacheStart = microtime(true);
             self::invalidateUserNotificationCache($userId);
+            $cacheTime = round((microtime(true) - $cacheStart) * 1000, 2);
+
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            ds('GameNotificationService: Notification sent successfully', [
+                'user_id' => $userId,
+                'type' => $type,
+                'notification_id' => $notification->id,
+                'create_time_ms' => $createTime,
+                'cache_invalidation_time_ms' => $cacheTime,
+                'total_time_ms' => $totalTime
+            ]);
 
             // Log notification
             Log::info('Game notification sent', [
@@ -44,6 +71,16 @@ class GameNotificationService
 
             return true;
         } catch (\Exception $e) {
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            ds('GameNotificationService: Notification sending failed', [
+                'user_id' => $userId,
+                'type' => $type,
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+                'total_time_ms' => $totalTime
+            ]);
+            
             Log::error('Failed to send game notification', [
                 'user_id' => $userId,
                 'type' => $type,
