@@ -214,11 +214,12 @@ class GamePerformanceOptimizer
     protected function loadTroopData(string $userId): array
     {
         try {
-            return DB::table('troops')
+            $troops = DB::table('troops')
                 ->select(['id', 'created_at'])
                 ->where('user_id', $userId)
-                ->get()
-                ->toArray();
+                ->get();
+                
+            return $troops ? $troops->toArray() : [];
         } catch (\Exception $e) {
             return [];
         }
