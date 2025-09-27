@@ -26,6 +26,7 @@ class PlayerStatistic extends Model
         'defenses_lost',
         'barbarians_attacked',
         'last_updated',
+        'reference_number',
     ];
 
     protected $casts = [
