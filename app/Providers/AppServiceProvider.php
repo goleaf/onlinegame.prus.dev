@@ -84,6 +84,15 @@ class AppServiceProvider extends ServiceProvider
         // Register artifact and specialized services
         $this->app->singleton(\App\Services\ArtifactEffectService::class);
 
+        // Register additional missing services
+        $this->app->singleton(\App\Services\WonderService::class);
+        $this->app->singleton(\App\Services\Game\CombatService::class);
+        $this->app->singleton(\App\Services\Game\UnitTrainingService::class);
+        $this->app->singleton(\App\Services\TrainingQueueService::class);
+        $this->app->singleton(\App\Services\SeoAnalyticsService::class);
+        $this->app->singleton(\App\Services\SeoBreadcrumbService::class);
+        $this->app->singleton(\App\Services\PerformanceMonitoringService::class);
+
         // Register LaraUtilX utilities with proper dependencies
         $this->app->bind(\LaraUtilX\Utilities\CachingUtil::class, function ($app) {
             return new \LaraUtilX\Utilities\CachingUtil(
