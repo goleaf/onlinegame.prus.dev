@@ -9,7 +9,7 @@ use SmartCache\Facades\SmartCache;
 
 class Technology extends Model
 {
-    use HasTaxonomy;
+    use HasTaxonomy, Lift;
 
     protected $fillable = [
         'name',
