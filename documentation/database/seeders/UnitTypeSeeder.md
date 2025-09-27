@@ -1,6 +1,6 @@
-# Documentation: GameSeeder.php
+# Documentation: UnitTypeSeeder.php
 
-Original file: `database/seeders/GameSeeder.php`
+Original file: `database/seeders/UnitTypeSeeder.php`
 
 # Documentation Generation Error
 

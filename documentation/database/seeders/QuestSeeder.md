@@ -1,6 +1,6 @@
-# Documentation: TravianGameSeeder.php
+# Documentation: QuestSeeder.php
 
-Original file: `database/seeders/TravianGameSeeder.php`
+Original file: `database/seeders/QuestSeeder.php`
 
 # Documentation Generation Error
 
