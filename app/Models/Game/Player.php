@@ -335,6 +335,7 @@ class Player extends Model implements Auditable
             Filter::field('alliance_id', ['$eq']),
             Filter::field('last_login', ['$eq', '$gt', '$lt']),
             Filter::field('last_active_at', ['$eq', '$gt', '$lt']),
+            Filter::field('reference_number', ['$eq', '$like']),
             Filter::relation('alliance', ['$has']),
             Filter::relation('villages', ['$has']),
             Filter::relation('user', ['$has'])
