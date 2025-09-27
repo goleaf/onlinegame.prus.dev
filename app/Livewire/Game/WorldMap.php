@@ -168,8 +168,6 @@ class WorldMap extends Component
         }
     }
 
-
-
     public function resetZoom()
     {
         $this->zoomLevel = 1;
@@ -202,7 +200,6 @@ class WorldMap extends Component
         $this->filterTribe = $tribe;
         $this->addNotification("Filtered by tribe: {$tribe}", 'info');
     }
-
 
     public function getFilteredMapData()
     {

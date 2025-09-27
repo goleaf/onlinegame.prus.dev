@@ -130,6 +130,24 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::post('/larautilx/test/pagination', [LarautilxController::class, 'testPagination'])->name('game.api.larautilx.test.pagination');
     Route::post('/larautilx/test/caching', [LarautilxController::class, 'testCaching'])->name('game.api.larautilx.test.caching');
     Route::get('/larautilx/docs', [LarautilxController::class, 'getApiDocumentation'])->name('game.api.larautilx.docs');
+
+    // User management
+    Route::get('/users', [UserController::class, 'getAllRecords'])->name('game.api.users.index');
+    Route::get('/users/{id}', [UserController::class, 'getRecordById'])->name('game.api.users.show');
+    Route::post('/users', [UserController::class, 'storeRecord'])->name('game.api.users.store');
+    Route::put('/users/{id}', [UserController::class, 'updateRecord'])->name('game.api.users.update');
+    Route::delete('/users/{id}', [UserController::class, 'deleteRecord'])->name('game.api.users.destroy');
+    
+    // User advanced routes
+    Route::get('/users/with-game-stats', [UserController::class, 'getUsersWithGameStats'])->name('game.api.users.with-game-stats');
+    Route::get('/users/online', [UserController::class, 'getOnlineUsers'])->name('game.api.users.online');
+    Route::get('/users/activity-stats', [UserController::class, 'getUserActivityStats'])->name('game.api.users.activity-stats');
+    Route::get('/users/{userId}/details', [UserController::class, 'getUserDetails'])->name('game.api.users.details');
+    Route::put('/users/{userId}/status', [UserController::class, 'updateUserStatus'])->name('game.api.users.status');
+    Route::get('/users/{userId}/game-history', [UserController::class, 'getUserGameHistory'])->name('game.api.users.game-history');
+    Route::get('/users/search', [UserController::class, 'searchUsers'])->name('game.api.users.search');
+    Route::get('/users/{userId}/feature-toggles', [UserController::class, 'getUserFeatureToggles'])->name('game.api.users.feature-toggles');
+    Route::post('/users/bulk-update-status', [UserController::class, 'bulkUpdateUserStatus'])->name('game.api.users.bulk-update-status');
 });
 
 // Error pages

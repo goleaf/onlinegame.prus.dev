@@ -29,7 +29,7 @@ class StartRabbitMQConsumer extends Command
         $connection = $this->option('connection');
         $queue = $this->option('queue');
 
-        $this->info("Starting RabbitMQ consumer...");
+        $this->info('Starting RabbitMQ consumer...');
         $this->info("Connection: {$connection}");
         $this->info("Queue: {$queue}");
         $this->newLine();
@@ -48,10 +48,9 @@ class StartRabbitMQConsumer extends Command
                 if ($output) {
                     $this->line($output);
                 }
-                
+
                 sleep(1);
             }
-
         } catch (\Exception $e) {
             $this->error('Failed to start consumer: ' . $e->getMessage());
             return 1;

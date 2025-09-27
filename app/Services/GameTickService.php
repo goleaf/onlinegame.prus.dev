@@ -459,11 +459,11 @@ class GameTickService
         $content .= "=== BATTLE POWER ===\n";
         $content .= 'Attacker Power: ' . number_format($battle->battle_data['battle_power']['attacker'], 0) . "\n";
         $content .= 'Defender Power: ' . number_format($battle->battle_data['battle_power']['defender'], 0) . "\n";
-        
+
         // Add defensive bonus information if available
         if (isset($battle->battle_data['defensive_bonus'])) {
             $bonus = $battle->battle_data['defensive_bonus'] * 100;
-            $content .= "Defensive Bonus: +" . number_format($bonus, 1) . "%\n";
+            $content .= 'Defensive Bonus: +' . number_format($bonus, 1) . "%\n";
         }
         $content .= "\n";
 
@@ -600,37 +600,37 @@ class GameTickService
     private function calculateDefensiveBonus($village)
     {
         $totalBonus = 0;
-        
+
         // Get all buildings for the village
         $buildings = $village->buildings()->with('buildingType')->get();
-        
+
         foreach ($buildings as $building) {
             $buildingType = $building->buildingType;
             $level = $building->level;
-            
+
             switch ($buildingType->key) {
                 case 'wall':
                     // Wall provides 2% defense bonus per level
                     $totalBonus += ($level * 0.02);
                     break;
-                    
+
                 case 'watchtower':
                     // Watchtower provides 1.5% defense bonus per level
                     $totalBonus += ($level * 0.015);
                     break;
-                    
+
                 case 'trap':
                     // Trap provides 1% defense bonus per level
                     $totalBonus += ($level * 0.01);
                     break;
-                    
+
                 case 'rally_point':
                     // Rally point provides 0.5% defense bonus per level
                     $totalBonus += ($level * 0.005);
                     break;
             }
         }
-        
+
         // Cap defensive bonus at 50% (level 20 wall = 40% + other buildings)
         return min($totalBonus, 0.5);
     }
@@ -638,30 +638,31 @@ class GameTickService
     private function calculateSpyDefense($village)
     {
         $spyDefense = 0;
-        
+
         // Get trap level for spy defense
-        $trap = $village->buildings()
+        $trap = $village
+            ->buildings()
             ->whereHas('buildingType', function ($query) {
                 $query->where('key', 'trap');
             })
             ->first();
-            
+
         if ($trap) {
             // Each trap level provides 5% chance to catch spies
             $spyDefense = $trap->level * 5;
         }
-        
-        return min($spyDefense, 100); // Cap at 100%
+
+        return min($spyDefense, 100);  // Cap at 100%
     }
 
     private function processSpyDefense($movement)
     {
         $targetVillage = $movement->toVillage;
         $spyDefense = $this->calculateSpyDefense($targetVillage);
-        
+
         // Check if spy is caught
         $spyCaught = (rand(1, 100) <= $spyDefense);
-        
+
         if ($spyCaught) {
             // Spy is caught - create failure report
             Report::create([
@@ -676,20 +677,22 @@ class GameTickService
                 'content' => "Your spy was caught by the traps at {$targetVillage->name}. The mission failed.",
                 'battle_data' => [
                     'spy_caught' => true,
-                    'trap_level' => $targetVillage->buildings()
+                    'trap_level' => $targetVillage
+                        ->buildings()
                         ->whereHas('buildingType', function ($query) {
                             $query->where('key', 'trap');
                         })
-                        ->first()?->level ?? 0,
+                        ->first()
+                        ?->level ?? 0,
                 ],
                 'is_read' => false,
                 'is_important' => false,
             ]);
-            
+
             Log::info("Spy caught at village {$targetVillage->name}");
             return;
         }
-        
+
         // Spy succeeds - create success report
         Report::create([
             'world_id' => $targetVillage->world_id,
@@ -700,9 +703,9 @@ class GameTickService
             'type' => 'spy',
             'status' => 'success',
             'title' => 'Spy Report',
-            'content' => "Spy report from {$targetVillage->name}: " .
-                        "Population: {$targetVillage->population}, " .
-                        "Resources: " . $this->getVillageResourceSummary($targetVillage),
+            'content' => "Spy report from {$targetVillage->name}: "
+                . "Population: {$targetVillage->population}, "
+                . 'Resources: ' . $this->getVillageResourceSummary($targetVillage),
             'battle_data' => [
                 'spy_caught' => false,
                 'spy_data' => $this->getSpyData($targetVillage),

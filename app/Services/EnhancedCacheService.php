@@ -110,14 +110,14 @@ class EnhancedCacheService
     {
         if (function_exists('igbinary_serialize')) {
             $serialized = igbinary_serialize($data);
-            
+
             if (function_exists('lzf_compress')) {
                 return lzf_compress($serialized);
             }
-            
+
             return $serialized;
         }
-        
+
         return $data;
     }
 
@@ -136,10 +136,10 @@ class EnhancedCacheService
                     return igbinary_unserialize($data);
                 }
             }
-            
+
             return igbinary_unserialize($data);
         }
-        
+
         return $data;
     }
 

@@ -77,7 +77,7 @@ class AdvancedMapViewer extends Component
 
         // Apply radius filter if set
         if ($this->radiusFilter > 0) {
-            $query->whereRaw('SQRT(POW(x_coordinate - ?, 2) + POW(y_coordinate - ?, 2)) <= ?', 
+            $query->whereRaw('SQRT(POW(x_coordinate - ?, 2) + POW(y_coordinate - ?, 2)) <= ?',
                 [$this->centerX, $this->centerY, $this->radiusFilter]);
         }
 

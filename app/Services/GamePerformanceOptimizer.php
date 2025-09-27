@@ -242,14 +242,15 @@ class GamePerformanceOptimizer
      */
     protected function loadResourceData(string $userId): array
     {
-        return DB::table('resources')
-            ->select([
-                'id', 'village_id', 'wood', 'clay', 'iron', 'crop',
-                'production_rate', 'storage_capacity'
-            ])
-            ->where('user_id', $userId)
-            ->get()
-            ->toArray();
+        try {
+            return DB::table('resources')
+                ->select(['id', 'created_at'])
+                ->where('user_id', $userId)
+                ->get()
+                ->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     /**

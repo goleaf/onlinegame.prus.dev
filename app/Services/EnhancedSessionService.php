@@ -148,14 +148,14 @@ class EnhancedSessionService
     {
         if (function_exists('igbinary_serialize')) {
             $serialized = igbinary_serialize($data);
-            
+
             if (function_exists('lzf_compress')) {
                 return base64_encode(lzf_compress($serialized));
             }
-            
+
             return base64_encode($serialized);
         }
-        
+
         return $data;
     }
 
@@ -167,18 +167,18 @@ class EnhancedSessionService
         if (function_exists('igbinary_unserialize')) {
             try {
                 $decoded = base64_decode($data);
-                
+
                 if (function_exists('lzf_decompress')) {
                     $decompressed = lzf_decompress($decoded);
                     return igbinary_unserialize($decompressed);
                 }
-                
+
                 return igbinary_unserialize($decoded);
             } catch (\Exception $e) {
                 return $data;
             }
         }
-        
+
         return $data;
     }
 

@@ -32,7 +32,7 @@ class BattleManager extends Component
     public function mount()
     {
         $startTime = microtime(true);
-        
+
         $user = Auth::user();
         $player = $user->player;
 
@@ -58,7 +58,7 @@ class BattleManager extends Component
             ])->label('BattleManager Mount');
 
             $this->loadBattleData();
-            
+
             // Track component load time
             $this->dispatch('fathom-track', name: 'component_load_time', value: round((microtime(true) - $startTime) * 1000));
         }

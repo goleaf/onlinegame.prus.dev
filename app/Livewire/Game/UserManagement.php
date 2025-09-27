@@ -9,9 +9,9 @@ use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\FilteringUtil;
 use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\PaginationUtil;
-use SmartCache\Facades\SmartCache;
 use Livewire\Component;
 use Livewire\WithPagination;
+use SmartCache\Facades\SmartCache;
 
 class UserManagement extends Component
 {
@@ -54,7 +54,7 @@ class UserManagement extends Component
         try {
             // Use SmartCache for user data with automatic optimization
             $cacheKey = "users_data_{$this->searchQuery}_{$this->filterByWorld}_{$this->filterByTribe}_{$this->filterByAlliance}_{$this->showOnlyOnline}_{$this->showOnlyActive}_{$this->filterByStatus}_{$this->sortBy}_{$this->sortOrder}";
-            
+
             $this->users = SmartCache::remember($cacheKey, now()->addMinutes(3), function () {
                 $query = User::withGamePlayers()
                     ->with(['player.world', 'player.alliance']);
@@ -62,11 +62,12 @@ class UserManagement extends Component
                 // Apply search
                 if (!empty($this->searchQuery)) {
                     $query->where(function ($q) {
-                        $q->where('name', 'like', '%' . $this->searchQuery . '%')
-                          ->orWhere('email', 'like', '%' . $this->searchQuery . '%')
-                          ->orWhereHas('player', function ($playerQuery) {
-                              $playerQuery->where('name', 'like', '%' . $this->searchQuery . '%');
-                          });
+                        $q
+                            ->where('name', 'like', '%' . $this->searchQuery . '%')
+                            ->orWhere('email', 'like', '%' . $this->searchQuery . '%')
+                            ->orWhereHas('player', function ($playerQuery) {
+                                $playerQuery->where('name', 'like', '%' . $this->searchQuery . '%');
+                            });
                     });
                 }
 
@@ -116,7 +117,6 @@ class UserManagement extends Component
 
                 return $users;
             });
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading users', [
                 'error' => $e->getMessage(),
@@ -148,7 +148,6 @@ class UserManagement extends Component
                     'recent_registrations' => User::where('created_at', '>=', now()->subDays(7))->count(),
                 ];
             });
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading user statistics', [
                 'error' => $e->getMessage()
@@ -293,7 +292,6 @@ class UserManagement extends Component
             $this->clearSelection();
             $this->loadUsers();
             $this->loadStatistics();
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error executing bulk action', [
                 'error' => $e->getMessage(),
@@ -333,7 +331,6 @@ class UserManagement extends Component
 
             $this->dispatch('exportUsers', ['data' => $users->toArray()]);
             $this->addNotification('User data exported successfully', 'success');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error exporting users', [
                 'error' => $e->getMessage()

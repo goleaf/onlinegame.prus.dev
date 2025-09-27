@@ -11,8 +11,8 @@ use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\FilteringUtil;
-use SmartCache\Facades\SmartCache;
 use Livewire\Component;
+use SmartCache\Facades\SmartCache;
 
 class AdvancedMapManager extends Component
 {
@@ -71,15 +71,15 @@ class AdvancedMapManager extends Component
         }
 
         $this->isLoading = true;
-        
+
         try {
             // Use LarautilxIntegrationService for caching
             $integrationService = app(LarautilxIntegrationService::class);
-            
+
             $this->villages = $integrationService->cacheWorldData(
                 $this->selectedWorld,
                 'villages_map_data',
-                function() {
+                function () {
                     return Village::with(['player:id,name,alliance_id', 'world:id,name'])
                         ->byWorld($this->selectedWorld)
                         ->withStats()
@@ -107,12 +107,11 @@ class AdvancedMapManager extends Component
                             ];
                         });
                 },
-                300 // 5 minutes cache
+                300  // 5 minutes cache
             );
 
             $this->calculateStatistics();
             $this->updateMapData();
-            
         } catch (\Exception $e) {
             $this->addNotification('Error loading map data: ' . $e->getMessage(), 'error');
         } finally {
@@ -163,8 +162,8 @@ class AdvancedMapManager extends Component
         // Apply radius filter
         $filteredVillages = $filteredVillages->filter(function ($village) {
             $distance = sqrt(
-                pow($village['x_coordinate'] - $this->centerX, 2) + 
-                pow($village['y_coordinate'] - $this->centerY, 2)
+                pow($village['x_coordinate'] - $this->centerX, 2)
+                + pow($village['y_coordinate'] - $this->centerY, 2)
             );
             return $distance <= $this->radius;
         });
@@ -218,7 +217,7 @@ class AdvancedMapManager extends Component
 
         $this->mapData = $filteredVillages->values()->toArray();
         $this->calculateStatistics();
-        
+
         $this->dispatch('mapUpdated', [
             'villages' => $this->mapData,
             'center' => ['x' => $this->centerX, 'y' => $this->centerY],
@@ -230,11 +229,11 @@ class AdvancedMapManager extends Component
     public function calculateStatistics()
     {
         $currentPlayer = Auth::user()?->player;
-        
+
         // Use optimized query to calculate statistics in one go
         if (!empty($this->mapData)) {
             $villageIds = collect($this->mapData)->pluck('id')->toArray();
-            
+
             $stats = Village::whereIn('id', $villageIds)
                 ->selectRaw('
                     COUNT(*) as total_villages,
@@ -252,7 +251,7 @@ class AdvancedMapManager extends Component
                     $currentPlayer?->alliance_id ?? 0
                 ])
                 ->first();
-                
+
             $this->statistics = [
                 'total_villages' => $stats->total_villages ?? count($this->mapData),
                 'my_villages' => $stats->my_villages ?? 0,
@@ -301,7 +300,7 @@ class AdvancedMapManager extends Component
         // Clear cache and reload data
         $integrationService = app(LarautilxIntegrationService::class);
         $integrationService->clearWorldCache($this->selectedWorld);
-        
+
         $this->loadInitialData();
         $this->addNotification('Map refreshed successfully', 'success');
     }
@@ -349,7 +348,7 @@ class AdvancedMapManager extends Component
     {
         try {
             $village = Village::findOrFail($villageId);
-            
+
             $nearbyVillages = Village::with(['player'])
                 ->where('world_id', $village->world_id)
                 ->where('id', '!=', $villageId)

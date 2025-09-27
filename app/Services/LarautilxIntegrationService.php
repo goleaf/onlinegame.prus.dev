@@ -67,7 +67,7 @@ class LarautilxIntegrationService
     public function cacheGameData(string $key, callable $callback, ?int $expiration = null, ?array $tags = null)
     {
         $expiration = $expiration ?? $this->defaultCacheExpiration;
-        
+
         return SmartCache::remember($key, now()->addSeconds($expiration), $callback);
     }
 
