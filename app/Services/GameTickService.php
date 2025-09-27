@@ -297,6 +297,7 @@ class GameTickService
                 'attacker' => $attackerPower,
                 'defender' => $defenderPower,
             ],
+            'defensive_bonus' => $defensiveBonus,
         ];
     }
 

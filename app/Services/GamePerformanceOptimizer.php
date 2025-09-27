@@ -226,14 +226,15 @@ class GamePerformanceOptimizer
      */
     protected function loadBuildingData(string $userId): array
     {
-        return DB::table('buildings')
-            ->select([
-                'id', 'village_id', 'building_type', 'level',
-                'construction_time', 'resource_cost'
-            ])
-            ->where('user_id', $userId)
-            ->get()
-            ->toArray();
+        try {
+            return DB::table('buildings')
+                ->select(['id', 'created_at'])
+                ->where('user_id', $userId)
+                ->get()
+                ->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     /**
