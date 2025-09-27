@@ -12,12 +12,16 @@ This index is automatically generated and lists all documentation files:
       * [Documentation: GamePerformanceCommand.php](app/Console/Commands/GamePerformanceCommand.md)
       * [Documentation: IntrospectAnalyzeCommand.php](app/Console/Commands/IntrospectAnalyzeCommand.md)
       * [Documentation: Laravel129FeaturesCommand.php](app/Console/Commands/Laravel129FeaturesCommand.md)
+      * [Documentation: MarketSystemCommand.php](app/Console/Commands/MarketSystemCommand.md)
       * [Documentation: PopulateGameCommand.php](app/Console/Commands/PopulateGameCommand.md)
       * [Documentation: PopulateVillageGeographicData.php](app/Console/Commands/PopulateVillageGeographicData.md)
       * [Documentation: ProcessGameTick.php](app/Console/Commands/ProcessGameTick.md)
+      * [Documentation: QuestSystemCommand.php](app/Console/Commands/QuestSystemCommand.md)
       * [Documentation: SetupMySQLPerformance.php](app/Console/Commands/SetupMySQLPerformance.md)
       * [Documentation: StartRabbitMQConsumer.php](app/Console/Commands/StartRabbitMQConsumer.md)
       * [Documentation: TestRabbitMQ.php](app/Console/Commands/TestRabbitMQ.md)
+  * **Forms/**
+    * [Documentation: PlayerForm.php](app/Forms/PlayerForm.md)
   * **Http/**
     * **Controllers/**
       * **Auth/**
@@ -133,6 +137,9 @@ This index is automatically generated and lists all documentation files:
     * [Documentation: RabbitMQService.php](app/Services/RabbitMQService.md)
     * [Documentation: ResourceProductionService.php](app/Services/ResourceProductionService.md)
     * [Documentation: TroopService.php](app/Services/TroopService.md)
+  * **Traits/**
+    * [Documentation: ApiResponseTrait.php](app/Traits/ApiResponseTrait.md)
+    * [Documentation: GameValidationTrait.php](app/Traits/GameValidationTrait.md)
   * **Utilities/**
     * [Documentation: CachingUtil.php](app/Utilities/CachingUtil.md)
     * [Documentation: ConfigUtil.php](app/Utilities/ConfigUtil.md)
