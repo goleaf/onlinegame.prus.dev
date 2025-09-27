@@ -217,9 +217,9 @@ class Alliance extends Model implements Auditable
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
-            Filter::field('name', ['$eq', '$contains']),
-            Filter::field('tag', ['$eq', '$contains']),
-            Filter::field('description', ['$eq', '$contains']),
+            Filter::field('name', ['$eq', '$like']),
+            Filter::field('tag', ['$eq', '$like']),
+            Filter::field('description', ['$eq', '$like']),
             Filter::field('points', ['$eq', '$gt', '$lt']),
             Filter::field('villages_count', ['$eq', '$gt', '$lt']),
             Filter::field('members_count', ['$eq', '$gt', '$lt']),
