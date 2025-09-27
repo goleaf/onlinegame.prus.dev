@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
+use App\Services\GameSeoService;
 use Illuminate\Http\Request;
 
 class GameController extends Controller
