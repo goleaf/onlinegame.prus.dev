@@ -394,4 +394,60 @@ class User extends Authenticatable implements Auditable, IsFilterable
             Filter::relation('player', ['$has'])
         );
     }
+
+    /**
+     * Initialize user with game integration
+     */
+    public function initializeWithGameIntegration(): void
+    {
+        try {
+            // Initialize real-time features
+            GameIntegrationService::initializeUserRealTime($this->id);
+            
+            // Send welcome notification
+            GameNotificationService::sendNotification(
+                [$this->id],
+                'user_welcome',
+                [
+                    'user_id' => $this->id,
+                    'user_name' => $this->name,
+                    'timestamp' => now()->toISOString(),
+                ]
+            );
+
+        } catch (\Exception $e) {
+            Log::error('Failed to initialize user with game integration', [
+                'user_id' => $this->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Update user profile with integration notifications
+     */
+    public function updateProfileWithIntegration(array $data): void
+    {
+        try {
+            $this->update($data);
+
+            // Send notification about profile update
+            GameNotificationService::sendNotification(
+                [$this->id],
+                'profile_updated',
+                [
+                    'user_id' => $this->id,
+                    'updated_fields' => array_keys($data),
+                    'timestamp' => now()->toISOString(),
+                ]
+            );
+
+        } catch (\Exception $e) {
+            Log::error('Failed to update user profile with integration', [
+                'user_id' => $this->id,
+                'data' => $data,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
 }

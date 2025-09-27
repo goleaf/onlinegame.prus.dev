@@ -154,6 +154,10 @@ class Village extends Model implements Auditable
             }
         );
     }
+                );
+            }
+        );
+    }
     {
         return $this->hasMany(Resource::class);
     }

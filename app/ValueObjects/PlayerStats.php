@@ -13,7 +13,7 @@ class PlayerStats
         public readonly bool $isActive,
         public readonly bool $isOnline,
         public readonly int $rank = 0,
-        public readonly int $alliance_id = null,
+        public readonly ?int $alliance_id = null,
         public readonly string $tribe = '',
         public readonly ?\DateTime $last_active_at = null,
     ) {}
