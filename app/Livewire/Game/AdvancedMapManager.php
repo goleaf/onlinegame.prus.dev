@@ -311,6 +311,37 @@ class AdvancedMapManager extends Component
         $this->updateMapData();
     }
 
+    public function toggleRealWorld()
+    {
+        $this->toggleRealWorldView();
+    }
+
+    public function updateWorld($worldId)
+    {
+        $this->selectedWorld = $worldId;
+        $this->loadInitialData();
+    }
+
+    public function updateFilter($filter)
+    {
+        $this->filter = $filter;
+        $this->loadInitialData();
+    }
+
+    public function updateMap($data)
+    {
+        if (isset($data['centerX'])) {
+            $this->centerX = $data['centerX'];
+        }
+        if (isset($data['centerY'])) {
+            $this->centerY = $data['centerY'];
+        }
+        if (isset($data['radius'])) {
+            $this->radius = $data['radius'];
+        }
+        $this->loadInitialData();
+    }
+
     public function getVillageDetails($villageId)
     {
         try {
