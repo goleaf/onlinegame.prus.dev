@@ -8,6 +8,8 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class GameTask extends Model
 {
+    use HasReference;
+
     protected $fillable = [
         'player_id',
         'village_id',
