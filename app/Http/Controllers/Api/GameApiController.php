@@ -42,7 +42,6 @@ use JonPurvis\Squeaky\Rules\Clean;
 class GameApiController extends Controller
 {
     use GameValidationTrait;
-{
     /**
      * Get authenticated user
      *

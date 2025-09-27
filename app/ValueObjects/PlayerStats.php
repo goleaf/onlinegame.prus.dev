@@ -2,163 +2,74 @@
 
 namespace App\ValueObjects;
 
-readonly class PlayerStats
+class PlayerStats
 {
     public function __construct(
-        public int $points = 0,
-        public int $population = 0,
-        public int $villagesCount = 0,
-        public int $totalAttackPoints = 0,
-        public int $totalDefensePoints = 0,
-        public bool $isActive = true,
-        public bool $isOnline = false
+        public readonly int $points,
+        public readonly int $rank,
+        public readonly int $population,
+        public readonly int $villages,
+        public readonly int $alliance_id = null,
+        public readonly string $tribe = '',
+        public readonly bool $is_online = false,
+        public readonly bool $is_active = true,
+        public readonly ?\DateTime $last_active_at = null,
     ) {}
 
-    /**
-     * Get total military points
-     */
-    public function getTotalMilitaryPoints(): int
+    public static function fromArray(array $data): self
     {
-        return $this->totalAttackPoints + $this->totalDefensePoints;
-    }
-
-    /**
-     * Calculate points per village
-     */
-    public function getPointsPerVillage(): float
-    {
-        return $this->villagesCount > 0 ? $this->points / $this->villagesCount : 0;
-    }
-
-    /**
-     * Calculate population per village
-     */
-    public function getPopulationPerVillage(): float
-    {
-        return $this->villagesCount > 0 ? $this->population / $this->villagesCount : 0;
-    }
-
-    /**
-     * Check if player is considered active (online or recently active)
-     */
-    public function isActivePlayer(): bool
-    {
-        return $this->isActive && $this->isOnline;
-    }
-
-    /**
-     * Get player ranking category based on points
-     */
-    public function getRankingCategory(): string
-    {
-        if ($this->points >= 1000000)
-            return 'elite';
-        if ($this->points >= 500000)
-            return 'veteran';
-        if ($this->points >= 100000)
-            return 'experienced';
-        if ($this->points >= 10000)
-            return 'intermediate';
-        if ($this->points >= 1000)
-            return 'beginner';
-        return 'newbie';
-    }
-
-    /**
-     * Calculate military strength ratio (attack vs defense)
-     */
-    public function getMilitaryRatio(): float
-    {
-        if ($this->totalDefensePoints === 0) {
-            return $this->totalAttackPoints > 0 ? 1.0 : 0.0;
-        }
-
-        return $this->totalAttackPoints / $this->totalDefensePoints;
-    }
-
-    /**
-     * Check if player has balanced military
-     */
-    public function hasBalancedMilitary(): bool
-    {
-        $ratio = $this->getMilitaryRatio();
-        return $ratio >= 0.5 && $ratio <= 2.0;
-    }
-
-    /**
-     * Check if player is attack-focused
-     */
-    public function isAttackFocused(): bool
-    {
-        return $this->getMilitaryRatio() > 2.0;
-    }
-
-    /**
-     * Check if player is defense-focused
-     */
-    public function isDefenseFocused(): bool
-    {
-        return $this->getMilitaryRatio() < 0.5;
-    }
-
-    /**
-     * Get efficiency score (points per population)
-     */
-    public function getEfficiencyScore(): float
-    {
-        return $this->population > 0 ? $this->points / $this->population : 0;
-    }
-
-    /**
-     * Check if player is efficient
-     */
-    public function isEfficient(): bool
-    {
-        return $this->getEfficiencyScore() >= 1.0;
-    }
-
-    /**
-     * Update stats with new values
-     */
-    public function withStats(
-        ?int $points = null,
-        ?int $population = null,
-        ?int $villagesCount = null,
-        ?int $totalAttackPoints = null,
-        ?int $totalDefensePoints = null,
-        ?bool $isActive = null,
-        ?bool $isOnline = null
-    ): self {
         return new self(
-            points: $points ?? $this->points,
-            population: $population ?? $this->population,
-            villagesCount: $villagesCount ?? $this->villagesCount,
-            totalAttackPoints: $totalAttackPoints ?? $this->totalAttackPoints,
-            totalDefensePoints: $totalDefensePoints ?? $this->totalDefensePoints,
-            isActive: $isActive ?? $this->isActive,
-            isOnline: $isOnline ?? $this->isOnline
+            points: $data['points'] ?? 0,
+            rank: $data['rank'] ?? 0,
+            population: $data['population'] ?? 0,
+            villages: $data['villages'] ?? 0,
+            alliance_id: $data['alliance_id'] ?? null,
+            tribe: $data['tribe'] ?? '',
+            is_online: $data['is_online'] ?? false,
+            is_active: $data['is_active'] ?? true,
+            last_active_at: isset($data['last_active_at']) ? new \DateTime($data['last_active_at']) : null,
         );
     }
 
-    /**
-     * Convert to array
-     */
     public function toArray(): array
     {
         return [
             'points' => $this->points,
+            'rank' => $this->rank,
             'population' => $this->population,
-            'villages_count' => $this->villagesCount,
-            'total_attack_points' => $this->totalAttackPoints,
-            'total_defense_points' => $this->totalDefensePoints,
-            'is_active' => $this->isActive,
-            'is_online' => $this->isOnline,
-            'total_military_points' => $this->getTotalMilitaryPoints(),
-            'points_per_village' => $this->getPointsPerVillage(),
-            'population_per_village' => $this->getPopulationPerVillage(),
-            'ranking_category' => $this->getRankingCategory(),
-            'military_ratio' => $this->getMilitaryRatio(),
-            'efficiency_score' => $this->getEfficiencyScore(),
+            'villages' => $this->villages,
+            'alliance_id' => $this->alliance_id,
+            'tribe' => $this->tribe,
+            'is_online' => $this->is_online,
+            'is_active' => $this->is_active,
+            'last_active_at' => $this->last_active_at?->format('Y-m-d H:i:s'),
         ];
+    }
+
+    public function getTotalPower(): int
+    {
+        return $this->points + $this->population;
+    }
+
+    public function isInAlliance(): bool
+    {
+        return $this->alliance_id !== null;
+    }
+
+    public function getActivityStatus(): string
+    {
+        if (!$this->is_active) {
+            return 'inactive';
+        }
+
+        if ($this->is_online) {
+            return 'online';
+        }
+
+        if ($this->last_active_at && $this->last_active_at > new \DateTime('-15 minutes')) {
+            return 'recently_active';
+        }
+
+        return 'offline';
     }
 }
