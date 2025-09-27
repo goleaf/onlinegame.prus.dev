@@ -19,7 +19,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
 
-class User extends Authenticatable implements Auditable
+class User extends Authenticatable implements Auditable, IsFilterable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -28,6 +28,7 @@ class User extends Authenticatable implements Auditable
     use AuditableTrait;
     use Lift;
     use HasReference;
+    use Filterable;
 
     // Laravel Lift typed properties
     public int $id;
