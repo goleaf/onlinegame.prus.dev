@@ -102,8 +102,7 @@ class QuestSystemCommand extends Command
         $assignedCount = 0;
 
         // Get available quests for the player
-        $questQuery = Quest::where('is_active', true)
-            ->where('world_id', $player->world_id);
+        $questQuery = Quest::where('is_active', true);
 
         if ($questType) {
             $questQuery->where('category', $questType);
