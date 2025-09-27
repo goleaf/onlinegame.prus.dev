@@ -18,6 +18,8 @@ use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use SmartCache\Facades\SmartCache;
+use sbamtr\LaravelQueryEnrich\QE;
+use function sbamtr\LaravelQueryEnrich\c;
 use WendellAdriel\Lift\Lift;
 
 class Player extends Model implements Auditable
@@ -25,26 +27,6 @@ class Player extends Model implements Auditable
     use HasFactory;
     use HasNotables;
     use AuditableTrait;
-    use Lift;
-
-    // Laravel Lift typed properties
-    public int $id;
-    public int $user_id;
-    public int $world_id;
-    public string $name;
-    public ?string $tribe;
-    public ?int $alliance_id;
-    public int $population;
-    public int $villages_count;
-    public bool $is_active;
-    public bool $is_online;
-    public ?\Carbon\Carbon $last_login;
-    public ?\Carbon\Carbon $last_active_at;
-    public int $points;
-    public int $total_attack_points;
-    public int $total_defense_points;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
 
     protected $fillable = [
         'user_id',
