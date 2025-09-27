@@ -363,4 +363,124 @@ class RealTimeGameService
             ]);
         }
     }
+
+    /**
+     * Send geographic update to nearby players
+     */
+    public static function sendGeographicUpdate(int $villageId, string $eventType, array $data = []): void
+    {
+        try {
+            $geoService = app(GeographicService::class);
+            
+            // Get village with geographic data
+            $village = \App\Models\Game\Village::with('player')
+                ->where('id', $villageId)
+                ->first();
+
+            if (!$village || !$village->latitude || !$village->longitude) {
+                return;
+            }
+
+            // Find nearby villages within 50km
+            $nearbyVillages = \App\Models\Game\Village::whereNotNull('latitude')
+                ->whereNotNull('longitude')
+                ->where('id', '!=', $villageId)
+                ->get()
+                ->filter(function ($nearbyVillage) use ($village, $geoService) {
+                    $distance = $geoService->calculateDistance(
+                        $village->latitude,
+                        $village->longitude,
+                        $nearbyVillage->latitude,
+                        $nearbyVillage->longitude
+                    );
+                    return $distance <= 50; // Within 50km
+                });
+
+            // Send updates to players of nearby villages
+            foreach ($nearbyVillages as $nearbyVillage) {
+                if ($nearbyVillage->player && $nearbyVillage->player->user_id) {
+                    $geographicData = [
+                        'village_id' => $villageId,
+                        'village_name' => $village->name,
+                        'distance_km' => $geoService->calculateDistance(
+                            $village->latitude,
+                            $village->longitude,
+                            $nearbyVillage->latitude,
+                            $nearbyVillage->longitude
+                        ),
+                        'bearing' => $geoService->calculateBearing(
+                            $nearbyVillage->latitude,
+                            $nearbyVillage->longitude,
+                            $village->latitude,
+                            $village->longitude
+                        ),
+                        'event_type' => $eventType,
+                        'data' => $data,
+                    ];
+
+                    self::sendUpdate($nearbyVillage->player->user_id, 'geographic_event', $geographicData);
+                }
+            }
+
+            Log::info('Geographic update sent', [
+                'village_id' => $villageId,
+                'nearby_villages' => $nearbyVillages->count(),
+                'event_type' => $eventType,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to send geographic update', [
+                'village_id' => $villageId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Send movement update with geographic context
+     */
+    public static function sendMovementUpdate(int $movementId, string $eventType, array $data = []): void
+    {
+        try {
+            $movement = \App\Models\Game\Movement::with(['fromVillage', 'toVillage', 'player'])
+                ->find($movementId);
+
+            if (!$movement) {
+                return;
+            }
+
+            $geoService = app(GeographicService::class);
+            
+            // Add geographic context to movement data
+            $geographicContext = [
+                'movement_id' => $movementId,
+                'from_village' => $movement->fromVillage->name ?? 'Unknown',
+                'to_village' => $movement->toVillage->name ?? 'Unknown',
+                'distance_km' => $movement->distance ?? 0,
+                'bearing' => $movement->bearing ?? 0,
+                'travel_time' => $movement->travel_time ?? 0,
+                'event_type' => $eventType,
+                'data' => $data,
+            ];
+
+            // Send to movement owner
+            if ($movement->player && $movement->player->user_id) {
+                self::sendUpdate($movement->player->user_id, 'movement_update', $geographicContext);
+            }
+
+            // Send to nearby players if it's an attack
+            if ($eventType === 'attack_launched' && $movement->toVillage) {
+                self::sendGeographicUpdate($movement->toVillage->id, 'incoming_attack', $geographicContext);
+            }
+
+            Log::info('Movement update sent', [
+                'movement_id' => $movementId,
+                'event_type' => $eventType,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to send movement update', [
+                'movement_id' => $movementId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
 }

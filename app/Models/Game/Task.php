@@ -125,16 +125,31 @@ class Task extends Model
         });
     }
 
-    // Optimized query scopes using when() and selectRaw
+    // Enhanced query scopes using Query Enrich
     public function scopeWithStats($query)
     {
-        return $query->selectRaw('
-            player_tasks.*,
-            (SELECT COUNT(*) FROM player_tasks pt2 WHERE pt2.player_id = player_tasks.player_id) as total_tasks,
-            (SELECT COUNT(*) FROM player_tasks pt3 WHERE pt3.player_id = player_tasks.player_id AND pt3.status = "active") as active_tasks,
-            (SELECT COUNT(*) FROM player_tasks pt4 WHERE pt4.player_id = player_tasks.player_id AND pt4.status = "completed") as completed_tasks,
-            (SELECT AVG(progress) FROM player_tasks pt5 WHERE pt5.player_id = player_tasks.player_id AND pt5.status = "active") as avg_progress
-        ');
+        return $query->select([
+            'player_tasks.*',
+            QE::select(QE::count(c('id')))
+                ->from('player_tasks', 'pt2')
+                ->whereColumn('pt2.player_id', c('player_tasks.player_id'))
+                ->as('total_tasks'),
+            QE::select(QE::count(c('id')))
+                ->from('player_tasks', 'pt3')
+                ->whereColumn('pt3.player_id', c('player_tasks.player_id'))
+                ->where('pt3.status', '=', 'active')
+                ->as('active_tasks'),
+            QE::select(QE::count(c('id')))
+                ->from('player_tasks', 'pt4')
+                ->whereColumn('pt4.player_id', c('player_tasks.player_id'))
+                ->where('pt4.status', '=', 'completed')
+                ->as('completed_tasks'),
+            QE::select(QE::avg(c('progress')))
+                ->from('player_tasks', 'pt5')
+                ->whereColumn('pt5.player_id', c('player_tasks.player_id'))
+                ->where('pt5.status', '=', 'active')
+                ->as('avg_progress')
+        ]);
     }
 
     public function scopeByWorld($query, $worldId)

@@ -45,30 +45,34 @@ class UpdaterService
      */
     public function checkForUpdates(): array
     {
-        try {
-            // Fetch latest tags from remote
-            Process::run('git fetch --tags');
+        $cacheKey = 'updater_check_' . now()->format('Y-m-d-H-i');
+        
+        return SmartCache::remember($cacheKey, now()->addMinutes(5), function () {
+            try {
+                // Fetch latest tags from remote
+                Process::run('git fetch --tags');
 
-            $result = Process::run('git describe --tags --abbrev=0 origin/main');
-            $this->latestVersion = $result->successful() ? trim($result->output()) : $this->currentVersion;
+                $result = Process::run('git describe --tags --abbrev=0 origin/main');
+                $this->latestVersion = $result->successful() ? trim($result->output()) : $this->currentVersion;
 
-            $isUpdateAvailable = version_compare($this->latestVersion, $this->currentVersion, '>');
+                $isUpdateAvailable = version_compare($this->latestVersion, $this->currentVersion, '>');
 
-            return [
-                'current_version' => $this->currentVersion,
-                'latest_version' => $this->latestVersion,
-                'update_available' => $isUpdateAvailable,
-                'behind_commits' => $this->getCommitsBehind(),
-            ];
-        } catch (\Exception $e) {
-            Log::error('Error checking for updates', ['error' => $e->getMessage()]);
-            return [
-                'current_version' => $this->currentVersion,
-                'latest_version' => $this->currentVersion,
-                'update_available' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
+                return [
+                    'current_version' => $this->currentVersion,
+                    'latest_version' => $this->latestVersion,
+                    'update_available' => $isUpdateAvailable,
+                    'behind_commits' => $this->getCommitsBehind(),
+                ];
+            } catch (\Exception $e) {
+                Log::error('Error checking for updates', ['error' => $e->getMessage()]);
+                return [
+                    'current_version' => $this->currentVersion,
+                    'latest_version' => $this->currentVersion,
+                    'update_available' => false,
+                    'error' => $e->getMessage(),
+                ];
+            }
+        });
     }
 
     /**
