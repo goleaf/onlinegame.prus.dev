@@ -237,7 +237,7 @@ class TroopManager extends Component
             ]);
 
             // Generate reference number for the training queue
-            $trainingQueue->generateReferenceNumber();
+            $trainingQueue->generateReference();
 
             // Deduct resources
             foreach ($this->trainingCost as $resource => $cost) {
