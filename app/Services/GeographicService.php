@@ -238,7 +238,7 @@ class GeographicService
      * @param float $speedKmh
      * @return int Travel time in seconds
      */
-    public function calculateTravelTimeFromDistance(float $distance, float $speedKmh): int
+    public function calculateTravelTime(float $distance, float $speedKmh): int
     {
         if ($speedKmh <= 0) {
             return 0;
@@ -261,7 +261,7 @@ class GeographicService
     public function calculateTravelTime(float $lat1, float $lon1, float $lat2, float $lon2, float $speedKmh): int
     {
         $distance = $this->calculateDistance($lat1, $lon1, $lat2, $lon2);
-        return $this->calculateTravelTimeFromDistance($distance, $speedKmh);
+        return $this->calculateTravelTime($distance, $speedKmh);
     }
 
     /**
