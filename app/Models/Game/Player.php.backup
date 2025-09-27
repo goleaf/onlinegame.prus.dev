@@ -141,14 +141,36 @@ class Player extends Model implements Auditable
     }
 
     // Enhanced query scopes using Query Enrich
-    // Enhanced query scopes
     public function scopeWithStats($query)
     {
-        return $query->selectRaw('
-            players.*,
-            (SELECT COUNT(*) FROM villages WHERE player_id = players.id) as village_count,
-            (SELECT SUM(population) FROM villages WHERE player_id = players.id) as total_population
-        ');
+        return $query->select([
+            'players.*',
+            QE::select(QE::count(c('id')))
+                ->from('villages')
+                ->whereColumn('player_id', c('players.id'))
+                ->as('village_count'),
+            QE::select(QE::sum(c('population')))
+                ->from('villages')
+                ->whereColumn('player_id', c('players.id'))
+                ->as('total_population'),
+            QE::select(QE::count(c('id')))
+                ->from('reports')
+                ->where(function($q) {
+                    $q->whereColumn('attacker_id', c('players.id'))
+                      ->orWhereColumn('defender_id', c('players.id'));
+                })
+                ->as('total_battles'),
+            QE::select(
+                QE::sum(QE::case()
+                    ->when(QE::and(
+                        QE::eq(c('attacker_id'), c('players.id')),
+                        QE::eq(c('status'), 'victory')
+                    ), 1)
+                    ->else(0)))
+                ->from('reports')
+                ->whereColumn('attacker_id', c('players.id'))
+                ->as('victories')
+        ]);
     }
 
     public function scopeByWorld($query, $worldId)

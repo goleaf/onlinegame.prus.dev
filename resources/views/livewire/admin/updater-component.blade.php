@@ -86,7 +86,7 @@
             
             @if($isUpdating)
                 <div class="flex items-center space-x-3 mb-4">
-                    <x-flux::spinner class="w-5 h-5" />
+                    <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
                     <span class="text-gray-600 dark:text-gray-400">Please wait while the update is being processed...</span>
                 </div>
             @endif
