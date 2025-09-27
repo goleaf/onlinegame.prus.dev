@@ -15,6 +15,18 @@ use Illuminate\Support\Facades\Validator;
  * 
  * API endpoints for managing game players, villages, and game mechanics.
  * All endpoints require authentication via Sanctum token.
+ * 
+ * @authenticated
+ * 
+ * This API provides comprehensive game management functionality including:
+ * - Player authentication and profile management
+ * - Village creation and management
+ * - Building upgrades and resource management
+ * - Game statistics and analytics
+ * 
+ * @tag Game Management
+ * @tag Player Management
+ * @tag Village Management
  */
 class GameApiController extends Controller
 {
