@@ -300,16 +300,21 @@ class MarketTradingService
     /**
      * Check if village has enough resources
      */
-    private function hasEnoughResources(Village $village, array $resources): bool
+    private function hasEnoughResources(Village $village, ResourceAmounts $resources): bool
     {
-        foreach ($resources as $resource => $amount) {
-            $resourceModel = $village->resources()->where('type', $resource)->first();
-            if (!$resourceModel || $resourceModel->amount < $amount) {
-                return false;
-            }
+        $villageResources = $village->resources;
+        if (!$villageResources) {
+            return false;
         }
 
-        return true;
+        $villageResourceAmounts = new VillageResources(
+            wood: $villageResources->wood ?? 0,
+            clay: $villageResources->clay ?? 0,
+            iron: $villageResources->iron ?? 0,
+            crop: $villageResources->crop ?? 0
+        );
+
+        return $villageResourceAmounts->hasEnoughResources($resources);
     }
 
     /**

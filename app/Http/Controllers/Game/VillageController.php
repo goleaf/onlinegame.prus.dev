@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use sbamtr\LaravelQueryEnrich\QE;
+use function sbamtr\LaravelQueryEnrich\c;
 
 class VillageController extends CrudController
 {
