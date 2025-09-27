@@ -195,4 +195,12 @@ class Task extends Model
             'world:id,name',
         ]);
     }
+
+    /**
+     * Validate task data using GameValidationTrait
+     */
+    public function validateTaskData(array $data)
+    {
+        return $this->validateTaskData($data);
+    }
 }
