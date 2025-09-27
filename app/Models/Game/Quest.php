@@ -290,11 +290,6 @@ class Quest extends Model implements Auditable
         ]);
     }
 }
-                ->where(c('status'), '=', 'completed')
-                ->as('completed_count'),
-            QE::select(QE::avg(c('progress')))
-                ->from('player_quests')
-                ->whereColumn('quest_id', c('quests.id'))
                 ->as('avg_progress')
         ];
 
