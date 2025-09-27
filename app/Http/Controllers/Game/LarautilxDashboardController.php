@@ -277,8 +277,10 @@ class LarautilxDashboardController extends Controller
     protected function checkCacheHealth()
     {
         try {
-            \Cache::put('health_check', 'ok', 60);
-            $value = \Cache::get('health_check');
+            CachingUtil::remember('health_check', now()->addMinutes(1), function () {
+                return 'ok';
+            });
+            $value = CachingUtil::get('health_check');
             return $value === 'ok' ? 'healthy' : 'unhealthy';
         } catch (\Exception $e) {
             return 'unhealthy';

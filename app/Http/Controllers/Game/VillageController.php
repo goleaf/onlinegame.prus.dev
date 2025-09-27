@@ -11,7 +11,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
+use LaraUtilX\Utilities\FilteringUtil;
 use sbamtr\LaravelQueryEnrich\QE;
+
 use function sbamtr\LaravelQueryEnrich\c;
 
 class VillageController extends CrudController
@@ -53,21 +56,27 @@ class VillageController extends CrudController
                 (SELECT SUM(wood + clay + iron + crop) FROM resources WHERE village_id = villages.id) as total_resources
             ');
 
-        // Apply filters
+        // Apply filters using FilteringUtil
+        $filters = [];
+
         if ($request->has('player_id')) {
-            $query->where('player_id', $request->get('player_id'));
+            $filters[] = ['target' => 'player_id', 'type' => '$eq', 'value' => $request->get('player_id')];
         }
 
         if ($request->has('world_id')) {
-            $query->where('world_id', $request->get('world_id'));
+            $filters[] = ['target' => 'world_id', 'type' => '$eq', 'value' => $request->get('world_id')];
         }
 
         if ($request->has('min_population')) {
-            $query->where('population', '>=', $request->get('min_population'));
+            $filters[] = ['target' => 'population', 'type' => '$gte', 'value' => $request->get('min_population')];
         }
 
         if ($request->has('max_population')) {
-            $query->where('population', '<=', $request->get('max_population'));
+            $filters[] = ['target' => 'population', 'type' => '$lte', 'value' => $request->get('max_population')];
+        }
+
+        if (!empty($filters)) {
+            $query = $query->filter($filters);
         }
 
         // Apply search

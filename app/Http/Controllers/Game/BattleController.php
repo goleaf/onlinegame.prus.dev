@@ -11,13 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Traits\ValidationHelperTrait;
-use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\FilteringUtil;
+use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Battle Management
@@ -152,7 +152,8 @@ class BattleController extends CrudController
                 $query->where('occurred_at', '<=', $request->input('date_to'));
             }
 
-            $battles = $query->orderBy('occurred_at', 'desc')
+            $battles = $query
+                ->orderBy('occurred_at', 'desc')
                 ->paginate($request->input('per_page', 15));
 
             LoggingUtil::info('Battles retrieved', [
@@ -162,7 +163,6 @@ class BattleController extends CrudController
             ], 'battle_system');
 
             return $this->paginatedResponse($battles, 'Battles retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving battles', [
                 'error' => $e->getMessage(),
@@ -245,7 +245,6 @@ class BattleController extends CrudController
             ], 'battle_system');
 
             return $this->successResponse($battle, 'Battle details retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving battle details', [
                 'error' => $e->getMessage(),
@@ -295,11 +294,12 @@ class BattleController extends CrudController
     {
         try {
             $playerId = Auth::user()->player->id;
-            
+
             $query = Battle::with(['attacker', 'defender', 'village'])
                 ->where(function ($q) use ($playerId) {
-                    $q->where('attacker_id', $playerId)
-                      ->orWhere('defender_id', $playerId);
+                    $q
+                        ->where('attacker_id', $playerId)
+                        ->orWhere('defender_id', $playerId);
                 });
 
             // Apply filters
@@ -316,7 +316,8 @@ class BattleController extends CrudController
                 $query->where('result', $request->input('result'));
             }
 
-            $battles = $query->orderBy('occurred_at', 'desc')
+            $battles = $query
+                ->orderBy('occurred_at', 'desc')
                 ->paginate($request->input('per_page', 15));
 
             LoggingUtil::info('Player battles retrieved', [
@@ -327,7 +328,6 @@ class BattleController extends CrudController
             ], 'battle_system');
 
             return $this->paginatedResponse($battles, 'Player battles retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving player battles', [
                 'error' => $e->getMessage(),
@@ -380,18 +380,25 @@ class BattleController extends CrudController
                 ->count();
 
             $victories = Battle::where(function ($q) use ($playerId) {
-                $q->where('attacker_id', $playerId)->where('result', 'victory')
-                  ->orWhere('defender_id', $playerId)->where('result', 'defeat');
+                $q
+                    ->where('attacker_id', $playerId)
+                    ->where('result', 'victory')
+                    ->orWhere('defender_id', $playerId)
+                    ->where('result', 'defeat');
             })->count();
 
             $defeats = Battle::where(function ($q) use ($playerId) {
-                $q->where('attacker_id', $playerId)->where('result', 'defeat')
-                  ->orWhere('defender_id', $playerId)->where('result', 'victory');
+                $q
+                    ->where('attacker_id', $playerId)
+                    ->where('result', 'defeat')
+                    ->orWhere('defender_id', $playerId)
+                    ->where('result', 'victory');
             })->count();
 
             $draws = Battle::where(function ($q) use ($playerId) {
-                $q->where('attacker_id', $playerId)
-                  ->orWhere('defender_id', $playerId);
+                $q
+                    ->where('attacker_id', $playerId)
+                    ->orWhere('defender_id', $playerId);
             })->where('result', 'draw')->count();
 
             $winRate = $totalBattles > 0 ? ($victories / $totalBattles) * 100 : 0;
@@ -434,7 +441,6 @@ class BattleController extends CrudController
             ], 'battle_system');
 
             return $this->successResponse($stats, 'Battle statistics retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving battle statistics', [
                 'error' => $e->getMessage(),
@@ -491,7 +497,6 @@ class BattleController extends CrudController
             ], 'battle_system');
 
             return $this->successResponse($battles, 'War battles retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving war battles', [
                 'error' => $e->getMessage(),
@@ -548,7 +553,7 @@ class BattleController extends CrudController
     public function store(Request $request): JsonResponse
     {
         try {
-            $validator = Validator::make($request->all(), [
+            $validated = $this->validateRequest($request, [
                 'attacker_id' => 'required|exists:players,id',
                 'defender_id' => 'required|exists:players,id',
                 'village_id' => 'required|exists:villages,id',
@@ -561,23 +566,9 @@ class BattleController extends CrudController
                 'war_id' => 'nullable|exists:alliance_wars,id',
             ]);
 
-            if ($validator->fails()) {
-                return $this->validationErrorResponse($validator->errors());
-            }
-
-            $battle = Battle::create([
-                'attacker_id' => $request->input('attacker_id'),
-                'defender_id' => $request->input('defender_id'),
-                'village_id' => $request->input('village_id'),
-                'attacker_troops' => $request->input('attacker_troops'),
-                'defender_troops' => $request->input('defender_troops'),
-                'attacker_losses' => $request->input('attacker_losses', []),
-                'defender_losses' => $request->input('defender_losses', []),
-                'loot' => $request->input('loot', []),
-                'result' => $request->input('result'),
-                'war_id' => $request->input('war_id'),
+            $battle = Battle::create(array_merge($validated, [
                 'occurred_at' => now(),
-            ]);
+            ]));
 
             LoggingUtil::info('Battle report created', [
                 'user_id' => auth()->id(),
@@ -588,7 +579,6 @@ class BattleController extends CrudController
             ], 'battle_system');
 
             return $this->successResponse($battle, 'Battle report created successfully.', 201);
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error creating battle report', [
                 'error' => $e->getMessage(),
@@ -658,19 +648,20 @@ class BattleController extends CrudController
                 ])
                 ->groupBy('players.id', 'players.name');
 
-            $orderBy = match($metric) {
+            $orderBy = match ($metric) {
                 'win_rate' => DB::raw('(victories / total_battles) DESC'),
                 'total_battles' => 'total_battles DESC',
                 default => 'victories DESC'
             };
 
-            $leaderboard = $subQuery->orderByRaw($orderBy)
+            $leaderboard = $subQuery
+                ->orderByRaw($orderBy)
                 ->limit($limit)
                 ->get();
 
             // Calculate win rates
             $leaderboard = $leaderboard->map(function ($player) {
-                $player->win_rate = $player->total_battles > 0 
+                $player->win_rate = $player->total_battles > 0
                     ? round(($player->victories / $player->total_battles) * 100, 2)
                     : 0;
                 return $player;
@@ -684,7 +675,6 @@ class BattleController extends CrudController
             ], 'battle_system');
 
             return $this->successResponse($leaderboard, 'Battle leaderboard retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving battle leaderboard', [
                 'error' => $e->getMessage(),

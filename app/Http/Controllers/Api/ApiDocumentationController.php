@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use SmartCache\Facades\SmartCache;
+use LaraUtilX\Utilities\CachingUtil;
 
 /**
  * @group API Documentation
@@ -51,7 +51,7 @@ class ApiDocumentationController extends Controller
     {
         $cacheKey = "api_info_" . now()->format('Y-m-d-H');
         
-        $data = SmartCache::remember($cacheKey, now()->addMinutes(30), function () {
+        $data = CachingUtil::remember($cacheKey, now()->addMinutes(30), function () {
             return [
                 'name' => 'Online Game API',
                 'version' => '1.0.0',
@@ -133,8 +133,10 @@ class ApiDocumentationController extends Controller
             }
 
             try {
-                \Cache::put('health_check', 'ok', 60);
-                $value = \Cache::get('health_check');
+                CachingUtil::remember('health_check', now()->addMinutes(1), function () {
+                    return 'ok';
+                });
+                $value = CachingUtil::get('health_check');
                 $cacheHealthy = $value === 'ok';
             } catch (\Exception $e) {
                 $cacheHealthy = false;

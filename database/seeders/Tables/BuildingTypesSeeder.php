@@ -293,7 +293,11 @@ class BuildingTypesSeeder extends Seeder
         ];
         
         foreach ($dataTables as $data) {
-            DB::table("building_types")->updateOrInsert(['id' => $data['id']], $data);
+            // Use firstOrCreate to avoid unique constraint violations on the key field
+            \App\Models\Game\BuildingType::firstOrCreate(
+                ['key' => $data['key']],
+                $data
+            );
         }
     }
 }

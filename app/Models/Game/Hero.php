@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use WendellAdriel\Lift\Lift;
 
 class Hero extends Model implements Auditable
 {
@@ -28,8 +27,8 @@ class Hero extends Model implements Auditable
     public ?array $equipment;
     public bool $is_active;
     public ?string $reference_number;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
+    public \Carbon\CarbonImmutable $created_at;
+    public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
         'player_id',

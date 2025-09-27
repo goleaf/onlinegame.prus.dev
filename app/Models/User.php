@@ -111,7 +111,6 @@ class User extends Authenticatable implements Auditable
         return $this->isAuditingDisabled();
     }
 
-
     public function players()
     {
         return $this->hasMany(\App\Models\Game\Player::class);

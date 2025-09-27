@@ -43,31 +43,33 @@ class AdminUserSeeder extends Seeder
         );
 
         // Create admin player
-        $adminPlayer = Player::create([
-            'user_id' => $adminUser->id,
-            'world_id' => $world->id,
-            'name' => 'Admin',
-            'tribe' => 'roman',
-            'population' => 0,
-            'villages_count' => 1,
-            'is_active' => true,
-            'is_online' => true,
-            'last_login' => now(),
-            'last_active_at' => now(),
-            'points' => 0,
-        ]);
+        $adminPlayer = Player::firstOrCreate(
+            ['user_id' => $adminUser->id, 'world_id' => $world->id],
+            [
+                'name' => 'Admin',
+                'tribe' => 'roman',
+                'population' => 0,
+                'villages_count' => 1,
+                'is_active' => true,
+                'is_online' => true,
+                'last_login' => now(),
+                'last_active_at' => now(),
+                'points' => 0,
+            ]
+        );
 
         // Create admin's capital village
-        $capitalVillage = Village::create([
-            'player_id' => $adminPlayer->id,
-            'world_id' => $world->id,
-            'name' => 'Capital',
-            'x_coordinate' => 0,
-            'y_coordinate' => 0,
-            'population' => 2,
-            'is_capital' => true,
-            'is_active' => true,
-        ]);
+        $capitalVillage = Village::firstOrCreate(
+            ['player_id' => $adminPlayer->id, 'world_id' => $world->id],
+            [
+                'name' => 'Capital',
+                'x_coordinate' => 0,
+                'y_coordinate' => 0,
+                'population' => 2,
+                'is_capital' => true,
+                'is_active' => true,
+            ]
+        );
 
         // Create resources for the capital
         $resourceTypes = ['wood', 'clay', 'iron', 'crop'];

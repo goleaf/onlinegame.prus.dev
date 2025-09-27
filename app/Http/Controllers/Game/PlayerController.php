@@ -10,10 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
 
 class PlayerController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait;
+    use ApiResponseTrait, GameValidationTrait, ValidationHelperTrait;
 
     protected Model $model;
 
@@ -133,7 +134,7 @@ class PlayerController extends CrudController
     {
         $player = Player::findOrFail($playerId);
 
-        $validated = $request->validate([
+        $validated = $this->validateRequest($request, [
             'is_active' => 'boolean',
             'is_online' => 'boolean',
             'last_active_at' => 'nullable|date',

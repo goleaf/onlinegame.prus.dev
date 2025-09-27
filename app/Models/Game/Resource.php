@@ -10,14 +10,13 @@ use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use SmartCache\Facades\SmartCache;
-use WendellAdriel\Lift\Lift;
 
 class Resource extends Model implements Auditable
 {
     use HasFactory;
     use HasNotables;
     use AuditableTrait;
-    use Lift;
+    // use Lift;
 
     // Laravel Lift typed properties
     public int $id;
@@ -28,8 +27,8 @@ class Resource extends Model implements Auditable
     public int $storage_capacity;
     public int $level;
     public ?\Carbon\Carbon $last_updated;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
+    public \Carbon\CarbonImmutable $created_at;
+    public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
         'village_id',

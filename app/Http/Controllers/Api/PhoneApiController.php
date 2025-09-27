@@ -7,48 +7,49 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
+use LaraUtilX\Utilities\LoggingUtil;
 
-class PhoneApiController extends Controller
+class PhoneApiController extends CrudController
 {
+    use ApiResponseTrait, ValidationHelperTrait;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
     /**
      * Validate and update user phone number
      */
     public function updatePhone(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $this->validateRequest($request, [
             'phone' => 'nullable|string|max:20',
             'phone_country' => 'nullable|string|size:2',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         $user = auth()->user();
         if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not authenticated'
-            ], 401);
+            return $this->errorResponse('User not authenticated', 401);
         }
 
         $user->update([
-            'phone' => $request->phone,
-            'phone_country' => $request->phone_country,
+            'phone' => $validated['phone'],
+            'phone_country' => $validated['phone_country'],
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Phone number updated successfully',
-            'data' => [
-                'phone' => $user->phone,
-                'phone_country' => $user->phone_country,
-            ]
-        ]);
+        LoggingUtil::info('Phone number updated', [
+            'user_id' => $user->id,
+            'phone' => $validated['phone'],
+            'phone_country' => $validated['phone_country'],
+        ], 'user_management');
+
+        return $this->successResponse([
+            'phone' => $user->phone,
+            'phone_country' => $user->phone_country,
+        ], 'Phone number updated successfully');
     }
 
     /**
@@ -58,18 +59,16 @@ class PhoneApiController extends Controller
     {
         $user = auth()->user();
         if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not authenticated'
-            ], 401);
+            return $this->errorResponse('User not authenticated', 401);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'phone' => $user->phone,
-                'phone_country' => $user->phone_country,
-            ]
-        ]);
+        LoggingUtil::info('Phone information retrieved', [
+            'user_id' => $user->id,
+        ], 'user_management');
+
+        return $this->successResponse([
+            'phone' => $user->phone,
+            'phone_country' => $user->phone_country,
+        ], 'Phone information retrieved successfully');
     }
 }

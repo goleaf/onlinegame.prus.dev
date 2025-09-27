@@ -5,9 +5,9 @@ namespace App\Http\Middleware;
 use App\Services\GameSeoService;
 use App\Services\SeoAnalyticsService;
 use Illuminate\Http\Request;
+use LaraUtilX\Utilities\LoggingUtil;
 use Symfony\Component\HttpFoundation\Response;
 use Closure;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class SeoMiddleware
 {
@@ -32,7 +32,7 @@ class SeoMiddleware
         $response = $next($request);
 
         // Only apply SEO middleware to GET requests that return HTML
-        if ($request->isMethod('GET') && $request->wantsHtml()) {
+        if ($request->isMethod('GET') && $request->acceptsHtml()) {
             $this->applySeoMetadata($request);
         }
 

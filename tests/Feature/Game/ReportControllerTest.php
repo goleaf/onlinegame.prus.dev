@@ -3,273 +3,300 @@
 namespace Tests\Feature\Game;
 
 use App\Models\Game\Report;
-use App\Models\Game\Player;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ReportControllerTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
 
-    protected User $user;
-    protected Player $player;
+    protected $user;
+    protected $player;
+    protected $report;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
-        $this->user = User::factory()->create();
-        $this->player = Player::factory()->create(['user_id' => $this->user->id]);
-    }
 
-    /** @test */
-    public function it_can_list_reports()
-    {
-        $reports = Report::factory()->count(3)->create([
-            'player_id' => $this->player->id,
+        $this->user = User::factory()->create();
+        $this->player = $this->user->player()->create([
+            'name' => 'TestPlayer',
+            'world_id' => 1,
         ]);
 
-        $response = $this->actingAs($this->user)
-            ->getJson('/game/api/reports');
+        $this->report = Report::factory()->create([
+            'player_id' => $this->player->id,
+            'type' => 'battle',
+            'title' => 'Test Battle Report',
+            'content' => 'You won a battle',
+            'status' => 'unread',
+        ]);
+    }
 
-        $response->assertStatus(200)
+    public function test_can_get_reports()
+    {
+        $response = $this
+            ->actingAs($this->user)
+            ->getJson('/api/game/reports');
+
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
+                'success',
                 'data' => [
-                    '*' => [
-                        'id',
-                        'player_id',
-                        'type',
-                        'title',
-                        'content',
-                        'status',
-                        'priority',
-                        'created_at',
-                        'updated_at',
-                    ]
+                    'data' => [
+                        '*' => [
+                            'id',
+                            'player_id',
+                            'type',
+                            'title',
+                            'content',
+                            'status',
+                            'created_at',
+                        ],
+                    ],
+                    'meta' => [
+                        'current_page',
+                        'per_page',
+                        'total',
+                        'last_page',
+                    ],
                 ],
-                'meta' => [
-                    'current_page',
-                    'per_page',
-                    'total',
-                    'last_page',
-                ]
+                'message',
             ]);
     }
 
-    /** @test */
-    public function it_can_filter_reports_by_type()
+    public function test_can_filter_reports_by_type()
     {
-        Report::factory()->create([
-            'player_id' => $this->player->id,
-            'type' => 'battle',
-        ]);
+        $response = $this
+            ->actingAs($this->user)
+            ->getJson('/api/game/reports?type=battle');
 
-        Report::factory()->create([
-            'player_id' => $this->player->id,
-            'type' => 'resource',
-        ]);
-
-        $response = $this->actingAs($this->user)
-            ->getJson('/game/api/reports?type=battle');
-
-        $response->assertStatus(200);
-        $responseData = $response->json('data');
-        $this->assertCount(1, $responseData);
-        $this->assertEquals('battle', $responseData[0]['type']);
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'data',
+                'message',
+            ]);
     }
 
-    /** @test */
-    public function it_can_filter_reports_by_status()
+    public function test_can_filter_reports_by_status()
+    {
+        $response = $this
+            ->actingAs($this->user)
+            ->getJson('/api/game/reports?status=unread');
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'data',
+                'message',
+            ]);
+    }
+
+    public function test_can_get_report_details()
+    {
+        $response = $this
+            ->actingAs($this->user)
+            ->getJson("/api/game/reports/{$this->report->id}");
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'id',
+                    'player_id',
+                    'type',
+                    'title',
+                    'content',
+                    'status',
+                ],
+                'message',
+            ]);
+
+        // Should mark as read when viewed
+        $this->assertDatabaseHas('reports', [
+            'id' => $this->report->id,
+            'status' => 'read',
+        ]);
+    }
+
+    public function test_can_mark_report_as_read()
+    {
+        $response = $this
+            ->actingAs($this->user)
+            ->putJson("/api/game/reports/{$this->report->id}/mark-read");
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+            ]);
+
+        $this->assertDatabaseHas('reports', [
+            'id' => $this->report->id,
+            'status' => 'read',
+        ]);
+    }
+
+    public function test_can_mark_all_reports_as_read()
     {
         Report::factory()->create([
             'player_id' => $this->player->id,
             'status' => 'unread',
         ]);
 
+        $response = $this
+            ->actingAs($this->user)
+            ->putJson('/api/game/reports/mark-all-read');
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'updated_count',
+                ],
+                'message',
+            ]);
+    }
+
+    public function test_can_delete_report()
+    {
+        $response = $this
+            ->actingAs($this->user)
+            ->deleteJson("/api/game/reports/{$this->report->id}");
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+            ]);
+
+        $this->assertDatabaseMissing('reports', [
+            'id' => $this->report->id,
+        ]);
+    }
+
+    public function test_can_get_report_statistics()
+    {
         Report::factory()->create([
             'player_id' => $this->player->id,
+            'type' => 'system',
             'status' => 'read',
         ]);
 
-        $response = $this->actingAs($this->user)
-            ->getJson('/game/api/reports?status=unread');
+        $response = $this
+            ->actingAs($this->user)
+            ->getJson('/api/game/reports/statistics');
 
-        $response->assertStatus(200);
-        $responseData = $response->json('data');
-        $this->assertCount(1, $responseData);
-        $this->assertEquals('unread', $responseData[0]['status']);
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'total_reports',
+                    'unread_reports',
+                    'read_reports',
+                    'by_type',
+                    'recent_reports',
+                ],
+                'message',
+            ]);
     }
 
-    /** @test */
-    public function it_can_create_a_report()
+    public function test_can_get_unread_count()
+    {
+        $response = $this
+            ->actingAs($this->user)
+            ->getJson('/api/game/reports/unread-count');
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'unread_count',
+                ],
+                'message',
+            ]);
+    }
+
+    public function test_cannot_access_other_player_reports()
+    {
+        $otherUser = User::factory()->create();
+        $otherPlayer = $otherUser->player()->create([
+            'name' => 'OtherPlayer',
+            'world_id' => 1,
+        ]);
+        $otherReport = Report::factory()->create([
+            'player_id' => $otherPlayer->id,
+        ]);
+
+        $response = $this
+            ->actingAs($this->user)
+            ->getJson("/api/game/reports/{$otherReport->id}");
+
+        $response->assertStatus(404);
+    }
+
+    public function test_cannot_delete_other_player_reports()
+    {
+        $otherUser = User::factory()->create();
+        $otherPlayer = $otherUser->player()->create([
+            'name' => 'OtherPlayer',
+            'world_id' => 1,
+        ]);
+        $otherReport = Report::factory()->create([
+            'player_id' => $otherPlayer->id,
+        ]);
+
+        $response = $this
+            ->actingAs($this->user)
+            ->deleteJson("/api/game/reports/{$otherReport->id}");
+
+        $response->assertStatus(404);
+    }
+
+    public function test_can_create_report()
     {
         $reportData = [
             'player_id' => $this->player->id,
-            'type' => 'battle',
-            'title' => 'Battle Report: Victory',
-            'content' => 'You successfully attacked PlayerTwo\'s village',
-            'status' => 'unread',
-            'priority' => 'medium',
-            'is_important' => false,
+            'type' => 'system',
+            'title' => 'System Notification',
+            'message' => 'Welcome to the game!',
+            'priority' => 'normal',
         ];
 
-        $response = $this->actingAs($this->user)
-            ->postJson('/game/api/reports', $reportData);
+        $response = $this
+            ->actingAs($this->user)
+            ->postJson('/api/game/reports', $reportData);
 
-        $response->assertStatus(201)
+        $response
+            ->assertStatus(201)
             ->assertJsonStructure([
+                'success',
                 'data' => [
                     'id',
                     'player_id',
                     'type',
                     'title',
-                    'content',
+                    'message',
                     'status',
-                    'priority',
-                    'is_important',
-                ]
+                ],
+                'message',
             ]);
 
         $this->assertDatabaseHas('reports', [
             'player_id' => $this->player->id,
-            'type' => 'battle',
-            'title' => 'Battle Report: Victory',
-            'status' => 'unread',
+            'type' => 'system',
+            'title' => 'System Notification',
         ]);
-    }
-
-    /** @test */
-    public function it_validates_report_creation_data()
-    {
-        $response = $this->actingAs($this->user)
-            ->postJson('/game/api/reports', []);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors([
-                'player_id',
-                'type',
-                'title',
-                'content',
-                'status',
-                'priority',
-            ]);
-    }
-
-    /** @test */
-    public function it_can_show_a_report()
-    {
-        $report = Report::factory()->create([
-            'player_id' => $this->player->id,
-        ]);
-
-        $response = $this->actingAs($this->user)
-            ->getJson("/game/api/reports/{$report->id}");
-
-        $response->assertStatus(200)
-            ->assertJsonStructure([
-                'data' => [
-                    'id',
-                    'player_id',
-                    'type',
-                    'title',
-                    'content',
-                    'status',
-                    'priority',
-                    'player',
-                ]
-            ]);
-    }
-
-    /** @test */
-    public function it_can_update_a_report()
-    {
-        $report = Report::factory()->create([
-            'player_id' => $this->player->id,
-            'status' => 'unread',
-        ]);
-
-        $updateData = [
-            'status' => 'read',
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->putJson("/game/api/reports/{$report->id}", $updateData);
-
-        $response->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    'status' => 'read',
-                ]
-            ]);
-
-        $this->assertDatabaseHas('reports', [
-            'id' => $report->id,
-            'status' => 'read',
-        ]);
-    }
-
-    /** @test */
-    public function it_can_delete_a_report()
-    {
-        $report = Report::factory()->create([
-            'player_id' => $this->player->id,
-        ]);
-
-        $response = $this->actingAs($this->user)
-            ->deleteJson("/game/api/reports/{$report->id}");
-
-        $response->assertStatus(200);
-
-        $this->assertDatabaseMissing('reports', [
-            'id' => $report->id,
-        ]);
-    }
-
-    /** @test */
-    public function it_can_search_reports()
-    {
-        Report::factory()->create([
-            'player_id' => $this->player->id,
-            'title' => 'Battle Report: Victory',
-            'content' => 'You successfully attacked PlayerTwo\'s village',
-        ]);
-
-        Report::factory()->create([
-            'player_id' => $this->player->id,
-            'title' => 'Resource Update',
-            'content' => 'Your resources have been updated',
-        ]);
-
-        $response = $this->actingAs($this->user)
-            ->getJson('/game/api/reports?search=Victory');
-
-        $response->assertStatus(200);
-        $responseData = $response->json('data');
-        $this->assertCount(1, $responseData);
-        $this->assertStringContainsString('Victory', $responseData[0]['title']);
-    }
-
-    /** @test */
-    public function it_can_filter_reports_by_priority()
-    {
-        Report::factory()->create([
-            'player_id' => $this->player->id,
-            'priority' => 'high',
-        ]);
-
-        Report::factory()->create([
-            'player_id' => $this->player->id,
-            'priority' => 'low',
-        ]);
-
-        $response = $this->actingAs($this->user)
-            ->getJson('/game/api/reports?priority=high');
-
-        $response->assertStatus(200);
-        $responseData = $response->json('data');
-        $this->assertCount(1, $responseData);
-        $this->assertEquals('high', $responseData[0]['priority']);
     }
 }

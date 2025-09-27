@@ -73,17 +73,23 @@ class NotificationController extends CrudController
             
             $query = Notification::where('player_id', $playerId);
 
-            // Apply filters
+            // Apply filters using FilteringUtil
+            $filters = [];
+            
             if ($request->has('type')) {
-                $query->where('type', $request->input('type'));
+                $filters[] = ['target' => 'type', 'type' => '$eq', 'value' => $request->input('type')];
             }
 
             if ($request->has('is_read')) {
-                $query->where('is_read', $request->boolean('is_read'));
+                $filters[] = ['target' => 'is_read', 'type' => '$eq', 'value' => $request->boolean('is_read')];
             }
 
             if ($request->has('priority')) {
-                $query->where('priority', $request->input('priority'));
+                $filters[] = ['target' => 'priority', 'type' => '$eq', 'value' => $request->input('priority')];
+            }
+
+            if (!empty($filters)) {
+                $query = $query->filter($filters);
             }
 
             $notifications = $query->orderBy('created_at', 'desc')

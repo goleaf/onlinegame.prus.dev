@@ -15,16 +15,40 @@ use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Traits\ValidationHelperTrait;
+use LaraUtilX\Utilities\CachingUtil;
+use LaraUtilX\Utilities\FilteringUtil;
 use LaraUtilX\Utilities\LoggingUtil;
+use LaraUtilX\Utilities\RateLimiterUtil;
 
 class MessageController extends CrudController
 {
     use ApiResponseTrait, ValidationHelperTrait;
-    protected $messageService;
 
-    public function __construct()
+    protected Model $model;
+    protected MessageService $messageService;
+    protected RateLimiterUtil $rateLimiter;
+    protected array $validationRules = [];
+    protected array $searchableFields = ['subject', 'body'];
+    protected array $relationships = ['sender', 'recipient', 'alliance'];
+    protected int $perPage = 20;
+
+    protected function getValidationRules(): array
     {
-        $this->messageService = new MessageService();
+        return [
+            'recipient_id' => 'required|exists:players,id',
+            'subject' => 'required|string|max:255',
+            'body' => 'required|string|max:5000',
+            'priority' => 'required|in:low,normal,high,urgent',
+        ];
+    }
+
+    public function __construct(MessageService $messageService, RateLimiterUtil $rateLimiter)
+    {
+        $this->model = new Message();
+        $this->messageService = $messageService;
+        $this->rateLimiter = $rateLimiter;
+        $this->validationRules = $this->getValidationRules();
+        parent::__construct($this->model);
     }
 
     /**
@@ -32,16 +56,31 @@ class MessageController extends CrudController
      */
     public function getInbox(Request $request): JsonResponse
     {
-        $playerId = Auth::user()->player->id;
-        $limit = $request->get('limit', 50);
-        $offset = $request->get('offset', 0);
+        try {
+            $playerId = Auth::user()->player->id;
+            $cacheKey = "inbox_messages_{$playerId}_" . md5(serialize($request->all()));
 
-        $result = $this->messageService->getInbox($playerId, $limit, $offset);
+            $result = CachingUtil::remember($cacheKey, now()->addMinutes(5), function () use ($request, $playerId) {
+                $limit = $request->get('limit', 50);
+                $offset = $request->get('offset', 0);
+                return $this->messageService->getInbox($playerId, $limit, $offset);
+            });
 
-        return response()->json([
-            'success' => true,
-            'data' => $result,
-        ]);
+            LoggingUtil::info('Inbox messages retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'limit' => $request->get('limit', 50),
+            ], 'message_system');
+
+            return $this->successResponse($result, 'Inbox messages retrieved successfully.');
+        } catch (\Exception $e) {
+            LoggingUtil::error('Error retrieving inbox messages', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to retrieve inbox messages.', 500);
+        }
     }
 
     /**
@@ -49,16 +88,31 @@ class MessageController extends CrudController
      */
     public function getSent(Request $request): JsonResponse
     {
-        $playerId = Auth::user()->player->id;
-        $limit = $request->get('limit', 50);
-        $offset = $request->get('offset', 0);
+        try {
+            $playerId = Auth::user()->player->id;
+            $cacheKey = "sent_messages_{$playerId}_" . md5(serialize($request->all()));
 
-        $result = $this->messageService->getSentMessages($playerId, $limit, $offset);
+            $result = CachingUtil::remember($cacheKey, now()->addMinutes(5), function () use ($request, $playerId) {
+                $limit = $request->get('limit', 50);
+                $offset = $request->get('offset', 0);
+                return $this->messageService->getSentMessages($playerId, $limit, $offset);
+            });
 
-        return response()->json([
-            'success' => true,
-            'data' => $result,
-        ]);
+            LoggingUtil::info('Sent messages retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'limit' => $request->get('limit', 50),
+            ], 'message_system');
+
+            return $this->successResponse($result, 'Sent messages retrieved successfully.');
+        } catch (\Exception $e) {
+            LoggingUtil::error('Error retrieving sent messages', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to retrieve sent messages.', 500);
+        }
     }
 
     /**
@@ -66,15 +120,32 @@ class MessageController extends CrudController
      */
     public function getConversation(Request $request, int $otherPlayerId): JsonResponse
     {
-        $playerId = Auth::user()->player->id;
-        $limit = $request->get('limit', 50);
+        try {
+            $playerId = Auth::user()->player->id;
+            $cacheKey = "conversation_{$playerId}_{$otherPlayerId}_" . md5(serialize($request->all()));
 
-        $result = $this->messageService->getConversation($playerId, $otherPlayerId, $limit);
+            $result = CachingUtil::remember($cacheKey, now()->addMinutes(2), function () use ($request, $playerId, $otherPlayerId) {
+                $limit = $request->get('limit', 50);
+                return $this->messageService->getConversation($playerId, $otherPlayerId, $limit);
+            });
 
-        return response()->json([
-            'success' => true,
-            'data' => $result,
-        ]);
+            LoggingUtil::info('Conversation retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'other_player_id' => $otherPlayerId,
+                'limit' => $request->get('limit', 50),
+            ], 'message_system');
+
+            return $this->successResponse($result, 'Conversation retrieved successfully.');
+        } catch (\Exception $e) {
+            LoggingUtil::error('Error retrieving conversation', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'other_player_id' => $otherPlayerId,
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to retrieve conversation.', 500);
+        }
     }
 
     /**
@@ -82,24 +153,37 @@ class MessageController extends CrudController
      */
     public function getAllianceMessages(Request $request): JsonResponse
     {
-        $player = Auth::user()->player;
+        try {
+            $player = Auth::user()->player;
 
-        if (!$player->alliance_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Player is not in an alliance',
-            ], 400);
+            if (!$player->alliance_id) {
+                return $this->errorResponse('Player is not in an alliance', 400);
+            }
+
+            $cacheKey = "alliance_messages_{$player->alliance_id}_" . md5(serialize($request->all()));
+
+            $result = CachingUtil::remember($cacheKey, now()->addMinutes(3), function () use ($request, $player) {
+                $limit = $request->get('limit', 50);
+                $offset = $request->get('offset', 0);
+                return $this->messageService->getAllianceMessages($player->alliance_id, $limit, $offset);
+            });
+
+            LoggingUtil::info('Alliance messages retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $player->id,
+                'alliance_id' => $player->alliance_id,
+                'limit' => $request->get('limit', 50),
+            ], 'message_system');
+
+            return $this->successResponse($result, 'Alliance messages retrieved successfully.');
+        } catch (\Exception $e) {
+            LoggingUtil::error('Error retrieving alliance messages', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to retrieve alliance messages.', 500);
         }
-
-        $limit = $request->get('limit', 50);
-        $offset = $request->get('offset', 0);
-
-        $result = $this->messageService->getAllianceMessages($player->alliance_id, $limit, $offset);
-
-        return response()->json([
-            'success' => true,
-            'data' => $result,
-        ]);
     }
 
     /**
@@ -107,40 +191,43 @@ class MessageController extends CrudController
      */
     public function sendMessage(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'recipient_id' => 'required|exists:players,id',
-            'subject' => 'required|string|max:255',
-            'body' => 'required|string|max:5000',
-            'priority' => 'required|in:low,normal,high,urgent',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         try {
+            // Rate limiting for sending messages
+            $rateLimitKey = 'send_message_' . (auth()->id() ?? 'unknown');
+            if (!$this->rateLimiter->attempt($rateLimitKey, 20, 1)) {
+                return $this->errorResponse('Too many messages sent. Please try again later.', 429);
+            }
+
+            $validated = $this->validateRequest($request, $this->validationRules);
+
             $message = $this->messageService->sendPrivateMessage(
                 Auth::user()->player->id,
-                $request->recipient_id,
-                $request->subject,
-                $request->body,
-                $request->priority
+                $validated['recipient_id'],
+                $validated['subject'],
+                $validated['body'],
+                $validated['priority']
             );
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Message sent successfully',
-                'data' => $message,
-            ]);
+            // Clear related caches
+            CachingUtil::forget("inbox_messages_{$validated['recipient_id']}");
+            CachingUtil::forget("sent_messages_{$message->sender_id}");
+
+            LoggingUtil::info('Private message sent', [
+                'user_id' => auth()->id(),
+                'sender_id' => $message->sender_id,
+                'recipient_id' => $message->recipient_id,
+                'subject' => $message->subject,
+                'priority' => $message->priority,
+            ], 'message_system');
+
+            return $this->successResponse($message, 'Message sent successfully.', 201);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to send message: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error sending private message', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to send message: ' . $e->getMessage(), 500);
         }
     }
 
@@ -149,48 +236,52 @@ class MessageController extends CrudController
      */
     public function sendAllianceMessage(Request $request): JsonResponse
     {
-        $player = Auth::user()->player;
-
-        if (!$player->alliance_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Player is not in an alliance',
-            ], 400);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'subject' => 'required|string|max:255',
-            'body' => 'required|string|max:5000',
-            'priority' => 'required|in:low,normal,high,urgent',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         try {
+            $player = Auth::user()->player;
+
+            if (!$player->alliance_id) {
+                return $this->errorResponse('Player is not in an alliance', 400);
+            }
+
+            // Rate limiting for sending alliance messages
+            $rateLimitKey = 'send_alliance_message_' . (auth()->id() ?? 'unknown');
+            if (!$this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
+                return $this->errorResponse('Too many alliance messages sent. Please try again later.', 429);
+            }
+
+            $validated = $this->validateRequest($request, [
+                'subject' => 'required|string|max:255',
+                'body' => 'required|string|max:5000',
+                'priority' => 'required|in:low,normal,high,urgent',
+            ]);
+
             $message = $this->messageService->sendAllianceMessage(
                 $player->id,
                 $player->alliance_id,
-                $request->subject,
-                $request->body,
-                $request->priority
+                $validated['subject'],
+                $validated['body'],
+                $validated['priority']
             );
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Alliance message sent successfully',
-                'data' => $message,
-            ]);
+            // Clear related caches
+            CachingUtil::forget("alliance_messages_{$player->alliance_id}");
+
+            LoggingUtil::info('Alliance message sent', [
+                'user_id' => auth()->id(),
+                'player_id' => $player->id,
+                'alliance_id' => $player->alliance_id,
+                'subject' => $message->subject,
+                'priority' => $message->priority,
+            ], 'message_system');
+
+            return $this->successResponse($message, 'Alliance message sent successfully.', 201);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to send alliance message: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error sending alliance message', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to send alliance message: ' . $e->getMessage(), 500);
         }
     }
 
@@ -203,21 +294,26 @@ class MessageController extends CrudController
             $success = $this->messageService->markAsRead($messageId, Auth::user()->player->id);
 
             if ($success) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Message marked as read',
-                ]);
+                // Clear related caches
+                CachingUtil::forget("inbox_messages_{$messageId}");
+
+                LoggingUtil::info('Message marked as read', [
+                    'user_id' => auth()->id(),
+                    'message_id' => $messageId,
+                ], 'message_system');
+
+                return $this->successResponse(null, 'Message marked as read.');
             } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Message not found or access denied',
-                ], 404);
+                return $this->errorResponse('Message not found or access denied', 404);
             }
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to mark message as read: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error marking message as read', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'message_id' => $messageId,
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to mark message as read: ' . $e->getMessage(), 500);
         }
     }
 
@@ -230,21 +326,27 @@ class MessageController extends CrudController
             $success = $this->messageService->deleteMessage($messageId, Auth::user()->player->id);
 
             if ($success) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Message deleted successfully',
-                ]);
+                // Clear related caches
+                CachingUtil::forget("inbox_messages_{$messageId}");
+                CachingUtil::forget("sent_messages_{$messageId}");
+
+                LoggingUtil::info('Message deleted', [
+                    'user_id' => auth()->id(),
+                    'message_id' => $messageId,
+                ], 'message_system');
+
+                return $this->successResponse(null, 'Message deleted successfully.');
             } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Message not found or access denied',
-                ], 404);
+                return $this->errorResponse('Message not found or access denied', 404);
             }
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete message: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error deleting message', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'message_id' => $messageId,
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to delete message: ' . $e->getMessage(), 500);
         }
     }
 
@@ -254,17 +356,26 @@ class MessageController extends CrudController
     public function getStats(): JsonResponse
     {
         try {
-            $stats = $this->messageService->getMessageStats(Auth::user()->player->id);
+            $playerId = Auth::user()->player->id;
+            $cacheKey = "message_stats_{$playerId}";
 
-            return response()->json([
-                'success' => true,
-                'data' => $stats,
-            ]);
+            $stats = CachingUtil::remember($cacheKey, now()->addMinutes(10), function () use ($playerId) {
+                return $this->messageService->getMessageStats($playerId);
+            });
+
+            LoggingUtil::info('Message statistics retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+            ], 'message_system');
+
+            return $this->successResponse($stats, 'Message statistics retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get message statistics: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error retrieving message statistics', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to get message statistics: ' . $e->getMessage(), 500);
         }
     }
 
@@ -273,35 +384,38 @@ class MessageController extends CrudController
      */
     public function bulkMarkAsRead(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'message_ids' => 'required|array',
-            'message_ids.*' => 'integer|exists:messages,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         try {
+            $validated = $this->validateRequest($request, [
+                'message_ids' => 'required|array',
+                'message_ids.*' => 'integer|exists:messages,id',
+            ]);
+
             $updated = $this->messageService->bulkMarkAsRead(
-                $request->message_ids,
+                $validated['message_ids'],
                 Auth::user()->player->id
             );
 
-            return response()->json([
-                'success' => true,
-                'message' => "{$updated} messages marked as read",
+            // Clear related caches
+            foreach ($validated['message_ids'] as $messageId) {
+                CachingUtil::forget("inbox_messages_{$messageId}");
+            }
+
+            LoggingUtil::info('Bulk mark messages as read', [
+                'user_id' => auth()->id(),
+                'message_ids' => $validated['message_ids'],
                 'updated_count' => $updated,
-            ]);
+            ], 'message_system');
+
+            return $this->successResponse([
+                'updated_count' => $updated,
+            ], "{$updated} messages marked as read.");
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to bulk mark messages as read: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error bulk marking messages as read', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to bulk mark messages as read: ' . $e->getMessage(), 500);
         }
     }
 
@@ -310,35 +424,39 @@ class MessageController extends CrudController
      */
     public function bulkDelete(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'message_ids' => 'required|array',
-            'message_ids.*' => 'integer|exists:messages,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         try {
+            $validated = $this->validateRequest($request, [
+                'message_ids' => 'required|array',
+                'message_ids.*' => 'integer|exists:messages,id',
+            ]);
+
             $deleted = $this->messageService->bulkDeleteMessages(
-                $request->message_ids,
+                $validated['message_ids'],
                 Auth::user()->player->id
             );
 
-            return response()->json([
-                'success' => true,
-                'message' => "{$deleted} messages deleted",
+            // Clear related caches
+            foreach ($validated['message_ids'] as $messageId) {
+                CachingUtil::forget("inbox_messages_{$messageId}");
+                CachingUtil::forget("sent_messages_{$messageId}");
+            }
+
+            LoggingUtil::info('Bulk delete messages', [
+                'user_id' => auth()->id(),
+                'message_ids' => $validated['message_ids'],
                 'deleted_count' => $deleted,
-            ]);
+            ], 'message_system');
+
+            return $this->successResponse([
+                'deleted_count' => $deleted,
+            ], "{$deleted} messages deleted.");
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to bulk delete messages: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error bulk deleting messages', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to bulk delete messages: ' . $e->getMessage(), 500);
         }
     }
 
@@ -348,20 +466,30 @@ class MessageController extends CrudController
     public function getPlayers(): JsonResponse
     {
         try {
-            $players = Player::where('id', '!=', Auth::user()->player->id)
-                ->select('id', 'name')
-                ->orderBy('name')
-                ->get();
+            $playerId = Auth::user()->player->id;
+            $cacheKey = "message_players_{$playerId}";
 
-            return response()->json([
-                'success' => true,
-                'data' => $players,
-            ]);
+            $players = CachingUtil::remember($cacheKey, now()->addMinutes(15), function () use ($playerId) {
+                return Player::where('id', '!=', $playerId)
+                    ->select('id', 'name')
+                    ->orderBy('name')
+                    ->get();
+            });
+
+            LoggingUtil::info('Players for message composition retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'players_count' => $players->count(),
+            ], 'message_system');
+
+            return $this->successResponse($players, 'Players retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get players: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error retrieving players for message composition', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to get players: ' . $e->getMessage(), 500);
         }
     }
 
@@ -371,36 +499,46 @@ class MessageController extends CrudController
     public function getMessage(int $messageId): JsonResponse
     {
         try {
-            $message = Message::with(['sender', 'recipient', 'alliance'])
-                ->where('id', $messageId)
-                ->where(function ($q) {
-                    $q
-                        ->where('sender_id', Auth::user()->player->id)
-                        ->orWhere('recipient_id', Auth::user()->player->id);
-                })
-                ->first();
+            $playerId = Auth::user()->player->id;
+            $cacheKey = "message_{$messageId}_{$playerId}";
+
+            $message = CachingUtil::remember($cacheKey, now()->addMinutes(5), function () use ($messageId, $playerId) {
+                return Message::with(['sender', 'recipient', 'alliance'])
+                    ->where('id', $messageId)
+                    ->where(function ($q) use ($playerId) {
+                        $q
+                            ->where('sender_id', $playerId)
+                            ->orWhere('recipient_id', $playerId);
+                    })
+                    ->first();
+            });
 
             if (!$message) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Message not found or access denied',
-                ], 404);
+                return $this->errorResponse('Message not found or access denied', 404);
             }
 
             // Mark as read if recipient
-            if ($message->recipient_id === Auth::user()->player->id) {
-                $this->messageService->markAsRead($messageId, Auth::user()->player->id);
+            if ($message->recipient_id === $playerId) {
+                $this->messageService->markAsRead($messageId, $playerId);
+                // Clear cache after marking as read
+                CachingUtil::forget($cacheKey);
             }
 
-            return response()->json([
-                'success' => true,
-                'data' => $message,
-            ]);
+            LoggingUtil::info('Message retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'message_id' => $messageId,
+            ], 'message_system');
+
+            return $this->successResponse($message, 'Message retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get message: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error retrieving message', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'message_id' => $messageId,
+            ], 'message_system');
+
+            return $this->errorResponse('Failed to get message: ' . $e->getMessage(), 500);
         }
     }
 }

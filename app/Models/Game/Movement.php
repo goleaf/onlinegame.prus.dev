@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use WendellAdriel\Lift\Lift;
 use sbamtr\LaravelQueryEnrich\QE;
 use function sbamtr\LaravelQueryEnrich\c;
 
@@ -40,8 +39,8 @@ class Movement extends Model implements Auditable
     public string $status;
     public ?array $metadata;
     public ?string $reference_number;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
+    public \Carbon\CarbonImmutable $created_at;
+    public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
         'player_id',

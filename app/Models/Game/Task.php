@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use WendellAdriel\Lift\Lift;
 use sbamtr\LaravelQueryEnrich\QE;
 use function sbamtr\LaravelQueryEnrich\c;
 
@@ -34,8 +33,8 @@ class Task extends Model
     public ?\Carbon\Carbon $started_at;
     public ?\Carbon\Carbon $completed_at;
     public ?string $reference_number;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
+    public \Carbon\CarbonImmutable $created_at;
+    public \Carbon\CarbonImmutable $updated_at;
 
     protected $table = 'player_tasks';
 

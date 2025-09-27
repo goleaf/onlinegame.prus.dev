@@ -12,6 +12,7 @@ use Intervention\Validation\Rules\Username;
 use JonPurvis\Squeaky\Rules\Clean;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\FeatureToggleUtil;
 use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
@@ -20,8 +21,7 @@ use Ziming\LaravelZxcvbn\Rules\ZxcvbnRule;
 
 class UserController extends CrudController
 {
-    use ApiResponseTrait;
-    use GameValidationTrait;
+    use ApiResponseTrait, GameValidationTrait, ValidationHelperTrait;
 
     protected Model $model;
     protected RateLimiterUtil $rateLimiter;

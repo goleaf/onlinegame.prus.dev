@@ -14,32 +14,12 @@ use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use sbamtr\LaravelQueryEnrich\QE;
 use SmartCache\Facades\SmartCache;
-use WendellAdriel\Lift\Lift;
 
 use function sbamtr\LaravelQueryEnrich\c;
 
 class Quest extends Model implements Auditable
 {
-    use HasFactory, HasTaxonomy, HasNotables, HasReference, Commentable, Lift, AuditableTrait, GameValidationTrait;
-
-    // Laravel Lift typed properties
-    public int $id;
-    public string $name;
-    public string $key;
-    public ?string $description;
-    public ?string $instructions;
-    public ?string $category;
-    public ?string $difficulty;
-    public ?array $requirements;
-    public ?array $rewards;
-    public ?int $experience_reward;
-    public ?int $gold_reward;
-    public ?array $resource_rewards;
-    public bool $is_repeatable;
-    public bool $is_active;
-    public ?string $reference_number;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
+    use HasFactory, HasTaxonomy, HasNotables, HasReference, Commentable, AuditableTrait, GameValidationTrait;
 
     protected $fillable = [
         'name',
@@ -56,14 +36,18 @@ class Quest extends Model implements Auditable
         'is_repeatable',
         'is_active',
         'reference_number',
+        'isCustomEvent',
+        'preloadedResolverData',
     ];
 
     protected $casts = [
         'requirements' => 'array',
         'rewards' => 'array',
         'resource_rewards' => 'array',
+        'preloadedResolverData' => 'array',
         'is_repeatable' => 'boolean',
         'is_active' => 'boolean',
+        'isCustomEvent' => 'boolean',
     ];
 
     // Referenceable configuration
@@ -155,7 +139,8 @@ class Quest extends Model implements Auditable
 
     public function scopePopular($query, $limit = 10)
     {
-        return $query->withCount('players')
+        return $query
+            ->withCount('players')
             ->orderByDesc('players_count')
             ->limit($limit);
     }
@@ -170,13 +155,13 @@ class Quest extends Model implements Auditable
     {
         $total = $this->players_count ?? 0;
         $completed = $this->completed_count ?? 0;
-        
+
         return $total > 0 ? ($completed / $total) * 100 : 0;
     }
 
     public function getDifficultyColorAttribute(): string
     {
-        return match($this->difficulty) {
+        return match ($this->difficulty) {
             'easy' => 'green',
             'medium' => 'yellow',
             'hard' => 'orange',
@@ -187,7 +172,7 @@ class Quest extends Model implements Auditable
 
     public function getCategoryIconAttribute(): string
     {
-        return match($this->category) {
+        return match ($this->category) {
             'tutorial' => 'book',
             'building' => 'home',
             'combat' => 'sword',
@@ -200,7 +185,8 @@ class Quest extends Model implements Auditable
 
     public function isCompletedByPlayer(int $playerId): bool
     {
-        return $this->players()
+        return $this
+            ->players()
             ->where('player_id', $playerId)
             ->where('status', 'completed')
             ->exists();
@@ -208,7 +194,8 @@ class Quest extends Model implements Auditable
 
     public function isActiveForPlayer(int $playerId): bool
     {
-        return $this->players()
+        return $this
+            ->players()
             ->where('player_id', $playerId)
             ->where('status', 'active')
             ->exists();
@@ -216,9 +203,9 @@ class Quest extends Model implements Auditable
 
     public function canBeStartedByPlayer(int $playerId): bool
     {
-        return !$this->isCompletedByPlayer($playerId) && 
-               !$this->isActiveForPlayer($playerId) &&
-               $this->is_active;
+        return !$this->isCompletedByPlayer($playerId) &&
+            !$this->isActiveForPlayer($playerId) &&
+            $this->is_active;
     }
 
     // Caching methods
@@ -237,7 +224,8 @@ class Quest extends Model implements Auditable
             "quest_progress_{$this->id}_{$playerId}",
             now()->addMinutes(15),
             function () use ($playerId) {
-                return $this->players()
+                return $this
+                    ->players()
                     ->where('player_id', $playerId)
                     ->first();
             }
@@ -289,7 +277,8 @@ class Quest extends Model implements Auditable
             'gold_reward' => 250,
         ]);
     }
-}
+
+    public function scopeAvailableForPlayer($query, $playerId)
     {
         return $query
             ->where('is_active', true)
@@ -322,36 +311,6 @@ class Quest extends Model implements Auditable
                     ->orWhere('description', 'like', '%' . $searchTerm . '%')
                     ->orWhere('category', 'like', '%' . $searchTerm . '%');
             });
-        });
-    }
-
-    /**
-     * Get quests with SmartCache optimization
-     */
-    public static function getCachedQuests($playerId = null, $filters = [])
-    {
-        $cacheKey = "quests_{$playerId}_" . md5(serialize($filters));
-
-        return SmartCache::remember($cacheKey, now()->addMinutes(20), function () use ($playerId, $filters) {
-            $query = static::active()->withPlayerStats($playerId);
-
-            if (isset($filters['category'])) {
-                $query->where('category', $filters['category']);
-            }
-
-            if (isset($filters['difficulty'])) {
-                $query->byDifficultyFilter($filters['difficulty']);
-            }
-
-            if (isset($filters['repeatable'])) {
-                $query->repeatable();
-            }
-
-            if (isset($filters['search'])) {
-                $query->search($filters['search']);
-            }
-
-            return $query->get();
         });
     }
 }

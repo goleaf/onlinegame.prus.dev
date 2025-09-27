@@ -91,11 +91,11 @@ class MarketController extends CrudController
      *       "status": "active",
      *       "created_at": "2023-01-01T12:00:00.000000Z"
      *     }
-   *   ]
-   * }
-   *
-   * @tag Market System
-   */
+     *   ]
+     * }
+     *
+     * @tag Market System
+     */
     public function index(Request $request): JsonResponse
     {
         try {
@@ -106,14 +106,14 @@ class MarketController extends CrudController
             }
 
             $cacheKey = 'market_offers_' . md5(serialize($request->all()));
-            
+
             $offers = CachingUtil::remember($cacheKey, now()->addMinutes(5), function () use ($request) {
                 $query = MarketOffer::with($this->relationships)
                     ->where('status', 'active');
 
                 // Apply filters using FilteringUtil
                 $filters = [];
-                
+
                 if ($request->has('resource_type')) {
                     $filters[] = ['target' => 'resource_type', 'type' => '$eq', 'value' => $request->input('resource_type')];
                 }
@@ -138,14 +138,16 @@ class MarketController extends CrudController
                 if ($request->has('search')) {
                     $searchTerm = $request->get('search');
                     $query->where(function ($q) use ($searchTerm) {
-                        $q->where('description', 'like', "%{$searchTerm}%")
-                          ->orWhereHas('player', function ($playerQuery) use ($searchTerm) {
-                              $playerQuery->where('name', 'like', "%{$searchTerm}%");
-                          });
+                        $q
+                            ->where('description', 'like', "%{$searchTerm}%")
+                            ->orWhereHas('player', function ($playerQuery) use ($searchTerm) {
+                                $playerQuery->where('name', 'like', "%{$searchTerm}%");
+                            });
                     });
                 }
 
-                return $query->orderBy('created_at', 'desc')
+                return $query
+                    ->orderBy('created_at', 'desc')
                     ->paginate($request->input('per_page', $this->perPage));
             });
 
@@ -162,7 +164,6 @@ class MarketController extends CrudController
             ], 'market_system');
 
             return $this->paginatedResponse($offers, 'Market offers retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving market offers', [
                 'error' => $e->getMessage(),
@@ -177,41 +178,41 @@ class MarketController extends CrudController
      * Get specific market offer
      *
      * @authenticated
-   *
-   * @description Retrieve detailed information about a specific market offer.
-   *
-   * @urlParam id int required The ID of the market offer. Example: 1
-   *
-   * @response 200 {
-   *   "id": 1,
-   *   "player_id": 1,
-   *   "player_name": "PlayerOne",
-   *   "offer_type": "sell",
-   *   "resource_type": "wood",
-   *   "resource_amount": 1000,
-   *   "exchange_rate": 1.5,
-   *   "total_amount": 1500,
-   *   "status": "active",
-   *   "description": "Selling wood for clay",
-   *   "created_at": "2023-01-01T12:00:00.000000Z",
-   *   "updated_at": "2023-01-01T12:00:00.000000Z"
-   * }
-   *
-   * @response 404 {
-   *   "message": "Market offer not found"
-   * }
-   *
-   * @tag Market System
-   */
+     *
+     * @description Retrieve detailed information about a specific market offer.
+     *
+     * @urlParam id int required The ID of the market offer. Example: 1
+     *
+     * @response 200 {
+     *   "id": 1,
+     *   "player_id": 1,
+     *   "player_name": "PlayerOne",
+     *   "offer_type": "sell",
+     *   "resource_type": "wood",
+     *   "resource_amount": 1000,
+     *   "exchange_rate": 1.5,
+     *   "total_amount": 1500,
+     *   "status": "active",
+     *   "description": "Selling wood for clay",
+     *   "created_at": "2023-01-01T12:00:00.000000Z",
+     *   "updated_at": "2023-01-01T12:00:00.000000Z"
+     * }
+     *
+     * @response 404 {
+     *   "message": "Market offer not found"
+     * }
+     *
+     * @tag Market System
+     */
     public function show(int $id): JsonResponse
     {
         try {
             $cacheKey = "market_offer_{$id}";
-            
+
             $offer = CachingUtil::remember($cacheKey, now()->addMinutes(10), function () use ($id) {
                 return MarketOffer::with($this->relationships)->findOrFail($id);
             });
-            
+
             $offer->player_name = $offer->player->name ?? 'Unknown';
 
             LoggingUtil::info('Market offer retrieved', [
@@ -220,7 +221,6 @@ class MarketController extends CrudController
             ], 'market_system');
 
             return $this->successResponse($offer, 'Market offer retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving market offer', [
                 'error' => $e->getMessage(),
@@ -235,35 +235,35 @@ class MarketController extends CrudController
      * Get player's market offers
      *
      * @authenticated
-   *
-   * @description Retrieve all market offers created by the authenticated player.
-   *
-   * @queryParam status string Filter by offer status (active, completed, cancelled). Example: "active"
-   *
-   * @response 200 {
-   *   "data": [
-   *     {
-   *       "id": 1,
-   *       "offer_type": "sell",
-   *       "resource_type": "wood",
-   *       "resource_amount": 1000,
-   *       "exchange_rate": 1.5,
-   *       "total_amount": 1500,
-   *       "status": "active",
-   *       "created_at": "2023-01-01T12:00:00.000000Z"
-   *     }
-   *   ]
-   * }
-   *
-   * @tag Market System
-   */
+     *
+     * @description Retrieve all market offers created by the authenticated player.
+     *
+     * @queryParam status string Filter by offer status (active, completed, cancelled). Example: "active"
+     *
+     * @response 200 {
+     *   "data": [
+     *     {
+     *       "id": 1,
+     *       "offer_type": "sell",
+     *       "resource_type": "wood",
+     *       "resource_amount": 1000,
+     *       "exchange_rate": 1.5,
+     *       "total_amount": 1500,
+     *       "status": "active",
+     *       "created_at": "2023-01-01T12:00:00.000000Z"
+     *     }
+     *   ]
+     * }
+     *
+     * @tag Market System
+     */
     public function myOffers(Request $request): JsonResponse
     {
         try {
             $playerId = Auth::user()->player->id;
-            
+
             $cacheKey = "player_offers_{$playerId}_" . md5(serialize($request->all()));
-            
+
             $offers = CachingUtil::remember($cacheKey, now()->addMinutes(2), function () use ($request, $playerId) {
                 $query = MarketOffer::where('player_id', $playerId);
 
@@ -282,7 +282,6 @@ class MarketController extends CrudController
             ], 'market_system');
 
             return $this->successResponse($offers, 'Your market offers retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving player market offers', [
                 'error' => $e->getMessage(),
@@ -297,40 +296,40 @@ class MarketController extends CrudController
      * Create market offer
      *
      * @authenticated
-   *
-   * @description Create a new market offer for trading resources.
-   *
-   * @bodyParam offer_type string required The type of offer (buy, sell). Example: "sell"
-   * @bodyParam resource_type string required The resource type to trade. Example: "wood"
-   * @bodyParam resource_amount int required The amount of resource to trade. Example: 1000
-   * @bodyParam exchange_rate float required The exchange rate. Example: 1.5
-   * @bodyParam description string Optional description for the offer. Example: "Selling wood for clay"
-   *
-   * @response 201 {
-   *   "success": true,
-   *   "message": "Market offer created successfully",
-   *   "offer": {
-   *     "id": 1,
-   *     "player_id": 1,
-   *     "offer_type": "sell",
-   *     "resource_type": "wood",
-   *     "resource_amount": 1000,
-   *     "exchange_rate": 1.5,
-   *     "total_amount": 1500,
-   *     "status": "active"
-   *   }
-   * }
-   *
-   * @response 422 {
-   *   "message": "The given data was invalid.",
-   *   "errors": {
-   *     "offer_type": ["The offer type field is required."],
-   *     "resource_type": ["The resource type field is required."]
-   *   }
-   * }
-   *
-   * @tag Market System
-   */
+     *
+     * @description Create a new market offer for trading resources.
+     *
+     * @bodyParam offer_type string required The type of offer (buy, sell). Example: "sell"
+     * @bodyParam resource_type string required The resource type to trade. Example: "wood"
+     * @bodyParam resource_amount int required The amount of resource to trade. Example: 1000
+     * @bodyParam exchange_rate float required The exchange rate. Example: 1.5
+     * @bodyParam description string Optional description for the offer. Example: "Selling wood for clay"
+     *
+     * @response 201 {
+     *   "success": true,
+     *   "message": "Market offer created successfully",
+     *   "offer": {
+     *     "id": 1,
+     *     "player_id": 1,
+     *     "offer_type": "sell",
+     *     "resource_type": "wood",
+     *     "resource_amount": 1000,
+     *     "exchange_rate": 1.5,
+     *     "total_amount": 1500,
+     *     "status": "active"
+     *   }
+     * }
+     *
+     * @response 422 {
+     *   "message": "The given data was invalid.",
+     *   "errors": {
+     *     "offer_type": ["The offer type field is required."],
+     *     "resource_type": ["The resource type field is required."]
+     *   }
+     * }
+     *
+     * @tag Market System
+     */
     public function store(Request $request): JsonResponse
     {
         try {
@@ -390,12 +389,10 @@ class MarketController extends CrudController
                 ], 'market_system');
 
                 return $this->successResponse($offer, 'Market offer created successfully.', 201);
-
             } catch (\Exception $e) {
                 DB::rollBack();
                 throw $e;
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error creating market offer', [
                 'error' => $e->getMessage(),
@@ -411,30 +408,30 @@ class MarketController extends CrudController
      * Accept market offer
      *
      * @authenticated
-   *
-   * @description Accept a market offer and complete the trade.
-   *
-   * @urlParam id int required The ID of the market offer to accept. Example: 1
-   * @bodyParam accept_amount int required The amount to accept (cannot exceed offer amount). Example: 500
-   *
-   * @response 200 {
-   *   "success": true,
-   *   "message": "Trade completed successfully",
-   *   "trade_details": {
-   *     "offer_id": 1,
-   *     "accepted_amount": 500,
-   *     "received_amount": 750,
-   *     "cost": 500
-   *   }
-   * }
-   *
-   * @response 400 {
-   *   "success": false,
-   *   "message": "Cannot accept your own offer or insufficient resources"
-   * }
-   *
-   * @tag Market System
-   */
+     *
+     * @description Accept a market offer and complete the trade.
+     *
+     * @urlParam id int required The ID of the market offer to accept. Example: 1
+     * @bodyParam accept_amount int required The amount to accept (cannot exceed offer amount). Example: 500
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Trade completed successfully",
+     *   "trade_details": {
+     *     "offer_id": 1,
+     *     "accepted_amount": 500,
+     *     "received_amount": 750,
+     *     "cost": 500
+     *   }
+     * }
+     *
+     * @response 400 {
+     *   "success": false,
+     *   "message": "Cannot accept your own offer or insufficient resources"
+     * }
+     *
+     * @tag Market System
+     */
     public function acceptOffer(Request $request, int $id): JsonResponse
     {
         try {
@@ -532,12 +529,10 @@ class MarketController extends CrudController
                     'received_amount' => $receivedAmount,
                     'cost' => $receivedAmount,
                 ], 'Trade completed successfully.');
-
             } catch (\Exception $e) {
                 DB::rollBack();
                 throw $e;
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error accepting market offer', [
                 'error' => $e->getMessage(),
@@ -554,28 +549,28 @@ class MarketController extends CrudController
      * Cancel market offer
      *
      * @authenticated
-   *
-   * @description Cancel a market offer and refund resources if applicable.
-   *
-   * @urlParam id int required The ID of the market offer to cancel. Example: 1
-   *
-   * @response 200 {
-   *   "success": true,
-   *   "message": "Market offer cancelled successfully"
-   * }
-   *
-   * @response 400 {
-   *   "success": false,
-   *   "message": "Cannot cancel this offer"
-   * }
-   *
-   * @tag Market System
-   */
+     *
+     * @description Cancel a market offer and refund resources if applicable.
+     *
+     * @urlParam id int required The ID of the market offer to cancel. Example: 1
+     *
+     * @response 200 {
+     *   "success": true,
+     *   "message": "Market offer cancelled successfully"
+     * }
+     *
+     * @response 400 {
+     *   "success": false,
+     *   "message": "Cannot cancel this offer"
+     * }
+     *
+     * @tag Market System
+     */
     public function cancelOffer(int $id): JsonResponse
     {
         try {
             $playerId = Auth::user()->player->id;
-            
+
             $offer = MarketOffer::where('player_id', $playerId)
                 ->where('status', 'active')
                 ->findOrFail($id);
@@ -607,12 +602,10 @@ class MarketController extends CrudController
                 ], 'market_system');
 
                 return $this->successResponse(null, 'Market offer cancelled successfully.');
-
             } catch (\Exception $e) {
                 DB::rollBack();
                 throw $e;
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error cancelling market offer', [
                 'error' => $e->getMessage(),
@@ -629,38 +622,38 @@ class MarketController extends CrudController
      * Get market statistics
      *
      * @authenticated
-   *
-   * @description Get market statistics and trends.
-   *
-   * @response 200 {
-   *   "total_offers": 150,
-   *   "active_offers": 120,
-   *   "completed_offers": 25,
-   *   "cancelled_offers": 5,
-   *   "average_exchange_rates": {
-   *     "wood": 1.2,
-   *     "clay": 1.1,
-   *     "iron": 1.3,
-   *     "crop": 1.0
-   *   },
-   *   "recent_trades": [
-   *     {
-   *       "id": 1,
-   *       "resource_type": "wood",
-   *       "amount": 1000,
-   *       "rate": 1.5,
-   *       "created_at": "2023-01-01T12:00:00.000000Z"
-   *     }
-   *   ]
-   * }
-   *
-   * @tag Market System
-   */
+     *
+     * @description Get market statistics and trends.
+     *
+     * @response 200 {
+     *   "total_offers": 150,
+     *   "active_offers": 120,
+     *   "completed_offers": 25,
+     *   "cancelled_offers": 5,
+     *   "average_exchange_rates": {
+     *     "wood": 1.2,
+     *     "clay": 1.1,
+     *     "iron": 1.3,
+     *     "crop": 1.0
+     *   },
+     *   "recent_trades": [
+     *     {
+     *       "id": 1,
+     *       "resource_type": "wood",
+     *       "amount": 1000,
+     *       "rate": 1.5,
+     *       "created_at": "2023-01-01T12:00:00.000000Z"
+     *     }
+     *   ]
+     * }
+     *
+     * @tag Market System
+     */
     public function statistics(): JsonResponse
     {
         try {
             $cacheKey = 'market_statistics';
-            
+
             $statistics = CachingUtil::remember($cacheKey, now()->addMinutes(15), function () {
                 $totalOffers = MarketOffer::count();
                 $activeOffers = MarketOffer::where('status', 'active')->count();
@@ -670,7 +663,7 @@ class MarketController extends CrudController
                 // Calculate average exchange rates
                 $averageRates = [];
                 $resourceTypes = ['wood', 'clay', 'iron', 'crop'];
-                
+
                 foreach ($resourceTypes as $resourceType) {
                     $avgRate = MarketOffer::where('resource_type', $resourceType)
                         ->where('status', 'active')
@@ -701,7 +694,6 @@ class MarketController extends CrudController
             ], 'market_system');
 
             return $this->successResponse($statistics, 'Market statistics retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving market statistics', [
                 'error' => $e->getMessage(),

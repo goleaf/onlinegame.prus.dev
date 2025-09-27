@@ -14,7 +14,6 @@ use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use WendellAdriel\Lift\Lift;
 
 class Battle extends Model implements Auditable, IsFilterable
 {
@@ -22,7 +21,7 @@ class Battle extends Model implements Auditable, IsFilterable
     use HasTaxonomy;
     use AuditableTrait;
     use Filterable;
-    use Lift;
+    // use Lift;
 
     // Laravel Lift typed properties
     public int $id;
@@ -38,8 +37,8 @@ class Battle extends Model implements Auditable, IsFilterable
     public string $result;
     public \Carbon\Carbon $occurred_at;
     public ?string $reference_number;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
+    public \Carbon\CarbonImmutable $created_at;
+    public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
         'attacker_id',

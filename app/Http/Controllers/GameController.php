@@ -7,14 +7,20 @@ use App\Models\Game\Village;
 use App\Models\Game\World;
 use App\Services\GameSeoService;
 use Illuminate\Http\Request;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\LoggingUtil;
 
-class GameController extends Controller
+class GameController extends CrudController
 {
+    use ApiResponseTrait;
+
     protected GameSeoService $seoService;
 
     public function __construct(GameSeoService $seoService)
     {
         $this->seoService = $seoService;
+        parent::__construct();
     }
 
     public function dashboard()

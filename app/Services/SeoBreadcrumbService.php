@@ -86,6 +86,6 @@ class SeoBreadcrumbService
     public function addBreadcrumbToSeo(array $breadcrumbs): void
     {
         $structuredData = $this->generateBreadcrumbData($breadcrumbs);
-        seo()->addMeta('application/ld+json', json_encode($structuredData), 'script');
+        seo()->metaTag('script[type="application/ld+json"]', json_encode($structuredData));
     }
 }

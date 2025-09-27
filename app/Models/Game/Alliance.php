@@ -16,7 +16,6 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use sbamtr\LaravelQueryEnrich\QE;
-use WendellAdriel\Lift\Lift;
 
 use function sbamtr\LaravelQueryEnrich\c;
 
@@ -24,7 +23,7 @@ class Alliance extends Model implements Auditable
 {
     use HasNotables, HasReference, Commentable;
     use AuditableTrait;
-    use Lift;
+    // use Lift;
 
     // Laravel Lift typed properties
     public int $id;
@@ -38,8 +37,8 @@ class Alliance extends Model implements Auditable
     public int $members_count;
     public bool $is_active;
     public ?string $reference_number;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
+    public \Carbon\CarbonImmutable $created_at;
+    public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
         'name',

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Game;
 
 use App\Http\Controllers\Controller;
-use App\Models\Game\Report;
 use App\Models\Game\Player;
+use App\Models\Game\Report;
 use App\Traits\GameValidationTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\FilteringUtil;
 use LaraUtilX\Utilities\LoggingUtil;
 
 /**
@@ -53,6 +54,7 @@ class ReportController extends CrudController
         $this->model = new Report();
         parent::__construct($this->model);
     }
+
     /**
      * Get all reports
      *
@@ -96,36 +98,51 @@ class ReportController extends CrudController
     {
         try {
             $playerId = Auth::user()->player->id;
-            
+
             $query = Report::where('player_id', $playerId);
 
-            // Apply filters
+            // Apply filters using FilteringUtil
+            $filters = [];
+
             if ($request->has('type')) {
-                $query->where('type', $request->input('type'));
+                $filters[] = ['target' => 'type', 'type' => '$eq', 'value' => $request->input('type')];
             }
 
             if ($request->has('status')) {
-                $query->where('status', $request->input('status'));
+                $filters[] = ['target' => 'status', 'type' => '$eq', 'value' => $request->input('status')];
             }
 
             if ($request->has('date_from')) {
-                $query->where('created_at', '>=', $request->input('date_from'));
+                $filters[] = ['target' => 'created_at', 'type' => '$gte', 'value' => $request->input('date_from')];
             }
 
             if ($request->has('date_to')) {
-                $query->where('created_at', '<=', $request->input('date_to'));
+                $filters[] = ['target' => 'created_at', 'type' => '$lte', 'value' => $request->input('date_to')];
             }
 
-            $reports = $query->orderBy('created_at', 'desc')
+            if (!empty($filters)) {
+                $query = $query->filter($filters);
+            }
+
+            $reports = $query
+                ->orderBy('created_at', 'desc')
                 ->paginate($request->input('per_page', 15));
 
-            return response()->json($reports);
+            LoggingUtil::info('Reports retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'filters' => $request->only(['type', 'status', 'date_from', 'date_to']),
+                'count' => $reports->count(),
+            ], 'report_system');
 
+            return $this->paginatedResponse($reports, 'Reports retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve reports: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving reports', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'report_system');
+
+            return $this->errorResponse('Failed to retrieve reports: ' . $e->getMessage(), 500);
         }
     }
 
@@ -176,13 +193,21 @@ class ReportController extends CrudController
                 $report->update(['status' => 'read']);
             }
 
-            return response()->json($report);
+            LoggingUtil::info('Report details retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'report_id' => $id,
+            ], 'report_system');
 
+            return $this->successResponse($report, 'Report details retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Report not found'
-            ], 404);
+            LoggingUtil::error('Error retrieving report details', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'report_id' => $id,
+            ], 'report_system');
+
+            return $this->errorResponse('Report not found', 404);
         }
     }
 
@@ -215,16 +240,21 @@ class ReportController extends CrudController
 
             $report->update(['status' => 'read']);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Report marked as read'
-            ]);
+            LoggingUtil::info('Report marked as read', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'report_id' => $id,
+            ], 'report_system');
 
+            return $this->successResponse(null, 'Report marked as read.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Report not found'
-            ], 404);
+            LoggingUtil::error('Error marking report as read', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'report_id' => $id,
+            ], 'report_system');
+
+            return $this->errorResponse('Report not found', 404);
         }
     }
 
@@ -251,17 +281,22 @@ class ReportController extends CrudController
                 ->where('status', 'unread')
                 ->update(['status' => 'read']);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'All reports marked as read',
-                'updated_count' => $updatedCount
-            ]);
+            LoggingUtil::info('All reports marked as read', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'updated_count' => $updatedCount,
+            ], 'report_system');
 
+            return $this->successResponse([
+                'updated_count' => $updatedCount
+            ], 'All reports marked as read.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to mark reports as read: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error marking all reports as read', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'report_system');
+
+            return $this->errorResponse('Failed to mark reports as read: ' . $e->getMessage(), 500);
         }
     }
 
@@ -294,16 +329,21 @@ class ReportController extends CrudController
 
             $report->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Report deleted successfully'
-            ]);
+            LoggingUtil::info('Report deleted', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'report_id' => $id,
+            ], 'report_system');
 
+            return $this->successResponse(null, 'Report deleted successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Report not found'
-            ], 404);
+            LoggingUtil::error('Error deleting report', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'report_id' => $id,
+            ], 'report_system');
+
+            return $this->errorResponse('Report not found', 404);
         }
     }
 
@@ -361,19 +401,29 @@ class ReportController extends CrudController
                 ->limit(5)
                 ->get(['id', 'type', 'title', 'status', 'created_at']);
 
-            return response()->json([
+            $stats = [
                 'total_reports' => $totalReports,
                 'unread_reports' => $unreadReports,
                 'read_reports' => $readReports,
                 'by_type' => $reportsByType,
                 'recent_reports' => $recentReports
-            ]);
+            ];
 
+            LoggingUtil::info('Report statistics retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'total_reports' => $totalReports,
+                'unread_reports' => $unreadReports,
+            ], 'report_system');
+
+            return $this->successResponse($stats, 'Report statistics retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve report statistics: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving report statistics', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'report_system');
+
+            return $this->errorResponse('Failed to retrieve report statistics: ' . $e->getMessage(), 500);
         }
     }
 
@@ -398,15 +448,22 @@ class ReportController extends CrudController
                 ->where('status', 'unread')
                 ->count();
 
-            return response()->json([
-                'unread_count' => $unreadCount
-            ]);
+            LoggingUtil::info('Unread reports count retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'unread_count' => $unreadCount,
+            ], 'report_system');
 
+            return $this->successResponse([
+                'unread_count' => $unreadCount
+            ], 'Unread count retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve unread count: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving unread count', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'report_system');
+
+            return $this->errorResponse('Failed to retrieve unread count: ' . $e->getMessage(), 500);
         }
     }
 }

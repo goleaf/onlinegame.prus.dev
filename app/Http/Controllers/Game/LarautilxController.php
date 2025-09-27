@@ -5,17 +5,20 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use App\Services\LarautilxIntegrationService;
 use Illuminate\Http\Request;
+use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
 
-class LarautilxController extends Controller
+class LarautilxController extends CrudController
 {
-    use ApiResponseTrait;
+    use ApiResponseTrait, ValidationHelperTrait;
 
     protected LarautilxIntegrationService $integrationService;
 
     public function __construct(LarautilxIntegrationService $integrationService)
     {
         $this->integrationService = $integrationService;
+        parent::__construct();
     }
 
     /**
@@ -41,7 +44,7 @@ class LarautilxController extends Controller
      */
     public function clearCache(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $this->validateRequest($request, [
             'tags' => 'required|array',
             'tags.*' => 'string',
         ]);
@@ -56,7 +59,7 @@ class LarautilxController extends Controller
      */
     public function clearPlayerCache(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $this->validateRequest($request, [
             'player_id' => 'required|integer|exists:players,id',
         ]);
 
@@ -70,7 +73,7 @@ class LarautilxController extends Controller
      */
     public function clearWorldCache(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $this->validateRequest($request, [
             'world_id' => 'required|integer|exists:worlds,id',
         ]);
 
@@ -84,7 +87,7 @@ class LarautilxController extends Controller
      */
     public function clearVillageCache(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $this->validateRequest($request, [
             'village_id' => 'required|integer|exists:villages,id',
         ]);
 
@@ -98,7 +101,7 @@ class LarautilxController extends Controller
      */
     public function testFiltering(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $this->validateRequest($request, [
             'filters' => 'required|array',
             'filters.*.field' => 'required|string',
             'filters.*.operator' => 'required|string|in:equals,not_equals,contains,not_contains,starts_with,ends_with',
@@ -119,7 +122,7 @@ class LarautilxController extends Controller
      */
     public function testPagination(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $this->validateRequest($request, [
             'items' => 'required|array',
             'per_page' => 'integer|min:1|max:100',
             'current_page' => 'integer|min:1',
@@ -153,7 +156,7 @@ class LarautilxController extends Controller
      */
     public function testCaching(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $this->validateRequest($request, [
             'key' => 'required|string',
             'data' => 'required',
             'expiration' => 'integer|min:1|max:3600',

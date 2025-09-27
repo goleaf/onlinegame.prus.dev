@@ -16,13 +16,11 @@ class PlayersSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --tables=players --order-by=points,desc --limit=3
-         *
          */
-
         $dataTables = [
             [
                 'id' => 2,
-                'user_id' => 2,
+                'user_id' => 1,
                 'world_id' => 1,
                 'name' => 'jeanette.welch',
                 'tribe' => 'gaul',
@@ -38,7 +36,7 @@ class PlayersSeeder extends Seeder
             ],
             [
                 'id' => 48,
-                'user_id' => 48,
+                'user_id' => 2,
                 'world_id' => 1,
                 'name' => 'douglas.cleta',
                 'tribe' => 'natars',
@@ -54,7 +52,7 @@ class PlayersSeeder extends Seeder
             ],
             [
                 'id' => 7,
-                'user_id' => 7,
+                'user_id' => 3,
                 'world_id' => 1,
                 'name' => 'gaylord.ryann',
                 'tribe' => 'gaul',
@@ -69,9 +67,9 @@ class PlayersSeeder extends Seeder
                 'updated_at' => '2025-09-27 00:51:03',
             ]
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("players")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('players')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

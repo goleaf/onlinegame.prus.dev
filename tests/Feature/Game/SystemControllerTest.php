@@ -15,17 +15,21 @@ class SystemControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_get_system_configuration()
     {
-        $response = $this->actingAs($this->user)
+        $response = $this
+            ->actingAs($this->user)
             ->getJson('/game/api/system/config');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     'game' => [
@@ -39,13 +43,17 @@ class SystemControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_get_system_health_status()
     {
-        $response = $this->actingAs($this->user)
+        $response = $this
+            ->actingAs($this->user)
             ->getJson('/game/api/system/health');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     'status',
@@ -61,13 +69,17 @@ class SystemControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_get_system_metrics()
     {
-        $response = $this->actingAs($this->user)
+        $response = $this
+            ->actingAs($this->user)
             ->getJson('/game/api/system/metrics');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     'timestamp',
@@ -93,13 +105,17 @@ class SystemControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_get_scheduled_tasks()
     {
-        $response = $this->actingAs($this->user)
+        $response = $this
+            ->actingAs($this->user)
             ->getJson('/game/api/system/scheduled-tasks');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     'tasks',
@@ -113,15 +129,19 @@ class SystemControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_clear_system_caches()
     {
-        $response = $this->actingAs($this->user)
+        $response = $this
+            ->actingAs($this->user)
             ->postJson('/game/api/system/clear-caches', [
                 'cache_types' => ['config', 'route']
             ]);
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     'cleared_caches',
@@ -130,13 +150,17 @@ class SystemControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_get_system_logs()
     {
-        $response = $this->actingAs($this->user)
+        $response = $this
+            ->actingAs($this->user)
             ->getJson('/game/api/system/logs?level=info&limit=50');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     'logs',
@@ -150,17 +174,21 @@ class SystemControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_update_system_configuration()
     {
-        $response = $this->actingAs($this->user)
+        $response = $this
+            ->actingAs($this->user)
             ->postJson('/game/api/system/config/update', [
                 'key' => 'test_setting',
                 'value' => 'test_value',
                 'section' => 'testing',
             ]);
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     'key',
@@ -170,26 +198,34 @@ class SystemControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_validates_configuration_update_data()
     {
-        $response = $this->actingAs($this->user)
+        $response = $this
+            ->actingAs($this->user)
             ->postJson('/game/api/system/config/update', []);
 
-        $response->assertStatus(422)
+        $response
+            ->assertStatus(422)
             ->assertJsonValidationErrors([
                 'key',
                 'value',
             ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_filter_configuration_by_section()
     {
-        $response = $this->actingAs($this->user)
+        $response = $this
+            ->actingAs($this->user)
             ->getJson('/game/api/system/config?section=game');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     'game',
@@ -197,13 +233,17 @@ class SystemControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_get_specific_configuration_key()
     {
-        $response = $this->actingAs($this->user)
+        $response = $this
+            ->actingAs($this->user)
             ->getJson('/game/api/system/config?key=app.name');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     'specific_key',
@@ -211,13 +251,17 @@ class SystemControllerTest extends TestCase
             ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_include_app_configuration()
     {
-        $response = $this->actingAs($this->user)
+        $response = $this
+            ->actingAs($this->user)
             ->getJson('/game/api/system/config?include_app=true');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'data' => [
                     'app',

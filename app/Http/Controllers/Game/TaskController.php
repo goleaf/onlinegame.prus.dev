@@ -11,10 +11,11 @@ use Intervention\Validation\Rules\Username;
 use JonPurvis\Squeaky\Rules\Clean;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
 
 class TaskController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait;
+    use ApiResponseTrait, GameValidationTrait, ValidationHelperTrait;
 
     protected Model $model;
 
@@ -148,7 +149,7 @@ class TaskController extends CrudController
     {
         $task = Task::findOrFail($taskId);
 
-        $validated = $request->validate([
+        $validated = $this->validateRequest($request, [
             'progress' => 'required|integer|min:0|max:100',
         ]);
 

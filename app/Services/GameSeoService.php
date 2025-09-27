@@ -5,16 +5,18 @@ namespace App\Services;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
-use App\Services\SeoCacheService;
 use App\Services\SeoBreadcrumbService;
+use App\Services\SeoCacheService;
 
 class GameSeoService
 {
     protected SeoCacheService $cacheService;
+    protected SeoBreadcrumbService $breadcrumbService;
 
-    public function __construct(SeoCacheService $cacheService)
+    public function __construct(SeoCacheService $cacheService, SeoBreadcrumbService $breadcrumbService)
     {
         $this->cacheService = $cacheService;
+        $this->breadcrumbService = $breadcrumbService;
     }
 
     /**
@@ -32,7 +34,7 @@ class GameSeoService
                 $config['default_image'],
                 'img/travian/village-preview.svg',
                 'img/travian/world-map.svg'
-            ]))
+            ])[0] ?? asset($config['default_image']))
             ->twitterEnabled($config['twitter']['enabled'])
             ->twitterSite($config['twitter']['site'])
             ->twitterCreator($config['twitter']['creator'])
@@ -52,10 +54,7 @@ class GameSeoService
         seo()
             ->title("Dashboard - {$player->name}", 'Travian Game')
             ->description("Manage your {$villageCount} village(s) and {$totalPopulation} population in Travian. Build, expand, and strategize your way to victory in the ancient world.")
-            ->images([
-                asset('img/travian/dashboard-preview.jpg'),
-                asset('img/travian/village-overview.jpg')
-            ])
+            ->images(asset('img/travian/dashboard-preview.jpg'))
             ->twitterEnabled(true)
             ->twitterTitle("Dashboard - {$player->name}")
             ->twitterDescription("Manage {$villageCount} village(s) and {$totalPopulation} population in Travian.")
@@ -76,10 +75,7 @@ class GameSeoService
         seo()
             ->title("{$villageName} - {$player->name}", 'Travian Game')
             ->description("Manage {$villageName} with {$village->population} population in Travian. Build structures, manage resources, and expand your empire in the ancient world.")
-            ->images([
-                asset('img/travian/village-preview.jpg'),
-                asset('img/travian/building-grid.jpg')
-            ])
+            ->images(asset('img/travian/village-preview.jpg'))
             ->twitterEnabled(true)
             ->twitterTitle("{$villageName} - {$player->name}")
             ->twitterDescription("Manage {$villageName} with {$village->population} population in Travian.")
@@ -100,10 +96,7 @@ class GameSeoService
         seo()
             ->title("World Map - {$worldName}", 'Travian Game')
             ->description("Explore the {$worldName} in Travian. Discover villages, plan attacks, and expand your empire across the ancient world map.")
-            ->images([
-                asset('img/travian/world-map.jpg'),
-                asset('img/travian/map-overview.jpg')
-            ])
+            ->images(asset('img/travian/world-map.jpg'))
             ->twitterEnabled(true)
             ->twitterTitle("World Map - {$worldName}")
             ->twitterDescription("Explore the {$worldName} in Travian. Discover villages and plan your strategy.")
@@ -118,11 +111,7 @@ class GameSeoService
         seo()
             ->title('Game Features - Travian Online Game', 'Travian Game')
             ->description('Discover the amazing features of Travian Online Game: village building, resource management, military strategy, alliances, and epic battles in the ancient world.')
-            ->images([
-                asset('img/travian/features-preview.jpg'),
-                asset('img/travian/battle-system.jpg'),
-                asset('img/travian/alliance-system.jpg')
-            ])
+            ->images(asset('img/travian/features-preview.jpg'))
             ->twitterEnabled(true)
             ->twitterTitle('Game Features - Travian Online Game')
             ->twitterDescription('Discover amazing features: village building, resource management, military strategy, and epic battles.')
@@ -166,8 +155,8 @@ class GameSeoService
         $websiteData = $jsonLdConfig['website'];
 
         // Add the structured data to the page
-        seo()->addMeta('application/ld+json', json_encode($gameData), 'script');
-        seo()->addMeta('application/ld+json', json_encode($websiteData), 'script');
+        seo()->metaTag('script[type="application/ld+json"]', json_encode($gameData));
+        seo()->metaTag('script[type="application/ld+json"]', json_encode($websiteData));
     }
 
     /**
@@ -219,6 +208,6 @@ class GameSeoService
             $robots['nocache'] ? 'nocache' : null,
         ]));
 
-        seo()->addMeta('robots', $robotsString);
+        seo()->metaRobots(explode(', ', $robotsString));
     }
 }

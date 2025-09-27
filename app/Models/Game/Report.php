@@ -15,7 +15,6 @@ use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use WendellAdriel\Lift\Lift;
 
 class Report extends Model implements Auditable
 {
@@ -38,8 +37,8 @@ class Report extends Model implements Auditable
     public bool $is_important;
     public ?\Carbon\Carbon $read_at;
     public ?string $reference_number;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
+    public \Carbon\CarbonImmutable $created_at;
+    public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
         'world_id',

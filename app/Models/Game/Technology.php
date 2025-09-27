@@ -9,13 +9,12 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use SmartCache\Facades\SmartCache;
-use WendellAdriel\Lift\Lift;
 use sbamtr\LaravelQueryEnrich\QE;
 use function sbamtr\LaravelQueryEnrich\c;
 
 class Technology extends Model implements Auditable
 {
-    use HasTaxonomy, HasReference, Lift, AuditableTrait;
+    use HasTaxonomy, HasReference, AuditableTrait;
 
     protected $fillable = [
         'name',
@@ -39,6 +38,17 @@ class Technology extends Model implements Auditable
         'effects' => 'array',
         'is_active' => 'boolean',
     ];
+
+    // Referenceable configuration
+    protected $referenceColumn = 'reference';
+    protected $referenceStrategy = 'template';
+
+    protected $referenceTemplate = [
+        'format' => 'TECH-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+
+    protected $referencePrefix = 'TECH';
 
     public function players(): BelongsToMany
     {

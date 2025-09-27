@@ -3,17 +3,22 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Game\Player;
-use App\Models\Game\Village;
 use App\Models\Game\Building;
 use App\Models\Game\BuildingQueue;
-use App\Models\Game\TrainingQueue;
 use App\Models\Game\MarketOffer;
+use App\Models\Game\Player;
+use App\Models\Game\TrainingQueue;
+use App\Models\Game\Village;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
+use LaraUtilX\Utilities\CachingUtil;
+use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Game Integration API
@@ -27,8 +32,15 @@ use Illuminate\Support\Facades\DB;
  * @tag Cross-System Operations
  * @tag Game Management
  */
-class GameIntegrationController extends Controller
+class GameIntegrationController extends CrudController
 {
+    use ApiResponseTrait, ValidationHelperTrait;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     /**
      * Get player dashboard data
      *
@@ -119,13 +131,13 @@ class GameIntegrationController extends Controller
 
             // Get basic statistics (would need to implement actual queries)
             $statistics = [
-                'total_battles' => 0, // Would query battles table
-                'victories' => 0, // Would query battles table
-                'total_quests' => 0, // Would query quests table
-                'completed_quests' => 0, // Would query quests table
+                'total_battles' => 0,  // Would query battles table
+                'victories' => 0,  // Would query battles table
+                'total_quests' => 0,  // Would query quests table
+                'completed_quests' => 0,  // Would query quests table
             ];
 
-            return response()->json([
+            $data = [
                 'player' => [
                     'id' => $player->id,
                     'name' => $player->name,
@@ -142,13 +154,22 @@ class GameIntegrationController extends Controller
                     'pending_offers' => $pendingOffers,
                 ],
                 'statistics' => $statistics,
-            ]);
+            ];
 
+            LoggingUtil::info('Player dashboard data retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $player->id,
+                'villages_count' => $villages->count(),
+            ], 'game_integration');
+
+            return $this->successResponse($data, 'Dashboard data retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve dashboard data: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving dashboard data', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'game_integration');
+
+            return $this->errorResponse('Failed to retrieve dashboard data: ' . $e->getMessage(), 500);
         }
     }
 
@@ -179,36 +200,36 @@ class GameIntegrationController extends Controller
      *       "is_upgrading": false
      *     }
      *   ],
-   *   "queues": {
-   *     "building_queue": [
-   *       {
-   *         "id": 1,
-   *         "building_type": "barracks",
-   *         "target_level": 6,
-   *         "completion_time": "2023-01-01T13:00:00Z"
-   *       }
-   *     ],
-   *     "training_queue": []
-   *   },
-   *   "resources": {
-   *     "wood": 5000,
-   *     "clay": 4000,
-   *     "iron": 3000,
-   *     "crop": 2000
-   *   }
-   * }
-   *
-   * @response 404 {
-   *   "message": "Village not found"
-   * }
-   *
-   * @tag Game Integration
-   */
+     *   "queues": {
+     *     "building_queue": [
+     *       {
+     *         "id": 1,
+     *         "building_type": "barracks",
+     *         "target_level": 6,
+     *         "completion_time": "2023-01-01T13:00:00Z"
+     *       }
+     *     ],
+     *     "training_queue": []
+     *   },
+     *   "resources": {
+     *     "wood": 5000,
+     *     "clay": 4000,
+     *     "iron": 3000,
+     *     "crop": 2000
+     *   }
+     * }
+     *
+     * @response 404 {
+     *   "message": "Village not found"
+     * }
+     *
+     * @tag Game Integration
+     */
     public function villageOverview(int $villageId): JsonResponse
     {
         try {
             $playerId = Auth::user()->player->id;
-            
+
             $village = Village::where('player_id', $playerId)
                 ->with(['buildings', 'buildings.buildingType'])
                 ->findOrFail($villageId);
@@ -226,7 +247,8 @@ class GameIntegrationController extends Controller
             // Get building queue
             $buildingQueue = BuildingQueue::whereHas('building', function ($query) use ($villageId) {
                 $query->where('village_id', $villageId);
-            })->with(['buildingType'])
+            })
+                ->with(['buildingType'])
                 ->get()
                 ->map(function ($queue) {
                     return [
@@ -249,7 +271,7 @@ class GameIntegrationController extends Controller
                     ];
                 });
 
-            return response()->json([
+            $data = [
                 'village' => [
                     'id' => $village->id,
                     'name' => $village->name,
@@ -270,13 +292,23 @@ class GameIntegrationController extends Controller
                     'iron' => $village->iron ?? 0,
                     'crop' => $village->crop ?? 0,
                 ]
-            ]);
+            ];
 
+            LoggingUtil::info('Village overview retrieved', [
+                'user_id' => auth()->id(),
+                'village_id' => $villageId,
+                'buildings_count' => $buildings->count(),
+            ], 'game_integration');
+
+            return $this->successResponse($data, 'Village overview retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Village not found'
-            ], 404);
+            LoggingUtil::error('Error retrieving village overview', [
+                'error' => $e->getMessage(),
+                'village_id' => $villageId,
+                'user_id' => auth()->id(),
+            ], 'game_integration');
+
+            return $this->errorResponse('Village not found', 404);
         }
     }
 
@@ -310,11 +342,11 @@ class GameIntegrationController extends Controller
      *     "current_alliance": "Elite Warriors",
      *     "alliance_rank": "Member",
      *     "joined_date": "2023-01-01T00:00:00Z"
-   *   }
-   * }
-   *
-   * @tag Game Integration
-   */
+     *   }
+     * }
+     *
+     * @tag Game Integration
+     */
     public function statistics(): JsonResponse
     {
         try {
@@ -352,18 +384,26 @@ class GameIntegrationController extends Controller
                 'joined_date' => null,
             ];
 
-            return response()->json([
+            $data = [
                 'player_stats' => $playerStats,
                 'battle_stats' => $battleStats,
                 'quest_stats' => $questStats,
                 'alliance_stats' => $allianceStats,
-            ]);
+            ];
 
+            LoggingUtil::info('Player statistics retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+            ], 'game_integration');
+
+            return $this->successResponse($data, 'Player statistics retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve statistics: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving player statistics', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'game_integration');
+
+            return $this->errorResponse('Failed to retrieve statistics: ' . $e->getMessage(), 500);
         }
     }
 
@@ -385,11 +425,11 @@ class GameIntegrationController extends Controller
      *     "version": "1.0.0",
      *     "last_update": "2023-01-01T00:00:00Z",
      *     "next_maintenance": "2023-01-15T02:00:00Z"
-   *   }
-   * }
-   *
-   * @tag Game Integration
-   */
+     *   }
+     * }
+     *
+     * @tag Game Integration
+     */
     public function systemStatus(): JsonResponse
     {
         try {
@@ -406,16 +446,25 @@ class GameIntegrationController extends Controller
                 'next_maintenance' => now()->addDays(7)->toISOString(),
             ];
 
-            return response()->json([
+            $data = [
                 'system_status' => $systemStatus,
                 'server_info' => $serverInfo,
-            ]);
+            ];
 
+            LoggingUtil::info('System status retrieved', [
+                'user_id' => auth()->id(),
+                'active_players' => $systemStatus['active_players'],
+                'total_villages' => $systemStatus['total_villages'],
+            ], 'game_integration');
+
+            return $this->successResponse($data, 'System status retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve system status: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving system status', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'game_integration');
+
+            return $this->errorResponse('Failed to retrieve system status: ' . $e->getMessage(), 500);
         }
     }
 }

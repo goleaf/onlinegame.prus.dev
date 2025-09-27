@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\ConfigUtil;
 use LaraUtilX\Utilities\LoggingUtil;
@@ -17,14 +18,13 @@ use LaraUtilX\Utilities\SchedulerUtil;
 
 class SystemController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait;
+    use ApiResponseTrait, GameValidationTrait, ValidationHelperTrait;
 
     protected Model $model;
     protected ConfigUtil $configUtil;
     protected SchedulerUtil $schedulerUtil;
     protected LarautilxIntegrationService $integrationService;
     protected CachingUtil $cachingUtil;
-
     protected array $validationRules = [];
     protected array $searchableFields = [];
     protected array $relationships = [];
@@ -105,7 +105,7 @@ class SystemController extends CrudController
     public function updateConfig(Request $request)
     {
         try {
-            $validated = $request->validate([
+            $validated = $this->validateRequest($request, [
                 'key' => 'required|string',
                 'value' => 'required',
                 'section' => 'nullable|string',
@@ -198,8 +198,10 @@ class SystemController extends CrudController
 
             // Cache system check
             try {
-                $this->cachingUtil->cache('health_check', 'ok', 60);
-                $cacheValue = $this->cachingUtil->get('health_check');
+                CachingUtil::remember('health_check', now()->addMinutes(1), function () {
+                    return 'ok';
+                });
+                $cacheValue = CachingUtil::get('health_check');
                 $health['checks']['cache'] = [
                     'status' => $cacheValue === 'ok' ? 'healthy' : 'unhealthy',
                     'message' => $cacheValue === 'ok' ? 'Cache system working' : 'Cache system not responding',
@@ -358,7 +360,7 @@ class SystemController extends CrudController
     public function clearSystemCaches(Request $request)
     {
         try {
-            $validated = $request->validate([
+            $validated = $this->validateRequest($request, [
                 'cache_types' => 'array',
                 'cache_types.*' => 'in:config,route,view,application,larautilx',
             ]);

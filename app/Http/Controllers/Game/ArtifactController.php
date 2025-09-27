@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\FilteringUtil;
+use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Artifact Management
@@ -107,13 +107,13 @@ class ArtifactController extends CrudController
     {
         try {
             $cacheKey = 'artifacts_index_' . md5(serialize($request->all()));
-            
+
             $artifacts = CachingUtil::remember($cacheKey, 300, function () use ($request) {
                 $query = Artifact::with($this->relationships);
 
                 // Apply filters using FilteringUtil
                 $filters = [];
-                
+
                 if ($request->has('type')) {
                     $filters[] = ['field' => 'type', 'operator' => 'equals', 'value' => $request->input('type')];
                 }
@@ -219,7 +219,7 @@ class ArtifactController extends CrudController
     {
         try {
             $cacheKey = "artifact_{$id}_details";
-            
+
             $artifact = CachingUtil::remember($cacheKey, 600, function () use ($id) {
                 return Artifact::with($this->relationships)->findOrFail($id);
             });
@@ -372,10 +372,7 @@ class ArtifactController extends CrudController
             $artifact = Artifact::findOrFail($id);
 
             if (!$artifact->canActivate()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Artifact cannot be activated. Check requirements and status.'
-                ], 400);
+                return $this->errorResponse('Artifact cannot be activated. Check requirements and status.', 400);
             }
 
             // Update owner and village if provided
@@ -518,7 +515,7 @@ class ArtifactController extends CrudController
     {
         try {
             $cacheKey = 'server_wide_artifacts';
-            
+
             $artifacts = CachingUtil::remember($cacheKey, 300, function () {
                 return Artifact::serverWide()
                     ->active()
@@ -716,7 +713,7 @@ class ArtifactController extends CrudController
         try {
             $artifact = Artifact::findOrFail($id);
 
-            $validator = Validator::make($request->all(), [
+            $validated = $this->validateRequest($request, [
                 'name' => 'sometimes|string|max:255',
                 'description' => 'nullable|string',
                 'power_level' => 'sometimes|integer|min:1|max:100',
@@ -725,16 +722,7 @@ class ArtifactController extends CrudController
                 'requirements' => 'nullable|array',
             ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'The given data was invalid.',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
-            $artifact->update($request->only([
-                'name', 'description', 'power_level', 'durability', 'effects', 'requirements'
-            ]));
+            $artifact->update($validated);
 
             // Clear cache
             CachingUtil::forget("artifact_{$id}_details");
@@ -744,9 +732,7 @@ class ArtifactController extends CrudController
                 'user_id' => auth()->id(),
                 'artifact_id' => $artifact->id,
                 'artifact_name' => $artifact->name,
-                'updated_fields' => array_keys($request->only([
-                    'name', 'description', 'power_level', 'durability', 'effects', 'requirements'
-                ])),
+                'updated_fields' => array_keys($validated),
             ], 'artifact_system');
 
             return $this->successResponse($artifact->fresh(), 'Artifact updated successfully.');
@@ -792,10 +778,7 @@ class ArtifactController extends CrudController
             $artifact = Artifact::findOrFail($id);
 
             if ($artifact->status === 'active') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Cannot delete active artifact. Deactivate it first.'
-                ], 400);
+                return $this->errorResponse('Cannot delete active artifact. Deactivate it first.', 400);
             }
 
             $artifactName = $artifact->name;

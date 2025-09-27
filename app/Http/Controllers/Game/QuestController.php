@@ -360,10 +360,7 @@ class QuestController extends CrudController
                 ->first();
 
             if ($existingQuest) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Quest is already started or completed'
-                ], 400);
+                return $this->errorResponse('Quest is already started or completed', 400);
             }
 
             $playerQuest = PlayerQuest::create([
@@ -374,16 +371,15 @@ class QuestController extends CrudController
                 'started_at' => now(),
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Quest started successfully',
-                'player_quest' => $playerQuest
-            ]);
+            return $this->successResponse($playerQuest, 'Quest started successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to start quest: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error starting quest', [
+                'error' => $e->getMessage(),
+                'quest_id' => $id,
+                'user_id' => auth()->id(),
+            ], 'quest_system');
+
+            return $this->errorResponse('Failed to start quest: ' . $e->getMessage(), 500);
         }
     }
 
@@ -426,19 +422,13 @@ class QuestController extends CrudController
                 ->first();
 
             if (!$playerQuest || $playerQuest->status !== 'in_progress') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Quest is not in progress'
-                ], 400);
+                return $this->errorResponse('Quest is not in progress', 400);
             }
 
             // Check if quest requirements are met
             $requiredProgress = $quest->requirements['count'] ?? 1;
             if ($playerQuest->progress < $requiredProgress) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Quest requirements not met'
-                ], 400);
+                return $this->errorResponse('Quest requirements not met', 400);
             }
 
             DB::beginTransaction();
@@ -465,17 +455,16 @@ class QuestController extends CrudController
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Quest completed successfully',
-                'rewards' => $rewards
-            ]);
+            return $this->successResponse(['rewards' => $rewards], 'Quest completed successfully');
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to complete quest: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error completing quest', [
+                'error' => $e->getMessage(),
+                'quest_id' => $id,
+                'user_id' => auth()->id(),
+            ], 'quest_system');
+
+            return $this->errorResponse('Failed to complete quest: ' . $e->getMessage(), 500);
         }
     }
 
@@ -535,12 +524,14 @@ class QuestController extends CrudController
                 ->orderBy('unlocked_at', 'desc')
                 ->get();
 
-            return response()->json(['data' => $achievements]);
+            return $this->successResponse($achievements, 'Achievements retrieved successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve achievements: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving achievements', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'quest_system');
+
+            return $this->errorResponse('Failed to retrieve achievements: ' . $e->getMessage(), 500);
         }
     }
 
@@ -591,12 +582,14 @@ class QuestController extends CrudController
                 ->limit($limit)
                 ->get();
 
-            return response()->json(['data' => $leaderboard]);
+            return $this->successResponse($leaderboard, 'Achievement leaderboard retrieved successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve achievement leaderboard: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving achievement leaderboard', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'quest_system');
+
+            return $this->errorResponse('Failed to retrieve achievement leaderboard: ' . $e->getMessage(), 500);
         }
     }
 
@@ -659,7 +652,7 @@ class QuestController extends CrudController
                 ->pluck('count', 'rarity')
                 ->toArray();
 
-            return response()->json([
+            return $this->successResponse([
                 'quests' => [
                     'total_started' => $totalStarted,
                     'total_completed' => $totalCompleted,
@@ -672,12 +665,14 @@ class QuestController extends CrudController
                     'total_points' => $totalPoints,
                     'by_rarity' => $achievementsByRarity
                 ]
-            ]);
+            ], 'Quest statistics retrieved successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve statistics: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving quest statistics', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'quest_system');
+
+            return $this->errorResponse('Failed to retrieve statistics: ' . $e->getMessage(), 500);
         }
     }
 

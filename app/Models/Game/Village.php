@@ -19,7 +19,6 @@ use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use WendellAdriel\Lift\Lift;
 
 class Village extends Model implements Auditable
 {
@@ -40,8 +39,8 @@ class Village extends Model implements Auditable
     public int $population;
     public bool $is_capital;
     public bool $is_active;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
+    public \Carbon\CarbonImmutable $created_at;
+    public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
         'player_id',

@@ -26,7 +26,9 @@ use Intervention\Validation\Rules\Longitude;
 use JonPurvis\Squeaky\Rules\Clean;
 use sbamtr\LaravelQueryEnrich\QE;
 use function sbamtr\LaravelQueryEnrich\c;
+use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\LoggingUtil;
 
 /**
@@ -47,9 +49,15 @@ use LaraUtilX\Utilities\LoggingUtil;
  * @tag Player Management
  * @tag Village Management
  */
-class GameApiController extends Controller
+class GameApiController extends CrudController
 {
-    use ApiResponseTrait;
+    use ApiResponseTrait, ValidationHelperTrait;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     /**
      * Get authenticated user
      *
@@ -90,7 +98,7 @@ class GameApiController extends Controller
             'response_time_ms' => $responseTime
         ]);
 
-        return response()->json($user);
+        return $this->successResponse($user, 'User retrieved successfully.');
     }
 
     /**
@@ -139,7 +147,7 @@ class GameApiController extends Controller
             ds('API: No player found for user', [
                 'user_id' => $user->id
             ]);
-            return response()->json(['villages' => []]);
+            return $this->successResponse(['villages' => []], 'No villages found for user.');
         }
 
         $villages = Village::where('player_id', $player->id)
@@ -193,7 +201,7 @@ class GameApiController extends Controller
             'response_time_ms' => $responseTime
         ]);
 
-        return response()->json(['villages' => $villages]);
+        return $this->successResponse(['villages' => $villages], 'Villages retrieved successfully.');
     }
 
     /**
@@ -239,36 +247,25 @@ class GameApiController extends Controller
      */
     public function createVillage(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $this->validateRequest($request, [
             'name' => 'required|string|max:255',
             'x' => 'required|integer|min:0|max:999',
             'y' => 'required|integer|min:0|max:999',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'The given data was invalid.',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         $user = $request->user();
         $player = Player::where('user_id', $user->id)->first();
 
         if (!$player) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Player not found'
-            ], 404);
+            return $this->errorResponse('Player not found', 404);
         }
 
         $village = Village::create([
             'player_id' => $player->id,
             'world_id' => $player->world_id,
-            'name' => $request->input('name'),
-            'x_coordinate' => $request->input('x'),
-            'y_coordinate' => $request->input('y'),
+            'name' => $validated['name'],
+            'x_coordinate' => $validated['x'],
+            'y_coordinate' => $validated['y'],
             'population' => 2,
             'is_capital' => false,
         ]);
@@ -277,10 +274,7 @@ class GameApiController extends Controller
         $player->increment('villages_count');
         $player->increment('population', $village->population);
 
-        return response()->json([
-            'success' => true,
-            'village' => $village
-        ]);
+        return $this->successResponse(['village' => $village], 'Village created successfully.');
     }
 
     /**

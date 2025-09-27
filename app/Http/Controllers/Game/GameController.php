@@ -8,18 +8,18 @@ use App\ValueObjects\PlayerStats;
 use App\ValueObjects\VillageResources;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\FileProcessingTrait;
-use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\LoggingUtil;
+use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\FileProcessingTrait;
 
 class GameController extends CrudController
 {
     use ApiResponseTrait;
     use FileProcessingTrait;
-
+    
     protected RateLimiterUtil $rateLimiter;
 
     public function __construct(RateLimiterUtil $rateLimiter)

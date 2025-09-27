@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use sbamtr\LaravelQueryEnrich\QE;
-use WendellAdriel\Lift\Lift;
 
 use function sbamtr\LaravelQueryEnrich\c;
 
@@ -25,8 +24,8 @@ class Troop extends Model implements Auditable
     public int $in_attack;
     public int $in_defense;
     public int $in_support;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
+    public \Carbon\CarbonImmutable $created_at;
+    public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
         'village_id',

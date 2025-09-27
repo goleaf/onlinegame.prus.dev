@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Models\Game\ChatMessage;
 use App\Models\Game\ChatChannel;
+use App\Models\Game\ChatMessage;
 use App\Services\ChatService;
 use App\Services\GameIntegrationService;
 use App\Services\GameNotificationService;
 use App\Traits\GameValidationTrait;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use JonPurvis\Squeaky\Rules\Clean;
 use LaraUtilX\Http\Controllers\CrudController;
@@ -24,7 +24,7 @@ use LaraUtilX\Utilities\RateLimiterUtil;
 class ChatController extends CrudController
 {
     use GameValidationTrait, ApiResponseTrait, ValidationHelperTrait, FileProcessingTrait;
-    
+
     protected Model $model;
     protected $chatService;
     protected RateLimiterUtil $rateLimiter;
@@ -66,7 +66,7 @@ class ChatController extends CrudController
             }
 
             $cacheKey = "channel_messages_{$channelId}_" . md5(serialize($request->all()));
-            
+
             $result = CachingUtil::remember($cacheKey, now()->addMinutes(2), function () use ($request, $channelId) {
                 $limit = $request->get('limit', $this->perPage);
                 $offset = $request->get('offset', 0);
@@ -80,7 +80,6 @@ class ChatController extends CrudController
             ], 'chat_system');
 
             return $this->successResponse($result, 'Channel messages retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving channel messages', [
                 'error' => $e->getMessage(),
@@ -98,7 +97,7 @@ class ChatController extends CrudController
     {
         try {
             $cacheKey = "messages_by_type_{$channelType}_" . md5(serialize($request->all()));
-            
+
             $result = CachingUtil::remember($cacheKey, now()->addMinutes(3), function () use ($request, $channelType) {
                 $limit = $request->get('limit', $this->perPage);
                 $offset = $request->get('offset', 0);
@@ -112,7 +111,6 @@ class ChatController extends CrudController
             ], 'chat_system');
 
             return $this->successResponse($result, 'Messages by type retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving messages by type', [
                 'error' => $e->getMessage(),
@@ -151,7 +149,6 @@ class ChatController extends CrudController
             ], 'chat_system');
 
             return $this->successResponse($message, 'Message sent successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Failed to send chat message', [
                 'error' => $e->getMessage(),
@@ -185,7 +182,6 @@ class ChatController extends CrudController
             ], 'chat_system');
 
             return $this->successResponse($message, 'Global message sent successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Failed to send global chat message', [
                 'error' => $e->getMessage(),
@@ -209,7 +205,7 @@ class ChatController extends CrudController
             }
 
             $player = Auth::user()->player;
-            
+
             if (!$player->alliance_id) {
                 return $this->errorResponse('Player is not in an alliance', 400);
             }
@@ -227,7 +223,7 @@ class ChatController extends CrudController
             );
 
             // Clear related caches
-            CachingUtil::forget("messages_by_type_alliance");
+            CachingUtil::forget('messages_by_type_alliance');
             CachingUtil::forget("channel_messages_{$player->alliance_id}");
 
             LoggingUtil::info('Alliance message sent', [
@@ -237,7 +233,6 @@ class ChatController extends CrudController
             ], 'chat_system');
 
             return $this->successResponse($message, 'Alliance message sent successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error sending alliance message', [
                 'error' => $e->getMessage(),
@@ -266,7 +261,7 @@ class ChatController extends CrudController
             );
 
             // Clear related caches
-            CachingUtil::forget("messages_by_type_private");
+            CachingUtil::forget('messages_by_type_private');
 
             LoggingUtil::info('Private message sent', [
                 'user_id' => auth()->id(),
@@ -274,7 +269,6 @@ class ChatController extends CrudController
             ], 'chat_system');
 
             return $this->successResponse($message, 'Private message sent successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error sending private message', [
                 'error' => $e->getMessage(),
@@ -290,35 +284,31 @@ class ChatController extends CrudController
      */
     public function sendTradeMessage(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'message' => 'required|string|max:1000',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         try {
-            $message = $this->chatService->sendTradeMessage(
-                Auth::user()->player->id,
-                $request->message
-            );
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Trade message sent successfully',
-                'data' => $message,
+            $validated = $this->validateRequest($request, [
+                'message' => 'required|string|max:1000',
             ]);
 
+            $message = $this->chatService->sendTradeMessage(
+                Auth::user()->player->id,
+                $validated['message']
+            );
+
+            // Clear related caches
+            CachingUtil::forget('messages_by_type_trade');
+
+            LoggingUtil::info('Trade message sent', [
+                'user_id' => auth()->id(),
+            ], 'chat_system');
+
+            return $this->successResponse($message, 'Trade message sent successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to send trade message: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error sending trade message', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'chat_system');
+
+            return $this->errorResponse('Failed to send trade message.', 500);
         }
     }
 
@@ -327,35 +317,31 @@ class ChatController extends CrudController
      */
     public function sendDiplomacyMessage(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'message' => 'required|string|max:1000',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         try {
-            $message = $this->chatService->sendDiplomacyMessage(
-                Auth::user()->player->id,
-                $request->message
-            );
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Diplomacy message sent successfully',
-                'data' => $message,
+            $validated = $this->validateRequest($request, [
+                'message' => 'required|string|max:1000',
             ]);
 
+            $message = $this->chatService->sendDiplomacyMessage(
+                Auth::user()->player->id,
+                $validated['message']
+            );
+
+            // Clear related caches
+            CachingUtil::forget('messages_by_type_diplomacy');
+
+            LoggingUtil::info('Diplomacy message sent', [
+                'user_id' => auth()->id(),
+            ], 'chat_system');
+
+            return $this->successResponse($message, 'Diplomacy message sent successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to send diplomacy message: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error sending diplomacy message', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'chat_system');
+
+            return $this->errorResponse('Failed to send diplomacy message.', 500);
         }
     }
 
@@ -368,22 +354,26 @@ class ChatController extends CrudController
             $success = $this->chatService->deleteMessage($messageId, Auth::user()->player->id);
 
             if ($success) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Message deleted successfully',
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Message not found or access denied',
-                ], 404);
-            }
+                // Clear related caches
+                CachingUtil::forget("message_{$messageId}");
 
+                LoggingUtil::info('Message deleted', [
+                    'user_id' => auth()->id(),
+                    'message_id' => $messageId,
+                ], 'chat_system');
+
+                return $this->successResponse(null, 'Message deleted successfully.');
+            } else {
+                return $this->errorResponse('Message not found or access denied', 404);
+            }
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete message: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error deleting message', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'message_id' => $messageId,
+            ], 'chat_system');
+
+            return $this->errorResponse('Failed to delete message.', 500);
         }
     }
 
@@ -393,18 +383,25 @@ class ChatController extends CrudController
     public function getAvailableChannels(): JsonResponse
     {
         try {
-            $channels = $this->chatService->getAvailableChannels(Auth::user()->player->id);
+            $cacheKey = 'available_channels_' . auth()->id();
 
-            return response()->json([
-                'success' => true,
-                'data' => $channels,
-            ]);
+            $channels = CachingUtil::remember($cacheKey, now()->addMinutes(10), function () {
+                return $this->chatService->getAvailableChannels(Auth::user()->player->id);
+            });
 
+            LoggingUtil::info('Available channels retrieved', [
+                'user_id' => auth()->id(),
+                'channels_count' => count($channels),
+            ], 'chat_system');
+
+            return $this->successResponse($channels, 'Available channels retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get available channels: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error retrieving available channels', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'chat_system');
+
+            return $this->errorResponse('Failed to get available channels.', 500);
         }
     }
 
@@ -414,18 +411,25 @@ class ChatController extends CrudController
     public function getChannelStats(int $channelId): JsonResponse
     {
         try {
-            $stats = $this->chatService->getChannelStats($channelId);
+            $cacheKey = "channel_stats_{$channelId}";
 
-            return response()->json([
-                'success' => true,
-                'data' => $stats,
-            ]);
+            $stats = CachingUtil::remember($cacheKey, now()->addMinutes(15), function () use ($channelId) {
+                return $this->chatService->getChannelStats($channelId);
+            });
 
+            LoggingUtil::info('Channel statistics retrieved', [
+                'user_id' => auth()->id(),
+                'channel_id' => $channelId,
+            ], 'chat_system');
+
+            return $this->successResponse($stats, 'Channel statistics retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get channel statistics: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error retrieving channel statistics', [
+                'error' => $e->getMessage(),
+                'channel_id' => $channelId,
+            ], 'chat_system');
+
+            return $this->errorResponse('Failed to get channel statistics.', 500);
         }
     }
 
@@ -434,37 +438,34 @@ class ChatController extends CrudController
      */
     public function searchMessages(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'query' => 'required|string|min:3|max:100',
-            'channel_type' => 'nullable|in:global,alliance,private,trade,diplomacy',
-            'limit' => 'nullable|integer|min:1|max:100',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
-
         try {
-            $result = $this->chatService->searchMessages(
-                $request->query,
-                $request->channel_type,
-                $request->get('limit', 50)
-            );
-
-            return response()->json([
-                'success' => true,
-                'data' => $result,
+            $validated = $this->validateRequest($request, [
+                'query' => 'required|string|min:3|max:100',
+                'channel_type' => 'nullable|in:global,alliance,private,trade,diplomacy',
+                'limit' => 'nullable|integer|min:1|max:100',
             ]);
 
+            $result = $this->chatService->searchMessages(
+                $validated['query'],
+                $validated['channel_type'] ?? null,
+                $validated['limit'] ?? 50
+            );
+
+            LoggingUtil::info('Messages searched', [
+                'user_id' => auth()->id(),
+                'query' => $validated['query'],
+                'channel_type' => $validated['channel_type'] ?? null,
+                'results_count' => count($result),
+            ], 'chat_system');
+
+            return $this->successResponse($result, 'Messages searched successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to search messages: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error searching messages', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'chat_system');
+
+            return $this->errorResponse('Failed to search messages.', 500);
         }
     }
 
@@ -474,18 +475,24 @@ class ChatController extends CrudController
     public function getMessageStats(): JsonResponse
     {
         try {
-            $stats = $this->chatService->getMessageStats();
+            $cacheKey = 'message_statistics';
 
-            return response()->json([
-                'success' => true,
-                'data' => $stats,
-            ]);
+            $stats = CachingUtil::remember($cacheKey, now()->addMinutes(30), function () {
+                return $this->chatService->getMessageStats();
+            });
 
+            LoggingUtil::info('Message statistics retrieved', [
+                'user_id' => auth()->id(),
+            ], 'chat_system');
+
+            return $this->successResponse($stats, 'Message statistics retrieved successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get message statistics: ' . $e->getMessage(),
-            ], 500);
+            LoggingUtil::error('Error retrieving message statistics', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'chat_system');
+
+            return $this->errorResponse('Failed to get message statistics.', 500);
         }
     }
 }
