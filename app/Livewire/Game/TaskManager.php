@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Game;
 
+use Aliziodev\LaravelTaxonomy\Facades\Taxonomy;
 use App\Models\Game\Player;
 use App\Models\Game\PlayerAchievement;
 use App\Models\Game\PlayerQuest;

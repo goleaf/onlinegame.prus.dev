@@ -206,4 +206,69 @@ class Task extends Model
     {
         return parent::validateTaskData($data);
     }
+
+    /**
+     * Create task with real-time integration
+     */
+    public static function createWithIntegration(array $data): self
+    {
+        $task = self::create($data);
+        
+        // Send notification
+        GameNotificationService::sendQuestNotification(
+            $task->player_id,
+            'created',
+            [
+                'task_id' => $task->id,
+                'title' => $task->title,
+                'type' => $task->type,
+            ]
+        );
+
+        return $task;
+    }
+
+    /**
+     * Complete task with real-time integration
+     */
+    public function completeWithIntegration(): void
+    {
+        $this->update([
+            'status' => 'completed',
+            'completed_at' => now(),
+        ]);
+
+        // Send completion notification
+        GameNotificationService::sendQuestNotification(
+            $this->player_id,
+            'completed',
+            [
+                'task_id' => $this->id,
+                'title' => $this->title,
+                'rewards' => $this->rewards,
+            ]
+        );
+    }
+
+    /**
+     * Update task progress with real-time integration
+     */
+    public function updateProgressWithIntegration(int $progress): void
+    {
+        $this->update(['progress' => $progress]);
+
+        // Send progress notification if significant milestone
+        if ($progress >= $this->target * 0.5) {
+            GameNotificationService::sendQuestNotification(
+                $this->player_id,
+                'progress',
+                [
+                    'task_id' => $this->id,
+                    'title' => $this->title,
+                    'progress' => $progress,
+                    'target' => $this->target,
+                ]
+            );
+        }
+    }
 }
