@@ -35,6 +35,12 @@ class AdvancedMapManager extends Component
         'mapUpdated' => 'handleMapUpdate',
         'villageSelected' => 'handleVillageSelection',
         'worldChanged' => 'handleWorldChange',
+        'refreshMap' => 'refreshMap',
+        'toggleRealWorld' => 'toggleRealWorld',
+        'selectVillage' => 'selectVillage',
+        'updateWorld' => 'updateWorld',
+        'updateFilter' => 'updateFilter',
+        'updateMap' => 'updateMap'
     ];
 
     public function mount()
