@@ -80,14 +80,19 @@ class TestRabbitMQ extends Command
         $this->rabbitMQ->publishBuildingCompleted(1, 1, 'barracks');
         $this->line('✓ Published building completion event');
 
-        // Test battle result
+        // Test battle result with defensive bonuses
         $this->rabbitMQ->publishBattleResult(1, 2, [
             'result' => 'attacker_wins',
             'attacker_losses' => ['warrior' => 10],
             'defender_losses' => ['warrior' => 50],
-            'resources_looted' => ['wood' => 1000, 'clay' => 500]
+            'resources_looted' => ['wood' => 1000, 'clay' => 500],
+            'defensive_bonus' => 0.15,
+            'battle_power' => [
+                'attacker' => 1500,
+                'defender' => 1200
+            ]
         ]);
-        $this->line('✓ Published battle result event');
+        $this->line('✓ Published battle result event with defensive bonuses');
 
         // Test resource update
         $this->rabbitMQ->publishResourceUpdate(1, [

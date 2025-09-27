@@ -7,6 +7,7 @@ use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
 use Illuminate\Support\Facades\Auth;
+use JonPurvis\Squeaky\Rules\Clean;
 use Livewire\Component;
 
 class VillageFormComponent extends Component
