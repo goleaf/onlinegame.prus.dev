@@ -8,6 +8,8 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class PlayerNote extends Model
 {
+    use HasReference;
+
     protected $fillable = [
         'player_id',
         'target_player_id',
