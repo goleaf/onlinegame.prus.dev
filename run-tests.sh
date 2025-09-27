@@ -35,5 +35,10 @@ php artisan dusk --headless
 echo "🚀 Running all tests..."
 php artisan test
 
+# Generate code coverage report
+echo "📊 Generating code coverage report..."
+composer test-coverage
+
 echo "✅ All tests completed!"
+echo "📈 Code coverage report generated in storage/app/coverage/"
 echo "🎮 Travian Online Game is ready to play!"

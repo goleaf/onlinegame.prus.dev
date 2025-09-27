@@ -2,6 +2,7 @@
 
 namespace App\Models\Game;
 
+use App\Traits\Commentable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Task extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory, HasReference, Commentable;
 
     protected $table = 'player_tasks';
 

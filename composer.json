@@ -15,6 +15,7 @@
         "genericmilk/docudoodle": "^2.2",
         "honeystone/laravel-seo": "^2.0",
         "iazaran/smart-cache": "^1.3",
+        "immutablephp/immutable": "^1.0",
         "indexzer0/eloquent-filtering": "^2.2",
         "intervention/image": "^3.11",
         "intervention/validation": "^4.6",
@@ -123,18 +124,6 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
-        ],
-        "test-coverage": [
-            "@php artisan config:clear --ansi",
-            "@php -d pcov.enabled=1 -d pcov.directory=app vendor/bin/phpunit --coverage-html storage/app/coverage --coverage-text --coverage-clover storage/app/coverage.xml"
-        ],
-        "test-coverage-text": [
-            "@php artisan config:clear --ansi",
-            "@php -d pcov.enabled=1 -d pcov.directory=app vendor/bin/phpunit --coverage-text"
-        ],
-        "test-coverage-html": [
-            "@php artisan config:clear --ansi",
-            "@php -d pcov.enabled=1 -d pcov.directory=app vendor/bin/phpunit --coverage-html storage/app/coverage"
         ],
         "format": [
             "php-cs-fixer fix"
