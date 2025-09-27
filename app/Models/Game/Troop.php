@@ -32,17 +32,35 @@ class Troop extends Model
         return $this->belongsTo(UnitType::class);
     }
 
-    // Optimized query scopes using when() and selectRaw
+    // Enhanced query scopes using Query Enrich
     public function scopeWithStats($query)
     {
-        return $query->selectRaw('
-            troops.*,
-            (SELECT COUNT(*) FROM troops t2 WHERE t2.village_id = troops.village_id AND t2.quantity > 0) as total_troops_in_village,
-            (SELECT SUM(quantity) FROM troops t3 WHERE t3.village_id = troops.village_id) as total_quantity_in_village,
-            (SELECT COUNT(*) FROM troops t4 WHERE t4.unit_type_id = troops.unit_type_id AND t4.quantity > 0) as total_troops_of_type,
-            (SELECT SUM(quantity) FROM troops t5 WHERE t5.unit_type_id = troops.unit_type_id) as total_quantity_of_type,
-            (SELECT AVG(quantity) FROM troops t6 WHERE t6.unit_type_id = troops.unit_type_id AND t6.quantity > 0) as avg_quantity_of_type
-        ');
+        return $query->select([
+            'troops.*',
+            QE::select(QE::count(c('id')))
+                ->from('troops', 't2')
+                ->whereColumn('t2.village_id', c('troops.village_id'))
+                ->where('t2.quantity', '>', 0)
+                ->as('total_troops_in_village'),
+            QE::select(QE::sum(c('quantity')))
+                ->from('troops', 't3')
+                ->whereColumn('t3.village_id', c('troops.village_id'))
+                ->as('total_quantity_in_village'),
+            QE::select(QE::count(c('id')))
+                ->from('troops', 't4')
+                ->whereColumn('t4.unit_type_id', c('troops.unit_type_id'))
+                ->where('t4.quantity', '>', 0)
+                ->as('total_troops_of_type'),
+            QE::select(QE::sum(c('quantity')))
+                ->from('troops', 't5')
+                ->whereColumn('t5.unit_type_id', c('troops.unit_type_id'))
+                ->as('total_quantity_of_type'),
+            QE::select(QE::avg(c('quantity')))
+                ->from('troops', 't6')
+                ->whereColumn('t6.unit_type_id', c('troops.unit_type_id'))
+                ->where('t6.quantity', '>', 0)
+                ->as('avg_quantity_of_type')
+        ]);
     }
 
     public function scopeByVillage($query, $villageId)

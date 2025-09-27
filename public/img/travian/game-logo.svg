@@ -1,0 +1,23 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2c3e50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#34495e;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="text" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ecf0f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#bdc3c7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="300" cy="200" r="80" fill="#e74c3c" opacity="0.8"/>
+  <circle cx="900" cy="200" r="80" fill="#3498db" opacity="0.8"/>
+  <circle cx="600" cy="400" r="80" fill="#f39c12" opacity="0.8"/>
+  <text x="600" y="320" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="url(#text)" text-anchor="middle" dominant-baseline="middle">
+    Travian Game
+  </text>
+  <text x="600" y="380" font-family="Arial, sans-serif" font-size="24" fill="url(#text)" text-anchor="middle" dominant-baseline="middle">
+    Laravel Edition - Strategy MMO
+  </text>
+  <rect x="450" y="450" width="300" height="4" fill="#e74c3c" opacity="0.6"/>
+</svg>
