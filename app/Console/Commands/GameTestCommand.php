@@ -419,6 +419,8 @@ class GameTestCommand extends Command
         $this->line('  security               - Test security features');
         $this->line('  database               - Test database operations');
         $this->line('  integration            - Test system integration');
+        $this->line('  error-handling         - Test error handling system');
+        $this->line('  optimization           - Test performance optimization');
         $this->line('');
         $this->line('Options:');
         $this->line('  --player=ID            - Use specific player ID for tests');
@@ -430,5 +432,7 @@ class GameTestCommand extends Command
         $this->line('  php artisan game:test all');
         $this->line('  php artisan game:test cache --verbose');
         $this->line('  php artisan game:test integration --player=1');
+        $this->line('  php artisan game:test error-handling --verbose');
+        $this->line('  php artisan game:test optimization --player=1');
     }
 }

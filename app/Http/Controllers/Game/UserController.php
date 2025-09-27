@@ -12,6 +12,7 @@ use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\FeatureToggleUtil;
 use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
+use Ziming\LaravelZxcvbn\Rules\ZxcvbnRule;
 
 class UserController extends CrudController
 {

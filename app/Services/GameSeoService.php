@@ -59,7 +59,11 @@ class GameSeoService
             ->twitterEnabled(true)
             ->twitterTitle("Dashboard - {$player->name}")
             ->twitterDescription("Manage {$villageCount} village(s) and {$totalPopulation} population in Travian.")
-            ->twitterImage(asset('img/travian/dashboard-preview.jpg'));
+            ->twitterImage(asset('img/travian/dashboard-preview.svg'));
+
+        // Add breadcrumb structured data
+        $breadcrumbs = $this->breadcrumbService->getDashboardBreadcrumbs($player);
+        $this->breadcrumbService->addBreadcrumbToSeo($breadcrumbs);
     }
 
     /**

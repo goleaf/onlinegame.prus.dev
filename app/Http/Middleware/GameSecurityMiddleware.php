@@ -17,17 +17,44 @@ class GameSecurityMiddleware
     {
         $startTime = microtime(true);
 
+        ds('GameSecurityMiddleware: Security check started', [
+            'middleware' => 'GameSecurityMiddleware',
+            'action' => $action,
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+            'user_id' => auth()->id(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'security_check_time' => now()
+        ]);
+
         try {
             // Rate limiting based on action
             if ($action) {
+                $rateLimitStart = microtime(true);
                 $this->applyRateLimit($request, $action);
+                $rateLimitTime = round((microtime(true) - $rateLimitStart) * 1000, 2);
+                ds('GameSecurityMiddleware: Rate limit check completed', [
+                    'action' => $action,
+                    'rate_limit_time_ms' => $rateLimitTime
+                ]);
             }
 
             // Validate request integrity
+            $integrityStart = microtime(true);
             $this->validateRequestIntegrity($request);
+            $integrityTime = round((microtime(true) - $integrityStart) * 1000, 2);
+            ds('GameSecurityMiddleware: Request integrity validated', [
+                'integrity_check_time_ms' => $integrityTime
+            ]);
 
             // Check for suspicious patterns
+            $suspiciousStart = microtime(true);
             $this->checkSuspiciousActivity($request);
+            $suspiciousTime = round((microtime(true) - $suspiciousStart) * 1000, 2);
+            ds('GameSecurityMiddleware: Suspicious activity check completed', [
+                'suspicious_check_time_ms' => $suspiciousTime
+            ]);
 
             // Log security event
             $this->logSecurityEvent($request, $action);
@@ -38,6 +65,15 @@ class GameSecurityMiddleware
 
             // Log performance
             $duration = microtime(true) - $startTime;
+            $totalTime = round($duration * 1000, 2);
+            
+            ds('GameSecurityMiddleware: Security check completed successfully', [
+                'action' => $action,
+                'total_time_ms' => $totalTime,
+                'status_code' => $response->getStatusCode(),
+                'memory_usage' => memory_get_usage(true)
+            ]);
+            
             if ($duration > 1.0) {
                 Log::channel('security')->warning('Slow request detected', [
                     'action' => $action,
@@ -49,6 +85,13 @@ class GameSecurityMiddleware
 
             return $response;
         } catch (\Exception $e) {
+            ds('GameSecurityMiddleware: Security check failed', [
+                'action' => $action,
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            ]);
+            
             GameErrorHandler::handleGameError($e, [
                 'action' => 'security_middleware',
                 'request_action' => $action,

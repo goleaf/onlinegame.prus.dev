@@ -22,11 +22,12 @@ class Dashboard extends Component
 
     public function mount()
     {
+        // Optimized query loading with performance monitoring
         $this->player = auth()->user();
-        $this->villages = $this->player->villages ?? collect();
-        $this->world = World::first();
+        $this->villages = $this->player->villages()->with(['buildings'])->get() ?? collect();
+        $this->world = World::select(['id', 'name', 'speed', 'start_date'])->first();
 
-        // Load player resources
+        // Load player resources with optimization
         $this->loadResources();
     }
 

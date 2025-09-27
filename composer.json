@@ -67,6 +67,8 @@
         "laravel/horizon": "^5.34",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",
+        "laravel/pulse": "^1.0",
+        "laravel/ray": "^1.0",
         "laravel/sail": "^1.41",
         "laravel/scout": "^10.19",
         "laravel/socialite": "^5.23",
