@@ -13,7 +13,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 
 class TournamentParticipant extends Model implements Auditable
 {
-    use HasFactory, AuditableTrait;
+    use HasFactory, HasReference, AuditableTrait;
 
     protected $fillable = [
         'tournament_id',

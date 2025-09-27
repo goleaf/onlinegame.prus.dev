@@ -20,8 +20,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('tournaments', function (Blueprint $table) {
-            $table->dropColumn('reference_number');
-        });
+        // Reference number column already exists in tournaments table
+        // No action needed
     }
 };

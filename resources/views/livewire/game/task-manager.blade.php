@@ -269,6 +269,7 @@
                                     <i class="fas fa-check mr-1"></i>Complete
                                 </button>
                                 <button wire:click="abandonQuest({{ $quest->id }})" 
+                                        wire:confirm="Are you sure you want to abandon this quest? This action cannot be undone."
                                         class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm transition-colors">
                                     <i class="fas fa-times mr-1"></i>Abandon
                                 </button>
