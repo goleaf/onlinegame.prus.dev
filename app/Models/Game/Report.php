@@ -175,7 +175,7 @@ class Report extends Model implements Auditable
             Filter::field('from_village_id', ['$eq']),
             Filter::field('to_village_id', ['$eq']),
             Filter::field('read_at', ['$eq', '$gt', '$lt']),
-            Filter::field('reference_number', ['$eq', '$contains']),
+            Filter::field('reference_number', ['$eq', '$like']),
             Filter::relation('world', ['$has']),
             Filter::relation('attacker', ['$has']),
             Filter::relation('defender', ['$has']),

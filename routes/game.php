@@ -153,6 +153,11 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::put('/tasks/{taskId}/progress', [TaskController::class, 'updateProgress'])->name('game.api.tasks.progress');
     Route::get('/tasks/player/{playerId}/stats', [TaskController::class, 'getPlayerTaskStats'])->name('game.api.tasks.player-stats');
     Route::get('/tasks/overdue', [TaskController::class, 'getOverdueTasks'])->name('game.api.tasks.overdue');
+    
+    // Task detail view
+    Route::get('/game/tasks/{task}', function ($task) {
+        return view('livewire.game.task-detail', compact('task'));
+    })->name('game.tasks.detail');
 
     // Larautilx integration management
     Route::get('/larautilx/status', [LarautilxController::class, 'getStatus'])->name('game.api.larautilx.status');
