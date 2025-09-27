@@ -250,6 +250,13 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::delete('/chat/messages/{messageId}', [App\Http\Controllers\Game\ChatController::class, 'deleteMessage'])->name('game.api.chat.delete');
     Route::post('/chat/channels/create', [App\Http\Controllers\Game\ChatController::class, 'createChannel'])->name('game.api.chat.channels.create');
     Route::get('/chat/stats', [App\Http\Controllers\Game\ChatController::class, 'getChatStats'])->name('game.api.chat.stats');
+
+    // Game Integration Routes
+    Route::prefix('integration')->group(function () {
+        Route::post('/initialize-realtime', [App\Http\Controllers\Api\GameApiController::class, 'initializeRealTime'])->name('game.integration.initialize-realtime');
+        Route::get('/game-statistics', [App\Http\Controllers\Api\GameApiController::class, 'getGameStatisticsWithRealTime'])->name('game.integration.game-statistics');
+        Route::post('/system-announcement', [App\Http\Controllers\Api\GameApiController::class, 'sendSystemAnnouncement'])->name('game.integration.system-announcement');
+    });
 });
 
 // Error pages

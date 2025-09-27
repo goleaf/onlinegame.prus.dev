@@ -1,21 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\GameApiController;
-use App\Http\Controllers\Api\WebSocketController;
-use App\Http\Controllers\Game\AIController;
-use App\Http\Controllers\Game\AllianceController;
-use App\Http\Controllers\Game\APIDocumentationController;
-use App\Http\Controllers\Game\ArtifactController;
-use App\Http\Controllers\Game\BattleController;
-use App\Http\Controllers\Game\QuestController;
-use App\Http\Controllers\Game\LarautilxController;
-use App\Http\Controllers\Game\LarautilxDashboardController;
-use App\Http\Controllers\Game\MessageController;
-use App\Http\Controllers\Game\PlayerController;
-use App\Http\Controllers\Game\SystemController;
-use App\Http\Controllers\Game\TaskController;
-use App\Http\Controllers\Game\UserController;
-use App\Http\Controllers\Game\VillageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,218 +15,20 @@ use Illuminate\Support\Facades\Route;
  * |
  */
 
+// Public API documentation endpoints
+Route::prefix('docs')->group(function () {
+    Route::get('/info', [ApiDocumentationController::class, 'getApiInfo']);
+    Route::get('/health', [ApiDocumentationController::class, 'getHealthStatus']);
+    Route::get('/endpoints', [ApiDocumentationController::class, 'getEndpoints']);
+});
+
 Route::middleware('auth:sanctum')->get('/user', [GameApiController::class, 'getUser']);
 
-// Game API Routes - Core Game Functionality
+// Game API Routes
 Route::middleware('auth:sanctum')->prefix('game')->group(function () {
-    // Basic game operations
     Route::get('/villages', [GameApiController::class, 'getVillages']);
     Route::post('/create-village', [GameApiController::class, 'createVillage']);
     Route::get('/village/{id}', [GameApiController::class, 'getVillage']);
     Route::post('/village/{id}/upgrade-building', [GameApiController::class, 'upgradeBuilding']);
     Route::get('/player/stats', [GameApiController::class, 'getPlayerStats']);
-    
-    // Geographic Data
-    Route::get('/geographic-data', [GameApiController::class, 'getGeographicData']);
-    Route::get('/calculate-distance', [GameApiController::class, 'calculateDistance']);
-    
-    // Player Management
-    Route::prefix('players')->group(function () {
-        Route::get('/', [PlayerController::class, 'index']);
-        Route::post('/', [PlayerController::class, 'store']);
-        Route::get('/with-stats', [PlayerController::class, 'withStats']);
-        Route::get('/top', [PlayerController::class, 'top']);
-        Route::get('/stats/{playerId}', [PlayerController::class, 'stats']);
-        Route::get('/{id}', [PlayerController::class, 'show']);
-        Route::put('/{id}', [PlayerController::class, 'update']);
-        Route::delete('/{id}', [PlayerController::class, 'destroy']);
-        Route::put('/{playerId}/status', [PlayerController::class, 'updateStatus']);
-    });
-    
-    // Village Management
-    Route::prefix('villages')->group(function () {
-        Route::get('/', [VillageController::class, 'index']);
-        Route::post('/', [VillageController::class, 'store']);
-        Route::get('/with-stats', [VillageController::class, 'withStats']);
-        Route::get('/by-coordinates', [VillageController::class, 'byCoordinates']);
-        Route::get('/{id}', [VillageController::class, 'show']);
-        Route::put('/{id}', [VillageController::class, 'update']);
-        Route::delete('/{id}', [VillageController::class, 'destroy']);
-        Route::get('/{villageId}/details', [VillageController::class, 'details']);
-        Route::get('/{villageId}/nearby', [VillageController::class, 'nearby']);
-        Route::put('/{villageId}/resources', [VillageController::class, 'updateResources']);
-    });
-    
-    // User Management
-    Route::prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index']);
-        Route::post('/', [UserController::class, 'store']);
-        Route::get('/with-game-stats', [UserController::class, 'withGameStats']);
-        Route::get('/activity-stats', [UserController::class, 'activityStats']);
-        Route::get('/online', [UserController::class, 'online']);
-        Route::get('/search', [UserController::class, 'search']);
-        Route::post('/bulk-update-status', [UserController::class, 'bulkUpdateStatus']);
-        Route::get('/{id}', [UserController::class, 'show']);
-        Route::put('/{id}', [UserController::class, 'update']);
-        Route::delete('/{id}', [UserController::class, 'destroy']);
-        Route::get('/{userId}/details', [UserController::class, 'details']);
-        Route::get('/{userId}/feature-toggles', [UserController::class, 'featureToggles']);
-        Route::get('/{userId}/game-history', [UserController::class, 'gameHistory']);
-        Route::put('/{userId}/status', [UserController::class, 'updateStatus']);
-    });
-    
-    // Task Management
-    Route::prefix('tasks')->group(function () {
-        Route::get('/', [TaskController::class, 'index']);
-        Route::post('/', [TaskController::class, 'store']);
-        Route::get('/with-stats', [TaskController::class, 'withStats']);
-        Route::get('/overdue', [TaskController::class, 'overdue']);
-        Route::get('/player/{playerId}/stats', [TaskController::class, 'playerStats']);
-        Route::get('/{id}', [TaskController::class, 'show']);
-        Route::put('/{id}', [TaskController::class, 'update']);
-        Route::delete('/{id}', [TaskController::class, 'destroy']);
-        Route::post('/{taskId}/start', [TaskController::class, 'start']);
-        Route::post('/{taskId}/complete', [TaskController::class, 'complete']);
-        Route::put('/{taskId}/progress', [TaskController::class, 'updateProgress']);
-    });
-    
-    // AI Integration
-    Route::prefix('ai')->group(function () {
-        Route::get('/status', [AIController::class, 'getStatus']);
-        Route::post('/village-names', [AIController::class, 'generateVillageNames']);
-        Route::post('/alliance-names', [AIController::class, 'generateAllianceNames']);
-        Route::post('/quest-description', [AIController::class, 'generateQuestDescription']);
-        Route::post('/player-message', [AIController::class, 'generatePlayerMessage']);
-        Route::post('/battle-report', [AIController::class, 'generateBattleReport']);
-        Route::post('/world-event', [AIController::class, 'generateWorldEvent']);
-        Route::post('/strategy-suggestion', [AIController::class, 'generateStrategySuggestion']);
-        Route::post('/custom-content', [AIController::class, 'generateCustomContent']);
-        Route::post('/switch-provider', [AIController::class, 'switchProvider']);
-    });
-    
-    // System Management
-    Route::prefix('system')->group(function () {
-        Route::get('/health', [SystemController::class, 'health']);
-        Route::get('/config', [SystemController::class, 'config']);
-        Route::put('/config', [SystemController::class, 'updateConfig']);
-        Route::get('/logs', [SystemController::class, 'logs']);
-        Route::get('/metrics', [SystemController::class, 'metrics']);
-        Route::get('/scheduled-tasks', [SystemController::class, 'scheduledTasks']);
-        Route::post('/clear-caches', [SystemController::class, 'clearCaches']);
-    });
-    
-    // Larautilx Integration
-    Route::prefix('larautilx')->group(function () {
-        Route::get('/status', [LarautilxController::class, 'getStatus']);
-        Route::get('/docs', [LarautilxController::class, 'getDocs']);
-        Route::post('/test/caching', [LarautilxController::class, 'testCaching']);
-        Route::post('/test/filtering', [LarautilxController::class, 'testFiltering']);
-        Route::post('/test/pagination', [LarautilxController::class, 'testPagination']);
-        Route::get('/cache/stats', [LarautilxDashboardController::class, 'getCacheStats']);
-        Route::post('/cache/clear', [LarautilxDashboardController::class, 'clearCache']);
-        Route::post('/cache/player/clear', [LarautilxDashboardController::class, 'clearPlayerCache']);
-        Route::post('/cache/village/clear', [LarautilxDashboardController::class, 'clearVillageCache']);
-        Route::post('/cache/world/clear', [LarautilxDashboardController::class, 'clearWorldCache']);
-        Route::get('/dashboard', [LarautilxDashboardController::class, 'getDashboardData']);
-        Route::get('/integration-summary', [LarautilxDashboardController::class, 'getIntegrationSummary']);
-        Route::post('/test-components', [LarautilxDashboardController::class, 'testComponents']);
-    });
-    
-    // Artifact System
-    Route::prefix('artifacts')->group(function () {
-        Route::get('/', [ArtifactController::class, 'index']);
-        Route::post('/', [ArtifactController::class, 'store']);
-        Route::get('/server-wide', [ArtifactController::class, 'serverWide']);
-        Route::post('/generate-random', [ArtifactController::class, 'generateRandom']);
-        Route::get('/{id}', [ArtifactController::class, 'show']);
-        Route::put('/{id}', [ArtifactController::class, 'update']);
-        Route::delete('/{id}', [ArtifactController::class, 'destroy']);
-        Route::post('/{id}/activate', [ArtifactController::class, 'activate']);
-        Route::post('/{id}/deactivate', [ArtifactController::class, 'deactivate']);
-        Route::get('/{id}/effects', [ArtifactController::class, 'effects']);
-    });
-    
-    // Message System
-    Route::prefix('messages')->group(function () {
-        Route::get('/inbox', [MessageController::class, 'getInbox']);
-        Route::get('/sent', [MessageController::class, 'getSent']);
-        Route::get('/alliance', [MessageController::class, 'getAllianceMessages']);
-        Route::get('/conversation/{otherPlayerId}', [MessageController::class, 'getConversation']);
-        Route::get('/stats', [MessageController::class, 'getStats']);
-        Route::get('/players', [MessageController::class, 'getPlayers']);
-        Route::post('/send', [MessageController::class, 'sendMessage']);
-        Route::post('/send-alliance', [MessageController::class, 'sendAllianceMessage']);
-        Route::post('/bulk-mark-read', [MessageController::class, 'bulkMarkAsRead']);
-        Route::post('/bulk-delete', [MessageController::class, 'bulkDelete']);
-        Route::get('/{messageId}', [MessageController::class, 'getMessage']);
-        Route::post('/{messageId}/mark-read', [MessageController::class, 'markAsRead']);
-        Route::delete('/{messageId}', [MessageController::class, 'deleteMessage']);
-    });
-    
-    // Alliance System
-    Route::prefix('alliances')->group(function () {
-        Route::get('/', [AllianceController::class, 'index']);
-        Route::post('/', [AllianceController::class, 'store']);
-        Route::get('/{id}', [AllianceController::class, 'show']);
-        Route::put('/{id}', [AllianceController::class, 'update']);
-        Route::delete('/{id}', [AllianceController::class, 'destroy']);
-        Route::post('/{id}/join', [AllianceController::class, 'join']);
-        Route::post('/leave', [AllianceController::class, 'leave']);
-        Route::get('/{id}/members', [AllianceController::class, 'members']);
-        Route::get('/{id}/wars', [AllianceController::class, 'wars']);
-        Route::get('/{id}/diplomacy', [AllianceController::class, 'diplomacy']);
-    });
-});
-
-// WebSocket/Real-time API Routes
-Route::middleware('auth:sanctum')->prefix('websocket')->group(function () {
-    // Connection Management
-    Route::post('/subscribe', [WebSocketController::class, 'subscribe']);
-    Route::post('/unsubscribe', [WebSocketController::class, 'unsubscribe']);
-    Route::post('/auth', [WebSocketController::class, 'auth']);
-    
-    // Update Management
-    Route::get('/updates', [WebSocketController::class, 'getUpdates']);
-    Route::post('/test-message', [WebSocketController::class, 'sendTestMessage']);
-    
-    // Statistics
-    Route::get('/stats', [WebSocketController::class, 'getStats']);
-    
-    // Admin Features
-    Route::post('/broadcast-announcement', [WebSocketController::class, 'broadcastAnnouncement']);
-});
-
-// Public API Routes (no authentication required)
-Route::prefix('public')->group(function () {
-    Route::get('/health', function () {
-        return response()->json([
-            'success' => true,
-            'status' => 'healthy',
-            'data' => [
-                'timestamp' => now()->toISOString(),
-                'version' => config('game.version', '1.0.0'),
-                'name' => config('game.name', 'Online Strategy Game'),
-            ],
-        ]);
-    });
-    
-    Route::get('/statistics', function () {
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'total_players' => \App\Models\User::count(),
-                'server_status' => 'online',
-                'uptime' => \App\Services\GamePerformanceMonitor::monitorServerLoad()['uptime'] ?? 'Unknown',
-            ],
-            'timestamp' => now()->toISOString(),
-        ]);
-    });
-});
-
-
-// Game Integration Services
-Route::middleware('auth:sanctum')->prefix('game/integration')->group(function () {
-    Route::post('/initialize-realtime', [GameApiController::class, 'initializeRealTime']);
-    Route::get('/game-statistics', [GameApiController::class, 'getGameStatisticsWithRealTime']);
-    Route::post('/system-announcement', [GameApiController::class, 'sendSystemAnnouncement'])->middleware('admin');
 });

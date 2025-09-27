@@ -229,6 +229,9 @@
                                     <a href="{{ route('game.map') }}" class="btn btn-game">
                                         <i class="fas fa-map"></i> @text('game.world_map', 'World Map')
                                     </a>
+                                    <a href="{{ route('admin.dashboard') }}" class="btn btn-game">
+                                        <i class="fas fa-tachometer-alt"></i> Admin Panel
+                                    </a>
                                 </div>
                             </div>
                         </div>

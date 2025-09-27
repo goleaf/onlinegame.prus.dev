@@ -39,13 +39,15 @@ class PlayerStats
     {
         return [
             'points' => $this->points,
-            'rank' => $this->rank,
             'population' => $this->population,
-            'villages' => $this->villages,
+            'villages_count' => $this->villagesCount,
+            'total_attack_points' => $this->totalAttackPoints,
+            'total_defense_points' => $this->totalDefensePoints,
+            'is_active' => $this->isActive,
+            'is_online' => $this->isOnline,
+            'rank' => $this->rank,
             'alliance_id' => $this->alliance_id,
             'tribe' => $this->tribe,
-            'is_online' => $this->is_online,
-            'is_active' => $this->is_active,
             'last_active_at' => $this->last_active_at?->format('Y-m-d H:i:s'),
         ];
     }
