@@ -6,6 +6,7 @@ use App\Services\EnhancedCacheService;
 use App\Services\EnhancedSessionService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use SmartCache\Facades\SmartCache;
 
 /**
  * Game Performance Optimizer using Laravel 12.29.0+ features
@@ -295,11 +296,10 @@ class GamePerformanceOptimizer
     protected function getVillageStatistics(array $params): array
     {
         try {
-            $result = DB::table('villages')
+            return DB::table('villages')
                 ->selectRaw('COUNT(*) as total_villages')
-                ->first();
-                
-            return $result ? (array) $result : ['total_villages' => 0];
+                ->first()
+                ?->toArray() ?? [];
         } catch (\Exception $e) {
             return ['total_villages' => 0];
         }
