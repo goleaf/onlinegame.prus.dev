@@ -6,10 +6,10 @@
          data-center-y="{{ $centerY }}"
          data-radius="{{ $radius }}"
          data-map-mode="{{ $mapMode }}"
-         data-total-villages="{{ $totalVillages }}"
-         data-my-villages="{{ $myVillages }}"
-         data-alliance-villages="{{ $allianceVillages }}"
-         data-enemy-villages="{{ $enemyVillages }}"
+         data-total-villages="{{ $statistics['total_villages'] ?? 0 }}"
+         data-my-villages="{{ $statistics['my_villages'] ?? 0 }}"
+         data-alliance-villages="{{ $statistics['alliance_villages'] ?? 0 }}"
+         data-enemy-villages="{{ $statistics['enemy_villages'] ?? 0 }}"
          style="display: none;">
     </div>
 </div>

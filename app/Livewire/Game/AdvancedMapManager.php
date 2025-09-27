@@ -77,42 +77,35 @@ class AdvancedMapManager extends Component
         $this->isLoading = true;
 
         try {
-            // Use LarautilxIntegrationService for caching
-            $integrationService = app(LarautilxIntegrationService::class);
-
-            $this->villages = $integrationService->cacheWorldData(
-                $this->selectedWorld,
-                'villages_map_data',
-                function () {
-                    return Village::with(['player:id,name,alliance_id', 'world:id,name'])
-                        ->byWorld($this->selectedWorld)
-                        ->withStats()
-                        ->selectRaw('
-                            villages.*,
-                            (SELECT COUNT(*) FROM buildings WHERE village_id = villages.id) as building_count,
-                            (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as troop_count,
-                            (SELECT SUM(wood + clay + iron + crop) FROM resources WHERE village_id = villages.id) as total_resources
-                        ')
-                        ->get()
-                        ->map(function ($village) {
-                            return [
-                                'id' => $village->id,
-                                'name' => $village->name,
-                                'x_coordinate' => $village->x_coordinate,
-                                'y_coordinate' => $village->y_coordinate,
-                                'player_id' => $village->player_id,
-                                'player_name' => $village->player->name ?? 'Unknown',
-                                'alliance_id' => $village->player->alliance_id ?? null,
-                                'population' => $village->population ?? 0,
-                                'is_capital' => $village->is_capital ?? false,
-                                'building_count' => $village->building_count ?? 0,
-                                'troop_count' => $village->troop_count ?? 0,
-                                'total_resources' => $village->total_resources ?? 0,
-                            ];
-                        });
-                },
-                300  // 5 minutes cache
-            );
+            // Use SmartCache for villages map data with automatic optimization
+            $this->villages = SmartCache::remember("world_{$this->selectedWorld}_villages_map_data", now()->addMinutes(5), function () {
+                return Village::with(['player:id,name,alliance_id', 'world:id,name'])
+                    ->byWorld($this->selectedWorld)
+                    ->withStats()
+                    ->selectRaw('
+                        villages.*,
+                        (SELECT COUNT(*) FROM buildings WHERE village_id = villages.id) as building_count,
+                        (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as troop_count,
+                        (SELECT SUM(wood + clay + iron + crop) FROM resources WHERE village_id = villages.id) as total_resources
+                    ')
+                    ->get()
+                    ->map(function ($village) {
+                        return [
+                            'id' => $village->id,
+                            'name' => $village->name,
+                            'x_coordinate' => $village->x_coordinate,
+                            'y_coordinate' => $village->y_coordinate,
+                            'player_id' => $village->player_id,
+                            'player_name' => $village->player->name ?? 'Unknown',
+                            'alliance_id' => $village->player->alliance_id ?? null,
+                            'population' => $village->population ?? 0,
+                            'is_capital' => $village->is_capital ?? false,
+                            'building_count' => $village->building_count ?? 0,
+                            'troop_count' => $village->troop_count ?? 0,
+                            'total_resources' => $village->total_resources ?? 0,
+                        ];
+                    });
+            });
 
             $this->calculateStatistics();
             $this->updateMapData();

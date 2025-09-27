@@ -179,12 +179,14 @@ class GamePerformanceOptimizer
      */
     protected function loadUserStats(string $userId): array
     {
-        return DB::table('users')
+        $user = DB::table('users')
             ->select([
                 'id', 'name', 'email', 'created_at', 'updated_at'
             ])
             ->where('id', $userId)
-            ->first()?->toArray() ?? [];
+            ->first();
+            
+        return $user ? (array) $user : [];
     }
 
     /**

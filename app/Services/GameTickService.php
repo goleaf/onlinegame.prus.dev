@@ -732,6 +732,17 @@ class GameTickService
             'is_important' => true,
         ]);
 
+        // Publish successful spy event to RabbitMQ
+        $this->rabbitMQ->publishPlayerAction(
+            $movement->player_id,
+            'spy_success',
+            [
+                'target_village_id' => $targetVillage->id,
+                'target_village_name' => $targetVillage->name,
+                'spy_data' => $this->getSpyData($targetVillage),
+            ]
+        );
+
         Log::info("Spy mission completed at village {$targetVillage->name}");
     }
 
