@@ -1,3 +1,7 @@
-<div>
-    {{-- Care about people's approval and you will be their prisoner. --}}
+<div class="mt-6">
+    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        Quest Discussion
+    </h4>
+    
+    <livewire:comment-section :model="$quest" />
 </div>
