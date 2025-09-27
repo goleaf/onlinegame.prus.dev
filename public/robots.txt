@@ -1,0 +1,45 @@
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /game/api/
+Disallow: /game/dashboard/
+Disallow: /game/village/
+Disallow: /game/player/
+Disallow: /game/battles/
+Disallow: /game/movements/
+Disallow: /game/reports/
+Disallow: /game/statistics/
+Disallow: /game/technology/
+Disallow: /game/troops/
+Disallow: /game/users/
+Disallow: /game/system/
+Disallow: /game/real-time/
+Disallow: /game/no-player/
+Disallow: /game/suspended/
+
+# Allow public game areas
+Allow: /game
+Allow: /game/map
+Allow: /game/features
+Allow: /game/about
+
+# Disallow sensitive files
+Disallow: /*.log
+Disallow: /*.env
+Disallow: /storage/
+Disallow: /vendor/
+Disallow: /bootstrap/cache/
+
+# Allow CSS and JS files
+Allow: /css/
+Allow: /js/
+Allow: /img/
+Allow: /game/assets/
+
+# Sitemap location
+Sitemap: https://onlinegame.prus.dev/sitemap.xml
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1

@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Livewire\Admin;
+
+use App\Services\UpdaterService;
+use Livewire\Component;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Layout;
+use Jantinnerezo\LivewireAlert\LivewireAlert;
+
+#[Title('Application Updater')]
+#[Layout('layouts.app')]
+class UpdaterComponent extends Component
+{
+    use LivewireAlert;
+
+    public $currentVersion = '';
+    public $latestVersion = '';
+    public $updateAvailable = false;
+    public $behindCommits = 0;
+    public $isUpdating = false;
+    public $updateSteps = [];
+    public $systemInfo = [];
+    public $updateHistory = [];
+    public $error = null;
+
+    protected UpdaterService $updaterService;
+
+    public function boot(UpdaterService $updaterService)
+    {
+        $this->updaterService = $updaterService;
+    }
+
+    public function mount()
+    {
+        $this->loadUpdateInfo();
+        $this->loadSystemInfo();
+        $this->loadUpdateHistory();
+    }
+
+    public function loadUpdateInfo()
+    {
+        try {
+            $updateInfo = $this->updaterService->checkForUpdates();
+            
+            $this->currentVersion = $updateInfo['current_version'];
+            $this->latestVersion = $updateInfo['latest_version'];
+            $this->updateAvailable = $updateInfo['update_available'];
+            $this->behindCommits = $updateInfo['behind_commits'] ?? 0;
+            $this->error = $updateInfo['error'] ?? null;
+            
+        } catch (\Exception $e) {
+            $this->error = 'Failed to check for updates: ' . $e->getMessage();
+            $this->alert('error', $this->error);
+        }
+    }
+
+    public function loadSystemInfo()
+    {
+        try {
+            $this->systemInfo = $this->updaterService->getSystemInfo();
+        } catch (\Exception $e) {
+            $this->alert('warning', 'Failed to load system information: ' . $e->getMessage());
+        }
+    }
+
+    public function loadUpdateHistory()
+    {
+        try {
+            $this->updateHistory = $this->updaterService->getUpdateHistory();
+        } catch (\Exception $e) {
+            $this->alert('warning', 'Failed to load update history: ' . $e->getMessage());
+        }
+    }
+
+    public function checkForUpdates()
+    {
+        $this->loadUpdateInfo();
+        
+        if ($this->updateAvailable) {
+            $this->alert('info', "Update available! Current: {$this->currentVersion}, Latest: {$this->latestVersion}");
+        } else {
+            $this->alert('success', 'Application is up to date!');
+        }
+    }
+
+    public function performUpdate()
+    {
+        if (!$this->updateAvailable) {
+            $this->alert('warning', 'No updates available');
+            return;
+        }
+
+        $this->isUpdating = true;
+        $this->updateSteps = [];
+        $this->error = null;
+
+        try {
+            $updateResult = $this->updaterService->performUpdate();
+            
+            $this->updateSteps = $updateResult['steps'] ?? [];
+            
+            if ($updateResult['success']) {
+                $this->alert('success', 'Application updated successfully!');
+                $this->loadUpdateInfo(); // Refresh version info
+                $this->loadUpdateHistory(); // Refresh history
+            } else {
+                $this->error = $updateResult['error'] ?? 'Update failed';
+                $this->alert('error', $this->error);
+            }
+            
+        } catch (\Exception $e) {
+            $this->error = 'Update failed: ' . $e->getMessage();
+            $this->alert('error', $this->error);
+        } finally {
+            $this->isUpdating = false;
+        }
+    }
+
+    public function clearCache()
+    {
+        try {
+            \Artisan::call('cache:clear');
+            \Artisan::call('config:clear');
+            \Artisan::call('route:clear');
+            \Artisan::call('view:clear');
+            
+            $this->alert('success', 'Application caches cleared successfully!');
+        } catch (\Exception $e) {
+            $this->alert('error', 'Failed to clear caches: ' . $e->getMessage());
+        }
+    }
+
+    public function optimizeApplication()
+    {
+        try {
+            \Artisan::call('config:cache');
+            \Artisan::call('route:cache');
+            \Artisan::call('view:cache');
+            
+            $this->alert('success', 'Application optimized successfully!');
+        } catch (\Exception $e) {
+            $this->alert('error', 'Failed to optimize application: ' . $e->getMessage());
+        }
+    }
+
+    public function render()
+    {
+        return view('livewire.admin.updater-component');
+    }
+}
