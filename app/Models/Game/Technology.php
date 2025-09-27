@@ -143,12 +143,6 @@ class Technology extends Model
         ');
     }
 
-    public function scopeWithPlayerInfo($query)
-    {
-        return $query->with([
-            'players:id,name,level,points'
-        ]);
-    }
 
     /**
      * Get technologies with SmartCache optimization

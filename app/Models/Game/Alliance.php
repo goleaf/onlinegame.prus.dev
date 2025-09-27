@@ -133,18 +133,44 @@ class Alliance extends Model implements Auditable
         return $this->hasMany(AllianceLog::class);
     }
 
-    // Optimized query scopes using when() and selectRaw
+    // Enhanced query scopes using Query Enrich
     public function scopeWithStats($query)
     {
-        return $query->selectRaw('
-            alliances.*,
-            (SELECT COUNT(*) FROM players p WHERE p.alliance_id = alliances.id) as member_count,
-            (SELECT SUM(points) FROM players p2 WHERE p2.alliance_id = alliances.id) as total_points,
-            (SELECT AVG(points) FROM players p3 WHERE p3.alliance_id = alliances.id) as avg_points,
-            (SELECT MAX(points) FROM players p4 WHERE p4.alliance_id = alliances.id) as max_points,
-            (SELECT COUNT(*) FROM villages v WHERE v.player_id IN (SELECT id FROM players p5 WHERE p5.alliance_id = alliances.id)) as total_villages,
-            (SELECT SUM(population) FROM villages v2 WHERE v2.player_id IN (SELECT id FROM players p6 WHERE p6.alliance_id = alliances.id)) as total_population
-        ');
+        return $query->select([
+            'alliances.*',
+            QE::select(QE::count(c('id')))
+                ->from('players', 'p')
+                ->whereColumn('p.alliance_id', c('alliances.id'))
+                ->as('member_count'),
+            QE::select(QE::sum(c('points')))
+                ->from('players', 'p2')
+                ->whereColumn('p2.alliance_id', c('alliances.id'))
+                ->as('total_points'),
+            QE::select(QE::avg(c('points')))
+                ->from('players', 'p3')
+                ->whereColumn('p3.alliance_id', c('alliances.id'))
+                ->as('avg_points'),
+            QE::select(QE::max(c('points')))
+                ->from('players', 'p4')
+                ->whereColumn('p4.alliance_id', c('alliances.id'))
+                ->as('max_points'),
+            QE::select(QE::count(c('id')))
+                ->from('villages', 'v')
+                ->whereIn('v.player_id', function($subQuery) {
+                    $subQuery->select('id')
+                             ->from('players', 'p5')
+                             ->whereColumn('p5.alliance_id', c('alliances.id'));
+                })
+                ->as('total_villages'),
+            QE::select(QE::sum(c('population')))
+                ->from('villages', 'v2')
+                ->whereIn('v2.player_id', function($subQuery) {
+                    $subQuery->select('id')
+                             ->from('players', 'p6')
+                             ->whereColumn('p6.alliance_id', c('alliances.id'));
+                })
+                ->as('total_population')
+        ]);
     }
 
     public function scopeByWorld($query, $worldId)

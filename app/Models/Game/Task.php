@@ -11,7 +11,7 @@ use WendellAdriel\Lift\Lift;
 
 class Task extends Model
 {
-    use HasFactory, HasReference, Commentable;
+    use HasFactory, HasReference, Commentable, Lift;
 
     protected $table = 'player_tasks';
 

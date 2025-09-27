@@ -195,7 +195,7 @@ class Battle extends Model implements Auditable, IsFilterable
             Filter::field('defender_id', ['$eq']),
             Filter::field('village_id', ['$eq']),
             Filter::field('occurred_at', ['$eq', '$gt', '$lt']),
-            Filter::field('reference_number', ['$eq', '$contains']),
+            Filter::field('reference_number', ['$eq', '$like']),
             Filter::relation('attacker', ['$has']),
             Filter::relation('defender', ['$has']),
             Filter::relation('village', ['$has'])

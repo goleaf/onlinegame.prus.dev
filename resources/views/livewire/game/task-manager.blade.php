@@ -249,6 +249,10 @@
                         @endif
 
                         <div class="flex space-x-2">
+                            <a href="{{ route('game.quests.detail', $quest->id) }}" 
+                               class="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm transition-colors">
+                                <i class="fas fa-eye mr-1"></i>View Details
+                            </a>
                             @if($quest->status === 'available')
                                 <button wire:click="startQuest({{ $quest->id }})" 
                                         class="bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-sm transition-colors">

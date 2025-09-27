@@ -398,7 +398,7 @@ class UserController extends CrudController
     /**
      * Bulk update user status
      */
-    public function bulkUpdateUserStatus(Request $request)
+    public function bulkUpdateStatus(Request $request)
     {
         $validated = $request->validate([
             'user_ids' => 'required|array',

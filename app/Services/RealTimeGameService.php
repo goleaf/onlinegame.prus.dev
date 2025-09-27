@@ -202,23 +202,27 @@ class RealTimeGameService
     }
 
     /**
-     * Get online users
+     * Get online users with SmartCache optimization
      */
     public static function getOnlineUsers(): array
     {
         try {
-            $onlineUsers = Redis::smembers('online_users');
+            $cacheKey = "online_users_" . now()->format('Y-m-d-H-i');
             
-            // Filter out inactive users
-            $activeUsers = [];
-            foreach ($onlineUsers as $userId) {
-                $lastActivity = Cache::get("user_activity:{$userId}");
-                if ($lastActivity && (now()->timestamp - $lastActivity) < 300) { // 5 minutes
-                    $activeUsers[] = (int) $userId;
+            return SmartCache::remember($cacheKey, now()->addMinutes(2), function () {
+                $onlineUsers = Redis::smembers('online_users');
+                
+                // Filter out inactive users
+                $activeUsers = [];
+                foreach ($onlineUsers as $userId) {
+                    $lastActivity = Cache::get("user_activity:{$userId}");
+                    if ($lastActivity && (now()->timestamp - $lastActivity) < 300) { // 5 minutes
+                        $activeUsers[] = (int) $userId;
+                    }
                 }
-            }
 
-            return $activeUsers;
+                return $activeUsers;
+            });
 
         } catch (\Exception $e) {
             Log::error('Failed to get online users', [
