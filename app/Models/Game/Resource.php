@@ -17,6 +17,19 @@ class Resource extends Model implements Auditable
     use HasFactory;
     use HasNotables;
     use AuditableTrait;
+    use Lift;
+
+    // Laravel Lift typed properties
+    public int $id;
+    public int $village_id;
+    public string $type;
+    public int $amount;
+    public float $production_rate;
+    public int $storage_capacity;
+    public int $level;
+    public ?\Carbon\Carbon $last_updated;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
 
     protected $fillable = [
         'village_id',

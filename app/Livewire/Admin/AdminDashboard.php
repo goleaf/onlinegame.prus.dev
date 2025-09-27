@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
+use SmartCache\Facades\SmartCache;
 
 #[Title('Admin Dashboard')]
 #[Layout('layouts.app')]

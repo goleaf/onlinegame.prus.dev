@@ -6,6 +6,7 @@ use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
 use App\Services\SeoCacheService;
+use App\Services\SeoBreadcrumbService;
 
 class GameSeoService
 {
