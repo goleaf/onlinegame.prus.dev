@@ -10,6 +10,7 @@ use App\Services\GameNotificationService;
 use App\Utilities\GameUtility;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use SmartCache\Facades\SmartCache;
 
 class GameTestCommand extends Command
 {

@@ -17,6 +17,21 @@ class Building extends Model implements Auditable
     use AuditableTrait;
     use Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public int $village_id;
+    public int $building_type_id;
+    public string $name;
+    public int $level;
+    public ?int $x;
+    public ?int $y;
+    public bool $is_active;
+    public ?\Carbon\Carbon $upgrade_started_at;
+    public ?\Carbon\Carbon $upgrade_completed_at;
+    public ?array $metadata;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $fillable = [
         'village_id',
         'building_type_id',
