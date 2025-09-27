@@ -210,7 +210,7 @@ class UserProfileManager extends Component
 
             // Send notification about profile update
             GameNotificationService::sendNotification(
-                [$this->user->id],
+                $this->user->id,
                 'profile_updated',
                 [
                     'user_id' => $this->user->id,

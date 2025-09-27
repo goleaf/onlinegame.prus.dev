@@ -6,6 +6,8 @@ use App\Models\Game\MarketOffer;
 use App\Models\Game\Village;
 use App\Models\Game\Player;
 use App\Models\Game\Resource;
+use App\Services\GameIntegrationService;
+use App\Services\GameNotificationService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
