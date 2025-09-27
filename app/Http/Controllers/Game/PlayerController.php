@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use App\Models\Game\Player;
 use App\Traits\GameValidationTrait;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
@@ -13,9 +14,9 @@ class PlayerController extends CrudController
 {
     use ApiResponseTrait, GameValidationTrait;
 
-    protected $model;
+    protected Model $model;
 
-    protected $validationRules = [
+    protected array $validationRules = [
         'name' => 'required|string|max:255',
         'tribe' => 'required|string|in:roman,teuton,gaul',
         'alliance_id' => 'nullable|exists:alliances,id',

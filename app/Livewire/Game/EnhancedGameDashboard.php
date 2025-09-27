@@ -156,7 +156,7 @@ class EnhancedGameDashboard extends Component
             'player_id' => $this->player->id,
             'world_id' => $this->player->world_id,
             'villages_count' => $this->player->villages->count() ?? 0,
-            'player_coordinates' => $this->player->villages->map(function($village) {
+            'player_coordinates' => $this->player->villages->map(function ($village) {
                 return [
                     'village_name' => $village->name,
                     'coordinates' => "({$village->x_coordinate}|{$village->y_coordinate})",

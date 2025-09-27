@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use App\Models\Game\Village;
 use App\Traits\GameValidationTrait;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
@@ -13,7 +14,7 @@ class VillageController extends CrudController
 {
     use ApiResponseTrait, GameValidationTrait;
 
-    protected $model;
+    protected Model $model;
 
     protected $validationRules = [
         'name' => 'required|string|max:255',

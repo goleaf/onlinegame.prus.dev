@@ -5,10 +5,12 @@ namespace App\Models\Game;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use NunoMaduro\Essentials\Concerns\StrictModel;
 
 class World extends Model
 {
     use HasFactory;
+    use StrictModel;
 
     protected $fillable = [
         'name',

@@ -10,9 +10,9 @@ use App\Services\GeographicService;
 use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
-use SmartCache\Facades\SmartCache;
 use Livewire\Component;
 use Livewire\WithPagination;
+use SmartCache\Facades\SmartCache;
 
 class BattleManager extends Component
 {
@@ -70,7 +70,7 @@ class BattleManager extends Component
     {
         if ($this->village) {
             $cacheKey = "player_{$this->village->player_id}_recent_battles";
-            
+
             $this->recentBattles = SmartCache::remember($cacheKey, now()->addMinutes(2), function () {
                 return Battle::byPlayer($this->village->player_id)
                     ->withStats()
@@ -86,7 +86,7 @@ class BattleManager extends Component
     public function selectTarget($villageId)
     {
         $cacheKey = "village_{$villageId}_battle_target_data";
-        
+
         $this->selectedTarget = SmartCache::remember($cacheKey, now()->addMinutes(1), function () use ($villageId) {
             return Village::with(['player:id,name', 'troops.unitType:id,name,attack_power,defense_power,speed'])
                 ->selectRaw('
@@ -97,7 +97,7 @@ class BattleManager extends Component
                 ')
                 ->find($villageId);
         });
-        
+
         $this->showBattleModal = true;
     }
 

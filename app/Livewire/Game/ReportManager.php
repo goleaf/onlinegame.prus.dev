@@ -7,10 +7,10 @@ use App\Models\Game\Report;
 use App\Models\Game\World;
 use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
-use SmartCache\Facades\SmartCache;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
+use SmartCache\Facades\SmartCache;
 
 class ReportManager extends Component
 {
@@ -130,7 +130,7 @@ class ReportManager extends Component
         try {
             // Use SmartCache for report data with automatic optimization
             $cacheKey = "world_{$this->world->id}_reports_{$this->filterByType}_{$this->filterByStatus}_{$this->showOnlyMyReports}_{$this->showOnlyUnread}_{$this->showOnlyImportant}_{$this->sortBy}_{$this->sortOrder}";
-            
+
             $this->reports = SmartCache::remember($cacheKey, now()->addMinutes(3), function () {
                 $query = Report::where('world_id', $this->world->id)
                     ->with(['attacker:id,name', 'defender:id,name', 'fromVillage:id,name', 'toVillage:id,name']);
@@ -438,8 +438,8 @@ class ReportManager extends Component
     public function calculateReportStats()
     {
         // Use SmartCache for report statistics with automatic optimization
-        $statsCacheKey = "world_{$this->world->id}_player_" . Auth::id() . "_report_stats";
-        
+        $statsCacheKey = "world_{$this->world->id}_player_" . Auth::id() . '_report_stats';
+
         $stats = SmartCache::remember($statsCacheKey, now()->addMinutes(5), function () {
             // Use single query with selectRaw to get all stats at once
             return Report::where('world_id', $this->world->id)

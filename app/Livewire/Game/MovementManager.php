@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\FilteringUtil;
 use LaraUtilX\Utilities\PaginationUtil;
-use SmartCache\Facades\SmartCache;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
+use SmartCache\Facades\SmartCache;
 
 class MovementManager extends Component
 {
@@ -160,7 +160,7 @@ class MovementManager extends Component
         try {
             // Use SmartCache for movement data with automatic optimization
             $cacheKey = "village_{$this->village->id}_movements_{$this->filterByType}_{$this->filterByStatus}_{$this->showOnlyMyMovements}_{$this->sortBy}_{$this->sortOrder}";
-            
+
             $this->movements = SmartCache::remember($cacheKey, now()->addMinutes(2), function () {
                 // Use optimized scopes from Movement model
                 $query = Movement::byVillage($this->village->id)
@@ -674,13 +674,13 @@ class MovementManager extends Component
     {
         // Use geographic service for more accurate travel time calculation
         $geoService = app(GeographicService::class);
-        
+
         // Convert game distance to approximate real-world distance (km)
         $realWorldDistanceKm = $distance * 0.1;  // Rough conversion: 1 game unit = 0.1 km
-        
+
         // Use average troop speed (can be made configurable)
         $averageSpeedKmh = 20;  // 20 km/h average speed
-        
+
         return $geoService->calculateTravelTime($realWorldDistanceKm, $averageSpeedKmh);
     }
 

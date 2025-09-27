@@ -9,7 +9,7 @@ class CachingUtil
     protected int $defaultExpiration;
     protected array $defaultTags;
 
-    public function __construct(int$defaultExpiration, array $defaultTags)
+    public function __construct(int $defaultExpiration, array $defaultTags)
     {
         $this->defaultExpiration = $defaultExpiration;
         $this->defaultTags = $defaultTags;

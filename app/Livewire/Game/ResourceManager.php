@@ -4,6 +4,7 @@ namespace App\Livewire\Game;
 
 use App\Models\Game\Player;
 use App\Models\Game\Village;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -57,10 +58,17 @@ class ResourceManager extends Component
     public function mount($villageId = null)
     {
         if ($villageId) {
-            $this->village = Village::findOrFail($villageId);
+            $this->village = Village::withStats()
+                ->with(['resources:id,village_id,type,amount,production_rate,capacity', 'player:id,name,level'])
+                ->findOrFail($villageId);
         } else {
-            $player = Player::where('user_id', Auth::id())->first();
-            $this->village = $player?->villages()->first();
+            $player = Player::where('user_id', Auth::id())
+                ->with(['villages' => function ($query) {
+                    $query->withStats()
+                        ->with(['resources:id,village_id,type,amount,production_rate,capacity']);
+                }])
+                ->first();
+            $this->village = $player?->villages->first();
         }
 
         $this->loadResources();

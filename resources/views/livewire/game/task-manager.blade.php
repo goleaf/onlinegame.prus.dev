@@ -284,10 +284,17 @@
                                 <i class="fas fa-trophy text-2xl text-yellow-400 mr-3"></i>
                                 <div>
                                     <h3 class="text-lg font-bold text-white">{{ $achievement->title }}</h3>
-                                    <span class="px-2 py-1 rounded text-xs font-medium
-                                        {{ $this->getTaskColor($achievement->status) === 'yellow' ? 'bg-yellow-600 text-yellow-100' : 'bg-gray-600 text-gray-100' }}">
-                                        {{ ucfirst($achievement->status) }}
-                                    </span>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="px-2 py-1 rounded text-xs font-medium
+                                            {{ $this->getTaskColor($achievement->status) === 'yellow' ? 'bg-yellow-600 text-yellow-100' : 'bg-gray-600 text-gray-100' }}">
+                                            {{ ucfirst($achievement->status) }}
+                                        </span>
+                                        @if($achievement->reference_number)
+                                            <span class="px-2 py-1 rounded text-xs font-medium bg-gray-600 text-gray-100">
+                                                {{ $achievement->reference_number }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>

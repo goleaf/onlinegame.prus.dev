@@ -40,7 +40,7 @@ class IntrospectAnalyzeCommand extends Command
 
         $output = $this->option('output');
         $format = $this->option('format');
-        
+
         $results = [];
 
         // Analyze models
@@ -120,13 +120,13 @@ class IntrospectAnalyzeCommand extends Command
      */
     private function hasSpecificOptions(): bool
     {
-        return $this->option('models') || 
-               $this->option('routes') || 
-               $this->option('views') || 
-               $this->option('classes') || 
-               $this->option('schemas') || 
-               $this->option('dependencies') || 
-               $this->option('performance');
+        return $this->option('models') ||
+            $this->option('routes') ||
+            $this->option('views') ||
+            $this->option('classes') ||
+            $this->option('schemas') ||
+            $this->option('dependencies') ||
+            $this->option('performance');
     }
 
     /**
@@ -135,15 +135,22 @@ class IntrospectAnalyzeCommand extends Command
     private function getAnalysisType(): string
     {
         $types = [];
-        
-        if ($this->option('models')) $types[] = 'models';
-        if ($this->option('routes')) $types[] = 'routes';
-        if ($this->option('views')) $types[] = 'views';
-        if ($this->option('classes')) $types[] = 'classes';
-        if ($this->option('schemas')) $types[] = 'schemas';
-        if ($this->option('dependencies')) $types[] = 'dependencies';
-        if ($this->option('performance')) $types[] = 'performance';
-        
+
+        if ($this->option('models'))
+            $types[] = 'models';
+        if ($this->option('routes'))
+            $types[] = 'routes';
+        if ($this->option('views'))
+            $types[] = 'views';
+        if ($this->option('classes'))
+            $types[] = 'classes';
+        if ($this->option('schemas'))
+            $types[] = 'schemas';
+        if ($this->option('dependencies'))
+            $types[] = 'dependencies';
+        if ($this->option('performance'))
+            $types[] = 'performance';
+
         return empty($types) ? 'comprehensive' : implode(', ', $types);
     }
 
@@ -183,17 +190,18 @@ class IntrospectAnalyzeCommand extends Command
     private function formatResultsForTable(array $results): array
     {
         $table = [];
-        
+
         foreach ($results as $key => $value) {
-            if ($key === 'metadata') continue;
-            
+            if ($key === 'metadata')
+                continue;
+
             if (is_array($value)) {
                 $count = count($value);
                 $details = $this->getDetailsForComponent($key, $value);
                 $table[] = [ucfirst($key), $count, $details];
             }
         }
-        
+
         return $table;
     }
 

@@ -22,7 +22,7 @@ class VillageForm extends Formello
             'method' => 'PATCH',
             'action' => route('villages.update', $this->model->id),
         ];
-    }    
+    }
 
     protected function fields(): array
     {

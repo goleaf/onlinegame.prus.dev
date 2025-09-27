@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class BuildingType extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTaxonomy;
 
     protected $fillable = [
         'name',

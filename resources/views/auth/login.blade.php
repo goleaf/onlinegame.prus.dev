@@ -207,6 +207,16 @@
                     Ready to build your empire?<br>
                     <strong>Click "Enter the Game" to start playing!</strong>
                 </p>
+                <p style="margin-top: 15px;">
+                    <a href="{{ route('register') }}" style="color: #8B4513; text-decoration: none; font-weight: bold;">
+                        Don't have an account? Register here
+                    </a>
+                </p>
+                <p style="margin-top: 10px;">
+                    <a href="{{ route('password.request') }}" style="color: #8B4513; text-decoration: none; font-weight: bold;">
+                        Forgot your password?
+                    </a>
+                </p>
             </div>
         </div>
     </div>

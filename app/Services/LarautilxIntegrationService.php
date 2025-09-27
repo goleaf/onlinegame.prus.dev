@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Collection;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\FilteringUtil;
 use LaraUtilX\Utilities\PaginationUtil;
-use Illuminate\Support\Collection;
 
 class LarautilxIntegrationService
 {
@@ -16,7 +16,7 @@ class LarautilxIntegrationService
     public function __construct()
     {
         $this->defaultCacheTags = ['game', 'larautilx'];
-        $this->defaultCacheExpiration = 300; // 5 minutes
+        $this->defaultCacheExpiration = 300;  // 5 minutes
         $this->cachingUtil = new CachingUtil($this->defaultCacheExpiration, $this->defaultCacheTags);
     }
 

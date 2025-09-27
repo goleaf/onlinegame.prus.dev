@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Travian Game - Laravel Edition</title>
+    <title>@text('game.title', 'Travian Game - Laravel Edition')</title>
 
     <!-- Travian Game Assets -->
     <link rel="stylesheet" href="{{ asset('game/styles.css') }}">
@@ -144,16 +144,16 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <h1 class="game-title mb-0">
-                            <i class="fas fa-crown"></i> Travian Game - Laravel Edition
+                            <i class="fas fa-crown"></i> @text('game.header.title', 'Travian Game - Laravel Edition')
                         </h1>
                     </div>
                     <div class="col-md-6 text-end">
                         <div class="d-flex justify-content-end align-items-center gap-3">
                             <span class="badge bg-success">
-                                <i class="fas fa-user"></i> {{ auth()->user()->name ?? 'Guest' }}
+                                <i class="fas fa-user"></i> {{ auth()->user()->name ?? text('game.guest', 'Guest') }}
                             </span>
                             <a href="{{ route('logout') }}" class="btn btn-outline-light btn-sm">
-                                <i class="fas fa-sign-out-alt"></i> Logout
+                                <i class="fas fa-sign-out-alt"></i> @text('game.logout', 'Logout')
                             </a>
                         </div>
                     </div>
@@ -169,7 +169,7 @@
                         <div class="resource-item">
                             <div class="resource-icon" style="background: #8B4513;"></div>
                             <div>
-                                <strong>Wood</strong><br>
+                                <strong>@text('game.resources.wood', 'Wood')</strong><br>
                                 <span id="wood-amount">1000</span>
                             </div>
                         </div>
@@ -178,7 +178,7 @@
                         <div class="resource-item">
                             <div class="resource-icon" style="background: #CD853F;"></div>
                             <div>
-                                <strong>Clay</strong><br>
+                                <strong>@text('game.resources.clay', 'Clay')</strong><br>
                                 <span id="clay-amount">1000</span>
                             </div>
                         </div>
@@ -187,7 +187,7 @@
                         <div class="resource-item">
                             <div class="resource-icon" style="background: #708090;"></div>
                             <div>
-                                <strong>Iron</strong><br>
+                                <strong>@text('game.resources.iron', 'Iron')</strong><br>
                                 <span id="iron-amount">1000</span>
                             </div>
                         </div>
@@ -196,7 +196,7 @@
                         <div class="resource-item">
                             <div class="resource-icon" style="background: #32CD32;"></div>
                             <div>
-                                <strong>Crop</strong><br>
+                                <strong>@text('game.resources.crop', 'Crop')</strong><br>
                                 <span id="crop-amount">1000</span>
                             </div>
                         </div>
@@ -214,18 +214,17 @@
                         <div class="card bg-dark border-primary">
                             <div class="card-body text-center">
                                 <h2 class="card-title">
-                                    <i class="fas fa-rocket"></i> Welcome to Travian!
+                                    <i class="fas fa-rocket"></i> @text('game.welcome.title', 'Welcome to Travian!')
                                 </h2>
                                 <p class="card-text">
-                                    Build your empire, manage resources, and conquer the world in this classic strategy
-                                    game.
+                                    @text('game.welcome.description', 'Build your empire, manage resources, and conquer the world in this classic strategy game.')
                                 </p>
                                 <div class="d-flex justify-content-center gap-3">
                                     <a href="{{ route('game.dashboard') }}" class="btn btn-game">
-                                        <i class="fas fa-home"></i> Dashboard
+                                        <i class="fas fa-home"></i> @text('game.dashboard', 'Dashboard')
                                     </a>
                                     <a href="{{ route('game.map') }}" class="btn btn-game">
-                                        <i class="fas fa-map"></i> World Map
+                                        <i class="fas fa-map"></i> @text('game.world_map', 'World Map')
                                     </a>
                                 </div>
                             </div>
@@ -239,8 +238,8 @@
                         <div class="card bg-dark border-success">
                             <div class="card-body text-center">
                                 <i class="fas fa-village fa-3x text-success mb-3"></i>
-                                <h5>Build Villages</h5>
-                                <p>Create and manage multiple villages across the world.</p>
+                                <h5>@text('game.features.villages.title', 'Build Villages')</h5>
+                                <p>@text('game.features.villages.description', 'Create and manage multiple villages across the world.')</p>
                             </div>
                         </div>
                     </div>
@@ -248,8 +247,8 @@
                         <div class="card bg-dark border-warning">
                             <div class="card-body text-center">
                                 <i class="fas fa-users fa-3x text-warning mb-3"></i>
-                                <h5>Form Alliances</h5>
-                                <p>Join forces with other players to dominate the world.</p>
+                                <h5>@text('game.features.alliances.title', 'Form Alliances')</h5>
+                                <p>@text('game.features.alliances.description', 'Join forces with other players to dominate the world.')</p>
                             </div>
                         </div>
                     </div>
@@ -257,8 +256,8 @@
                         <div class="card bg-dark border-danger">
                             <div class="card-body text-center">
                                 <i class="fas fa-sword fa-3x text-danger mb-3"></i>
-                                <h5>Conquer & Expand</h5>
-                                <p>Attack enemies and expand your territory.</p>
+                                <h5>@text('game.features.conquer.title', 'Conquer & Expand')</h5>
+                                <p>@text('game.features.conquer.description', 'Attack enemies and expand your territory.')</p>
                             </div>
                         </div>
                     </div>

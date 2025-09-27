@@ -2,8 +2,8 @@
 
 namespace App\Forms;
 
-use App\Models\Game\World;
 use App\Models\Game\Alliance;
+use App\Models\Game\World;
 use App\Models\User;
 use Metalogico\Formello\Formello;
 
@@ -23,7 +23,7 @@ class PlayerForm extends Formello
             'method' => 'PATCH',
             'action' => route('players.update', $this->model->id),
         ];
-    }    
+    }
 
     protected function fields(): array
     {

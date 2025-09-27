@@ -2,8 +2,8 @@
 
 namespace App\Forms;
 
-use App\Models\Game\Village;
 use App\Models\Game\BuildingType;
+use App\Models\Game\Village;
 use Metalogico\Formello\Formello;
 
 class BuildingForm extends Formello
@@ -22,7 +22,7 @@ class BuildingForm extends Formello
             'method' => 'PATCH',
             'action' => route('buildings.update', $this->model->id),
         ];
-    }    
+    }
 
     protected function fields(): array
     {

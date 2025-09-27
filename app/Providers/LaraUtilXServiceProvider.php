@@ -4,6 +4,9 @@ namespace LaraUtilX;
 
 use Illuminate\Support\ServiceProvider;
 use LaraUtilX\Http\Middleware\AccessLogMiddleware;
+use LaraUtilX\LLMProviders\Contracts\LLMProviderInterface;
+use LaraUtilX\LLMProviders\Gemini\GeminiProvider;
+use LaraUtilX\LLMProviders\OpenAI\OpenAIProvider;
 use LaraUtilX\Models\AccessLog;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Traits\FileProcessingTrait;
@@ -16,9 +19,6 @@ use LaraUtilX\Utilities\PaginationUtil;
 use LaraUtilX\Utilities\QueryParameterUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
 use LaraUtilX\Utilities\SchedulerUtil;
-use LaraUtilX\LLMProviders\OpenAI\OpenAIProvider;
-use LaraUtilX\LLMProviders\Contracts\LLMProviderInterface;
-use LaraUtilX\LLMProviders\Gemini\GeminiProvider;
 
 class LaraUtilXServiceProvider extends ServiceProvider
 {
@@ -120,7 +120,6 @@ class LaraUtilXServiceProvider extends ServiceProvider
         // Register middleware
         $this->app['router']->aliasMiddleware('access.log', AccessLogMiddleware::class);
     }
-
 
     /**
      * Dynamically load the given class.

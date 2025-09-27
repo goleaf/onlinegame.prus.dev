@@ -2,11 +2,14 @@
 
 namespace App\Models\Game;
 
+use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 
 class Technology extends Model
 {
+    use HasTaxonomy;
+
     protected $fillable = [
         'name',
         'description',
@@ -81,7 +84,8 @@ class Technology extends Model
 
     public function scopePopular($query, $limit = 10)
     {
-        return $query->orderByRaw('(SELECT COUNT(*) FROM player_technologies pt WHERE pt.technology_id = technologies.id) DESC')
+        return $query
+            ->orderByRaw('(SELECT COUNT(*) FROM player_technologies pt WHERE pt.technology_id = technologies.id) DESC')
             ->limit($limit);
     }
 
@@ -94,9 +98,10 @@ class Technology extends Model
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
             return $q->where(function ($subQ) use ($searchTerm) {
-                $subQ->where('name', 'like', '%' . $searchTerm . '%')
-                     ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                     ->orWhere('category', 'like', '%' . $searchTerm . '%');
+                $subQ
+                    ->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('category', 'like', '%' . $searchTerm . '%');
             });
         });
     }

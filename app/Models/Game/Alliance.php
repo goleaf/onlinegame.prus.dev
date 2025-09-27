@@ -5,9 +5,11 @@ namespace App\Models\Game;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use NunoMaduro\Essentials\Concerns\StrictModel;
 
 class Alliance extends Model
 {
+    use StrictModel;
     protected $fillable = [
         'name',
         'tag',

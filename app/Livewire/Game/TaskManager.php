@@ -404,12 +404,17 @@ class TaskManager extends Component
                 'status' => 'active',
                 'started_at' => now(),
             ]);
+            
+            // Generate reference number for the task
+            $task->generateReferenceNumber();
+            
             $this->loadTasks();
             $this->addNotification("Task '{$task->title}' started", 'success');
             $this->dispatch('taskStarted', ['taskId' => $taskId]);
-
+            
             ds('Task started successfully', [
                 'task_id' => $taskId,
+                'reference_number' => $task->reference_number,
                 'task_title' => $task->title,
                 'started_at' => $task->started_at
             ])->label('TaskManager Task Started');
@@ -447,6 +452,7 @@ class TaskManager extends Component
 
             ds('Task completed successfully', [
                 'task_id' => $taskId,
+                'reference_number' => $task->reference_number,
                 'task_title' => $task->title,
                 'completed_at' => $task->completed_at,
                 'rewards' => $task->rewards

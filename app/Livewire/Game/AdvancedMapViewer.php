@@ -17,7 +17,6 @@ class AdvancedMapViewer extends Component
     public $selectedVillage = null;
     public $showVillageInfo = false;
     public $mapSize = 20;
-    
     // Geographic features
     public $showRealWorldCoordinates = false;
     public $showGeohash = false;
@@ -25,11 +24,10 @@ class AdvancedMapViewer extends Component
     public $showBearing = false;
     public $radiusFilter = 0;
     public $elevationFilter = null;
-    
     // Map modes
-    public $mapMode = 'game'; // 'game', 'real_world', 'hybrid'
-    public $coordinateSystem = 'game'; // 'game', 'decimal', 'dms'
-    
+    public $mapMode = 'game';  // 'game', 'real_world', 'hybrid'
+    public $coordinateSystem = 'game';  // 'game', 'decimal', 'dms'
+
     protected $listeners = ['refreshMap', 'villageSelected', 'mapMoved'];
 
     public function mount()
@@ -71,11 +69,12 @@ class AdvancedMapViewer extends Component
             $query->where('elevation', '>=', $this->elevationFilter);
         }
 
-        $this->villages = $query->get()
+        $this->villages = $query
+            ->get()
             ->map(function ($village) {
                 $geoService = app(GeographicService::class);
                 $coords = $village->getRealWorldCoordinates();
-                
+
                 return [
                     'id' => $village->id,
                     'name' => $village->name,
@@ -104,10 +103,10 @@ class AdvancedMapViewer extends Component
     public function calculateRealWorldDistance($x, $y)
     {
         $geoService = app(GeographicService::class);
-        
+
         $centerCoords = $geoService->gameToRealWorld($this->centerX, $this->centerY);
         $targetCoords = $geoService->gameToRealWorld($x, $y);
-        
+
         return $geoService->calculateDistance(
             $centerCoords['lat'],
             $centerCoords['lon'],
@@ -119,10 +118,10 @@ class AdvancedMapViewer extends Component
     public function calculateBearing($x, $y)
     {
         $geoService = app(GeographicService::class);
-        
+
         $centerCoords = $geoService->gameToRealWorld($this->centerX, $this->centerY);
         $targetCoords = $geoService->gameToRealWorld($x, $y);
-        
+
         return $geoService->getBearing(
             $centerCoords['lat'],
             $centerCoords['lon'],
@@ -214,7 +213,7 @@ class AdvancedMapViewer extends Component
     {
         $geoService = app(GeographicService::class);
         $centerCoords = $geoService->gameToRealWorld($this->centerX, $this->centerY);
-        
+
         $villages = Village::with(['player'])
             ->where('world_id', $this->world->id)
             ->whereNotNull('latitude')
@@ -231,18 +230,18 @@ class AdvancedMapViewer extends Component
                 ];
             })
             ->toArray();
-        
+
         $villagesInRadius = $geoService->findVillagesInRadius(
             $centerCoords['lat'],
             $centerCoords['lon'],
             (float) $radiusKm,
             $villages
         );
-        
+
         $this->villages = collect($villagesInRadius)->map(function ($village) {
             $geoService = app(GeographicService::class);
             $gameCoords = $geoService->realWorldToGame($village['lat'], $village['lon']);
-            
+
             return [
                 'id' => $village['id'],
                 'name' => $village['name'],

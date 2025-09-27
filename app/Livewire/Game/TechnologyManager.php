@@ -68,7 +68,8 @@ class TechnologyManager extends Component
         } else {
             $player = Player::where('user_id', Auth::id())
                 ->with(['villages' => function ($query) {
-                    $query->withStats()
+                    $query
+                        ->withStats()
                         ->with(['resources:id,village_id,wood,clay,iron,crop']);
                 }])
                 ->first();

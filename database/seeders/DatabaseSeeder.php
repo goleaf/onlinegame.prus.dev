@@ -21,5 +21,13 @@ class DatabaseSeeder extends Seeder
 
         // Create additional test users
         User::factory(5)->create();
+        $this->call(\Database\Seeders\Tables\PlayersSeeder::class);
+        $this->call(\Database\Seeders\Tables\VillagesSeeder::class);
+        $this->call(\Database\Seeders\Tables\WorldsSeeder::class);
+        $this->call(\Database\Seeders\Tables\AchievementsSeeder::class);
+        $this->call(\Database\Seeders\Tables\BuildingTypesSeeder::class);
+        $this->call(\Database\Seeders\Tables\BuildingsSeeder::class);
+        $this->call(\Database\Seeders\Tables\QuestsSeeder::class);
+        $this->call(\Database\Seeders\Tables\UnitTypesSeeder::class);
     }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\Game\BuildingType;
 use App\Models\Game\Player;
+use App\Models\Game\UnitType;
 use App\Models\Game\Village;
 use App\Models\Game\World;
-use App\Models\Game\BuildingType;
-use App\Models\Game\UnitType;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Mateffy\Introspect\Facades\Introspect;
@@ -31,7 +31,7 @@ class IntrospectService
 
         foreach ($models as $name => $class) {
             $modelDetail = Introspect::model($class);
-            
+
             $analysis[$name] = [
                 'class' => $class,
                 'properties' => $modelDetail->properties(),
@@ -51,7 +51,7 @@ class IntrospectService
     public function getModelRelationships(string $modelClass): array
     {
         $relationships = [];
-        
+
         // Get models that have relationships with the target model
         $relatedModels = Introspect::models()
             ->whereHasRelationship(class_basename($modelClass))
@@ -238,7 +238,7 @@ class IntrospectService
 
         foreach ($models as $name => $class) {
             $modelDetail = Introspect::model($class);
-            
+
             $dependencies[$name] = [
                 'class' => $class,
                 'properties' => $modelDetail->properties(),
@@ -269,7 +269,7 @@ class IntrospectService
 
         foreach ($models as $name => $class) {
             $modelDetail = Introspect::model($class);
-            
+
             $metrics[$name] = [
                 'property_count' => count($modelDetail->properties()),
                 'fillable_count' => count($modelDetail->fillable ?? []),
@@ -288,12 +288,12 @@ class IntrospectService
     private function calculateModelComplexity($modelDetail): int
     {
         $score = 0;
-        
+
         $score += count($modelDetail->properties()) * 1;
         $score += count($modelDetail->fillable ?? []) * 2;
         $score += count($modelDetail->casts ?? []) * 3;
         $score += count($this->getModelRelationships($modelDetail->class)) * 5;
-        
+
         return $score;
     }
 }
