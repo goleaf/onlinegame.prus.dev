@@ -62,10 +62,13 @@ class GameConfigSeeder extends Seeder
         ];
 
         foreach ($configs as $config) {
-            DB::table('game_configs')->insert(array_merge($config, [
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]));
+            DB::table('game_configs')->updateOrInsert(
+                ['key' => $config['key']],
+                array_merge($config, [
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ])
+            );
         }
     }
 }

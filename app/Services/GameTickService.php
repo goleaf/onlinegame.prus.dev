@@ -196,6 +196,7 @@ class GameTickService
         // Loot resources if attacker wins
         if ($battleResult['result'] === 'attacker_wins') {
             $this->lootResources($defenderVillage, $battleResult['resources_looted']);
+            $this->addLootToAttacker($attackerVillage, $battleResult['resources_looted']);
         }
 
         // Create battle reports
