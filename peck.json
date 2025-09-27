@@ -146,7 +146,9 @@
             "supervisord",
             "pgsql",
             "configs",
-            "durations"
+            "durations",
+            "cdn",
+            "preconnect"
         ],
         "paths": [
             "vendor/",

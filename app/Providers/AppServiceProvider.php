@@ -35,6 +35,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\EnhancedCacheService::class);
         $this->app->singleton(\App\Services\EnhancedSessionService::class);
         $this->app->singleton(\App\Services\GamePerformanceOptimizer::class);
+
+        // Register Basset helper
+        $this->app->singleton(\App\Helpers\BassetHelper::class);
     }
 
     /**
