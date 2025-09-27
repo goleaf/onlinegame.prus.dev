@@ -18,7 +18,6 @@ return [
     // used to internalize assets in advance with artisan basset:internalize
     'view_paths' => [
         resource_path('views'),
-        app_path('Services'), // Include services that may use basset()
     ],
 
     // content security policy nonce

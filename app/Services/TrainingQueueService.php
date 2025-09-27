@@ -7,6 +7,7 @@ use App\Models\Game\Village;
 use App\Models\Game\UnitType;
 use App\Models\Game\Troop;
 use App\Models\Game\Resource;
+use App\Services\PerformanceMonitoringService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 

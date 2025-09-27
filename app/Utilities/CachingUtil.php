@@ -3,21 +3,20 @@
 namespace LaraUtilX\Utilities;
 
 use Illuminate\Support\Facades\Cache;
-use SmartCache\Facades\SmartCache;
 
 class CachingUtil
 {
     protected int $defaultExpiration;
     protected array $defaultTags;
 
-    public function __construct(int $defaultExpiration, array $defaultTags)
+    public function __construct(int$defaultExpiration, array $defaultTags)
     {
         $this->defaultExpiration = $defaultExpiration;
         $this->defaultTags = $defaultTags;
     }
 
     /**
-     * Cache data with SmartCache optimization.
+     * Cache data with configurable options.
      *
      * @param  string  $key
      * @param  mixed   $data
@@ -27,9 +26,13 @@ class CachingUtil
      */
     public function cache(string $key, mixed $data, int $minutes = null, array $tags = null)
     {
-        $minutes = $minutes ?? $this->defaultExpiration;
+        if (Cache::getStore() instanceof \Illuminate\Cache\TaggableStore) {
+            return Cache::tags($tags)->remember($key, $minutes, function () use ($data) {
+                return $data;
+            });
+        }
 
-        return SmartCache::remember($key, now()->addMinutes($minutes), function () use ($data) {
+        return Cache::remember($key, $minutes, function () use ($data) {
             return $data;
         });
     }

@@ -15,7 +15,7 @@ use function sbamtr\LaravelQueryEnrich\c;
 
 class Technology extends Model implements Auditable
 {
-    use HasTaxonomy, HasReference, Lift, AuditableTrait;
+    use HasTaxonomy, Lift, AuditableTrait;
 
     protected $fillable = [
         'name',

@@ -2,12 +2,12 @@
 
 namespace LaraUtilX\Utilities;
 
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-use LaraUtilX\Enums\LogLevel;
+use Illuminate\Support\Facades\Config;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use LaraUtilX\Enums\LogLevel;
 
 class LoggingUtil
 {
@@ -29,11 +29,12 @@ class LoggingUtil
             $logPath = storage_path('logs/custom.log');
             $handler = new StreamHandler($logPath, Logger::DEBUG);
             $handler->setFormatter(new JsonFormatter());
-
+            
+            
             self::$customLogger = new Logger('custom');
             self::$customLogger->pushHandler($handler);
         }
-
+        
         return self::$customLogger;
     }
 
@@ -50,7 +51,7 @@ class LoggingUtil
         $logger = self::getLogger($channel);
         $context['timestamp'] = now()->toDateTimeString();
         $context['env'] = Config::get('app.env');
-
+        
         $logger->{$level->value}($message, $context);
     }
 

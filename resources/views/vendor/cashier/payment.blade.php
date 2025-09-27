@@ -6,10 +6,10 @@
 
     <title>{{ __('Payment Confirmation') }} - {{ config('app.name', 'Laravel') }}</title>
 
-    <link href="{{ basset('https://cdn.jsdelivr.net/npm/tailwindcss@^2/dist/tailwind.min.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 
-    <script src="{{ basset('https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js') }}"></script>
-    <script src="{{ basset('https://js.stripe.com/v3') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
+    <script src="https://js.stripe.com/v3"></script>
 </head>
 <body class="font-sans text-gray-600 bg-gray-100 leading-normal p-4 h-full">
     <div id="app" class="h-full md:flex md:justify-center md:items-center">

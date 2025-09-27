@@ -24,58 +24,12 @@ return [
         /*
          * API version.
          */
-        'version' => env('API_VERSION', '1.0.0'),
+        'version' => env('API_VERSION', '0.0.1'),
 
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => 'Online Game API - A comprehensive REST API for managing game players, villages, and game mechanics. This API provides complete functionality for game management including:
-
-## Core Features
-- **Player Management**: Complete CRUD operations for game players
-- **Village Management**: Village creation, updates, and resource management  
-- **Building System**: Building upgrades and construction management
-- **AI Integration**: AI-powered content generation for names, descriptions, and strategies
-- **System Management**: Health monitoring, configuration, and cache management
-- **Larautilx Integration**: Advanced utilities for caching, filtering, and pagination
-- **Artifact System**: Powerful items with server-wide effects and bonuses
-- **Message System**: Private and alliance messaging with bulk operations
-- **Alliance System**: Guild management, diplomacy, and war coordination
-- **Battle System**: Combat reports, statistics, and war battles
-- **Quest & Achievement System**: Player progression and milestone tracking
-- **Report System**: Battle reports, game events, and activity tracking
-- **Notification System**: Real-time alerts and game notifications
-- **Authentication**: Secure API access with Laravel Sanctum tokens
-
-## API Endpoints
-- **136+ Endpoints** across 15 main categories
-- **RESTful Design** following industry best practices
-- **Comprehensive Documentation** with examples and error handling
-- **Real-time Capabilities** for game updates and notifications
-
-All endpoints require authentication via Bearer token.',
-        
-        /*
-         * Contact information
-         */
-        'contact' => [
-            'name' => 'Game API Support',
-            'email' => 'api@game.example.com',
-            'url' => 'https://game.example.com/support',
-        ],
-        
-        /*
-         * License information
-         */
-        'license' => [
-            'name' => 'MIT',
-            'url' => 'https://opensource.org/licenses/MIT',
-        ],
-        
-        /*
-         * Terms of service
-         */
-        'terms_of_service' => 'https://game.example.com/terms',
+        'description' => '',
     ],
 
     /*
@@ -85,12 +39,12 @@ All endpoints require authentication via Bearer token.',
         /*
          * Define the title of the documentation's website. App name is used when this config is `null`.
          */
-        'title' => 'Online Game API Documentation',
+        'title' => null,
 
         /*
          * Define the theme of the documentation. Available options are `light`, `dark`, and `system`.
          */
-        'theme' => 'dark',
+        'theme' => 'light',
 
         /*
          * Hide the `Try It` feature. Enabled by default.
@@ -150,7 +104,7 @@ All endpoints require authentication via Bearer token.',
 
     'middleware' => [
         'web',
-        // RestrictedDocsAccess::class, // Commented out for development access
+        RestrictedDocsAccess::class,
     ],
 
     'extensions' => [],

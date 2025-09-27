@@ -2,6 +2,7 @@
 
 namespace LaraUtilX\Utilities;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 
 class ConfigUtil
@@ -17,15 +18,13 @@ class ConfigUtil
     {
         $filePath = $path ? $path : config('app');
 
-        if ($filePath == config('app')) {
+        if($filePath == config('app')) {
             $settings = $this->getAllAppSettings();
-
             return $settings[$key] ?? null;
         }
 
         if (Storage::exists($filePath)) {
             $settingsJson = Storage::get($filePath);
-
             return json_decode($settingsJson, true);
         }
 
@@ -60,6 +59,7 @@ class ConfigUtil
         $filePath = storage_path('app/config/settings.json');
         Storage::put($filePath, json_encode($settings));
     }
+
 
     /**
      * Get all application settings.
