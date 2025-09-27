@@ -32,8 +32,8 @@ class GeographicAnalysisServiceTest extends TestCase
         $this->assertEquals(50.0, $bounds['south']);
         $this->assertEquals(8.4, $bounds['east']);
         $this->assertEquals(8.0, $bounds['west']);
-        $this->assertEquals(50.2, $bounds['center_lat']);
-        $this->assertEquals(8.2, $bounds['center_lon']);
+        $this->assertEqualsWithDelta(50.2, $bounds['center_lat'], 0.0001);
+        $this->assertEqualsWithDelta(8.2, $bounds['center_lon'], 0.0001);
     }
 
     public function test_calculate_area()

@@ -147,9 +147,9 @@ trait GameValidationTrait
     protected function validateAllianceData(array $data)
     {
         $rules = [
-            'name' => 'required|string|max:255|unique:alliances,name',
-            'tag' => 'required|string|max:10|unique:alliances,tag',
-            'description' => 'nullable|string|max:1000',
+            'name' => ['required', 'string', 'max:255', 'unique:alliances,name', new Clean],
+            'tag' => ['required', 'string', 'max:10', 'unique:alliances,tag', new Clean],
+            'description' => ['nullable', 'string', 'max:1000', new Clean],
             'world_id' => 'required|exists:worlds,id',
         ];
 

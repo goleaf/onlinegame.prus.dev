@@ -53,11 +53,16 @@ class RabbitMQDemo extends Component
             [
                 'result' => 'attacker_wins',
                 'demo' => true,
-                'timestamp' => now()->toISOString()
+                'timestamp' => now()->toISOString(),
+                'defensive_bonus' => 0.12,
+                'battle_power' => [
+                    'attacker' => 1800,
+                    'defender' => 1500
+                ]
             ]
         );
 
-        $this->addMessage('Battle result event published successfully!');
+        $this->addMessage('Battle result event with defensive bonuses published successfully!');
     }
 
     public function publishResourceUpdate()

@@ -28,6 +28,7 @@ class Alliance extends Model implements Auditable
         'is_active',
         'created_at',
         'updated_at',
+        'reference_number',
     ];
 
     protected $casts = [
