@@ -57,7 +57,7 @@ class UpdaterComponent extends Component
         try {
             $this->systemInfo = $this->updaterService->getSystemInfo();
         } catch (\Exception $e) {
-            $this->alert('warning', 'Failed to load system information: ' . $e->getMessage());
+            session()->flash('error', 'Failed to load system information: ' . $e->getMessage());
         }
     }
 
