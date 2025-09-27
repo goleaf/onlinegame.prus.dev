@@ -6,10 +6,10 @@ use App\Models\User;
 use App\Services\LarautilxIntegrationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\FilteringUtil;
 use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\PaginationUtil;
+use SmartCache\Facades\SmartCache;
 use Livewire\Component;
 use Livewire\WithPagination;
 

@@ -63,14 +63,22 @@ class AdvancedMapViewer extends Component
         $minY = $this->centerY - $this->mapSize;
         $maxY = $this->centerY + $this->mapSize;
 
-        $query = Village::with(['player'])
+        $query = Village::with(['player:id,name,alliance_id'])
             ->where('world_id', $this->world->id)
             ->whereBetween('x_coordinate', [$minX, $maxX])
-            ->whereBetween('y_coordinate', [$minY, $maxY]);
+            ->whereBetween('y_coordinate', [$minY, $maxY])
+            ->selectRaw('
+                villages.*,
+                (SELECT COUNT(*) FROM buildings WHERE village_id = villages.id) as building_count,
+                (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as troop_count,
+                (SELECT SUM(wood + clay + iron + crop) FROM resources WHERE village_id = villages.id) as total_resources,
+                SQRT(POW(x_coordinate - ?, 2) + POW(y_coordinate - ?, 2)) as distance_from_center
+            ', [$this->centerX, $this->centerY]);
 
         // Apply radius filter if set
         if ($this->radiusFilter > 0) {
-            $query->withinRadius($this->centerX, $this->centerY, $this->radiusFilter);
+            $query->whereRaw('SQRT(POW(x_coordinate - ?, 2) + POW(y_coordinate - ?, 2)) <= ?', 
+                [$this->centerX, $this->centerY, $this->radiusFilter]);
         }
 
         // Apply elevation filter if set
@@ -79,6 +87,7 @@ class AdvancedMapViewer extends Component
         }
 
         $this->villages = $query
+            ->orderBy('distance_from_center')
             ->get()
             ->map(function ($village) {
                 $geoService = app(GeographicService::class);
@@ -92,15 +101,17 @@ class AdvancedMapViewer extends Component
                     'player_name' => $village->player->name,
                     'population' => $village->population,
                     'is_capital' => $village->is_capital,
-                    'distance' => $this->calculateDistance($village->x_coordinate, $village->y_coordinate),
+                    'distance' => $village->distance_from_center,
                     'real_world_coords' => $coords,
                     'geohash' => $village->geohash,
                     'elevation' => $village->elevation,
                     'bearing' => $this->calculateBearing($village->x_coordinate, $village->y_coordinate),
                     'real_world_distance' => $this->calculateRealWorldDistance($village->x_coordinate, $village->y_coordinate),
+                    'building_count' => $village->building_count ?? 0,
+                    'troop_count' => $village->troop_count ?? 0,
+                    'total_resources' => $village->total_resources ?? 0,
                 ];
-            })
-            ->sortBy('distance');
+            });
     }
 
     public function calculateDistance($x, $y)

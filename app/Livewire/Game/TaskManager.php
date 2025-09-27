@@ -410,7 +410,7 @@ class TaskManager extends Component
             ]);
 
             // Generate reference number for the task
-            $task->generateReferenceNumber();
+            $task->generateReference();
 
             $this->loadTasks();
             $this->addNotification("Task '{$task->title}' started", 'success');
