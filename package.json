@@ -9,7 +9,11 @@
         "format:check": "./pretty-php.phar app database tests --check",
         "format:app": "./pretty-php.phar app",
         "format:database": "./pretty-php.phar database",
-        "format:tests": "./pretty-php.phar tests"
+        "format:tests": "./pretty-php.phar tests",
+        "peck": "./vendor/bin/peck",
+        "peck:check": "./vendor/bin/peck --check",
+        "spell-check": "./vendor/bin/peck",
+        "spell-fix": "./vendor/bin/peck --fix"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

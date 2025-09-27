@@ -365,27 +365,6 @@ class WorldMap extends Component
         ];
     }
 
-    public function searchVillages()
-    {
-        if (empty($this->searchQuery)) {
-            $this->highlightedVillages = [];
-
-            return;
-        }
-
-        $villages = Village::where('world_id', $this->world->id)
-            ->where(function ($query) {
-                $query
-                    ->where('name', 'like', '%' . $this->searchQuery . '%')
-                    ->orWhereHas('player', function ($q) {
-                        $q->where('name', 'like', '%' . $this->searchQuery . '%');
-                    });
-            })
-            ->get();
-
-        $this->highlightedVillages = $villages->pluck('id')->toArray();
-        $this->addNotification('Found ' . $villages->count() . ' villages matching "' . $this->searchQuery . '"', 'info');
-    }
 
     public function filterByAlliance($allianceId)
     {
