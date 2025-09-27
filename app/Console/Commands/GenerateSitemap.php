@@ -89,7 +89,7 @@ class GenerateSitemap extends Command
         File::put($outputPath, $xml);
 
         $this->info("Sitemap generated successfully at: {$outputPath}");
-        $this->info('Total URLs: ' . (count($staticPages) + $worlds->count()));
+        $this->info('Total URLs: ' . count($staticPages));
 
         return 0;
     }
