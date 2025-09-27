@@ -32,7 +32,7 @@ class SystemController extends Controller
     /**
      * Get system configuration
      */
-    public function getSystemConfig(Request $request)
+    public function config(Request $request)
     {
         try {
             $allowedParams = ['section', 'key', 'include_app'];
