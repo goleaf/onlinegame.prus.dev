@@ -555,8 +555,8 @@ class GameApiController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'radius' => 'nullable|integer|min:1|max:1000',
-            'center_lat' => 'nullable|numeric|between:-90,90',
-            'center_lon' => 'nullable|numeric|between:-180,180',
+            'center_lat' => ['nullable', new Latitude()],
+            'center_lon' => ['nullable', new Longitude()],
         ]);
 
         if ($validator->fails()) {
