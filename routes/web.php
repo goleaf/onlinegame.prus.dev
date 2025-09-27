@@ -12,6 +12,7 @@
  */
 
 use App\Http\Controllers\Game\GameController;
+use App\Models\User;
 
 // Redirect root to login
 Route::get('/', function () {
