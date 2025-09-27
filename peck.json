@@ -145,7 +145,8 @@
             "zxcvbn",
             "supervisord",
             "pgsql",
-            "configs"
+            "configs",
+            "durations"
         ],
         "paths": [
             "vendor/",
