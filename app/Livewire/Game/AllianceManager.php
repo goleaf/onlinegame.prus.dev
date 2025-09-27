@@ -72,11 +72,13 @@ class AllianceManager extends Component
     ];
 
     public $messageForm = [
-        'type' => 'general',
-        'title' => '',
-        'content' => '',
+        'message_type' => 'general',
+        'subject' => '',
+        'body' => '',
+        'priority' => 'normal',
         'is_pinned' => false,
-        'is_important' => false,
+        'is_announcement' => false,
+        'expires_at' => null,
     ];
 
     public $warForm = [
