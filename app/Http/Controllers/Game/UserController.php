@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\LarautilxIntegrationService;
+use App\Traits\GameValidationTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Intervention\Validation\Rules\Username;
+use JonPurvis\Squeaky\Rules\Clean;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\FeatureToggleUtil;
 use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
+use Propaganistas\LaravelPhone\Rules\Phone;
 use Ziming\LaravelZxcvbn\Rules\ZxcvbnRule;
 
 class UserController extends CrudController
