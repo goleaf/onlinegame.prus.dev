@@ -29,8 +29,8 @@ class GameSeoService
             ->keywords($config['default_keywords'])
             ->images($this->getOptimizedImages([
                 $config['default_image'],
-                'img/travian/village-preview.jpg',
-                'img/travian/world-map.jpg'
+                'img/travian/village-preview.svg',
+                'img/travian/world-map.svg'
             ]))
             ->twitterEnabled($config['twitter']['enabled'])
             ->twitterSite($config['twitter']['site'])

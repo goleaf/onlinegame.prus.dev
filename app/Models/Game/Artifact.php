@@ -33,6 +33,7 @@ class Artifact extends Model
         'expires_at',
         'is_server_wide',
         'is_unique',
+        'reference_number',
     ];
 
     protected $casts = [
@@ -322,11 +323,8 @@ class Artifact extends Model
 
     public function removeEffect(array $effect): void
     {
-        // Deactivate the ArtifactEffect record
-        $this->artifactEffects()
-            ->where('effect_type', $effect['type'])
-            ->where('is_active', true)
-            ->update(['is_active' => false]);
+        // Remove the effect (implementation depends on how effects are stored)
+        // This would typically involve updating the affected entities
     }
 
     public function damage(int $amount): void
@@ -392,17 +390,6 @@ class Artifact extends Model
 
     public function getEffectValue(string $effectType): float
     {
-        // Get active effect from ArtifactEffect records
-        $activeEffect = $this->artifactEffects()
-            ->where('effect_type', $effectType)
-            ->where('is_active', true)
-            ->first();
-
-        if ($activeEffect) {
-            return $activeEffect->magnitude;
-        }
-
-        // Fallback to legacy effects array
         if (empty($this->effects)) {
             return 0;
         }
