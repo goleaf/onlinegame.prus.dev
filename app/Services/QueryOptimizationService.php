@@ -12,6 +12,7 @@ class QueryOptimizationService
 {
     /**
      * Apply conditional filters using when() method
+     * @deprecated Use eloquent filtering instead
      */
     public static function applyConditionalFilters(Builder $query, array $filters): Builder
     {
@@ -23,6 +24,18 @@ class QueryOptimizationService
                     return $q->where($callback);
                 });
             }
+        }
+
+        return $query;
+    }
+
+    /**
+     * Apply eloquent filters to a query
+     */
+    public static function applyEloquentFilters(Builder $query, array $filters): Builder
+    {
+        if (!empty($filters) && method_exists($query->getModel(), 'filter')) {
+            return $query->filter($filters);
         }
 
         return $query;

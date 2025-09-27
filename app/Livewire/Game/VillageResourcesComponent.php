@@ -56,4 +56,34 @@ class VillageResourcesComponent extends Component
     {
         return $this->resources->getLeastAbundantResource();
     }
+
+    public function getResourceEfficiencyProperty()
+    {
+        return $this->resources->getResourceEfficiency();
+    }
+
+    public function getStorageUtilizationProperty()
+    {
+        return $this->resources->getStorageUtilization();
+    }
+
+    public function getProductionRatesProperty()
+    {
+        return $this->resources->getProductionRates();
+    }
+
+    public function getResourceRecommendationsProperty()
+    {
+        return $this->resources->getResourceRecommendations();
+    }
+
+    public function getVillageCoordinatesProperty()
+    {
+        return $this->village->coordinates;
+    }
+
+    public function getPlayerStatsProperty()
+    {
+        return $this->village->player->stats;
+    }
 }

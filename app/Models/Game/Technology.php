@@ -5,11 +5,14 @@ namespace App\Models\Game;
 use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 use SmartCache\Facades\SmartCache;
+use WendellAdriel\Lift\Lift;
 
-class Technology extends Model
+class Technology extends Model implements Auditable
 {
-    use HasTaxonomy, Lift;
+    use HasTaxonomy, Lift, AuditableTrait;
 
     protected $fillable = [
         'name',
