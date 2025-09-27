@@ -133,26 +133,21 @@ class UserManagement extends Component
     public function loadStatistics()
     {
         try {
-            $integrationService = app(LarautilxIntegrationService::class);
-
-            $this->statistics = $integrationService->cacheGameData(
-                'user_management_stats',
-                function() {
-                    return [
-                        'total_users' => User::count(),
-                        'users_with_players' => User::withGamePlayers()->count(),
-                        'active_game_users' => User::activeGameUsers()->count(),
-                        'online_users' => User::onlineUsers()->count(),
-                        'users_by_tribe' => User::withGamePlayers()
-                            ->join('players', 'users.id', '=', 'players.user_id')
-                            ->selectRaw('players.tribe, COUNT(*) as count')
-                            ->groupBy('players.tribe')
-                            ->pluck('count', 'tribe'),
-                        'recent_registrations' => User::where('created_at', '>=', now()->subDays(7))->count(),
-                    ];
-                },
-                300 // 5 minutes cache
-            );
+            // Use SmartCache for user statistics with automatic optimization
+            $this->statistics = SmartCache::remember('user_management_stats', now()->addMinutes(5), function () {
+                return [
+                    'total_users' => User::count(),
+                    'users_with_players' => User::withGamePlayers()->count(),
+                    'active_game_users' => User::activeGameUsers()->count(),
+                    'online_users' => User::onlineUsers()->count(),
+                    'users_by_tribe' => User::withGamePlayers()
+                        ->join('players', 'users.id', '=', 'players.user_id')
+                        ->selectRaw('players.tribe, COUNT(*) as count')
+                        ->groupBy('players.tribe')
+                        ->pluck('count', 'tribe'),
+                    'recent_registrations' => User::where('created_at', '>=', now()->subDays(7))->count(),
+                ];
+            });
 
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading user statistics', [
