@@ -219,30 +219,38 @@ class Player extends Model implements Auditable
     public static function getCachedPlayers($worldId = null, $filters = [])
     {
         $cacheKey = "players_{$worldId}_" . md5(serialize($filters));
-
+        
         return SmartCache::remember($cacheKey, now()->addMinutes(10), function () use ($worldId, $filters) {
             $query = static::active()->withStats();
-
+            
+            // Build eloquent filters array
+            $eloquentFilters = [];
+            
             if ($worldId) {
-                $query->byWorld($worldId);
+                $eloquentFilters[] = ['target' => 'world_id', 'type' => '$eq', 'value' => $worldId];
             }
-
+            
             if (isset($filters['tribe'])) {
-                $query->byTribe($filters['tribe']);
+                $eloquentFilters[] = ['target' => 'tribe', 'type' => '$eq', 'value' => $filters['tribe']];
             }
-
+            
             if (isset($filters['alliance'])) {
-                $query->byAlliance($filters['alliance']);
+                $eloquentFilters[] = ['target' => 'alliance_id', 'type' => '$eq', 'value' => $filters['alliance']];
             }
-
+            
             if (isset($filters['online'])) {
-                $query->online();
+                $eloquentFilters[] = ['target' => 'is_online', 'type' => '$eq', 'value' => true];
             }
-
+            
             if (isset($filters['search'])) {
-                $query->search($filters['search']);
+                $eloquentFilters[] = ['target' => 'name', 'type' => '$like', 'value' => $filters['search']];
             }
-
+            
+            // Apply eloquent filtering
+            if (!empty($eloquentFilters)) {
+                $query = $query->filter($eloquentFilters);
+            }
+            
             return $query->get();
         });
     }
