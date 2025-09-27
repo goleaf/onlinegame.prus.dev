@@ -120,15 +120,4 @@ return [
             'memory_threshold' => 1024 * 100, // 100KB
         ],
     ],
-    'drivers' => [
-        'redis' => null, // Use global settings
-        'file' => [
-            'compression' => true,
-            'chunking' => true,
-        ],
-        'memcached' => [
-            'compression' => false, // Memcached has its own compression
-            'chunking' => true,
-        ],
-    ],
 ]; 

@@ -209,7 +209,7 @@ class BattleManager extends Component
             ]);
 
             // Generate reference number for the movement
-            $movement->generateReferenceNumber();
+            $movement->generateReference();
 
             // Update troop counts
             foreach ($this->attackingTroops as $troop) {
