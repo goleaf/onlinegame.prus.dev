@@ -83,10 +83,10 @@
         <!-- Game Header -->
         <div class="game-header">
             <div class="d-flex justify-content-between align-items-center">
-                <h1 class="mb-0">Travian Game</h1>
+                <h1 class="mb-0">@text('game.title', 'Travian Game')</h1>
                 <div class="d-flex gap-3">
-                    <span>Welcome, {{ auth()->user()->name }}</span>
-                    <a href="{{ route('logout') }}" class="btn btn-outline-light btn-sm">Logout</a>
+                    <span>@text('game.welcome', 'Welcome'), {{ auth()->user()->name }}</span>
+                    <a href="{{ route('logout') }}" class="btn btn-outline-light btn-sm">@text('game.logout', 'Logout')</a>
                 </div>
             </div>
         </div>
@@ -95,19 +95,19 @@
         <div class="resource-bar">
             <div class="resource-item">
                 <img src="{{ asset('game/wood.png') }}" alt="Wood" class="resource-icon">
-                <span>Wood: 1000</span>
+                <span>@text('game.resources.wood', 'Wood'): 1000</span>
             </div>
             <div class="resource-item">
                 <img src="{{ asset('game/clay.png') }}" alt="Clay" class="resource-icon">
-                <span>Clay: 1000</span>
+                <span>@text('game.resources.clay', 'Clay'): 1000</span>
             </div>
             <div class="resource-item">
                 <img src="{{ asset('game/iron.png') }}" alt="Iron" class="resource-icon">
-                <span>Iron: 1000</span>
+                <span>@text('game.resources.iron', 'Iron'): 1000</span>
             </div>
             <div class="resource-item">
                 <img src="{{ asset('game/crop.png') }}" alt="Crop" class="resource-icon">
-                <span>Crop: 1000</span>
+                <span>@text('game.resources.crop', 'Crop'): 1000</span>
             </div>
         </div>
         

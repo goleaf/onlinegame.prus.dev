@@ -28,7 +28,7 @@ class GeographicService
         $distance->setFrom($coord1);
         $distance->setTo($coord2);
 
-        return $distance->in($unit);
+        return (float) $distance->in($unit);
     }
 
     /**

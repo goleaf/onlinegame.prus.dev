@@ -7,15 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use MohamedSaid\Notable\Traits\HasNotables;
-use NunoMaduro\Essentials\Concerns\StrictModel;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class User extends Authenticatable
+class User extends Authenticatable implements Auditable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
     use Notifiable;
     use HasNotables;
-    use StrictModel;
+    use AuditableTrait;
 
     /**
      * The attributes that are mass assignable.

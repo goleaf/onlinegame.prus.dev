@@ -97,7 +97,9 @@ class ResourceManager extends Component
         }
 
         // Load resources with optimized query
-        $villageResources = $this->village->resources()
+        $villageResources = $this
+            ->village
+            ->resources()
             ->selectRaw('
                 resources.*,
                 (SELECT SUM(amount) FROM resources r2 WHERE r2.village_id = resources.village_id) as total_resources,
@@ -131,12 +133,22 @@ class ResourceManager extends Component
             return;
         }
 
-        // Base production rates (would be calculated from building levels)
+        // Load production rates from resources with optimized query
+        $villageResources = $this
+            ->village
+            ->resources()
+            ->selectRaw('
+                resources.*,
+                (SELECT AVG(production_rate) FROM resources r2 WHERE r2.village_id = resources.village_id) as avg_production_rate,
+                (SELECT MAX(production_rate) FROM resources r3 WHERE r3.village_id = resources.village_id) as max_production_rate
+            ')
+            ->get();
+
         $this->productionRates = [
-            'wood' => 10,
-            'clay' => 10,
-            'iron' => 10,
-            'crop' => 10,
+            'wood' => $villageResources->where('type', 'wood')->first()->production_rate ?? 10,
+            'clay' => $villageResources->where('type', 'clay')->first()->production_rate ?? 10,
+            'iron' => $villageResources->where('type', 'iron')->first()->production_rate ?? 10,
+            'crop' => $villageResources->where('type', 'crop')->first()->production_rate ?? 10,
         ];
     }
 

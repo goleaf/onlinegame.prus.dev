@@ -105,8 +105,8 @@ class StatisticsViewer extends Component
     {
         try {
             // Use SmartCache for player data with automatic optimization
-            $cacheKey = "world_{$this->world->id}_player_" . Auth::id() . "_data";
-            
+            $cacheKey = "world_{$this->world->id}_player_" . Auth::id() . '_data';
+
             $this->player = SmartCache::remember($cacheKey, now()->addMinutes(10), function () {
                 return Player::where('user_id', Auth::id())
                     ->where('world_id', $this->world->id)

@@ -23,6 +23,12 @@ class BuildingsSeeder extends Seeder
             
         ];
         
-        DB::table("buildings")->insert($dataTables);
+        // Use updateOrInsert to avoid duplicate key errors
+        foreach ($dataTables as $data) {
+            DB::table("buildings")->updateOrInsert(
+                ['id' => $data['id']],
+                $data
+            );
+        }
     }
 }

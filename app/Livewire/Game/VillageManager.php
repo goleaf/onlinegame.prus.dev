@@ -132,6 +132,9 @@ class VillageManager extends Component
             ->find($buildingId);
         $this->calculateUpgradeCost();
         $this->showUpgradeModal = true;
+        
+        // Track building selection
+        $this->dispatch('fathom-track', name: 'building selected', value: $buildingId);
     }
 
     public function calculateUpgradeCost()
@@ -207,6 +210,10 @@ class VillageManager extends Component
 
             $this->showUpgradeModal = false;
             $this->loadVillageData();
+
+            // Track building upgrade
+            $totalCost = array_sum($this->upgradeCost);
+            $this->dispatch('fathom-track', name: 'building upgrade started', value: $totalCost);
 
             $this->dispatch('buildingUpgradeStarted', [
                 'building' => $this->selectedBuilding->name,

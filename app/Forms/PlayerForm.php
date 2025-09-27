@@ -13,7 +13,7 @@ class PlayerForm extends Formello
     {
         return [
             'method' => 'POST',
-            'action' => route('players.store'),
+            'action' => route('game.api.players.store'),
         ];
     }
 
@@ -21,7 +21,7 @@ class PlayerForm extends Formello
     {
         return [
             'method' => 'PATCH',
-            'action' => route('players.update', $this->model->id),
+            'action' => route('game.api.players.update', $this->model->id),
         ];
     }
 

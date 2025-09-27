@@ -16,7 +16,7 @@ class VillageController extends CrudController
 
     protected Model $model;
 
-    protected $validationRules = [
+    protected array $validationRules = [
         'name' => 'required|string|max:255',
         'player_id' => 'required|exists:players,id',
         'world_id' => 'required|exists:worlds,id',
@@ -26,9 +26,9 @@ class VillageController extends CrudController
         'culture_points' => 'integer|min:0',
     ];
 
-    protected $searchableFields = ['name'];
-    protected $relationships = ['player', 'world', 'buildings', 'troops', 'resources'];
-    protected $perPage = 15;
+    protected array $searchableFields = ['name'];
+    protected array $relationships = ['player', 'world', 'buildings', 'troops', 'resources'];
+    protected int $perPage = 15;
 
     public function __construct()
     {

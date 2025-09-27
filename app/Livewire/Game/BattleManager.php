@@ -99,6 +99,9 @@ class BattleManager extends Component
         });
 
         $this->showBattleModal = true;
+        
+        // Track target selection
+        $this->dispatch('fathom-track', name: 'battle target selected', value: $villageId);
     }
 
     public function addTroopToAttack($troopId, $count)
@@ -187,6 +190,10 @@ class BattleManager extends Component
                 'reference_number' => $movement->reference_number,
                 'arrives_at' => $movement->arrives_at
             ])->label('BattleManager Attack Success');
+
+            // Track attack launch
+            $totalAttackPower = array_sum(array_column($this->attackingTroops, 'attack'));
+            $this->dispatch('fathom-track', name: 'attack launched', value: $totalAttackPower);
 
             $this->dispatch('attackLaunched', [
                 'target' => $this->selectedTarget->name,

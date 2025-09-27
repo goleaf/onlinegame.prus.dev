@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('building_queues', function (Blueprint $table) {
-            //
+            $table->string('reference_number')->unique()->index()->after('id');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('building_queues', function (Blueprint $table) {
-            //
+            $table->dropColumn('reference_number');
         });
     }
 };

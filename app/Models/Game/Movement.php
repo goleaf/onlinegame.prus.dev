@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Movement extends Model
+class Movement extends Model implements Auditable
 {
-    use HasFactory, HasReference;
+    use HasFactory, HasReference, AuditableTrait;
 
     protected $fillable = [
         'player_id',

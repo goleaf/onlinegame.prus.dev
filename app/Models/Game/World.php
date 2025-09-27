@@ -11,7 +11,6 @@ class World extends Model
 {
     use HasFactory;
     use HasNotables;
-    use StrictModel;
 
     protected $fillable = [
         'name',

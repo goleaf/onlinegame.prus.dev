@@ -63,6 +63,7 @@ ds('Launching attack', [
 // View task completion details
 ds('Task completed successfully', [
     'task_id' => $taskId,
+    'reference_number' => $task->reference_number,
     'task_title' => $task->title,
     'completed_at' => $task->completed_at,
     'rewards' => $task->rewards
@@ -150,6 +151,18 @@ ds('Creating movement', [
 - **Geohash**: Geographic hash for location indexing
 - **Travel Times**: Calculated using geographic service
 - **Coordinate Conversion**: Game ↔ Real-world mapping
+
+### Reference Numbers (New)
+- **Movement References**: MOV-YYYYMM#### format
+- **Task References**: TSK-YYYYMM#### format
+- **Battle References**: Generated for attack movements
+- **Unique Identifiers**: For tracking and debugging
+
+### Caching (New)
+- **SmartCache Integration**: Automatic query optimization
+- **Cache Keys**: Context-aware caching strategies
+- **Performance**: Reduced database load
+- **Cache Duration**: Optimized TTL for different data types
 
 ## Usage Instructions
 

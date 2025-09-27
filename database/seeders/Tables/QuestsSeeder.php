@@ -112,6 +112,12 @@ class QuestsSeeder extends Seeder
             ]
         ];
         
-        DB::table("quests")->insert($dataTables);
+        // Use updateOrInsert to avoid duplicate key errors
+        foreach ($dataTables as $data) {
+            DB::table("quests")->updateOrInsert(
+                ['id' => $data['id']],
+                $data
+            );
+        }
     }
 }

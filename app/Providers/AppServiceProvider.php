@@ -12,7 +12,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Enhanced dependency injection for Laravel 12.29.0+ features
+        $this->app->singleton('game.cache', function ($app) {
+            return $app->make('cache.store');
+        });
+
+        $this->app->singleton('game.session', function ($app) {
+            return $app->make('session.store');
+        });
+
+        // Auto-resolve common game services
+        $this->app->bindIf(\App\Services\GameMechanicsService::class, function ($app) {
+            return new \App\Services\GameMechanicsService(
+                $app->make('game.cache'),
+                $app->make('game.session')
+            );
+        });
     }
 
     /**
@@ -29,5 +44,15 @@ class AppServiceProvider extends ServiceProvider
 
         // Prevent accessing missing relationships silently
         Model::preventAccessingMissingAttributes(!$this->app->isProduction());
+
+        // Enhanced debug page configuration for Laravel 12.29.0+
+        if ($this->app->environment('local', 'development')) {
+            // Enable enhanced debug features
+            config(['app.debug' => true]);
+            
+            // Configure enhanced error reporting
+            error_reporting(E_ALL);
+            ini_set('display_errors', '1');
+        }
     }
 }

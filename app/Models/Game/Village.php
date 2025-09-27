@@ -8,13 +8,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;
-use NunoMaduro\Essentials\Concerns\StrictModel;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Village extends Model
+class Village extends Model implements Auditable
 {
     use HasFactory;
     use HasNotables;
-    use StrictModel;
+    use AuditableTrait;
 
     protected $fillable = [
         'player_id',

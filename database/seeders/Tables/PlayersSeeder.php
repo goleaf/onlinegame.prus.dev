@@ -838,6 +838,12 @@ class PlayersSeeder extends Seeder
             ]
         ];
         
-        DB::table("players")->insert($dataTables);
+        // Use updateOrInsert to avoid duplicate key errors
+        foreach ($dataTables as $data) {
+            DB::table("players")->updateOrInsert(
+                ['id' => $data['id']],
+                $data
+            );
+        }
     }
 }

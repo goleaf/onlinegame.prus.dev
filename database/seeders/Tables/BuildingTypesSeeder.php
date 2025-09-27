@@ -37,6 +37,12 @@ class BuildingTypesSeeder extends Seeder
             ]
         ];
         
-        DB::table("building_types")->insert($dataTables);
+        // Use updateOrInsert to avoid duplicate key errors
+        foreach ($dataTables as $data) {
+            DB::table("building_types")->updateOrInsert(
+                ['id' => $data['id']],
+                $data
+            );
+        }
     }
 }

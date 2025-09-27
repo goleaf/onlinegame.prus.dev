@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\FilteringUtil;
 use LaraUtilX\Utilities\PaginationUtil;
-use SmartCache\Facades\SmartCache;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
+use SmartCache\Facades\SmartCache;
 
 class TaskManager extends Component
 {
@@ -116,7 +116,7 @@ class TaskManager extends Component
             'world_name' => $this->world?->name,
             'user_id' => Auth::id(),
             'player_id' => $player?->id,
-            'player_villages' => $player?->villages->map(function($village) {
+            'player_villages' => $player?->villages->map(function ($village) {
                 return [
                     'village_name' => $village->name,
                     'coordinates' => "({$village->x_coordinate}|{$village->y_coordinate})",
@@ -218,7 +218,7 @@ class TaskManager extends Component
 
         // Use SmartCache for task statistics with automatic optimization
         $statsCacheKey = "world_{$this->world->id}_player_{$this->player->id}_task_stats";
-        
+
         $taskStats = SmartCache::remember($statsCacheKey, now()->addMinutes(5), function () {
             // Use single query with selectRaw to get all task stats at once
             return Task::where('world_id', $this->world->id)
@@ -246,16 +246,20 @@ class TaskManager extends Component
         $completedTasksCacheKey = "world_{$this->world->id}_player_{$this->player->id}_completed_tasks";
         $this->completedTasks = SmartCache::remember($completedTasksCacheKey, now()->addMinutes(5), function () {
             return Task::byWorld($this->world->id)
-            ->byPlayer($this->player->id)
-            ->completed()
-            ->withStats()
-            ->get();
+                ->byPlayer($this->player->id)
+                ->completed()
+                ->withStats()
+                ->get();
+        });
 
-        $this->availableTasks = Task::byWorld($this->world->id)
-            ->byPlayer($this->player->id)
-            ->available()
-            ->withStats()
-            ->get();
+        $availableTasksCacheKey = "world_{$this->world->id}_player_{$this->player->id}_available_tasks";
+        $this->availableTasks = SmartCache::remember($availableTasksCacheKey, now()->addMinutes(5), function () {
+            return Task::byWorld($this->world->id)
+                ->byPlayer($this->player->id)
+                ->available()
+                ->withStats()
+                ->get();
+        });
 
         // Laradumps debugging for loaded data
         ds('Task data loaded', [
@@ -404,14 +408,14 @@ class TaskManager extends Component
                 'status' => 'active',
                 'started_at' => now(),
             ]);
-            
+
             // Generate reference number for the task
             $task->generateReferenceNumber();
-            
+
             $this->loadTasks();
             $this->addNotification("Task '{$task->title}' started", 'success');
             $this->dispatch('taskStarted', ['taskId' => $taskId]);
-            
+
             ds('Task started successfully', [
                 'task_id' => $taskId,
                 'reference_number' => $task->reference_number,

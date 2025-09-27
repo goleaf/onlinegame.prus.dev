@@ -23,6 +23,12 @@ class AchievementsSeeder extends Seeder
             
         ];
         
-        DB::table("achievements")->insert($dataTables);
+        // Use updateOrInsert to avoid duplicate key errors
+        foreach ($dataTables as $data) {
+            DB::table("achievements")->updateOrInsert(
+                ['id' => $data['id']],
+                $data
+            );
+        }
     }
 }

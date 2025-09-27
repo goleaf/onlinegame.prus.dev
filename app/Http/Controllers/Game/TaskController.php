@@ -16,7 +16,7 @@ class TaskController extends CrudController
 
     protected Model $model;
 
-    protected $validationRules = [
+    protected array $validationRules = [
         'title' => 'required|string|max:255',
         'description' => 'nullable|string',
         'type' => 'required|string|in:building,combat,resource,exploration,alliance',
@@ -29,9 +29,9 @@ class TaskController extends CrudController
         'player_id' => 'required|exists:players,id',
     ];
 
-    protected $searchableFields = ['title', 'description', 'type'];
-    protected $relationships = ['player', 'world'];
-    protected $perPage = 20;
+    protected array $searchableFields = ['title', 'description', 'type'];
+    protected array $relationships = ['player', 'world'];
+    protected int $perPage = 20;
 
     public function __construct()
     {

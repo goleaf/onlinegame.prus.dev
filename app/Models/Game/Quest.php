@@ -6,10 +6,11 @@ use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
+use MohamedSaid\Notable\Traits\HasNotables;
 
 class Quest extends Model
 {
-    use HasFactory, HasTaxonomy;
+    use HasFactory, HasTaxonomy, HasNotables;
 
     protected $fillable = [
         'name',

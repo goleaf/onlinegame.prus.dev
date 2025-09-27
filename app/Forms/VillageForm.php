@@ -12,7 +12,7 @@ class VillageForm extends Formello
     {
         return [
             'method' => 'POST',
-            'action' => route('villages.store'),
+            'action' => route('game.api.villages.store'),
         ];
     }
 
@@ -20,7 +20,7 @@ class VillageForm extends Formello
     {
         return [
             'method' => 'PATCH',
-            'action' => route('villages.update', $this->model->id),
+            'action' => route('game.api.villages.update', $this->model->id),
         ];
     }
 

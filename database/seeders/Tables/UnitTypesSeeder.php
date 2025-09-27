@@ -508,6 +508,12 @@ class UnitTypesSeeder extends Seeder
             ]
         ];
         
-        DB::table("unit_types")->insert($dataTables);
+        // Use updateOrInsert to avoid duplicate key errors
+        foreach ($dataTables as $data) {
+            DB::table("unit_types")->updateOrInsert(
+                ['id' => $data['id']],
+                $data
+            );
+        }
     }
 }

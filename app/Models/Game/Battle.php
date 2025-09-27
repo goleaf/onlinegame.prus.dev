@@ -5,10 +5,13 @@ namespace App\Models\Game;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Battle extends Model
+class Battle extends Model implements Auditable
 {
     use HasReference;
+    use AuditableTrait;
 
     protected $fillable = [
         'attacker_id',

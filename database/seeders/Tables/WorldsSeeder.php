@@ -67,6 +67,12 @@ class WorldsSeeder extends Seeder
             ]
         ];
         
-        DB::table("worlds")->insert($dataTables);
+        // Use updateOrInsert to avoid duplicate key errors
+        foreach ($dataTables as $data) {
+            DB::table("worlds")->updateOrInsert(
+                ['id' => $data['id']],
+                $data
+            );
+        }
     }
 }

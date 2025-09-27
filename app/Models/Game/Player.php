@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Player extends Model
+class Player extends Model implements Auditable
 {
     use HasFactory;
     use HasNotables;
-    use StrictModel;
+    use AuditableTrait;
 
     protected $fillable = [
         'user_id',

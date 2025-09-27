@@ -35,6 +35,9 @@ class Dashboard extends Component
         if ($this->villages->count() >= 1 && !$this->player->hasRole('premium')) {
             session()->flash('error', 'You need premium to create more villages!');
 
+            // Track failed village creation
+            $this->dispatch('fathom-track', name: 'village creation failed - premium required');
+
             return;
         }
 
@@ -54,10 +57,16 @@ class Dashboard extends Component
 
         $this->villages = $this->player->fresh()->villages;
         session()->flash('success', 'Village created successfully!');
+
+        // Track successful village creation
+        $this->dispatch('fathom-track', name: 'village created', value: $this->villages->count() * 100);
     }
 
     public function enterVillage($villageId)
     {
+        // Track village entry
+        $this->dispatch('fathom-track', name: 'village entered', value: $villageId);
+
         return redirect()->route('game.village', $villageId);
     }
 
