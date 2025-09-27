@@ -470,4 +470,75 @@ class BattleSimulationService
 
         return $recommendations;
     }
+
+    /**
+     * Create TroopCounts value object from array
+     */
+    private function createTroopCountsFromArray(array $troops): TroopCounts
+    {
+        $troopData = [
+            'legionnaires' => 0,
+            'praetorians' => 0,
+            'imperians' => 0,
+            'equites_legati' => 0,
+            'equites_imperatoris' => 0,
+            'equites_caesaris' => 0,
+            'battering_rams' => 0,
+            'fire_catapults' => 0,
+            'senators' => 0,
+            'settlers' => 0,
+        ];
+
+        foreach ($troops as $troop) {
+            $unitType = $troop['unit_type'] ?? '';
+            $count = $troop['count'] ?? 0;
+
+            // Map unit types to TroopCounts properties
+            switch ($unitType) {
+                case 'legionnaires':
+                    $troopData['legionnaires'] = $count;
+                    break;
+                case 'praetorians':
+                    $troopData['praetorians'] = $count;
+                    break;
+                case 'imperians':
+                    $troopData['imperians'] = $count;
+                    break;
+                case 'equites_legati':
+                    $troopData['equites_legati'] = $count;
+                    break;
+                case 'equites_imperatoris':
+                    $troopData['equites_imperatoris'] = $count;
+                    break;
+                case 'equites_caesaris':
+                    $troopData['equites_caesaris'] = $count;
+                    break;
+                case 'battering_rams':
+                    $troopData['battering_rams'] = $count;
+                    break;
+                case 'fire_catapults':
+                    $troopData['fire_catapults'] = $count;
+                    break;
+                case 'senators':
+                    $troopData['senators'] = $count;
+                    break;
+                case 'settlers':
+                    $troopData['settlers'] = $count;
+                    break;
+            }
+        }
+
+        return new TroopCounts(
+            legionnaires: $troopData['legionnaires'],
+            praetorians: $troopData['praetorians'],
+            imperians: $troopData['imperians'],
+            equitesLegati: $troopData['equites_legati'],
+            equitesImperatoris: $troopData['equites_imperatoris'],
+            equitesCaesaris: $troopData['equites_caesaris'],
+            batteringRams: $troopData['battering_rams'],
+            fireCatapults: $troopData['fire_catapults'],
+            senators: $troopData['senators'],
+            settlers: $troopData['settlers']
+        );
+    }
 }

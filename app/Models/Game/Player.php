@@ -218,9 +218,20 @@ class Player extends Model implements Auditable
      */
     public static function getCachedPlayers($worldId = null, $filters = [])
     {
+        $startTime = microtime(true);
+        
+        ds('Player: Getting cached players', [
+            'model' => 'Player',
+            'method' => 'getCachedPlayers',
+            'world_id' => $worldId,
+            'filters' => $filters,
+            'cache_key' => "players_{$worldId}_" . md5(serialize($filters)),
+            'request_time' => now()
+        ]);
+        
         $cacheKey = "players_{$worldId}_" . md5(serialize($filters));
         
-        return SmartCache::remember($cacheKey, now()->addMinutes(10), function () use ($worldId, $filters) {
+        return SmartCache::remember($cacheKey, now()->addMinutes(10), function () use ($worldId, $filters, $startTime) {
             $query = static::active()->withStats();
             
             // Build eloquent filters array
