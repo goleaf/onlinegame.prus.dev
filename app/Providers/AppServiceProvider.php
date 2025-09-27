@@ -53,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('local', 'development')) {
             // Enable enhanced debug features
             config(['app.debug' => true]);
-            
+
             // Configure enhanced error reporting
             error_reporting(E_ALL);
             ini_set('display_errors', '1');

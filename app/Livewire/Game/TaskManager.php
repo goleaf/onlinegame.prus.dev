@@ -415,7 +415,7 @@ class TaskManager extends Component
             $this->loadTasks();
             $this->addNotification("Task '{$task->title}' started", 'success');
             $this->dispatch('taskStarted', ['taskId' => $taskId]);
-            
+
             // Track task start
             $this->dispatch('fathom-track', name: 'task started', value: $taskId);
 
@@ -456,7 +456,7 @@ class TaskManager extends Component
             $this->loadTasks();
             $this->addNotification("Task '{$task->title}' completed!", 'success');
             $this->dispatch('taskCompleted', ['taskId' => $taskId]);
-            
+
             // Track task completion
             $this->dispatch('fathom-track', name: 'task completed', value: $taskId);
 

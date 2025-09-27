@@ -8,11 +8,11 @@ use App\Models\Game\UnitType;
 use App\Models\Game\Village;
 use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
-use SmartCache\Facades\SmartCache;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithPagination;
+use SmartCache\Facades\SmartCache;
 
 class TroopManager extends Component
 {

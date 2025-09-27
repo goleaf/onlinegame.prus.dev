@@ -7,11 +7,11 @@ use App\Models\Game\Player;
 use App\Models\Game\World;
 use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
-use SmartCache\Facades\SmartCache;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithPagination;
+use SmartCache\Facades\SmartCache;
 
 class AllianceManager extends Component
 {
@@ -111,7 +111,7 @@ class AllianceManager extends Component
             });
 
             // Use SmartCache for player alliance data with automatic optimization
-            $playerAllianceCacheKey = "player_" . Auth::id() . "_alliance_data";
+            $playerAllianceCacheKey = 'player_' . Auth::id() . '_alliance_data';
             $player = SmartCache::remember($playerAllianceCacheKey, now()->addMinutes(3), function () {
                 return Player::where('user_id', Auth::id())
                     ->with(['alliance' => function ($query) {

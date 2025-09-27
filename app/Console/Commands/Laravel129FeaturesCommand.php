@@ -132,7 +132,8 @@ class Laravel129FeaturesCommand extends Command
         $hasIgbinary = function_exists('igbinary_serialize');
         $hasLzf = function_exists('lzf_compress');
         
-        return $hasIgbinary && $hasLzf;
+        // igbinary is available, lzf is optional
+        return $hasIgbinary;
     }
 
     protected function checkConfiguration(): void

@@ -99,7 +99,7 @@ class BattleManager extends Component
             }
 
             $cacheKey = "village_{$villageId}_battle_target_data";
-            
+
             $this->selectedTarget = SmartCache::remember($cacheKey, now()->addMinutes(1), function () use ($villageId) {
                 return Village::with(['player:id,name', 'troops.unitType:id,name,attack_power,defense_power,speed'])
                     ->selectRaw('
@@ -117,7 +117,7 @@ class BattleManager extends Component
             }
 
             $this->showBattleModal = true;
-            
+
             // Track target selection
             $this->dispatch('fathom-track', name: 'battle target selected', value: $villageId);
 
@@ -126,10 +126,9 @@ class BattleManager extends Component
                 'target_village_name' => $this->selectedTarget->name,
                 'target_player' => $this->selectedTarget->player->name ?? 'Unknown'
             ])->label('BattleManager Target Selected');
-
         } catch (\Exception $e) {
             $this->addNotification('Error selecting target: ' . $e->getMessage(), 'error');
-            
+
             ds('Target selection error', [
                 'village_id' => $villageId,
                 'error' => $e->getMessage(),

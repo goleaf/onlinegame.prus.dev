@@ -94,7 +94,8 @@ class QuestManager extends Component
                     'description' => $taxonomy->description,
                     'meta' => $taxonomy->meta,
                 ];
-            })->toArray();
+            })
+            ->toArray();
 
         $this->questDifficulties = Taxonomy::findByType('quest_difficulty')
             ->map(function ($taxonomy) {
@@ -105,7 +106,8 @@ class QuestManager extends Component
                     'description' => $taxonomy->description,
                     'meta' => $taxonomy->meta,
                 ];
-            })->toArray();
+            })
+            ->toArray();
     }
 
     public function initializeQuestFeatures()
