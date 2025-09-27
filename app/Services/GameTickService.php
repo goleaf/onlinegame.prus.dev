@@ -198,6 +198,7 @@ class GameTickService
                 'attacking_troops' => $attackingTroops,
                 'defending_troops' => $defendingTroops,
                 'battle_power' => $battleResult['battle_power'],
+                'defensive_bonus' => $battleResult['defensive_bonus'],
             ],
             'occurred_at' => now(),
         ]);

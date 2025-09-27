@@ -42,6 +42,11 @@ Route::middleware(['auth', 'game.auth'])->group(function () {
         return view('game.advanced-map');
     })->name('game.advanced-map');
 
+    // User Management
+    Route::get('/game/users', function () {
+        return view('game.user-management');
+    })->name('game.users');
+
     // Statistics
     Route::get('/game/statistics', [GameController::class, 'statistics'])->name('game.statistics');
 
