@@ -322,8 +322,11 @@ class Artifact extends Model
 
     public function removeEffect(array $effect): void
     {
-        // Remove the effect (implementation depends on how effects are stored)
-        // This would typically involve updating the affected entities
+        // Deactivate the ArtifactEffect record
+        $this->artifactEffects()
+            ->where('effect_type', $effect['type'])
+            ->where('is_active', true)
+            ->update(['is_active' => false]);
     }
 
     public function damage(int $amount): void
