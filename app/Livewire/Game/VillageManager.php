@@ -8,6 +8,7 @@ use App\Models\Game\BuildingType;
 use App\Models\Game\Resource;
 use App\Models\Game\Village;
 use App\Services\QueryOptimizationService;
+use SmartCache\Facades\SmartCache;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -93,29 +94,43 @@ class VillageManager extends Component
         $this->isLoading = true;
 
         try {
-            $this->buildings = $this->village->buildings;
-            $this->resources = $this->village->resources;
+            // Use SmartCache for village data with automatic optimization
+            $buildingsCacheKey = "village_{$this->village->id}_buildings";
+            $this->buildings = SmartCache::remember($buildingsCacheKey, now()->addMinutes(2), function () {
+                return $this->village->buildings;
+            });
 
-            // Use optimized query for building types
-            $this->buildingTypes = BuildingType::where('is_active', true)
-                ->selectRaw('
-                    building_types.*,
-                    (SELECT COUNT(*) FROM buildings b WHERE b.building_type_id = building_types.id AND b.is_active = 1) as total_buildings,
-                    (SELECT AVG(level) FROM buildings b2 WHERE b2.building_type_id = building_types.id AND b2.is_active = 1) as avg_level
-                ')
-                ->get();
+            $resourcesCacheKey = "village_{$this->village->id}_resources";
+            $this->resources = SmartCache::remember($resourcesCacheKey, now()->addMinutes(1), function () {
+                return $this->village->resources;
+            });
 
-            // Use optimized query for building queues
-            $this->buildingQueues = $this
-                ->village
-                ->buildingQueues()
-                ->where('is_completed', false)
-                ->with('buildingType:id,name,description')
-                ->selectRaw('
-                    building_queues.*,
-                    (SELECT COUNT(*) FROM building_queues bq2 WHERE bq2.village_id = building_queues.village_id AND bq2.is_completed = 0) as total_active_queues
-                ')
-                ->get();
+            // Use SmartCache for building types with automatic optimization
+            $buildingTypesCacheKey = "building_types_active";
+            $this->buildingTypes = SmartCache::remember($buildingTypesCacheKey, now()->addMinutes(15), function () {
+                return BuildingType::where('is_active', true)
+                    ->selectRaw('
+                        building_types.*,
+                        (SELECT COUNT(*) FROM buildings b WHERE b.building_type_id = building_types.id AND b.is_active = 1) as total_buildings,
+                        (SELECT AVG(level) FROM buildings b2 WHERE b2.building_type_id = building_types.id AND b2.is_active = 1) as avg_level
+                    ')
+                    ->get();
+            });
+
+            // Use SmartCache for building queues with automatic optimization
+            $buildingQueuesCacheKey = "village_{$this->village->id}_building_queues";
+            $this->buildingQueues = SmartCache::remember($buildingQueuesCacheKey, now()->addMinutes(1), function () {
+                return $this
+                    ->village
+                    ->buildingQueues()
+                    ->where('is_completed', false)
+                    ->with('buildingType:id,name,description')
+                    ->selectRaw('
+                        building_queues.*,
+                        (SELECT COUNT(*) FROM building_queues bq2 WHERE bq2.village_id = building_queues.village_id AND bq2.is_completed = 0) as total_active_queues
+                    ')
+                    ->get();
+            });
         } finally {
             $this->isLoading = false;
         }
