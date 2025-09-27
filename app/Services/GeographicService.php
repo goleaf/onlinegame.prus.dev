@@ -239,7 +239,7 @@ class GeographicService
      * @return int Travel time in seconds
      */
 
-    public function calculateTravelTimeFromDistance(float $distance, float $speedKmh): int
+    public function calculateTravelTime(float $distance, float $speedKmh): int
     {
         if ($speedKmh <= 0) {
             return 0;
