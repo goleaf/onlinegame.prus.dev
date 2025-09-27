@@ -24,6 +24,11 @@ Route::get('/phone-test', function () {
     return view('phone-test');
 });
 
+// User profile management route
+Route::get('/profile', function () {
+    return view('user-profile');
+})->middleware('auth');
+
 // Include auth routes
 require __DIR__ . '/auth.php';
 
