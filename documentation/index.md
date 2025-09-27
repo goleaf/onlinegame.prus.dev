@@ -184,4 +184,5 @@ This index is automatically generated and lists all documentation files:
   * [Documentation: session.php](config/session.md)
   * [Documentation: smart-cache.php](config/smart-cache.md)
   * [Documentation: taxonomy.php](config/taxonomy.md)
+  * [Documentation: telescope.php](config/telescope.md)
   * [Documentation: wireui.php](config/wireui.md)
