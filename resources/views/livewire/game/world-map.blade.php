@@ -404,7 +404,8 @@
                      class="alert alert-{{ $notification['type'] === 'error' ? 'danger' : $notification['type'] }} alert-dismissible fade show">
                     {{ $notification['message'] }}
                     <button type="button" class="btn-close"
-                            wire:click="removeNotification('{{ $notification['id'] }}')"></button>
+                            wire:click="removeNotification('{{ $notification['id'] }}')"
+                            wire:confirm="Are you sure you want to dismiss this notification?"></button>
                 </div>
             @endforeach
         </div>
