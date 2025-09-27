@@ -31,6 +31,9 @@ Route::middleware(['auth', 'game.auth'])->group(function () {
 
     // Quest management
     Route::get('/game/quests', [GameController::class, 'quests'])->name('game.quests');
+    Route::get('/game/quests/{quest}', function ($quest) {
+        return view('livewire.game.quest-detail', compact('quest'));
+    })->name('game.quests.detail');
 
     // Technology management
     Route::get('/game/technology', [GameController::class, 'technology'])->name('game.technology');
