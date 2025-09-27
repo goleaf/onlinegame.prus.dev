@@ -125,6 +125,19 @@
                                     </p>
                                     <p><strong>Population:</strong> {{ $selectedVillage['population'] ?? 0 }}</p>
                                     <p><strong>Alliance:</strong> {{ $selectedVillage['alliance'] ?? 'No Alliance' }}</p>
+                                    
+                                    @if(isset($selectedVillage['latitude']) && isset($selectedVillage['longitude']))
+                                        <p><strong>Latitude:</strong> {{ number_format($selectedVillage['latitude'], 6) }}°</p>
+                                        <p><strong>Longitude:</strong> {{ number_format($selectedVillage['longitude'], 6) }}°</p>
+                                    @endif
+                                    
+                                    @if(isset($selectedVillage['geohash']))
+                                        <p><strong>Geohash:</strong> {{ $selectedVillage['geohash'] }}</p>
+                                    @endif
+                                    
+                                    @if(isset($selectedVillage['elevation']))
+                                        <p><strong>Elevation:</strong> {{ number_format($selectedVillage['elevation'], 2) }}m</p>
+                                    @endif
                                 </div>
                                 <div class="col-md-6">
                                     <h6>Resources</h6>
