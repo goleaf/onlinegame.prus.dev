@@ -2,6 +2,7 @@
 
 namespace App\Models\Game;
 
+use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use App\Services\GeographicService;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;

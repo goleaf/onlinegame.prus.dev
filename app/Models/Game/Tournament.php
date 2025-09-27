@@ -32,6 +32,7 @@ class Tournament extends Model implements Auditable
         'round_duration_minutes',
         'is_public',
         'allow_spectators',
+        'reference_number',
     ];
 
     protected $casts = [
