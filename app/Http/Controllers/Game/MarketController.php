@@ -438,19 +438,18 @@ class MarketController extends CrudController
     public function acceptOffer(Request $request, int $id): JsonResponse
     {
         try {
-            $validator = Validator::make($request->all(), [
+            // Rate limiting for accepting offers
+            $rateLimitKey = 'accept_offer_' . (auth()->id() ?? 'unknown');
+            if (!$this->rateLimiter->attempt($rateLimitKey, 5, 1)) {
+                return $this->errorResponse('Too many requests. Please try again later.', 429);
+            }
+
+            $validated = $this->validateRequest($request, [
                 'accept_amount' => 'required|integer|min:1',
             ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'The given data was invalid.',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
             $playerId = Auth::user()->player->id;
-            $acceptAmount = $request->input('accept_amount');
+            $acceptAmount = $validated['accept_amount'];
 
             $offer = MarketOffer::with(['player'])
                 ->where('status', 'active')

@@ -19,7 +19,6 @@ use LaraUtilX\Utilities\LoggingUtil;
 class MessageController extends CrudController
 {
     use ApiResponseTrait;
-{
     protected $messageService;
 
     public function __construct()
