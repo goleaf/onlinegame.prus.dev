@@ -38,7 +38,26 @@ class UserObserver
      */
     public function updated(User $user): void
     {
+        $startTime = microtime(true);
+        
+        ds('UserObserver: User updated event triggered', [
+            'observer' => 'UserObserver',
+            'event' => 'updated',
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'changed_attributes' => $user->getDirty(),
+            'event_time' => now()
+        ]);
+        
         $this->formatPhoneNumber($user);
+        
+        $processingTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ds('UserObserver: User updated event completed', [
+            'user_id' => $user->id,
+            'processing_time_ms' => $processingTime,
+            'attributes_changed' => count($user->getDirty())
+        ]);
     }
 
     /**

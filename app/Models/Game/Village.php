@@ -25,6 +25,7 @@ class Village extends Model implements Auditable
 {
     use HasFactory;
     use HasNotables;
+    use HasReference;
     use AuditableTrait;
     use Lift;
 
