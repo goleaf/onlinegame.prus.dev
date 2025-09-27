@@ -18,7 +18,7 @@ class EnhancedCacheService
     public function __construct()
     {
         $this->prefix = config('cache.prefix', 'game-cache-');
-        $this->defaultTtl = 3600; // 1 hour default
+        $this->defaultTtl = 3600;  // 1 hour default
         $this->compressionOptions = [
             'serializer' => 'igbinary',
             'compression' => 'lzf',
@@ -31,15 +31,15 @@ class EnhancedCacheService
     public function remember(string $key, int $ttl, callable $callback): mixed
     {
         $fullKey = $this->prefix . $key;
-        
+
         return Cache::store('redis')->remember($fullKey, $ttl, function () use ($callback) {
             $data = $callback();
-            
+
             // Apply compression for large data
             if (is_array($data) && count($data) > 100) {
                 $data = $this->compressData($data);
             }
-            
+
             return $data;
         });
     }
@@ -50,11 +50,11 @@ class EnhancedCacheService
     public function rememberWithTags(string $key, array $tags, int $ttl, callable $callback): mixed
     {
         $fullKey = $this->prefix . $key;
-        
+
         if (Cache::getStore() instanceof \Illuminate\Cache\TaggableStore) {
             return Cache::tags($tags)->remember($fullKey, $ttl, $callback);
         }
-        
+
         return $this->remember($key, $ttl, $callback);
     }
 
@@ -76,7 +76,7 @@ class EnhancedCacheService
         try {
             $redis = Redis::connection('cache');
             $info = $redis->info();
-            
+
             return [
                 'memory_used' => $info['used_memory_human'] ?? 'N/A',
                 'keys_count' => $redis->dbsize(),
@@ -112,7 +112,7 @@ class EnhancedCacheService
             $serialized = igbinary_serialize($data);
             return lzf_compress($serialized);
         }
-        
+
         return $data;
     }
 
@@ -125,7 +125,7 @@ class EnhancedCacheService
             $decompressed = lzf_decompress($data);
             return igbinary_unserialize($decompressed);
         }
-        
+
         return $data;
     }
 
@@ -137,11 +137,11 @@ class EnhancedCacheService
         try {
             $redis = Redis::connection('cache');
             $info = $redis->info();
-            
+
             $hits = $info['keyspace_hits'] ?? 0;
             $misses = $info['keyspace_misses'] ?? 0;
             $total = $hits + $misses;
-            
+
             return $total > 0 ? round(($hits / $total) * 100, 2) : 0;
         } catch (\Exception $e) {
             return 0;

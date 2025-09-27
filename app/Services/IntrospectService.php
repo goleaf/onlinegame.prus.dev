@@ -31,7 +31,7 @@ class IntrospectService
 
         foreach ($models as $name => $class) {
             $modelDetail = Introspect::model($class);
-            
+
             $analysis[$name] = [
                 'class' => $class,
                 'schema' => $modelDetail->schema(),
@@ -76,7 +76,7 @@ class IntrospectService
     public function getModelRelationships(string $modelClass): array
     {
         $relationships = [];
-        
+
         try {
             // Get models that have relationships with the target model
             $relatedModels = Introspect::models()
@@ -103,16 +103,16 @@ class IntrospectService
     private function getManualRelationships(string $modelClass): array
     {
         $relationships = [];
-        
+
         try {
             $reflection = new \ReflectionClass($modelClass);
             $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
-            
+
             foreach ($methods as $method) {
-                if (str_contains($method->getName(), 'belongsTo') || 
-                    str_contains($method->getName(), 'hasMany') ||
-                    str_contains($method->getName(), 'hasOne') ||
-                    str_contains($method->getName(), 'belongsToMany')) {
+                if (str_contains($method->getName(), 'belongsTo') ||
+                        str_contains($method->getName(), 'hasMany') ||
+                        str_contains($method->getName(), 'hasOne') ||
+                        str_contains($method->getName(), 'belongsToMany')) {
                     $relationships[] = [
                         'method' => $method->getName(),
                         'type' => 'relationship',
@@ -122,7 +122,7 @@ class IntrospectService
         } catch (\Exception $e) {
             // Ignore reflection errors
         }
-        
+
         return $relationships;
     }
 
@@ -306,7 +306,7 @@ class IntrospectService
         foreach ($models as $name => $class) {
             try {
                 $modelDetail = Introspect::model($class);
-                
+
                 $dependencies[$name] = [
                     'class' => $class,
                     'schema' => $modelDetail->schema(),
@@ -348,7 +348,7 @@ class IntrospectService
             $fillable = $this->getModelFillable($class);
             $casts = $this->getModelCasts($class);
             $relationships = $this->getModelRelationships($class);
-            
+
             $metrics[$name] = [
                 'fillable_count' => count($fillable),
                 'cast_count' => count($casts),
@@ -366,11 +366,11 @@ class IntrospectService
     private function calculateModelComplexity(array $fillable, array $casts, array $relationships): int
     {
         $score = 0;
-        
+
         $score += count($fillable) * 2;
         $score += count($casts) * 3;
         $score += count($relationships) * 5;
-        
+
         return $score;
     }
 }

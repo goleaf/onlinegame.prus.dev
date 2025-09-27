@@ -55,7 +55,7 @@ class GeographicAnalysisService
 
     /**
      * Calculate geographic bounds of villages
-     * 
+     *
      * @param Collection $villages
      * @return array|null
      */

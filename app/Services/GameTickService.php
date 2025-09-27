@@ -284,15 +284,15 @@ class GameTickService
     {
         // Get actual village resources for realistic loot calculation
         $villageResources = $defendingVillage->resources;
-        $lootRate = 0.1 + (rand(0, 15) / 100); // 10-25% loot rate
-        
+        $lootRate = 0.1 + (rand(0, 15) / 100);  // 10-25% loot rate
+
         $loot = [];
         foreach ($villageResources as $resource) {
             $availableAmount = $resource->amount;
             $lootAmount = floor($availableAmount * $lootRate);
             $loot[$resource->type] = min($lootAmount, $availableAmount);
         }
-        
+
         return $loot;
     }
 
@@ -404,14 +404,14 @@ class GameTickService
     {
         $result = $battle->result;
         $isAttacker = $perspective === 'attacker';
-        
+
         if ($perspective === 'defender') {
             $result = $battle->result === 'attacker_wins' ? 'defeat' : 'victory';
         }
 
         $status = match ($result) {
             'attacker_wins' => 'Victory',
-            'defender_wins' => 'Defeat', 
+            'defender_wins' => 'Defeat',
             'draw' => 'Draw',
             default => 'Unknown'
         };
@@ -419,12 +419,12 @@ class GameTickService
         $content = "=== BATTLE REPORT ===\n\n";
         $content .= "Location: {$battle->village->name}\n";
         $content .= "Result: {$status}\n";
-        $content .= "Date: " . $battle->occurred_at->format('Y-m-d H:i:s') . "\n\n";
+        $content .= 'Date: ' . $battle->occurred_at->format('Y-m-d H:i:s') . "\n\n";
 
         // Battle Power Summary
         $content .= "=== BATTLE POWER ===\n";
-        $content .= "Attacker Power: " . number_format($battle->battle_data['battle_power']['attacker'], 0) . "\n";
-        $content .= "Defender Power: " . number_format($battle->battle_data['battle_power']['defender'], 0) . "\n\n";
+        $content .= 'Attacker Power: ' . number_format($battle->battle_data['battle_power']['attacker'], 0) . "\n";
+        $content .= 'Defender Power: ' . number_format($battle->battle_data['battle_power']['defender'], 0) . "\n\n";
 
         // Troop Summary
         $content .= "=== TROOP SUMMARY ===\n";
@@ -470,12 +470,12 @@ class GameTickService
             $totalLoot = 0;
             foreach ($battle->resources_looted as $resource => $amount) {
                 if ($amount > 0) {
-                    $content .= "- " . ucfirst($resource) . ": " . number_format($amount) . "\n";
+                    $content .= '- ' . ucfirst($resource) . ': ' . number_format($amount) . "\n";
                     $totalLoot += $amount;
                 }
             }
             if ($totalLoot > 0) {
-                $content .= "Total Loot: " . number_format($totalLoot) . " resources\n";
+                $content .= 'Total Loot: ' . number_format($totalLoot) . " resources\n";
             } else {
                 $content .= "No resources looted\n";
             }
@@ -484,12 +484,12 @@ class GameTickService
             $totalLost = 0;
             foreach ($battle->resources_looted as $resource => $amount) {
                 if ($amount > 0) {
-                    $content .= "- " . ucfirst($resource) . ": " . number_format($amount) . " lost\n";
+                    $content .= '- ' . ucfirst($resource) . ': ' . number_format($amount) . " lost\n";
                     $totalLost += $amount;
                 }
             }
             if ($totalLost > 0) {
-                $content .= "Total Lost: " . number_format($totalLost) . " resources\n";
+                $content .= 'Total Lost: ' . number_format($totalLost) . " resources\n";
             }
         }
 
@@ -510,14 +510,14 @@ class GameTickService
     {
         $summary = [];
         $totalLosses = 0;
-        
+
         foreach ($losses as $loss) {
             if ($loss['count'] > 0) {
                 $summary[] = "{$loss['unit_type']}: {$loss['count']}";
                 $totalLosses += $loss['count'];
             }
         }
-        
+
         return [
             'total' => $totalLosses,
             'breakdown' => $summary,
@@ -529,14 +529,14 @@ class GameTickService
     {
         $summary = [];
         $totalLoot = 0;
-        
+
         foreach ($loot as $resource => $amount) {
             if ($amount > 0) {
-                $summary[] = ucfirst($resource) . ": " . number_format($amount);
+                $summary[] = ucfirst($resource) . ': ' . number_format($amount);
                 $totalLoot += $amount;
             }
         }
-        
+
         return [
             'total' => $totalLoot,
             'breakdown' => $summary,

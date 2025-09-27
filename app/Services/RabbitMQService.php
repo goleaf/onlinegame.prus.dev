@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use Usmonaliyev\SimpleRabbit\Facades\SimpleMQ;
 use Illuminate\Support\Facades\Log;
+use Usmonaliyev\SimpleRabbit\Facades\SimpleMQ;
 
 class RabbitMQService
 {
@@ -28,7 +28,6 @@ class RabbitMQService
                 'event_type' => $eventType,
                 'handler' => $handler
             ]);
-
         } catch (\Exception $e) {
             Log::error('Failed to publish game event', [
                 'event_type' => $eventType,
@@ -58,7 +57,6 @@ class RabbitMQService
                 'notification_type' => $notificationType,
                 'handler' => $handler
             ]);
-
         } catch (\Exception $e) {
             Log::error('Failed to publish notification', [
                 'notification_type' => $notificationType,

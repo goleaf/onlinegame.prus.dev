@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Artisan;
 
 class CacheEvictionService
 {
@@ -18,12 +18,12 @@ class CacheEvictionService
     {
         $results = [];
         $stores = config('cache.stores', []);
-        
+
         foreach ($stores as $storeName => $storeConfig) {
             if (in_array($storeName, ['array', 'null'])) {
-                continue; // Skip non-persistent stores
+                continue;  // Skip non-persistent stores
             }
-            
+
             try {
                 $results[$storeName] = $this->evictStore($storeName);
             } catch (\Exception $e) {
@@ -36,10 +36,10 @@ class CacheEvictionService
                 ];
             }
         }
-        
+
         return $results;
     }
-    
+
     /**
      * Evict expired cache items from a specific store
      *
@@ -49,7 +49,7 @@ class CacheEvictionService
     public function evictStore(string $storeName): array
     {
         $startTime = microtime(true);
-        
+
         switch ($storeName) {
             case 'database':
                 return $this->evictDatabaseStore($startTime);
@@ -62,7 +62,7 @@ class CacheEvictionService
                 return $this->evictViaCommand($storeName, $startTime);
         }
     }
-    
+
     /**
      * Evict expired items from database cache store
      *
@@ -73,20 +73,20 @@ class CacheEvictionService
     {
         $table = config('cache.stores.database.table', 'cache');
         $prefix = config('cache.prefix', '');
-        
+
         // Count total items before eviction
         $totalBefore = DB::table($table)->count();
-        
+
         // Remove expired items
         $expiredCount = DB::table($table)
             ->where('expiration', '<', time())
             ->delete();
-        
+
         // Count remaining items
         $totalAfter = DB::table($table)->count();
-        
+
         $duration = microtime(true) - $startTime;
-        
+
         return [
             'success' => true,
             'items_removed' => $expiredCount,
@@ -96,7 +96,7 @@ class CacheEvictionService
             'size_freed' => $this->estimateSizeFreed($expiredCount)
         ];
     }
-    
+
     /**
      * Evict expired items from file cache store
      *
@@ -108,7 +108,7 @@ class CacheEvictionService
         $path = config('cache.stores.file.path', storage_path('framework/cache/data'));
         $itemsRemoved = 0;
         $sizeFreed = 0;
-        
+
         if (!is_dir($path)) {
             return [
                 'success' => true,
@@ -117,18 +117,18 @@ class CacheEvictionService
                 'duration' => round(microtime(true) - $startTime, 6)
             ];
         }
-        
+
         $iterator = new \RecursiveIteratorIterator(
             new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS)
         );
-        
+
         foreach ($iterator as $file) {
             if ($file->isFile()) {
                 $content = file_get_contents($file->getPathname());
-                
+
                 try {
                     $data = unserialize($content);
-                    
+
                     // Check if the cache item is expired
                     if (isset($data['expires']) && $data['expires'] < time()) {
                         $sizeFreed += $file->getSize();
@@ -141,9 +141,9 @@ class CacheEvictionService
                 }
             }
         }
-        
+
         $duration = microtime(true) - $startTime;
-        
+
         return [
             'success' => true,
             'items_removed' => $itemsRemoved,
@@ -151,7 +151,7 @@ class CacheEvictionService
             'duration' => round($duration, 6)
         ];
     }
-    
+
     /**
      * Evict expired items from Redis cache store
      *
@@ -162,23 +162,23 @@ class CacheEvictionService
     {
         $redis = Cache::store('redis');
         $prefix = config('cache.prefix', '');
-        
+
         // Redis automatically handles expiration, but we can clean up manually
         $keys = $redis->getRedis()->keys($prefix . '*');
         $itemsRemoved = 0;
-        
+
         foreach ($keys as $key) {
             $ttl = $redis->getRedis()->ttl($key);
-            if ($ttl === -1) { // Key exists but has no expiration
+            if ($ttl === -1) {  // Key exists but has no expiration
                 // Skip keys without expiration
                 continue;
-            } elseif ($ttl === -2) { // Key doesn't exist (expired)
+            } elseif ($ttl === -2) {  // Key doesn't exist (expired)
                 $itemsRemoved++;
             }
         }
-        
+
         $duration = microtime(true) - $startTime;
-        
+
         return [
             'success' => true,
             'items_removed' => $itemsRemoved,
@@ -186,7 +186,7 @@ class CacheEvictionService
             'duration' => round($duration, 6)
         ];
     }
-    
+
     /**
      * Use the package's built-in command for eviction
      *
@@ -199,9 +199,9 @@ class CacheEvictionService
         try {
             Artisan::call('cache:evict', ['target' => $storeName]);
             $output = Artisan::output();
-            
+
             $duration = microtime(true) - $startTime;
-            
+
             return [
                 'success' => true,
                 'items_removed' => $this->parseItemsRemoved($output),
@@ -217,7 +217,7 @@ class CacheEvictionService
             ];
         }
     }
-    
+
     /**
      * Get cache statistics for all stores
      *
@@ -227,12 +227,12 @@ class CacheEvictionService
     {
         $stats = [];
         $stores = config('cache.stores', []);
-        
+
         foreach ($stores as $storeName => $storeConfig) {
             if (in_array($storeName, ['array', 'null'])) {
                 continue;
             }
-            
+
             try {
                 $stats[$storeName] = $this->getStoreStats($storeName);
             } catch (\Exception $e) {
@@ -241,10 +241,10 @@ class CacheEvictionService
                 ];
             }
         }
-        
+
         return $stats;
     }
-    
+
     /**
      * Get statistics for a specific store
      *
@@ -258,24 +258,24 @@ class CacheEvictionService
                 $table = config('cache.stores.database.table', 'cache');
                 $total = DB::table($table)->count();
                 $expired = DB::table($table)->where('expiration', '<', time())->count();
-                
+
                 return [
                     'total_items' => $total,
                     'expired_items' => $expired,
                     'active_items' => $total - $expired,
                     'driver' => 'database'
                 ];
-                
+
             case 'file':
                 $path = config('cache.stores.file.path', storage_path('framework/cache/data'));
                 $total = 0;
                 $size = 0;
-                
+
                 if (is_dir($path)) {
                     $iterator = new \RecursiveIteratorIterator(
                         new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS)
                     );
-                    
+
                     foreach ($iterator as $file) {
                         if ($file->isFile()) {
                             $total++;
@@ -283,23 +283,23 @@ class CacheEvictionService
                         }
                     }
                 }
-                
+
                 return [
                     'total_items' => $total,
                     'total_size' => $this->formatBytes($size),
                     'driver' => 'file'
                 ];
-                
+
             case 'redis':
                 $redis = Cache::store('redis');
                 $prefix = config('cache.prefix', '');
                 $keys = $redis->getRedis()->keys($prefix . '*');
-                
+
                 return [
                     'total_items' => count($keys),
                     'driver' => 'redis'
                 ];
-                
+
             default:
                 return [
                     'driver' => $storeName,
@@ -307,7 +307,7 @@ class CacheEvictionService
                 ];
         }
     }
-    
+
     /**
      * Estimate size freed based on number of items
      *
@@ -320,7 +320,7 @@ class CacheEvictionService
         $estimatedBytes = $itemCount * 1024;
         return $this->formatBytes($estimatedBytes);
     }
-    
+
     /**
      * Format bytes to human readable format
      *
@@ -331,15 +331,15 @@ class CacheEvictionService
     {
         $units = ['B', 'KB', 'MB', 'GB'];
         $unitIndex = 0;
-        
+
         while ($bytes >= 1024 && $unitIndex < count($units) - 1) {
             $bytes /= 1024;
             $unitIndex++;
         }
-        
+
         return round($bytes, 2) . ' ' . $units[$unitIndex];
     }
-    
+
     /**
      * Parse items removed from command output
      *
@@ -353,7 +353,7 @@ class CacheEvictionService
         }
         return 0;
     }
-    
+
     /**
      * Parse size freed from command output
      *

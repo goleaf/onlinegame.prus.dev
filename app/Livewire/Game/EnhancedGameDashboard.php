@@ -222,7 +222,7 @@ class EnhancedGameDashboard extends Component
             $this->pollingEnabled ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
         );
-        
+
         // Track polling toggle
         $this->dispatch('fathom-track', name: 'polling toggled', value: $this->pollingEnabled ? 1 : 0);
     }
@@ -470,7 +470,7 @@ class EnhancedGameDashboard extends Component
             $this->loadBuildingQueues();
             $this->loadTrainingQueues();
             $this->addNotification('Village selected: ' . $this->currentVillage->name, 'info');
-            
+
             // Track village selection
             $this->dispatch('fathom-track', name: 'village selected', value: $villageId);
 

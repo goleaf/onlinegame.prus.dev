@@ -49,7 +49,7 @@ class FileUploadManager extends Component
     {
         // Load existing files for the player with optimized query
         $playerId = $this->player?->id;
-        
+
         if ($playerId) {
             // Use optimized query to get file statistics
             $fileStats = \DB::table('player_files')

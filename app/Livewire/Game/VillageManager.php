@@ -8,10 +8,10 @@ use App\Models\Game\BuildingType;
 use App\Models\Game\Resource;
 use App\Models\Game\Village;
 use App\Services\QueryOptimizationService;
-use SmartCache\Facades\SmartCache;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
+use SmartCache\Facades\SmartCache;
 
 class VillageManager extends Component
 {
@@ -106,7 +106,7 @@ class VillageManager extends Component
             });
 
             // Use SmartCache for building types with automatic optimization
-            $buildingTypesCacheKey = "building_types_active";
+            $buildingTypesCacheKey = 'building_types_active';
             $this->buildingTypes = SmartCache::remember($buildingTypesCacheKey, now()->addMinutes(15), function () {
                 return BuildingType::where('is_active', true)
                     ->selectRaw('
@@ -147,7 +147,7 @@ class VillageManager extends Component
             ->find($buildingId);
         $this->calculateUpgradeCost();
         $this->showUpgradeModal = true;
-        
+
         // Track building selection
         $this->dispatch('fathom-track', name: 'building selected', value: $buildingId);
     }

@@ -8,10 +8,10 @@ use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
-use SmartCache\Facades\SmartCache;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
+use SmartCache\Facades\SmartCache;
 
 class BuildingManager extends Component
 {
@@ -73,7 +73,8 @@ class BuildingManager extends Component
                     'description' => $taxonomy->description,
                     'meta' => $taxonomy->meta,
                 ];
-            })->toArray();
+            })
+            ->toArray();
     }
 
     public function initializeBuildingFeatures()
@@ -117,7 +118,7 @@ class BuildingManager extends Component
     public function loadAvailableBuildings()
     {
         // Use SmartCache for available buildings with automatic optimization
-        $availableBuildingsCacheKey = "available_buildings_data";
+        $availableBuildingsCacheKey = 'available_buildings_data';
         $this->availableBuildings = SmartCache::remember($availableBuildingsCacheKey, now()->addMinutes(30), function () {
             return [
                 'wood' => [

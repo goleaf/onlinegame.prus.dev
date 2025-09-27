@@ -7,6 +7,7 @@ use App\Models\Game\Village;
 use App\Models\Game\World;
 use App\Services\GeographicService;
 use App\Services\LarautilxIntegrationService;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\CachingUtil;

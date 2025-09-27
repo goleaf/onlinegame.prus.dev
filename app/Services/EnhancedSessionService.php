@@ -40,11 +40,11 @@ class EnhancedSessionService
     public function get(string $key, mixed $default = null): mixed
     {
         $value = Session::get($key, $default);
-        
+
         if ($value !== $default && $this->isCompressed($value)) {
             return $this->decompressData($value);
         }
-        
+
         return $value;
     }
 
@@ -54,7 +54,7 @@ class EnhancedSessionService
     public function putWithTags(string $key, mixed $value, array $tags = []): void
     {
         $this->put($key, $value);
-        
+
         // Store tags for this session key
         if (!empty($tags)) {
             $tagKey = "session_tags:{$key}";
@@ -70,7 +70,7 @@ class EnhancedSessionService
         try {
             $redis = Redis::connection('session');
             $info = $redis->info();
-            
+
             return [
                 'session_count' => $this->getSessionCount(),
                 'memory_used' => $info['used_memory_human'] ?? 'N/A',
@@ -96,7 +96,7 @@ class EnhancedSessionService
             $pattern = $this->prefix . '*';
             $keys = $redis->keys($pattern);
             $cleaned = 0;
-            
+
             foreach ($keys as $key) {
                 $ttl = $redis->ttl($key);
                 if ($ttl === -1 || $ttl === -2) {
@@ -104,7 +104,7 @@ class EnhancedSessionService
                     $cleaned++;
                 }
             }
-            
+
             return $cleaned;
         } catch (\Exception $e) {
             return 0;
@@ -117,7 +117,7 @@ class EnhancedSessionService
     public function regenerateId(): void
     {
         Session::regenerate();
-        
+
         // Add security headers
         $this->addSecurityHeaders();
     }
@@ -128,16 +128,16 @@ class EnhancedSessionService
     public function getByTags(array $tags): array
     {
         $results = [];
-        
+
         foreach ($tags as $tag) {
             $tagKey = "session_tags:{$tag}";
             $taggedKeys = Session::get($tagKey, []);
-            
+
             foreach ($taggedKeys as $key) {
                 $results[$key] = $this->get($key);
             }
         }
-        
+
         return $results;
     }
 
@@ -150,7 +150,7 @@ class EnhancedSessionService
             $serialized = igbinary_serialize($data);
             return base64_encode(lzf_compress($serialized));
         }
-        
+
         return $data;
     }
 
@@ -168,7 +168,7 @@ class EnhancedSessionService
                 return $data;
             }
         }
-        
+
         return $data;
     }
 

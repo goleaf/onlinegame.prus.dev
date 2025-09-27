@@ -23,18 +23,18 @@ class GeographicService
     {
         // Use Haversine formula for distance calculation
         $earthRadius = $unit === 'km' ? 6371 : ($unit === 'mi' ? 3959 : 6371000);
-        
+
         $lat1Rad = deg2rad($lat1);
         $lat2Rad = deg2rad($lat2);
         $deltaLat = deg2rad($lat2 - $lat1);
         $deltaLon = deg2rad($lon2 - $lon1);
-        
-        $a = sin($deltaLat / 2) * sin($deltaLat / 2) +
-             cos($lat1Rad) * cos($lat2Rad) *
-             sin($deltaLon / 2) * sin($deltaLon / 2);
-        
+
+        $a = sin($deltaLat / 2) * sin($deltaLat / 2)
+            + cos($lat1Rad) * cos($lat2Rad)
+                * sin($deltaLon / 2) * sin($deltaLon / 2);
+
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-        
+
         return $earthRadius * $c;
     }
 
@@ -97,7 +97,7 @@ class GeographicService
 
     /**
      * Calculate bearing between two points
-     * 
+     *
      * @param float $lat1
      * @param float $lon1
      * @param float $lat2
@@ -109,14 +109,14 @@ class GeographicService
         $lat1Rad = deg2rad($lat1);
         $lat2Rad = deg2rad($lat2);
         $deltaLon = deg2rad($lon2 - $lon1);
-        
+
         $y = sin($deltaLon) * cos($lat2Rad);
         $x = cos($lat1Rad) * sin($lat2Rad) - sin($lat1Rad) * cos($lat2Rad) * cos($deltaLon);
-        
+
         $bearing = atan2($y, $x);
         $bearing = rad2deg($bearing);
-        
-        return ($bearing + 360) % 360; // Normalize to 0-360
+
+        return ($bearing + 360) % 360;  // Normalize to 0-360
     }
 
     /**
