@@ -128,19 +128,20 @@ class BuildingManager extends Component
                     'base_cost' => ['wood' => 10, 'clay' => 20, 'iron' => 10, 'crop' => 50],
                     'production_bonus' => 10,
                 ],
-            'warehouse' => [
-                'name' => 'Warehouse',
-                'description' => 'Increases storage capacity',
-                'base_cost' => ['wood' => 100, 'clay' => 80, 'iron' => 60, 'crop' => 40],
-                'storage_bonus' => 1000,
-            ],
-            'granary' => [
-                'name' => 'Granary',
-                'description' => 'Increases crop storage',
-                'base_cost' => ['wood' => 80, 'clay' => 100, 'iron' => 40, 'crop' => 60],
-                'storage_bonus' => 1000,
-            ],
-        ];
+                'warehouse' => [
+                    'name' => 'Warehouse',
+                    'description' => 'Increases storage capacity',
+                    'base_cost' => ['wood' => 100, 'clay' => 80, 'iron' => 60, 'crop' => 40],
+                    'storage_bonus' => 1000,
+                ],
+                'granary' => [
+                    'name' => 'Granary',
+                    'description' => 'Increases crop storage',
+                    'base_cost' => ['wood' => 80, 'clay' => 100, 'iron' => 40, 'crop' => 60],
+                    'storage_bonus' => 1000,
+                ],
+            ];
+        });
     }
 
     public function selectBuilding($buildingType)

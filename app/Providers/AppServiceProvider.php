@@ -28,6 +28,10 @@ class AppServiceProvider extends ServiceProvider
                 $app->make('game.session')
             );
         });
+
+        // Register enhanced services for Laravel 12.29.0+ features
+        $this->app->singleton(\App\Services\EnhancedCacheService::class);
+        $this->app->singleton(\App\Services\EnhancedSessionService::class);
     }
 
     /**

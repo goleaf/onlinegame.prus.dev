@@ -34,7 +34,14 @@ class FileUploadManager extends Component
 
     public function mount()
     {
-        $this->player = Auth::user()->player;
+        $this->player = Player::where('user_id', Auth::id())
+            ->with(['user:id,name,email'])
+            ->selectRaw('
+                players.*,
+                (SELECT COUNT(*) FROM villages WHERE player_id = players.id) as village_count,
+                (SELECT SUM(population) FROM villages WHERE player_id = players.id) as total_population
+            ')
+            ->first();
         $this->loadUploadedFiles();
     }
 
