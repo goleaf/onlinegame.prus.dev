@@ -352,6 +352,91 @@ class ChatComponent extends Component
         ];
     }
 
+    /**
+     * Initialize chat real-time features
+     */
+    public function initializeChatRealTime()
+    {
+        try {
+            if ($this->player) {
+                // Initialize real-time features for the player
+                GameIntegrationService::initializeUserRealTime($this->player->user_id);
+                
+                $this->dispatch('chat-initialized', [
+                    'message' => 'Chat component real-time features activated',
+                    'player_id' => $this->player->id,
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to initialize chat real-time features: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Send message with real-time integration
+     */
+    public function sendMessageWithIntegration()
+    {
+        try {
+            $this->sendMessage();
+
+            if ($this->player && $this->currentChannel) {
+                // Send notification about chat message
+                GameNotificationService::sendNotification(
+                    $this->player->user_id,
+                    'chat_message_sent',
+                    [
+                        'player_id' => $this->player->id,
+                        'channel_id' => $this->currentChannel->id,
+                        'channel_name' => $this->currentChannel->name,
+                        'timestamp' => now()->toISOString(),
+                    ]
+                );
+
+                $this->dispatch('message-sent', [
+                    'message' => 'Chat message sent successfully with notifications',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to send chat message: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Join channel with real-time integration
+     */
+    public function joinChannelWithIntegration($channelId)
+    {
+        try {
+            $this->joinChannel($channelId);
+
+            if ($this->player) {
+                // Send notification about channel join
+                GameNotificationService::sendNotification(
+                    $this->player->user_id,
+                    'chat_channel_joined',
+                    [
+                        'player_id' => $this->player->id,
+                        'channel_id' => $channelId,
+                        'timestamp' => now()->toISOString(),
+                    ]
+                );
+
+                $this->dispatch('channel-joined', [
+                    'message' => 'Channel joined successfully with notifications',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to join channel: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
     public function render()
     {
         return view('livewire.game.chat-component');

@@ -263,4 +263,29 @@ class MarketOffer extends Model implements Auditable, IsFilterable
     {
         return $this->cancelled_at ? $this->cancelled_at->diffForHumans() : null;
     }
+
+    /**
+     * Define allowed filters for the MarketOffer model
+     */
+    public function allowedFilters(): AllowedFilterList
+    {
+        return Filter::only(
+            Filter::field('status', ['$eq']),
+            Filter::field('type', ['$eq']),
+            Filter::field('resource_type', ['$eq', '$like']),
+            Filter::field('ratio', ['$eq', '$gt', '$lt']),
+            Filter::field('fee', ['$eq', '$gt', '$lt']),
+            Filter::field('quantity_traded', ['$eq', '$gt', '$lt']),
+            Filter::field('village_id', ['$eq']),
+            Filter::field('player_id', ['$eq']),
+            Filter::field('buyer_village_id', ['$eq']),
+            Filter::field('expires_at', ['$eq', '$gt', '$lt']),
+            Filter::field('completed_at', ['$eq', '$gt', '$lt']),
+            Filter::field('cancelled_at', ['$eq', '$gt', '$lt']),
+            Filter::field('reference_number', ['$eq', '$like']),
+            Filter::relation('village', ['$has']),
+            Filter::relation('player', ['$has']),
+            Filter::relation('buyerVillage', ['$has'])
+        );
+    }
 }
