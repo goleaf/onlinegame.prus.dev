@@ -24,13 +24,20 @@ class MapViewer extends Component
 
     public function mount()
     {
-        $user = Auth::user();
-        $player = $user->player;
+        $player = Player::where('user_id', Auth::id())
+            ->with(['world:id,name', 'villages:id,player_id,x_coordinate,y_coordinate'])
+            ->selectRaw('
+                players.*,
+                (SELECT COUNT(*) FROM villages WHERE player_id = players.id) as village_count,
+                (SELECT AVG(x_coordinate) FROM villages WHERE player_id = players.id) as avg_x,
+                (SELECT AVG(y_coordinate) FROM villages WHERE player_id = players.id) as avg_y
+            ')
+            ->first();
 
         if ($player) {
             $this->world = $player->world;
-            $this->centerX = $player->villages()->first()->x_coordinate ?? 0;
-            $this->centerY = $player->villages()->first()->y_coordinate ?? 0;
+            $this->centerX = $player->villages->first()->x_coordinate ?? $player->avg_x ?? 0;
+            $this->centerY = $player->villages->first()->y_coordinate ?? $player->avg_y ?? 0;
             $this->loadMapData();
         }
     }
