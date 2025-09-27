@@ -39,6 +39,8 @@ return [
 - **System Management**: Health monitoring, configuration, and cache management
 - **Larautilx Integration**: Advanced utilities for caching, filtering, and pagination
 - **Artifact System**: Powerful items with server-wide effects and bonuses
+- **Message System**: Private and alliance messaging with bulk operations
+- **Alliance System**: Guild management, diplomacy, and war coordination
 - **Authentication**: Secure API access with Laravel Sanctum tokens
 
 ## API Endpoints

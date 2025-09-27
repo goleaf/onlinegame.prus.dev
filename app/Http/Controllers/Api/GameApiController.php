@@ -10,11 +10,16 @@ use App\Services\GameCacheService;
 use App\Services\GameErrorHandler;
 use App\Services\GamePerformanceMonitor;
 use App\Services\GameIntegrationService;
+use App\Traits\GameValidationTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Intervention\Validation\Rules\Username;
+use Intervention\Validation\Rules\Latitude;
+use Intervention\Validation\Rules\Longitude;
+use JonPurvis\Squeaky\Rules\Clean;
 
 /**
  * @group Game API
