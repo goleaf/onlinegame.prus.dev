@@ -634,4 +634,22 @@ class QuestController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Add resources to player
+     */
+    private function addResourcesToPlayer($player, array $resources): void
+    {
+        // Get player's main village
+        $village = $player->villages()->first();
+        
+        if ($village) {
+            foreach ($resources as $resource => $amount) {
+                DB::table('resources')
+                    ->where('village_id', $village->id)
+                    ->where('type', $resource)
+                    ->increment('amount', $amount);
+            }
+        }
+    }
 }
