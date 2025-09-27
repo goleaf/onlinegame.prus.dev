@@ -21,3 +21,31 @@ Schedule::command('cache:evict-custom file --force')
     ->withoutOverlapping()
     ->runInBackground()
     ->appendOutputTo(storage_path('logs/cache-eviction.log'));
+
+// Schedule game tick processing every minute
+Schedule::command('game:tick')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/game-tick.log'));
+
+// Schedule training queue processing every 5 minutes
+Schedule::command('game:process-training-queues')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/training-queues.log'));
+
+// Schedule performance monitoring every 10 minutes
+Schedule::command('game:performance-audit')
+    ->everyTenMinutes()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/performance-audit.log'));
+
+// Schedule cleanup tasks daily at midnight
+Schedule::command('game:cleanup')
+    ->daily()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->appendOutputTo(storage_path('logs/cleanup.log'));

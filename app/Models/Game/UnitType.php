@@ -13,6 +13,24 @@ class UnitType extends Model
 {
     use HasFactory, HasTaxonomy, Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public string $name;
+    public string $key;
+    public ?string $tribe;
+    public ?string $description;
+    public int $attack;
+    public int $defense_infantry;
+    public int $defense_cavalry;
+    public int $speed;
+    public int $carry_capacity;
+    public ?array $costs;
+    public ?array $requirements;
+    public bool $is_special;
+    public bool $is_active;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $fillable = [
         'name',
         'key',
