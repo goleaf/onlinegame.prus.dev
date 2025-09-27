@@ -2,8 +2,8 @@
 
 namespace App\Models\Game;
 
-// use EloquentFiltering\Filterable;
-use EloquentFiltering\Contracts\IsFilterable;
+use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
+use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 use EloquentFiltering\AllowedFilterList;
 use EloquentFiltering\Filter;
 use EloquentFiltering\FilterType;

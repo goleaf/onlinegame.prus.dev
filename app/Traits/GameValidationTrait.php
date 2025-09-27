@@ -10,6 +10,7 @@ use Intervention\Validation\Rules\Longitude;
 use Intervention\Validation\Rules\Postalcode;
 use Intervention\Validation\Rules\Username;
 use JonPurvis\Squeaky\Rules\Clean;
+use Propaganistas\LaravelPhone\Rules\Phone;
 
 trait GameValidationTrait
 {
