@@ -23,6 +23,7 @@ class User extends Authenticatable implements Auditable
     use AuditableTrait;
     use Lift;
     use HasReference;
+    // use GameValidationTrait;
 
     // Laravel Lift typed properties
     public int $id;

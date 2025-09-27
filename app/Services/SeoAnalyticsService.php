@@ -116,7 +116,7 @@ class SeoAnalyticsService
 
         foreach ($pages as $page) {
             $key = "seo_metrics_{$page}_" . date('Y-m-d');
-            $metrics = Cache::get($key, []);
+            $metrics = $this->cachingUtil->get($key, []);
             
             if (!empty($metrics)) {
                 $overallMetrics[$page] = [
