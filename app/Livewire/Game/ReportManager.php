@@ -842,6 +842,45 @@ class ReportManager extends Component
     }
 
     /**
+     * Export all reports to Excel
+     */
+    public function exportReports()
+    {
+        try {
+            $reports = $this->getFilteredReports();
+            
+            $filename = 'reports_export_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
+            
+            return Excel::download(new ReportsExport($reports, $this->world), $filename);
+        } catch (\Exception $e) {
+            $this->addNotification('Error exporting reports: ' . $e->getMessage(), 'error');
+        }
+    }
+
+    /**
+     * Export selected reports to Excel
+     */
+    public function exportSelectedReports()
+    {
+        if (empty($this->selectedReports)) {
+            $this->addNotification('Please select reports to export', 'warning');
+            return;
+        }
+
+        try {
+            $reports = Report::whereIn('id', $this->selectedReports)
+                           ->with(['attacker', 'defender', 'world'])
+                           ->get();
+            
+            $filename = 'selected_reports_export_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
+            
+            return Excel::download(new ReportsExport($reports, $this->world), $filename);
+        } catch (\Exception $e) {
+            $this->addNotification('Error exporting selected reports: ' . $e->getMessage(), 'error');
+        }
+    }
+
+    /**
      * Send report notification to relevant players
      */
     public function sendReportNotification(array $playerIds, string $type, array $data): void
