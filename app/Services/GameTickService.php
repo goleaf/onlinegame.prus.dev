@@ -12,6 +12,7 @@ use App\Models\Game\Resource;
 use App\Models\Game\TrainingQueue;
 use App\Models\Game\Village;
 use App\Services\RabbitMQService;
+use App\Services\DefenseCalculationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 

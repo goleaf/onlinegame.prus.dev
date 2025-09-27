@@ -231,11 +231,12 @@ class GamePerformanceOptimizer
     protected function loadBuildingData(string $userId): array
     {
         try {
-            return DB::table('buildings')
+            $buildings = DB::table('buildings')
                 ->select(['id', 'created_at'])
                 ->where('user_id', $userId)
-                ->get()
-                ->toArray();
+                ->get();
+                
+            return $buildings ? $buildings->toArray() : [];
         } catch (\Exception $e) {
             return [];
         }

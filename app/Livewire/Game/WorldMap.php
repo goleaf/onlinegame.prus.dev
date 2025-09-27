@@ -131,7 +131,14 @@ class WorldMap extends Component
 
     public function selectVillage($villageId)
     {
-        $village = Village::with(['player', 'alliance'])->find($villageId);
+        $village = Village::with(['player:id,name,tribe,alliance_id', 'player.alliance:id,name,tag'])
+            ->selectRaw('
+                villages.*,
+                (SELECT COUNT(*) FROM buildings WHERE village_id = villages.id) as building_count,
+                (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as troop_count,
+                (SELECT SUM(wood + clay + iron + crop) FROM resources WHERE village_id = villages.id) as total_resources
+            ')
+            ->find($villageId);
 
         if ($village) {
             $this->selectedVillage = [
@@ -144,6 +151,9 @@ class WorldMap extends Component
                 'alliance_name' => $village->player->alliance?->name,
                 'tribe' => $village->player->tribe,
                 'is_capital' => $village->is_capital,
+                'building_count' => $village->building_count ?? 0,
+                'troop_count' => $village->troop_count ?? 0,
+                'total_resources' => $village->total_resources ?? 0,
             ];
 
             $this->dispatch('villageSelected', ['villageId' => $villageId]);
