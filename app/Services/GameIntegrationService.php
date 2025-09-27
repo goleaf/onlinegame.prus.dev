@@ -2,425 +2,487 @@
 
 namespace App\Services;
 
-use App\Models\User;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\Alliance;
+use App\Models\Game\Task;
+use App\Models\Game\Report;
+use App\Services\RealTimeGameService;
+use App\Services\GameCacheService;
+use App\Services\GameErrorHandler;
+use App\Services\GameNotificationService;
+use App\Services\GamePerformanceMonitor;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class GameIntegrationService
 {
+    protected $realTimeService;
+    protected $cacheService;
+    protected $errorHandler;
+    protected $notificationService;
+    protected $performanceMonitor;
+
+    public function __construct(
+        RealTimeGameService $realTimeService,
+        GameCacheService $cacheService,
+        GameErrorHandler $errorHandler,
+        GameNotificationService $notificationService,
+        GamePerformanceMonitor $performanceMonitor
+    ) {
+        $this->realTimeService = $realTimeService;
+        $this->cacheService = $cacheService;
+        $this->errorHandler = $errorHandler;
+        $this->notificationService = $notificationService;
+        $this->performanceMonitor = $performanceMonitor;
+    }
+
     /**
      * Initialize real-time features for a user
      */
-    public static function initializeUserRealTime(int $userId): void
+    public function initializeUserRealTime(int $userId): array
     {
         try {
+            $this->performanceMonitor->startTimer('user_initialization');
+
             // Mark user as online
             RealTimeGameService::markUserOnline($userId);
-            
-            // Send welcome update
-            RealTimeGameService::sendUpdate($userId, 'user_online', [
-                'message' => 'Welcome back to the game!',
-                'timestamp' => now()->toISOString(),
+
+            // Initialize real-time features
+            $player = Player::where('user_id', $userId)->first();
+            if (!$player) {
+                throw new \Exception('Player not found for user: ' . $userId);
+            }
+
+            // Get player's villages
+            $villages = $player->villages()->with(['buildings', 'resources', 'troops'])->get();
+
+            // Send initial data
+            $initialData = [
+                'player' => $player,
+                'villages' => $villages,
+                'alliance' => $player->alliance,
+                'notifications' => $this->notificationService->getUserNotifications($userId),
+            ];
+
+            // Send real-time update
+            RealTimeGameService::sendUpdate($userId, 'user_initialized', $initialData);
+
+            // Cache player data
+            $this->cacheService->cachePlayerData($player);
+
+            $this->performanceMonitor->endTimer('user_initialization');
+
+            Log::info('User real-time features initialized', [
+                'user_id' => $userId,
+                'player_id' => $player->id,
+                'villages_count' => $villages->count(),
             ]);
 
-            Log::info('User real-time features initialized', ['user_id' => $userId]);
+            return [
+                'success' => true,
+                'player_id' => $player->id,
+                'villages_count' => $villages->count(),
+                'initialization_time' => $this->performanceMonitor->getTimer('user_initialization'),
+            ];
 
         } catch (\Exception $e) {
-            Log::error('Failed to initialize user real-time features', [
+            $this->errorHandler->handleError('user_initialization', $e, [
                 'user_id' => $userId,
-                'error' => $e->getMessage(),
             ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
         }
     }
 
     /**
      * Deinitialize real-time features for a user
      */
-    public static function deinitializeUserRealTime(int $userId): void
+    public function deinitializeUserRealTime(int $userId): array
     {
         try {
             // Mark user as offline
             RealTimeGameService::markUserOffline($userId);
-            
-            Log::info('User real-time features deinitialized', ['user_id' => $userId]);
+
+            // Clear user cache
+            $this->cacheService->clearPlayerCache($userId);
+
+            // Clear user notifications
+            $this->notificationService->clearUserNotifications($userId);
+
+            Log::info('User real-time features deinitialized', [
+                'user_id' => $userId,
+            ]);
+
+            return [
+                'success' => true,
+                'message' => 'User real-time features deinitialized',
+            ];
 
         } catch (\Exception $e) {
-            Log::error('Failed to deinitialize user real-time features', [
+            $this->errorHandler->handleError('user_deinitialization', $e, [
                 'user_id' => $userId,
+            ]);
+
+            return [
+                'success' => false,
                 'error' => $e->getMessage(),
-            ]);
+            ];
         }
     }
 
     /**
-     * Handle village creation with real-time updates
+     * Create village with real-time updates
      */
-    public static function createVillageWithRealTime(int $userId, array $villageData): Village
+    public function createVillageWithIntegration(array $villageData): array
     {
         try {
-            DB::beginTransaction();
+            $this->performanceMonitor->startTimer('village_creation');
 
-            $player = Player::where('user_id', $userId)->first();
-            if (!$player) {
-                throw new \Exception('Player not found');
-            }
+            $village = DB::transaction(function () use ($villageData) {
+                $village = Village::create($villageData);
 
-            $village = new Village();
-            $village->player_id = $player->id;
-            $village->name = $villageData['name'];
-            $village->lat = $villageData['lat'];
-            $village->lon = $villageData['lon'];
-            $village->wood = config('game.resources.starting_wood', 1000);
-            $village->clay = config('game.resources.starting_clay', 1000);
-            $village->iron = config('game.resources.starting_iron', 1000);
-            $village->crop = config('game.resources.starting_crop', 1000);
-            $village->population = 100;
-            $village->save();
-
-            // Create initial buildings
-            self::createInitialBuildings($village);
-
-            DB::commit();
-
-            // Send real-time update
-            RealTimeGameService::sendVillageUpdate($userId, $village->id, 'village_created', [
-                'village_name' => $village->name,
-                'coordinates' => ['lat' => $village->lat, 'lon' => $village->lon],
-                'resources' => [
-                    'wood' => $village->wood,
-                    'clay' => $village->clay,
-                    'iron' => $village->iron,
-                    'crop' => $village->crop,
-                ],
-            ]);
-
-            // Invalidate cache
-            GameCacheService::invalidatePlayerCache($userId);
-
-            // Log action
-            GameErrorHandler::logGameAction('village_created', [
-                'user_id' => $userId,
-                'village_id' => $village->id,
-                'village_name' => $village->name,
-            ]);
-
-            return $village;
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            
-            GameErrorHandler::handleGameError($e, [
-                'action' => 'create_village',
-                'user_id' => $userId,
-                'village_data' => $villageData,
-            ]);
-            
-            throw $e;
-        }
-    }
-
-    /**
-     * Handle building upgrade with real-time updates
-     */
-    public static function upgradeBuildingWithRealTime(int $userId, int $villageId, string $buildingType, int $newLevel): void
-    {
-        try {
-            DB::beginTransaction();
-
-            $player = Player::where('user_id', $userId)->first();
-            if (!$player) {
-                throw new \Exception('Player not found');
-            }
-
-            $village = Village::where('id', $villageId)
-                ->where('player_id', $player->id)
-                ->first();
-            
-            if (!$village) {
-                throw new \Exception('Village not found');
-            }
-
-            // Update building level (simplified logic)
-            $village->increment('population', $newLevel);
-            $player->increment('population', $newLevel);
-
-            DB::commit();
-
-            // Send real-time update
-            RealTimeGameService::sendBuildingUpdate($userId, $villageId, $buildingType, $newLevel, [
-                'village_name' => $village->name,
-                'building_type' => $buildingType,
-                'new_level' => $newLevel,
-                'new_population' => $village->fresh()->population,
-            ]);
-
-            // Send resource update if applicable
-            if (in_array($buildingType, ['woodcutter', 'clay_pit', 'iron_mine', 'crop_field'])) {
-                RealTimeGameService::sendResourceUpdate($userId, $villageId, [
-                    'wood' => $village->wood,
-                    'clay' => $village->clay,
-                    'iron' => $village->iron,
-                    'crop' => $village->crop,
+                // Initialize village resources
+                $village->resources()->createMany([
+                    ['type' => 'wood', 'amount' => 750],
+                    ['type' => 'clay', 'amount' => 750],
+                    ['type' => 'iron', 'amount' => 750],
+                    ['type' => 'crop', 'amount' => 750],
                 ]);
-            }
 
-            // Invalidate cache
-            GameCacheService::invalidateVillageCache($villageId);
-            GameCacheService::invalidatePlayerCache($userId);
+                // Initialize village buildings
+                $village->buildings()->createMany([
+                    ['building_type_id' => 1, 'level' => 1], // Main Building
+                    ['building_type_id' => 2, 'level' => 1], // Woodcutter
+                    ['building_type_id' => 3, 'level' => 1], // Clay Pit
+                    ['building_type_id' => 4, 'level' => 1], // Iron Mine
+                    ['building_type_id' => 5, 'level' => 1], // Cropland
+                ]);
 
-            // Log action
-            GameErrorHandler::logGameAction('building_upgraded', [
-                'user_id' => $userId,
-                'village_id' => $villageId,
-                'building_type' => $buildingType,
-                'new_level' => $newLevel,
+                return $village;
+            });
+
+            // Send real-time update
+            RealTimeGameService::sendVillageUpdate(
+                $village->player_id,
+                $village->id,
+                'village_created',
+                [
+                    'village_name' => $village->name,
+                    'coordinates' => $village->x . '|' . $village->y,
+                ]
+            );
+
+            // Send notification
+            $this->notificationService->sendUserNotification(
+                $village->player_id,
+                'Village Created',
+                "Your new village '{$village->name}' has been created at coordinates {$village->x}|{$village->y}",
+                'village_created'
+            );
+
+            // Cache village data
+            $this->cacheService->cacheVillageData($village);
+
+            $this->performanceMonitor->endTimer('village_creation');
+
+            Log::info('Village created with integration', [
+                'village_id' => $village->id,
+                'player_id' => $village->player_id,
+                'coordinates' => $village->x . '|' . $village->y,
             ]);
+
+            return [
+                'success' => true,
+                'village_id' => $village->id,
+                'creation_time' => $this->performanceMonitor->getTimer('village_creation'),
+            ];
 
         } catch (\Exception $e) {
-            DB::rollBack();
-            
-            GameErrorHandler::handleGameError($e, [
-                'action' => 'upgrade_building',
-                'user_id' => $userId,
-                'village_id' => $villageId,
-                'building_type' => $buildingType,
-            ]);
-            
-            throw $e;
+            $this->errorHandler->handleError('village_creation', $e, $villageData);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
         }
     }
 
     /**
-     * Handle alliance join with real-time updates
+     * Upgrade building with real-time updates
      */
-    public static function joinAllianceWithRealTime(int $userId, int $allianceId): void
+    public function upgradeBuildingWithIntegration(int $villageId, int $buildingTypeId): array
     {
         try {
-            $player = Player::where('user_id', $userId)->first();
-            if (!$player) {
-                throw new \Exception('Player not found');
-            }
+            $this->performanceMonitor->startTimer('building_upgrade');
 
-            $alliance = Alliance::find($allianceId);
-            if (!$alliance) {
-                throw new \Exception('Alliance not found');
-            }
-
-            // Add player to alliance (simplified logic)
-            $player->alliance_id = $allianceId;
-            $player->save();
-
-            // Send alliance update
-            RealTimeGameService::sendAllianceUpdate($allianceId, 'member_joined', [
-                'player_name' => $player->name,
-                'player_id' => $player->id,
-                'alliance_name' => $alliance->name,
-            ]);
-
-            // Send personal update
-            RealTimeGameService::sendUpdate($userId, 'alliance_joined', [
-                'alliance_name' => $alliance->name,
-                'alliance_id' => $allianceId,
-            ]);
-
-            // Invalidate cache
-            GameCacheService::invalidatePlayerCache($userId);
-            GameCacheService::invalidateAllianceCache($allianceId);
-
-            // Log action
-            GameErrorHandler::logGameAction('alliance_joined', [
-                'user_id' => $userId,
-                'player_id' => $player->id,
-                'alliance_id' => $allianceId,
-                'alliance_name' => $alliance->name,
-            ]);
-
-        } catch (\Exception $e) {
-            GameErrorHandler::handleGameError($e, [
-                'action' => 'join_alliance',
-                'user_id' => $userId,
-                'alliance_id' => $allianceId,
-            ]);
-            
-            throw $e;
-        }
-    }
-
-    /**
-     * Handle resource update with real-time notifications
-     */
-    public static function updateResourcesWithRealTime(int $userId, int $villageId, array $resources): void
-    {
-        try {
-            $player = Player::where('user_id', $userId)->first();
-            if (!$player) {
-                throw new \Exception('Player not found');
-            }
-
-            $village = Village::where('id', $villageId)
-                ->where('player_id', $player->id)
+            $village = Village::with(['player', 'buildings'])->findOrFail($villageId);
+            $building = $village->buildings()
+                ->where('building_type_id', $buildingTypeId)
                 ->first();
-            
-            if (!$village) {
-                throw new \Exception('Village not found');
+
+            if (!$building) {
+                throw new \Exception('Building not found');
             }
 
-            // Update resources
-            foreach ($resources as $resourceType => $amount) {
-                if (in_array($resourceType, ['wood', 'clay', 'iron', 'crop'])) {
-                    $village->$resourceType = $amount;
-                }
-            }
-            $village->save();
-
-            // Send real-time resource update
-            RealTimeGameService::sendResourceUpdate($userId, $villageId, [
-                'wood' => $village->wood,
-                'clay' => $village->clay,
-                'iron' => $village->iron,
-                'crop' => $village->crop,
+            // Start building upgrade
+            $building->update([
+                'is_under_construction' => true,
+                'construction_started_at' => now(),
+                'construction_completed_at' => now()->addHours($building->level + 1),
             ]);
 
-            // Check for resource storage full notification
-            $storageCapacity = config('game.resources.storage_capacity_base', 10000);
-            foreach ($resources as $resourceType => $amount) {
-                if ($amount >= $storageCapacity * 0.9) { // 90% full
-                    RealTimeGameService::sendUpdate($userId, 'resource_storage_full', [
-                        'village_id' => $villageId,
-                        'resource_type' => $resourceType,
-                        'current_amount' => $amount,
-                        'storage_capacity' => $storageCapacity,
-                    ]);
-                }
-            }
+            // Send real-time update
+            RealTimeGameService::sendBuildingUpdate(
+                $village->player_id,
+                $villageId,
+                $building->buildingType->key,
+                $building->level + 1,
+                [
+                    'construction_time' => $building->construction_completed_at->diffInSeconds(now()),
+                ]
+            );
 
-            // Invalidate cache
-            GameCacheService::invalidateVillageCache($villageId);
+            // Send notification
+            $this->notificationService->sendUserNotification(
+                $village->player_id,
+                'Building Upgrade Started',
+                "Upgrading {$building->buildingType->name} to level " . ($building->level + 1),
+                'building_upgrade'
+            );
+
+            $this->performanceMonitor->endTimer('building_upgrade');
+
+            Log::info('Building upgrade started with integration', [
+                'village_id' => $villageId,
+                'building_type_id' => $buildingTypeId,
+                'new_level' => $building->level + 1,
+            ]);
+
+            return [
+                'success' => true,
+                'building_id' => $building->id,
+                'new_level' => $building->level + 1,
+                'completion_time' => $building->construction_completed_at,
+            ];
 
         } catch (\Exception $e) {
-            GameErrorHandler::handleGameError($e, [
-                'action' => 'update_resources',
-                'user_id' => $userId,
+            $this->errorHandler->handleError('building_upgrade', $e, [
                 'village_id' => $villageId,
-                'resources' => $resources,
+                'building_type_id' => $buildingTypeId,
             ]);
-            
-            throw $e;
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
         }
     }
 
     /**
-     * Send system-wide announcement with real-time delivery
+     * Join alliance with real-time updates
      */
-    public static function sendSystemAnnouncement(string $title, string $message, string $priority = 'normal'): void
+    public function joinAllianceWithIntegration(int $playerId, int $allianceId): array
     {
         try {
-            // Send via real-time service
+            $this->performanceMonitor->startTimer('alliance_join');
+
+            $player = Player::findOrFail($playerId);
+            $alliance = Alliance::findOrFail($allianceId);
+
+            // Update player alliance
+            $player->update(['alliance_id' => $allianceId]);
+
+            // Send real-time update to alliance members
+            RealTimeGameService::sendAllianceUpdate(
+                $allianceId,
+                'member_joined',
+                [
+                    'player_name' => $player->name,
+                    'player_id' => $playerId,
+                ]
+            );
+
+            // Send notification to alliance members
+            $allianceMembers = $alliance->members()->where('id', '!=', $playerId)->get();
+            foreach ($allianceMembers as $member) {
+                $this->notificationService->sendUserNotification(
+                    $member->user_id,
+                    'New Alliance Member',
+                    "{$player->name} has joined the alliance",
+                    'alliance_member_joined'
+                );
+            }
+
+            // Send notification to joining player
+            $this->notificationService->sendUserNotification(
+                $player->user_id,
+                'Alliance Joined',
+                "You have joined the alliance '{$alliance->name}'",
+                'alliance_joined'
+            );
+
+            $this->performanceMonitor->endTimer('alliance_join');
+
+            Log::info('Player joined alliance with integration', [
+                'player_id' => $playerId,
+                'alliance_id' => $allianceId,
+                'alliance_name' => $alliance->name,
+            ]);
+
+            return [
+                'success' => true,
+                'alliance_id' => $allianceId,
+                'alliance_name' => $alliance->name,
+            ];
+
+        } catch (\Exception $e) {
+            $this->errorHandler->handleError('alliance_join', $e, [
+                'player_id' => $playerId,
+                'alliance_id' => $allianceId,
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Get comprehensive game statistics
+     */
+    public function getGameStatistics(): array
+    {
+        try {
+            $this->performanceMonitor->startTimer('game_statistics');
+
+            $stats = [
+                'players' => [
+                    'total' => Player::count(),
+                    'online' => RealTimeGameService::getOnlineUsers(),
+                    'active_today' => Player::where('last_activity', '>=', now()->subDay())->count(),
+                ],
+                'villages' => [
+                    'total' => Village::count(),
+                    'active' => Village::whereHas('player', function ($query) {
+                        $query->where('last_activity', '>=', now()->subDay());
+                    })->count(),
+                ],
+                'alliances' => [
+                    'total' => Alliance::count(),
+                    'active' => Alliance::whereHas('members', function ($query) {
+                        $query->where('last_activity', '>=', now()->subDay());
+                    })->count(),
+                ],
+                'tasks' => [
+                    'total' => Task::count(),
+                    'completed_today' => Task::where('status', 'completed')
+                        ->where('completed_at', '>=', now()->subDay())
+                        ->count(),
+                ],
+                'reports' => [
+                    'total' => Report::count(),
+                    'today' => Report::where('created_at', '>=', now()->subDay())->count(),
+                ],
+                'performance' => $this->performanceMonitor->getPerformanceStats(),
+                'cache' => $this->cacheService->getCacheStats(),
+                'notifications' => $this->notificationService->getNotificationStats(),
+                'errors' => $this->errorHandler->getErrorStats(),
+            ];
+
+            $this->performanceMonitor->endTimer('game_statistics');
+
+            return [
+                'success' => true,
+                'statistics' => $stats,
+                'generation_time' => $this->performanceMonitor->getTimer('game_statistics'),
+            ];
+
+        } catch (\Exception $e) {
+            $this->errorHandler->handleError('game_statistics', $e);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Send system announcement
+     */
+    public function sendSystemAnnouncement(string $title, string $message, string $priority = 'normal'): array
+    {
+        try {
+            $this->performanceMonitor->startTimer('system_announcement');
+
+            // Send to all online users
             RealTimeGameService::sendSystemAnnouncement($title, $message, $priority);
 
-            // Also send via notification service if available
-            if (class_exists('App\Services\GameNotificationService')) {
-                $activeUsers = User::where('last_activity_at', '>=', now()->subHours(1))
-                    ->pluck('id')
-                    ->toArray();
+            // Send notifications to all users
+            $this->notificationService->sendSystemNotification($title, $message, $priority);
 
-                GameNotificationService::broadcastNotification($activeUsers, 'system_message', [
-                    'title' => $title,
-                    'message' => $message,
-                    'system_announcement' => true,
-                ], $priority);
-            }
+            $this->performanceMonitor->endTimer('system_announcement');
 
             Log::info('System announcement sent', [
                 'title' => $title,
                 'priority' => $priority,
             ]);
 
+            return [
+                'success' => true,
+                'message' => 'System announcement sent successfully',
+            ];
+
         } catch (\Exception $e) {
-            Log::error('Failed to send system announcement', [
+            $this->errorHandler->handleError('system_announcement', $e, [
                 'title' => $title,
-                'error' => $e->getMessage(),
+                'priority' => $priority,
             ]);
-        }
-    }
-
-    /**
-     * Get comprehensive game statistics with real-time data
-     */
-    public static function getGameStatisticsWithRealTime(): array
-    {
-        try {
-            $stats = GameCacheService::getGameStatistics('general');
-            $realTimeStats = RealTimeGameService::getRealTimeStats();
-            $performanceStats = GamePerformanceMonitor::getPerformanceStats();
 
             return [
-                'game_stats' => $stats,
-                'realtime_stats' => $realTimeStats,
-                'performance_stats' => $performanceStats,
-                'timestamp' => now()->toISOString(),
-            ];
-
-        } catch (\Exception $e) {
-            Log::error('Failed to get comprehensive game statistics', [
+                'success' => false,
                 'error' => $e->getMessage(),
-            ]);
-            
-            return [
-                'error' => 'Failed to retrieve statistics',
-                'timestamp' => now()->toISOString(),
             ];
         }
     }
 
     /**
-     * Create initial buildings for a new village
+     * Perform system maintenance
      */
-    private static function createInitialBuildings(Village $village): void
-    {
-        $initialBuildings = [
-            ['type' => 'woodcutter', 'level' => 1],
-            ['type' => 'clay_pit', 'level' => 1],
-            ['type' => 'iron_mine', 'level' => 1],
-            ['type' => 'crop_field', 'level' => 1],
-            ['type' => 'warehouse', 'level' => 1],
-            ['type' => 'barracks', 'level' => 1],
-        ];
-        
-        foreach ($initialBuildings as $buildingData) {
-            // This would create building records if you have a buildings table
-            // For now, we'll just log the creation
-            Log::debug('Initial building created', [
-                'village_id' => $village->id,
-                'building_type' => $buildingData['type'],
-                'level' => $buildingData['level'],
-            ]);
-        }
-    }
-
-    /**
-     * Cleanup and maintenance for real-time features
-     */
-    public static function performMaintenance(): void
+    public function performMaintenance(): array
     {
         try {
-            // Cleanup real-time data
-            RealTimeGameService::cleanup();
-            
-            // Cleanup old notifications if service exists
-            if (class_exists('App\Services\GameNotificationService')) {
-                GameNotificationService::cleanupOldNotifications();
-            }
+            $this->performanceMonitor->startTimer('system_maintenance');
 
-            Log::info('Real-time maintenance completed');
+            $maintenance = [
+                'cache_cleanup' => $this->cacheService->cleanup(),
+                'notification_cleanup' => $this->notificationService->cleanup(),
+                'error_cleanup' => $this->errorHandler->cleanup(),
+                'realtime_cleanup' => RealTimeGameService::cleanup(),
+            ];
+
+            $this->performanceMonitor->endTimer('system_maintenance');
+
+            Log::info('System maintenance completed', $maintenance);
+
+            return [
+                'success' => true,
+                'maintenance' => $maintenance,
+                'maintenance_time' => $this->performanceMonitor->getTimer('system_maintenance'),
+            ];
 
         } catch (\Exception $e) {
-            Log::error('Real-time maintenance failed', [
+            $this->errorHandler->handleError('system_maintenance', $e);
+
+            return [
+                'success' => false,
                 'error' => $e->getMessage(),
-            ]);
+            ];
         }
     }
 }

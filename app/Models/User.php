@@ -4,10 +4,14 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\Commenter;
+use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
+// use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
+use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use IndexZer0\EloquentFiltering\Traits\Filterable;
+// use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+// use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
 use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
@@ -92,9 +96,6 @@ class User extends Authenticatable implements Auditable
 
     public function player()
     {
-    /**
-     * Get user's game statistics
-     */
         return $this->hasOne(\App\Models\Game\Player::class);
     }
 
