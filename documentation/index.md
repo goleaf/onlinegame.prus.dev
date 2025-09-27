@@ -121,5 +121,8 @@ This index is automatically generated and lists all documentation files:
   * **Utilities/**
     * [Documentation: CachingUtil.php](app/Utilities/CachingUtil.md)
     * [Documentation: ConfigUtil.php](app/Utilities/ConfigUtil.md)
+    * [Documentation: FilteringUtil.php](app/Utilities/FilteringUtil.md)
+    * [Documentation: PaginationUtil.php](app/Utilities/PaginationUtil.md)
     * [Documentation: QueryParameterUtil.php](app/Utilities/QueryParameterUtil.md)
+    * [Documentation: RateLimiterUtil.php](app/Utilities/RateLimiterUtil.md)
     * [Documentation: SchedulerUtil.php](app/Utilities/SchedulerUtil.md)
