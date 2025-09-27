@@ -157,7 +157,7 @@ class SystemController extends Controller
     /**
      * Get system health status
      */
-    public function getSystemHealth()
+    public function health()
     {
         try {
             $health = [
