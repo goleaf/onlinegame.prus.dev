@@ -20,12 +20,14 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         // Create default admin user
-        $adminUser = User::create([
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password123'),
-            'email_verified_at' => now(),
-        ]);
+        $adminUser = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+            ]
+        );
 
         // Create default world
         $world = World::create([
