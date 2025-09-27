@@ -19,6 +19,7 @@ use WendellAdriel\Lift\Lift;
 class Battle extends Model implements Auditable, IsFilterable
 {
     use HasReference;
+    use HasTaxonomy;
     use AuditableTrait;
     use Filterable;
     use Lift;
