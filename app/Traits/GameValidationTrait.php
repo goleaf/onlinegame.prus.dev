@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use JonPurvis\Squeaky\Rules\Clean;
 
 trait GameValidationTrait
 {
