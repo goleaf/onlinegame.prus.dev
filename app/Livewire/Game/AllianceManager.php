@@ -26,7 +26,7 @@ use function sbamtr\LaravelQueryEnrich\c;
 
 class AllianceManager extends Component
 {
-    use WithPagination;
+    use WithPagination, ApiResponseTrait;
 
     #[Reactive]
     public $world;

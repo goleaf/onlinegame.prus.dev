@@ -45,6 +45,30 @@ class User extends Authenticatable implements Auditable
     ];
 
     /**
+     * Determine if auditing is disabled for this model instance.
+     *
+     * @return bool
+     */
+    public function auditingDisabled(): bool
+    {
+        // You can customize this logic based on your business requirements
+        // For example, disable auditing for certain user types or conditions
+
+        // Disable auditing for system users or admin users
+        if (str_contains($this->email, 'admin@') || str_contains($this->email, 'system@')) {
+            return true;
+        }
+
+        // Disable auditing for users created before a certain date
+        if ($this->created_at && $this->created_at->isBefore(now()->subYear())) {
+            return true;
+        }
+
+        // By default, enable auditing
+        return false;
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -90,9 +114,7 @@ class User extends Authenticatable implements Auditable
 
     public function player()
     {
-    /**
-     * Get user's game statistics
-     */
+        /** Get user's game statistics */
         return $this->hasOne(\App\Models\Game\Player::class);
     }
 
@@ -363,9 +385,10 @@ class User extends Authenticatable implements Auditable
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
             return $q->where(function ($subQ) use ($searchTerm) {
-                $subQ->where('name', 'like', '%' . $searchTerm . '%')
-                     ->orWhere('email', 'like', '%' . $searchTerm . '%')
-                     ->orWhere('phone', 'like', '%' . $searchTerm . '%');
+                $subQ
+                    ->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('email', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('phone', 'like', '%' . $searchTerm . '%');
             });
         });
     }
