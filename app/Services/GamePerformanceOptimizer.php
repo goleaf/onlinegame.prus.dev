@@ -181,8 +181,7 @@ class GamePerformanceOptimizer
     {
         return DB::table('users')
             ->select([
-                'id', 'name', 'email', 'created_at', 'updated_at',
-                'game_level', 'experience_points', 'total_villages'
+                'id', 'name', 'email', 'created_at', 'updated_at'
             ])
             ->where('id', $userId)
             ->first()?->toArray() ?? [];

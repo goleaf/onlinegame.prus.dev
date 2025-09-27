@@ -104,6 +104,8 @@
 
 @livewire('game.advanced-map-manager')
 
+@push('scripts')
+<script src="{{ asset('js/advanced-map-manager.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize the advanced map
@@ -111,4 +113,5 @@ document.addEventListener('DOMContentLoaded', function() {
     mapManager.init();
 });
 </script>
+@endpush
 @endsection
