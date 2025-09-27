@@ -82,6 +82,11 @@ Route::middleware(['auth', 'game.auth'])->group(function () {
 
     // Market management
     Route::get('/game/market', [GameController::class, 'market'])->name('game.market');
+
+    // Message management
+    Route::get('/game/messages', function () {
+        return view('game.messages');
+    })->name('game.messages');
 });
 
 // Secure API routes with rate limiting
@@ -201,6 +206,21 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
 
     // API Documentation
     Route::get('/docs/larautilx', [APIDocumentationController::class, 'getLarautilxAPIDocumentation'])->name('game.api.docs.larautilx');
+
+    // Message management API
+    Route::get('/messages/inbox', [App\Http\Controllers\Game\MessageController::class, 'getInbox'])->name('game.api.messages.inbox');
+    Route::get('/messages/sent', [App\Http\Controllers\Game\MessageController::class, 'getSent'])->name('game.api.messages.sent');
+    Route::get('/messages/conversation/{otherPlayerId}', [App\Http\Controllers\Game\MessageController::class, 'getConversation'])->name('game.api.messages.conversation');
+    Route::get('/messages/alliance', [App\Http\Controllers\Game\MessageController::class, 'getAllianceMessages'])->name('game.api.messages.alliance');
+    Route::post('/messages/send', [App\Http\Controllers\Game\MessageController::class, 'sendMessage'])->name('game.api.messages.send');
+    Route::post('/messages/alliance/send', [App\Http\Controllers\Game\MessageController::class, 'sendAllianceMessage'])->name('game.api.messages.alliance.send');
+    Route::put('/messages/{messageId}/read', [App\Http\Controllers\Game\MessageController::class, 'markAsRead'])->name('game.api.messages.read');
+    Route::delete('/messages/{messageId}', [App\Http\Controllers\Game\MessageController::class, 'deleteMessage'])->name('game.api.messages.delete');
+    Route::get('/messages/stats', [App\Http\Controllers\Game\MessageController::class, 'getStats'])->name('game.api.messages.stats');
+    Route::post('/messages/bulk-read', [App\Http\Controllers\Game\MessageController::class, 'bulkMarkAsRead'])->name('game.api.messages.bulk-read');
+    Route::post('/messages/bulk-delete', [App\Http\Controllers\Game\MessageController::class, 'bulkDelete'])->name('game.api.messages.bulk-delete');
+    Route::get('/messages/players', [App\Http\Controllers\Game\MessageController::class, 'getPlayers'])->name('game.api.messages.players');
+    Route::get('/messages/{messageId}', [App\Http\Controllers\Game\MessageController::class, 'getMessage'])->name('game.api.messages.show');
 });
 
 // Error pages

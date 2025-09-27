@@ -9,6 +9,7 @@ use App\Services\RealTimeGameService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use SmartCache\Facades\SmartCache;
 
 class MessageService
 {
@@ -37,8 +38,8 @@ class MessageService
                 'is_read' => false,
             ]);
 
-            // Clear recipient's unread count cache
-            Cache::forget("unread_messages_count:{$recipientId}");
+            // Clear recipient's unread count cache with SmartCache
+            SmartCache::forget("unread_messages_count:{$recipientId}");
 
             // Send real-time notification
             $this->realTimeService::sendUpdate($recipientId, 'new_message', [
@@ -149,8 +150,8 @@ class MessageService
                 'is_read' => false,
             ]);
 
-            // Clear recipient's unread count cache
-            Cache::forget("unread_messages_count:{$recipientId}");
+            // Clear recipient's unread count cache with SmartCache
+            SmartCache::forget("unread_messages_count:{$recipientId}");
 
             // Send real-time notification
             $this->realTimeService::sendUpdate($recipientId, 'new_system_message', [
@@ -197,8 +198,8 @@ class MessageService
                 'is_read' => false,
             ]);
 
-            // Clear recipient's unread count cache
-            Cache::forget("unread_messages_count:{$recipientId}");
+            // Clear recipient's unread count cache with SmartCache
+            SmartCache::forget("unread_messages_count:{$recipientId}");
 
             // Send real-time notification
             $this->realTimeService::sendUpdate($recipientId, 'new_battle_report', [

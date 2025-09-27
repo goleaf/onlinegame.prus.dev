@@ -36,7 +36,7 @@ class PlayerController extends CrudController
     /**
      * Get players with advanced filtering and statistics
      */
-    public function getPlayersWithStats(Request $request)
+    public function withStats(Request $request)
     {
         $query = Player::withStats()
             ->with($this->relationships);
@@ -83,7 +83,7 @@ class PlayerController extends CrudController
     /**
      * Get top players by various criteria
      */
-    public function getTopPlayers(Request $request)
+    public function top(Request $request)
     {
         $limit = $request->get('limit', 10);
         $worldId = $request->get('world_id');
@@ -104,7 +104,7 @@ class PlayerController extends CrudController
     /**
      * Get player statistics
      */
-    public function getPlayerStats($playerId)
+    public function stats($playerId)
     {
         $player = Player::withStats()
             ->with($this->relationships)

@@ -4,6 +4,7 @@ namespace App\Livewire\Game;
 
 use App\Models\User;
 use App\Services\LarautilxIntegrationService;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\FilteringUtil;
@@ -56,44 +57,49 @@ class UserManagement extends Component
             $cacheKey = "users_data_{$this->searchQuery}_{$this->filterByWorld}_{$this->filterByTribe}_{$this->filterByAlliance}_{$this->showOnlyOnline}_{$this->showOnlyActive}_{$this->filterByStatus}_{$this->sortBy}_{$this->sortOrder}";
 
             $this->users = SmartCache::remember($cacheKey, now()->addMinutes(3), function () {
-                $query = User::withGamePlayers()
-                    ->with(['player.world', 'player.alliance']);
+                // Create base query with optimized selectRaw
+                $baseQuery = User::withGamePlayers()
+                    ->with(['player.world:id,name', 'player.alliance:id,name'])
+                    ->selectRaw('
+                        users.*,
+                        (SELECT COUNT(*) FROM players WHERE user_id = users.id) as player_count,
+                        (SELECT COUNT(*) FROM villages v 
+                         JOIN players p ON v.player_id = p.id WHERE p.user_id = users.id) as village_count,
+                        (SELECT SUM(population) FROM villages v 
+                         JOIN players p ON v.player_id = p.id WHERE p.user_id = users.id) as total_population
+                    ');
 
-                // Apply search
-                if (!empty($this->searchQuery)) {
-                    $query->where(function ($q) {
-                        $q
-                            ->where('name', 'like', '%' . $this->searchQuery . '%')
-                            ->orWhere('email', 'like', '%' . $this->searchQuery . '%')
-                            ->orWhereHas('player', function ($playerQuery) {
-                                $playerQuery->where('name', 'like', '%' . $this->searchQuery . '%');
-                            });
-                    });
-                }
+                // Apply conditional filters using QueryOptimizationService
+                $filters = [
+                    !empty($this->searchQuery) => function ($q) {
+                        return $q->where(function ($subQ) {
+                            $subQ
+                                ->where('name', 'like', '%' . $this->searchQuery . '%')
+                                ->orWhere('email', 'like', '%' . $this->searchQuery . '%')
+                                ->orWhereHas('player', function ($playerQuery) {
+                                    $playerQuery->where('name', 'like', '%' . $this->searchQuery . '%');
+                                });
+                        });
+                    },
+                    !empty($this->filterByWorld) => function ($q) {
+                        return $q->byWorld($this->filterByWorld);
+                    },
+                    !empty($this->filterByTribe) => function ($q) {
+                        return $q->byTribe($this->filterByTribe);
+                    },
+                    !empty($this->filterByAlliance) => function ($q) {
+                        return $q->byAlliance($this->filterByAlliance);
+                    },
+                    $this->showOnlyOnline => function ($q) {
+                        return $q->onlineUsers();
+                    },
+                    $this->showOnlyActive => function ($q) {
+                        return $q->activeGameUsers();
+                    }
+                ];
 
-                // Apply filters
-                if (!empty($this->filterByWorld)) {
-                    $query->byWorld($this->filterByWorld);
-                }
-
-                if (!empty($this->filterByTribe)) {
-                    $query->byTribe($this->filterByTribe);
-                }
-
-                if (!empty($this->filterByAlliance)) {
-                    $query->byAlliance($this->filterByAlliance);
-                }
-
-                if ($this->showOnlyOnline) {
-                    $query->onlineUsers();
-                }
-
-                if ($this->showOnlyActive) {
-                    $query->activeGameUsers();
-                }
-
-                // Apply sorting
-                $query->orderBy($this->sortBy, $this->sortOrder);
+                $query = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters);
+                $query = QueryOptimizationService::applyConditionalOrdering($query, $this->sortBy, $this->sortOrder);
 
                 $users = $query->get();
 
@@ -133,19 +139,32 @@ class UserManagement extends Component
     public function loadStatistics()
     {
         try {
-            // Use SmartCache for user statistics with automatic optimization
+            // Use SmartCache for user statistics with automatic optimization and selectRaw
             $this->statistics = SmartCache::remember('user_management_stats', now()->addMinutes(5), function () {
+                // Use single selectRaw query to get all statistics at once
+                $stats = User::selectRaw('
+                    COUNT(*) as total_users,
+                    COUNT(CASE WHEN EXISTS(SELECT 1 FROM players WHERE user_id = users.id) THEN 1 END) as users_with_players,
+                    COUNT(CASE WHEN EXISTS(SELECT 1 FROM players WHERE user_id = users.id AND is_active = 1) THEN 1 END) as active_game_users,
+                    COUNT(CASE WHEN EXISTS(SELECT 1 FROM players WHERE user_id = users.id AND is_online = 1) THEN 1 END) as online_users,
+                    COUNT(CASE WHEN created_at >= ? THEN 1 END) as recent_registrations
+                ', [now()->subDays(7)])
+                ->first();
+
+                // Get tribe statistics separately for better performance
+                $tribeStats = User::withGamePlayers()
+                    ->join('players', 'users.id', '=', 'players.user_id')
+                    ->selectRaw('players.tribe, COUNT(*) as count')
+                    ->groupBy('players.tribe')
+                    ->pluck('count', 'tribe');
+
                 return [
-                    'total_users' => User::count(),
-                    'users_with_players' => User::withGamePlayers()->count(),
-                    'active_game_users' => User::activeGameUsers()->count(),
-                    'online_users' => User::onlineUsers()->count(),
-                    'users_by_tribe' => User::withGamePlayers()
-                        ->join('players', 'users.id', '=', 'players.user_id')
-                        ->selectRaw('players.tribe, COUNT(*) as count')
-                        ->groupBy('players.tribe')
-                        ->pluck('count', 'tribe'),
-                    'recent_registrations' => User::where('created_at', '>=', now()->subDays(7))->count(),
+                    'total_users' => $stats->total_users ?? 0,
+                    'users_with_players' => $stats->users_with_players ?? 0,
+                    'active_game_users' => $stats->active_game_users ?? 0,
+                    'online_users' => $stats->online_users ?? 0,
+                    'users_by_tribe' => $tribeStats,
+                    'recent_registrations' => $stats->recent_registrations ?? 0,
                 ];
             });
         } catch (\Exception $e) {

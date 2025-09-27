@@ -48,12 +48,40 @@ class IntrospectAnalyzer extends Component
 
     public function mount()
     {
+        $startTime = microtime(true);
+        
+        ds('IntrospectAnalyzer mounted', [
+            'component' => 'IntrospectAnalyzer',
+            'mount_time' => now(),
+            'user_id' => auth()->id(),
+            'admin_panel' => true,
+            'selected_tab' => $this->selectedTab
+        ]);
+        
         $this->loadAnalysis();
+        
+        $mountTime = round((microtime(true) - $startTime) * 1000, 2);
+        ds('IntrospectAnalyzer mount completed', [
+            'mount_time_ms' => $mountTime,
+            'analysis_results_count' => count($this->analysisResults),
+            'is_loading' => $this->isLoading
+        ]);
     }
 
     public function loadAnalysis()
     {
+        $startTime = microtime(true);
         $this->isLoading = true;
+
+        ds('Analysis loading started', [
+            'include_models' => $this->includeModels,
+            'include_routes' => $this->includeRoutes,
+            'include_views' => $this->includeViews,
+            'include_classes' => $this->includeClasses,
+            'include_schemas' => $this->includeSchemas,
+            'include_dependencies' => $this->includeDependencies,
+            'include_performance' => $this->includePerformance
+        ]);
 
         try {
             $introspectService = app(IntrospectService::class);
@@ -61,41 +89,87 @@ class IntrospectAnalyzer extends Component
             $this->analysisResults = [];
 
             if ($this->includeModels) {
+                $modelStart = microtime(true);
                 $this->analysisResults['models'] = $introspectService->getModelAnalysis();
+                $modelTime = round((microtime(true) - $modelStart) * 1000, 2);
+                ds('Models analysis completed', [
+                    'models_count' => count($this->analysisResults['models']),
+                    'analysis_time_ms' => $modelTime
+                ]);
             }
 
             if ($this->includeRoutes) {
+                $routeStart = microtime(true);
                 $this->analysisResults['routes'] = $introspectService->getRouteAnalysis();
+                $routeTime = round((microtime(true) - $routeStart) * 1000, 2);
+                ds('Routes analysis completed', [
+                    'routes_count' => count($this->analysisResults['routes']),
+                    'analysis_time_ms' => $routeTime
+                ]);
             }
 
             if ($this->includeViews) {
+                $viewStart = microtime(true);
                 $this->analysisResults['views'] = $introspectService->getViewAnalysis();
+                $viewTime = round((microtime(true) - $viewStart) * 1000, 2);
+                ds('Views analysis completed', [
+                    'views_count' => count($this->analysisResults['views']),
+                    'analysis_time_ms' => $viewTime
+                ]);
             }
 
             if ($this->includeClasses) {
+                $classStart = microtime(true);
                 $this->analysisResults['classes'] = $introspectService->getClassAnalysis();
+                $classTime = round((microtime(true) - $classStart) * 1000, 2);
+                ds('Classes analysis completed', [
+                    'classes_count' => count($this->analysisResults['classes']),
+                    'analysis_time_ms' => $classTime
+                ]);
             }
 
             if ($this->includeSchemas) {
                 $this->analysisResults['schemas'] = $introspectService->getModelSchemas();
+                ds('Schemas analysis completed', [
+                    'schemas_count' => count($this->analysisResults['schemas'])
+                ]);
             }
 
             if ($this->includeDependencies) {
                 $this->analysisResults['dependencies'] = $introspectService->getModelDependencies();
+                ds('Dependencies analysis completed', [
+                    'dependencies_count' => count($this->analysisResults['dependencies'])
+                ]);
             }
 
             if ($this->includePerformance) {
                 $this->analysisResults['performance'] = $introspectService->getModelPerformanceMetrics();
                 $this->performanceMetrics = $this->analysisResults['performance'];
+                ds('Performance analysis completed', [
+                    'performance_metrics_count' => count($this->analysisResults['performance'])
+                ]);
             }
 
             $this->lastUpdate = now();
             $this->isLoading = false;
 
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+            ds('Analysis completed successfully', [
+                'total_analysis_time_ms' => $totalTime,
+                'total_results_count' => count($this->analysisResults),
+                'last_update' => $this->lastUpdate
+            ]);
+
             session()->flash('message', 'Analysis completed successfully!');
         } catch (\Exception $e) {
             $this->isLoading = false;
             session()->flash('error', 'Analysis failed: ' . $e->getMessage());
+            
+            ds('Analysis failed', [
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+                'trace' => $e->getTraceAsString()
+            ]);
         }
     }
 

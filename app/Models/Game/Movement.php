@@ -172,4 +172,67 @@ class Movement extends Model implements Auditable
             Filter::relation('toVillage', ['$has'])
         );
     }
+
+    /**
+     * Calculate distance between from and to villages
+     */
+    public function getDistanceAttribute(): ?float
+    {
+        if (!$this->fromVillage || !$this->toVillage) {
+            return null;
+        }
+
+        $geographicService = app(GeographicService::class);
+        return $geographicService->calculateDistance(
+            $this->fromVillage->latitude,
+            $this->fromVillage->longitude,
+            $this->toVillage->latitude,
+            $this->toVillage->longitude
+        );
+    }
+
+    /**
+     * Calculate travel time based on distance and speed
+     */
+    public function getTravelTimeAttribute(): ?int
+    {
+        $distance = $this->distance;
+        if (!$distance) {
+            return null;
+        }
+
+        $geographicService = app(GeographicService::class);
+        return $geographicService->calculateTravelTimeFromDistance($distance);
+    }
+
+    /**
+     * Get bearing from source to destination
+     */
+    public function getBearingAttribute(): ?float
+    {
+        if (!$this->fromVillage || !$this->toVillage) {
+            return null;
+        }
+
+        $geographicService = app(GeographicService::class);
+        return $geographicService->calculateBearing(
+            $this->fromVillage->latitude,
+            $this->fromVillage->longitude,
+            $this->toVillage->latitude,
+            $this->toVillage->longitude
+        );
+    }
+
+    /**
+     * Scope for movements within a certain distance
+     */
+    public function scopeWithinDistance($query, $latitude, $longitude, $maxDistance)
+    {
+        return $query->whereHas('fromVillage', function ($q) use ($latitude, $longitude, $maxDistance) {
+            $q->whereRaw("ST_Distance_Sphere(
+                POINT(longitude, latitude), 
+                POINT(?, ?)
+            ) <= ?", [$longitude, $latitude, $maxDistance * 1000]);
+        });
+    }
 }

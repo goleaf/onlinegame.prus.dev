@@ -39,7 +39,7 @@ class VillageController extends CrudController
     /**
      * Get villages with advanced filtering and statistics
      */
-    public function getVillagesWithStats(Request $request)
+    public function withStats(Request $request)
     {
         $query = Village::with($this->relationships)
             ->selectRaw('
@@ -87,7 +87,7 @@ class VillageController extends CrudController
     /**
      * Get villages by coordinates range
      */
-    public function getVillagesByCoordinates(Request $request)
+    public function byCoordinates(Request $request)
     {
         $validated = $request->validate([
             'x_min' => 'required|integer|min:0|max:999',
@@ -111,7 +111,7 @@ class VillageController extends CrudController
     /**
      * Get village details with all related data
      */
-    public function getVillageDetails($villageId)
+    public function details($villageId)
     {
         $village = Village::with([
             'player',
@@ -164,7 +164,7 @@ class VillageController extends CrudController
     /**
      * Get nearby villages
      */
-    public function getNearbyVillages(Request $request, $villageId)
+    public function nearby(Request $request, $villageId)
     {
         $village = Village::findOrFail($villageId);
         $radius = $request->get('radius', 10);

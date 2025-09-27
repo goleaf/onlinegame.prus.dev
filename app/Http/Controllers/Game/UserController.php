@@ -42,7 +42,7 @@ class UserController extends CrudController
     /**
      * Get users with game statistics
      */
-    public function getUsersWithGameStats(Request $request)
+    public function withGameStats(Request $request)
     {
         // Rate limiting for user statistics
         $rateLimitKey = 'user_stats_' . ($request->ip() ?? 'unknown');
@@ -144,7 +144,7 @@ class UserController extends CrudController
     /**
      * Get online users
      */
-    public function getOnlineUsers(Request $request)
+    public function online(Request $request)
     {
         $query = User::onlineUsers()
             ->with(['player.world', 'player.alliance']);
