@@ -43,6 +43,7 @@ class BuildingForm extends Formello
             'name' => [
                 'label' => __('Building Name'),
                 'maxlength' => 100,
+                'rules' => [new Username()],
             ],
             'level' => [
                 'label' => __('Level'),
