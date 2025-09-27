@@ -10,6 +10,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use SmartCache\Facades\SmartCache;
+use WendellAdriel\Lift\Lift;
 
 class Message extends Model implements Auditable
 {

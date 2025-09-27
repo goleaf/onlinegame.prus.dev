@@ -143,8 +143,9 @@ class Village extends Model implements Auditable
                     clay: $resource->clay,
                     iron: $resource->iron,
                     crop: $resource->crop
-    {
-        return $this->hasMany(Resource::class);
+                );
+            }
+        );
     }
 
     public function resourceProductionLogs(): HasMany
