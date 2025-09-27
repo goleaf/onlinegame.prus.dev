@@ -2,6 +2,7 @@
 
 namespace App\Models\Game;
 
+use App\Traits\Commentable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
@@ -12,14 +13,12 @@ use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use WendellAdriel\Lift\Lift;
 
 class Battle extends Model implements Auditable, IsFilterable
 {
-    use HasReference;
+    use HasReference, Commentable;
     use AuditableTrait;
     use Filterable;
-    use Lift;
 
     protected $fillable = [
         'attacker_id',

@@ -5,9 +5,19 @@ namespace App\Services;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use LaraUtilX\Utilities\CachingUtil;
+use LaraUtilX\Utilities\LoggingUtil;
 
 class SeoAnalyticsService
 {
+    protected CachingUtil $cachingUtil;
+    protected LoggingUtil $loggingUtil;
+
+    public function __construct()
+    {
+        $this->cachingUtil = new CachingUtil(3600, ['seo_analytics']);
+        $this->loggingUtil = new LoggingUtil();
+    }
     /**
      * Track SEO metrics for a page
      */
