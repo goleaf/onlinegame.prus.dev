@@ -5,6 +5,7 @@ namespace App\Livewire\Game;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
+use App\Services\PerformanceMonitoringService;
 use Livewire\Component;
 
 class Dashboard extends Component
