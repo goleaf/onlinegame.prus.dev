@@ -43,6 +43,8 @@ return [
 - **Alliance System**: Guild management, diplomacy, and war coordination
 - **Battle System**: Combat reports, statistics, and war battles
 - **Quest & Achievement System**: Player progression and milestone tracking
+- **Report System**: Battle reports, game events, and activity tracking
+- **Notification System**: Real-time alerts and game notifications
 - **Authentication**: Secure API access with Laravel Sanctum tokens
 
 ## API Endpoints

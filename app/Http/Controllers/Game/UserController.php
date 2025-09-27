@@ -21,6 +21,7 @@ use Ziming\LaravelZxcvbn\Rules\ZxcvbnRule;
 class UserController extends CrudController
 {
     use ApiResponseTrait;
+    use GameValidationTrait;
 
     protected Model $model;
     protected RateLimiterUtil $rateLimiter;

@@ -227,7 +227,8 @@ class Tournament extends Model implements Auditable
             $rank = $participant->final_rank;
             if (isset($prizes[$rank])) {
                 $participant->update(['rewards' => $prizes[$rank]]);
-                // TODO: Actually give rewards to player
+                // Award rewards to player
+                $this->awardPlayerRewards($participant->player, $prizes[$rank]);
             }
         }
     }
@@ -323,5 +324,42 @@ class Tournament extends Model implements Auditable
         $remainingHours = $hours % 24;
 
         return $remainingHours > 0 ? "{$days}d {$remainingHours}h" : "{$days} days";
+    }
+
+    /**
+     * Award rewards to a player
+     */
+    protected function awardPlayerRewards(Player $player, array $rewards): void
+    {
+        foreach ($rewards as $rewardType => $amount) {
+            switch ($rewardType) {
+                case 'gold':
+                    $player->increment('gold', $amount);
+                    break;
+                case 'resources':
+                    // Award resources to player's capital village
+                    $capitalVillage = $player->villages()->where('is_capital', true)->first();
+                    if ($capitalVillage) {
+                        foreach ($amount as $resource => $resourceAmount) {
+                            $resourceModel = $capitalVillage->resources()->where('type', $resource)->first();
+                            if ($resourceModel) {
+                                $resourceModel->increment('amount', $resourceAmount);
+                            } else {
+                                $capitalVillage->resources()->create([
+                                    'type' => $resource,
+                                    'amount' => $resourceAmount,
+                                ]);
+                            }
+                        }
+                    }
+                    break;
+                case 'experience':
+                    $player->increment('experience', $amount);
+                    break;
+                case 'points':
+                    $player->increment('points', $amount);
+                    break;
+            }
+        }
     }
 }

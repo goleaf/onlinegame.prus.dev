@@ -6,6 +6,8 @@ use App\Models\Game\ChatMessage;
 use App\Models\Game\ChatChannel;
 use App\Models\Game\Player;
 use App\Services\ChatService;
+use App\Services\GameIntegrationService;
+use App\Services\GameNotificationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
