@@ -10,11 +10,14 @@ use App\Services\GeographicService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\FilteringUtil;
+use LaraUtilX\Utilities\PaginationUtil;
 use Livewire\WithPagination;
 
 class MovementManager extends Component
 {
-    use WithPagination;
+    use WithPagination, ApiResponseTrait;
 
     public $village;
 
