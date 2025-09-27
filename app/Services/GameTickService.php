@@ -19,10 +19,12 @@ use Illuminate\Support\Facades\Log;
 class GameTickService
 {
     protected $rabbitMQ;
+    protected $defenseService;
 
     public function __construct()
     {
         $this->rabbitMQ = new RabbitMQService();
+        $this->defenseService = new DefenseCalculationService();
     }
 
     public function processGameTick()

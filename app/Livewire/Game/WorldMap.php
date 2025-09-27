@@ -201,11 +201,6 @@ class WorldMap extends Component
 
 
 
-    public function resetZoom()
-    {
-        $this->zoomLevel = 1;
-        $this->addNotification('Zoom reset to 1x', 'info');
-    }
 
     public function toggleCoordinates()
     {

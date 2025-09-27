@@ -280,12 +280,13 @@ class GamePerformanceOptimizer
     {
         $limit = $params['limit'] ?? 100;
         
-        return DB::table('users')
+        $users = DB::table('users')
             ->select(['id', 'name', 'created_at'])
             ->orderBy('created_at', 'desc')
             ->limit($limit)
-            ->get()
-            ->toArray();
+            ->get();
+            
+        return $users ? $users->toArray() : [];
     }
 
     /**

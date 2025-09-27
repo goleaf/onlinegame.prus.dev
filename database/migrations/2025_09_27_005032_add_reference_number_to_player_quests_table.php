@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('player_quests', function (Blueprint $table) {
-            //
+            $table->string('reference_number')->nullable()->index()->after('id');
+        });
+        
+        // Add unique constraint after populating existing records
+        Schema::table('player_quests', function (Blueprint $table) {
+            $table->unique('reference_number');
         });
     }
 
@@ -22,7 +27,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('player_quests', function (Blueprint $table) {
-            //
+            $table->dropColumn('reference_number');
         });
     }
 };
