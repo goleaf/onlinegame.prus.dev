@@ -62,6 +62,8 @@ class GenerateSitemap extends Command
         }
 
         // Public player profiles (if any exist and are public)
+        // Note: Commenting out until is_public column is added to players table
+        /*
         $publicPlayers = Player::where('is_public', true)->limit(100)->get();
         foreach ($publicPlayers as $player) {
             $xml .= $this->generateUrlEntry(
@@ -71,6 +73,7 @@ class GenerateSitemap extends Command
                 $player->updated_at
             );
         }
+        */
 
         $xml .= '</urlset>' . PHP_EOL;
 

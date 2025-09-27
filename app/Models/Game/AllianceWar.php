@@ -9,7 +9,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class AllianceWar extends Model
 {
-    use HasFactory;
+    use HasFactory, HasReference;
 
     protected $fillable = [
         'attacker_alliance_id',
