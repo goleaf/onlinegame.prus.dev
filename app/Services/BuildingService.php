@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Log;
 
 class BuildingService
 {
+    protected $rabbitMQ;
+
+    public function __construct()
+    {
+        $this->rabbitMQ = new RabbitMQService();
+    }
+
     public function canBuild($village, $buildingType, $level = 1)
     {
         // Check if building exists and can be upgraded
