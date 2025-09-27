@@ -4,16 +4,22 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\Commenter;
+use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
+// use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
+use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+// use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
+use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
 
-class User extends Authenticatable implements Auditable
+class User extends Authenticatable implements Auditable, IsFilterable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -22,6 +28,7 @@ class User extends Authenticatable implements Auditable
     use AuditableTrait;
     use Lift;
     use HasReference;
+    use Filterable;
 
     // Laravel Lift typed properties
     public int $id;
@@ -307,12 +314,18 @@ class User extends Authenticatable implements Auditable
             $q->where('alliance_id', $allianceId);
         });
     }
-
-    /**
-     * Define allowed filters for the User model
-     */
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
             Filter::field('name', ['$eq', '$like']),
             Filter::field('email', ['$eq', '$like']),
+            Filter::field('phone', ['$eq', '$like']),
+            Filter::field('phone_country', ['$eq']),
+            Filter::field('phone_normalized', ['$eq', '$like']),
+            Filter::field('phone_e164', ['$eq', '$like']),
+            Filter::field('email_verified_at', ['$eq', '$gt', '$lt']),
+            Filter::relation('players', ['$has']),
+            Filter::relation('player', ['$has'])
+        );
+    }
+}

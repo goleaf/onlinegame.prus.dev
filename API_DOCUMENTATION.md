@@ -181,6 +181,29 @@ Authorization: Bearer your-token-here
 | GET | `/api/game/alliances/{id}/wars` | Get alliance wars |
 | GET | `/api/game/alliances/{id}/diplomacy` | Get alliance diplomacy |
 
+### Battle System
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/game/battles` | List all battles |
+| POST | `/api/game/battles` | Create battle report |
+| GET | `/api/game/battles/my-battles` | Get player's battles |
+| GET | `/api/game/battles/statistics` | Get battle statistics |
+| GET | `/api/game/battles/leaderboard` | Get battle leaderboard |
+| GET | `/api/game/battles/war/{warId}` | Get war battles |
+| GET | `/api/game/battles/{id}` | Get specific battle |
+
+### Quest & Achievement System
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/game/quests` | List all quests |
+| GET | `/api/game/quests/my-quests` | Get player's quests |
+| GET | `/api/game/quests/statistics` | Get quest statistics |
+| GET | `/api/game/quests/achievements` | Get player achievements |
+| GET | `/api/game/quests/achievements/leaderboard` | Get achievement leaderboard |
+| GET | `/api/game/quests/{id}` | Get specific quest |
+| POST | `/api/game/quests/{id}/start` | Start quest |
+| POST | `/api/game/quests/{id}/complete` | Complete quest |
+
 ## Response Format
 
 ### Success Response
