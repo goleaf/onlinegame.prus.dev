@@ -3,7 +3,6 @@
 namespace App\Models\Game;
 
 use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
-use EgMohamed\Referenceable\Traits\HasReference;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +10,7 @@ use MohamedSaid\Notable\Traits\HasNotables;
 
 class Quest extends Model
 {
-    use HasFactory, HasTaxonomy, HasNotables, HasReference;
+    use HasFactory, HasTaxonomy, HasNotables;
 
     protected $fillable = [
         'name',

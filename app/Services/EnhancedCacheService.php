@@ -108,11 +108,16 @@ class EnhancedCacheService
      */
     protected function compressData(mixed $data): mixed
     {
-        if (function_exists('igbinary_serialize') && function_exists('lzf_compress')) {
+        if (function_exists('igbinary_serialize')) {
             $serialized = igbinary_serialize($data);
-            return lzf_compress($serialized);
+            
+            if (function_exists('lzf_compress')) {
+                return lzf_compress($serialized);
+            }
+            
+            return $serialized;
         }
-
+        
         return $data;
     }
 

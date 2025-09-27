@@ -236,6 +236,9 @@ class TroopManager extends Component
                 'status' => 'in_progress',
             ]);
 
+            // Generate reference number for the training queue
+            $trainingQueue->generateReferenceNumber();
+
             // Deduct resources
             foreach ($this->trainingCost as $resource => $cost) {
                 $resourceModel = $this->village->resources()->where('type', $resource)->first();
