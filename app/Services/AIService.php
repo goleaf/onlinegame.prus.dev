@@ -80,6 +80,7 @@ class AIService
                 ]
             ];
 
+            $aiStart = microtime(true);
             $response = $this->provider->generateResponse(
                 modelName: $options['model'] ?? config('ai.default_model', 'gpt-3.5-turbo'),
                 messages: $messages,
@@ -87,6 +88,19 @@ class AIService
                 maxTokens: $options['max_tokens'] ?? 500,
                 jsonMode: $options['json_mode'] ?? false
             );
+            $aiTime = round((microtime(true) - $aiStart) * 1000, 2);
+
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            ds('AIService: Game content generation completed', [
+                'prompt_length' => strlen($prompt),
+                'response_length' => strlen($response->content),
+                'model_used' => $options['model'] ?? config('ai.default_model'),
+                'provider' => $this->defaultProvider,
+                'ai_generation_time_ms' => $aiTime,
+                'total_time_ms' => $totalTime,
+                'cache_hit' => false
+            ]);
 
             LoggingUtil::info('AI game content generated', [
                 'prompt' => $prompt,
