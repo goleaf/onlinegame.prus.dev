@@ -26,6 +26,7 @@ class Quest extends Model
         'resource_rewards',
         'is_repeatable',
         'is_active',
+        'reference_number',
     ];
 
     protected $casts = [

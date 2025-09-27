@@ -279,25 +279,20 @@ class GameTickService
         return $losses;
     }
 
-    private function calculateResourceLoot($defendingTroops)
+    private function calculateResourceLoot($defendingVillage)
     {
-        // More realistic loot calculation based on village resources
+        // Get actual village resources for realistic loot calculation
+        $villageResources = $defendingVillage->resources;
         $lootRate = 0.1 + (rand(0, 15) / 100); // 10-25% loot rate
         
-        // Base loot amounts (will be overridden by actual village resources if available)
-        $baseLoot = [
-            'wood' => rand(500, 2000),
-            'clay' => rand(500, 2000), 
-            'iron' => rand(500, 2000),
-            'crop' => rand(500, 2000),
-        ];
+        $loot = [];
+        foreach ($villageResources as $resource) {
+            $availableAmount = $resource->amount;
+            $lootAmount = floor($availableAmount * $lootRate);
+            $loot[$resource->type] = min($lootAmount, $availableAmount);
+        }
         
-        return [
-            'wood' => floor($baseLoot['wood'] * $lootRate),
-            'clay' => floor($baseLoot['clay'] * $lootRate),
-            'iron' => floor($baseLoot['iron'] * $lootRate),
-            'crop' => floor($baseLoot['crop'] * $lootRate),
-        ];
+        return $loot;
     }
 
     private function updateTroopLosses($village, $losses)
