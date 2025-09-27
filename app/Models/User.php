@@ -331,26 +331,7 @@ class User extends Authenticatable implements Auditable, IsFilterable
             Filter::relation('player', ['$has'])
         );
     }
-
-    /**
-     * Get user analytics data
-     */
-    public function getAnalyticsData(): array
-    {
-        $capitalVillage = $this->player?->villages()->where('is_capital', true)->first();
-        
-        return [
-            'user_id' => $this->id,
-            'user_name' => $this->name,
-            'has_player' => (bool) $this->player,
-            'has_capital' => (bool) $capitalVillage,
-            'capital_village_id' => $capitalVillage ? $capitalVillage->id : null,
-            'capital_village_name' => $capitalVillage ? $capitalVillage->name : null,
-            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
-        ])->label('User Capital Village');
-
-        return $capitalVillage;
-    }
+}
 
     /**
      * Scope to get users with game players
