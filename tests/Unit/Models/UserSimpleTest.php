@@ -12,8 +12,10 @@ class UserSimpleTest extends TestCase
     {
         $user = new User();
 
-        $this->assertTrue(method_exists($user, 'auditingDisabled'));
-        $this->assertIsBool($user->auditingDisabled());
+        $this->assertTrue(method_exists($user, 'isAuditingDisabled'));
+        $this->assertTrue(method_exists($user, 'getAuditingDisabledAttribute'));
+        $this->assertIsBool($user->isAuditingDisabled());
+        $this->assertIsBool($user->auditingDisabled);
     }
 
     /** @test */

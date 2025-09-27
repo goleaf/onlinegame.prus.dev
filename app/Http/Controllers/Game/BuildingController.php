@@ -7,11 +7,15 @@ use App\Models\Game\Building;
 use App\Models\Game\BuildingType;
 use App\Models\Game\BuildingQueue;
 use App\Models\Game\Village;
+use App\Traits\GameValidationTrait;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
 
 /**
  * @group Building Management
@@ -25,8 +29,28 @@ use Illuminate\Support\Facades\DB;
  * @tag Construction
  * @tag Village Development
  */
-class BuildingController extends Controller
+class BuildingController extends CrudController
 {
+    use ApiResponseTrait, GameValidationTrait;
+
+    protected Model $model;
+
+    protected array $validationRules = [
+        'village_id' => 'required|exists:villages,id',
+        'building_type_id' => 'required|exists:building_types,id',
+        'level' => 'required|integer|min:1|max:20',
+        'is_upgrading' => 'boolean',
+    ];
+
+    protected array $searchableFields = ['level'];
+    protected array $relationships = ['buildingType', 'village', 'buildingQueues'];
+    protected int $perPage = 15;
+
+    public function __construct()
+    {
+        $this->model = new Building();
+        parent::__construct($this->model);
+    }
     /**
      * Get village buildings
      *
@@ -72,13 +96,10 @@ class BuildingController extends Controller
                 ->where('village_id', $villageId)
                 ->get();
 
-            return response()->json(['data' => $buildings]);
+            return $this->successResponse($buildings, 'Village buildings retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Village not found'
-            ], 404);
+            return $this->errorResponse('Village not found', 404);
         }
     }
 
@@ -144,13 +165,10 @@ class BuildingController extends Controller
             $buildingData['upgrade_cost'] = $upgradeCost;
             $buildingData['upgrade_time'] = $upgradeTime;
 
-            return response()->json($buildingData);
+            return $this->successResponse($buildingData, 'Building details retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Building not found'
-            ], 404);
+            return $this->errorResponse('Building not found', 404);
         }
     }
 
@@ -257,18 +275,13 @@ class BuildingController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Building upgrade started',
+            return $this->successResponse([
                 'building_queue' => $buildingQueue
-            ]);
+            ], 'Building upgrade started successfully.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to start building upgrade: ' . $e->getMessage()
-            ], 500);
+            return $this->errorResponse('Failed to start building upgrade: ' . $e->getMessage(), 500);
         }
     }
 

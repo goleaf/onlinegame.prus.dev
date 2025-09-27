@@ -19,7 +19,7 @@ use SmartCache\Facades\SmartCache;
 
 class TroopManager extends Component
 {
-    use WithPagination;
+    use WithPagination, ApiResponseTrait;
 
     #[Reactive]
     public $village;
