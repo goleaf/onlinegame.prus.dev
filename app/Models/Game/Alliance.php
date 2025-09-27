@@ -14,12 +14,29 @@ use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use WendellAdriel\Lift\Lift;
 
 class Alliance extends Model implements Auditable
 {
     use HasNotables, HasReference;
     use AuditableTrait;
+    use Lift;
     // // use Filterable;
+
+    // Laravel Lift typed properties
+    public int $id;
+    public string $name;
+    public string $tag;
+    public ?string $description;
+    public int $world_id;
+    public ?int $leader_id;
+    public int $points;
+    public int $villages_count;
+    public int $members_count;
+    public bool $is_active;
+    public ?string $reference_number;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
 
     protected $fillable = [
         'name',
