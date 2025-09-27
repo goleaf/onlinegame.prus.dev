@@ -363,15 +363,14 @@ class IntrospectService
     /**
      * Calculate model complexity score
      */
-    private function calculateModelComplexity($modelDetail): int
+    private function calculateModelComplexity(array $fillable, array $casts, array $relationships): int
     {
         $score = 0;
-
-        $score += count($modelDetail->properties()) * 1;
-        $score += count($modelDetail->fillable ?? []) * 2;
-        $score += count($modelDetail->casts ?? []) * 3;
-        $score += count($this->getModelRelationships($modelDetail->class)) * 5;
-
+        
+        $score += count($fillable) * 2;
+        $score += count($casts) * 3;
+        $score += count($relationships) * 5;
+        
         return $score;
     }
 }

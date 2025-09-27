@@ -62,6 +62,20 @@ class BuildingManager extends Component
         $this->initializeBuildingFeatures();
     }
 
+    public function loadTaxonomies()
+    {
+        $this->buildingCategories = Taxonomy::findByType('building_category')
+            ->map(function ($taxonomy) {
+                return [
+                    'id' => $taxonomy->id,
+                    'name' => $taxonomy->name,
+                    'slug' => $taxonomy->slug,
+                    'description' => $taxonomy->description,
+                    'meta' => $taxonomy->meta,
+                ];
+            })->toArray();
+    }
+
     public function initializeBuildingFeatures()
     {
         $this->calculateBuildingProgress();
