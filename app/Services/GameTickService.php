@@ -604,40 +604,7 @@ class GameTickService
 
     private function calculateDefensiveBonus($village)
     {
-        $totalBonus = 0;
-
-        // Get all buildings for the village
-        $buildings = $village->buildings()->with('buildingType')->get();
-
-        foreach ($buildings as $building) {
-            $buildingType = $building->buildingType;
-            $level = $building->level;
-
-            switch ($buildingType->key) {
-                case 'wall':
-                    // Wall provides 2% defense bonus per level
-                    $totalBonus += ($level * 0.02);
-                    break;
-
-                case 'watchtower':
-                    // Watchtower provides 1.5% defense bonus per level
-                    $totalBonus += ($level * 0.015);
-                    break;
-
-                case 'trap':
-                    // Trap provides 1% defense bonus per level
-                    $totalBonus += ($level * 0.01);
-                    break;
-
-                case 'rally_point':
-                    // Rally point provides 0.5% defense bonus per level
-                    $totalBonus += ($level * 0.005);
-                    break;
-            }
-        }
-
-        // Cap defensive bonus at 50% (level 20 wall = 40% + other buildings)
-        return min($totalBonus, 0.5);
+        return $this->defenseService->calculateDefensiveBonus($village);
     }
 
     private function calculateSpyDefense($village)

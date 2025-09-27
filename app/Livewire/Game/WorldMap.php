@@ -67,6 +67,11 @@ class WorldMap extends Component
         'gameTickProcessed',
         'playerSelected',
         'allianceSelected',
+        'coordinatesSelected',
+        'mapLayerToggled',
+        'mapThemeChanged',
+        'movementPathSelected',
+        'tradeRouteSelected',
     ];
 
     public function mount($worldId = null)
@@ -92,6 +97,8 @@ class WorldMap extends Component
         if ($this->world) {
             $this->loadMapData();
             $this->initializeMapFeatures();
+            $this->calculateMapBounds();
+            $this->loadVisibleVillages();
         }
     }
 
@@ -322,19 +329,44 @@ class WorldMap extends Component
             return;
         }
 
-        $villages = Village::where('world_id', $this->world->id)->get();
-        $players = Player::where('world_id', $this->world->id)->get();
-        $alliances = $this->world->alliances;
+        // Use optimized query to get all stats in one go
+        $stats = Village::where('world_id', $this->world->id)
+            ->selectRaw('
+                COUNT(*) as total_villages,
+                SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active_villages,
+                SUM(CASE WHEN is_capital = 1 THEN 1 ELSE 0 END) as capital_villages,
+                AVG(population) as average_population,
+                MAX(population) as largest_village,
+                MIN(population) as smallest_village,
+                SUM(population) as total_population
+            ')
+            ->first();
+
+        $playerStats = Player::where('world_id', $this->world->id)
+            ->selectRaw('
+                COUNT(*) as total_players,
+                COUNT(DISTINCT tribe) as unique_tribes,
+                GROUP_CONCAT(DISTINCT tribe) as tribes
+            ')
+            ->first();
+
+        $allianceStats = \DB::table('alliances')
+            ->where('world_id', $this->world->id)
+            ->selectRaw('COUNT(*) as total_alliances')
+            ->first();
 
         $this->mapStats = [
-            'total_villages' => $villages->count(),
-            'total_players' => $players->count(),
-            'total_alliances' => $alliances->count(),
-            'active_villages' => $villages->where('is_active', true)->count(),
-            'capital_villages' => $villages->where('is_capital', true)->count(),
-            'average_population' => $villages->avg('population'),
-            'largest_village' => $villages->max('population'),
-            'tribes' => $players->pluck('tribe')->unique()->values()->toArray(),
+            'total_villages' => $stats->total_villages ?? 0,
+            'total_players' => $playerStats->total_players ?? 0,
+            'total_alliances' => $allianceStats->total_alliances ?? 0,
+            'active_villages' => $stats->active_villages ?? 0,
+            'capital_villages' => $stats->capital_villages ?? 0,
+            'average_population' => round($stats->average_population ?? 0, 2),
+            'largest_village' => $stats->largest_village ?? 0,
+            'smallest_village' => $stats->smallest_village ?? 0,
+            'total_population' => $stats->total_population ?? 0,
+            'unique_tribes' => $playerStats->unique_tribes ?? 0,
+            'tribes' => $playerStats->tribes ? explode(',', $playerStats->tribes) : [],
         ];
     }
 
