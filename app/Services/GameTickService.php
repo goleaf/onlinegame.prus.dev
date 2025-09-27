@@ -210,6 +210,21 @@ class GameTickService
         // Create battle reports
         $this->createBattleReports($battle);
 
+        // Publish battle result to RabbitMQ
+        $this->rabbitMQ->publishBattleResult(
+            $attackerVillage->player_id,
+            $defenderVillage->player_id,
+            [
+                'battle_id' => $battle->id,
+                'result' => $battleResult['result'],
+                'attacker_losses' => $battleResult['attacker_losses'],
+                'defender_losses' => $battleResult['defender_losses'],
+                'resources_looted' => $battleResult['resources_looted'],
+                'village_id' => $defenderVillage->id,
+                'village_name' => $defenderVillage->name,
+            ]
+        );
+
         Log::info("Battle processed: {$battleResult['result']} at village {$defenderVillage->name}");
     }
 

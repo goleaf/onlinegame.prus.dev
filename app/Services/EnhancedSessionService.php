@@ -21,7 +21,7 @@ class EnhancedSessionService
         $this->defaultLifetime = config('session.lifetime', 240);
         $this->compressionOptions = [
             'serializer' => 'igbinary',
-            'compression' => 'lzf',
+            'compression' => function_exists('lzf_compress') ? 'lzf' : 'none',
         ];
     }
 
@@ -146,11 +146,16 @@ class EnhancedSessionService
      */
     protected function compressData(mixed $data): mixed
     {
-        if (function_exists('igbinary_serialize') && function_exists('lzf_compress')) {
+        if (function_exists('igbinary_serialize')) {
             $serialized = igbinary_serialize($data);
-            return base64_encode(lzf_compress($serialized));
+            
+            if (function_exists('lzf_compress')) {
+                return base64_encode(lzf_compress($serialized));
+            }
+            
+            return base64_encode($serialized);
         }
-
+        
         return $data;
     }
 

@@ -56,7 +56,7 @@ class LarautilxIntegrationService
     }
 
     /**
-     * Cache data with game-specific tags
+     * Cache data with game-specific tags using SmartCache
      *
      * @param string $key
      * @param callable $callback
@@ -67,9 +67,8 @@ class LarautilxIntegrationService
     public function cacheGameData(string $key, callable $callback, ?int $expiration = null, ?array $tags = null)
     {
         $expiration = $expiration ?? $this->defaultCacheExpiration;
-        $tags = $tags ?? $this->defaultCacheTags;
-
-        return $this->cachingUtil->cache($key, $callback, $expiration, $tags);
+        
+        return SmartCache::remember($key, now()->addSeconds($expiration), $callback);
     }
 
     /**

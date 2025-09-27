@@ -256,6 +256,7 @@ class TroopManager extends Component
             $this->dispatch('trainingStarted', [
                 'unit_name' => $this->selectedUnitType->name,
                 'quantity' => $this->trainingQuantity,
+                'reference_number' => $trainingQueue->reference_number,
             ]);
         } catch (\Exception $e) {
             $this->addNotification('Training failed: ' . $e->getMessage(), 'error');

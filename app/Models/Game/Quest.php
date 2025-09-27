@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Quest extends Model
 {
-    use HasFactory, HasTaxonomy, HasNotables;
+    use HasFactory, HasTaxonomy, HasNotables, HasReference;
 
     protected $fillable = [
         'name',
