@@ -11,7 +11,26 @@ class UserObserver
      */
     public function created(User $user): void
     {
+        $startTime = microtime(true);
+        
+        ds('UserObserver: User created event triggered', [
+            'observer' => 'UserObserver',
+            'event' => 'created',
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'has_phone' => !empty($user->phone),
+            'event_time' => now()
+        ]);
+        
         $this->formatPhoneNumber($user);
+        
+        $processingTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ds('UserObserver: User created event completed', [
+            'user_id' => $user->id,
+            'processing_time_ms' => $processingTime,
+            'phone_formatted' => !empty($user->phone)
+        ]);
     }
 
     /**

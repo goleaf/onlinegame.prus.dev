@@ -56,6 +56,9 @@ class UserProfileManager extends Component
         $this->email = $this->user->email;
         $this->phone = $this->user->phone ?? '';
         $this->phone_country = $this->user->phone_country ?? 'US';
+
+        // Initialize real-time features for the user
+        $this->initializeUserRealTime();
     }
 
     public function updated($propertyName)
