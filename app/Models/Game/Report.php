@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use WendellAdriel\Lift\Lift;
 
 class Report extends Model implements Auditable
 {

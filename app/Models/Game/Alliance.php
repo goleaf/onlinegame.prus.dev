@@ -21,7 +21,7 @@ class Alliance extends Model implements Auditable, IsFilterable
     use HasNotables, HasReference;
     use AuditableTrait;
     use Lift;
-    // // use Filterable;
+    use Filterable;
 
     // Laravel Lift typed properties
     public int $id;

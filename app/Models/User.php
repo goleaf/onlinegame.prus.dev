@@ -84,6 +84,7 @@ class User extends Authenticatable implements Auditable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'phone' => \Propaganistas\LaravelPhone\Casts\RawPhoneNumberCast::class.':phone_country',
+            'reference_number' => 'string',
         ];
     }
 
