@@ -13,10 +13,8 @@ class AllianceMember extends Model
     protected $fillable = [
         'alliance_id',
         'player_id',
-        'role',
+        'rank',
         'joined_at',
-        'left_at',
-        'is_active',
         'reference_number',
     ];
 
