@@ -228,6 +228,8 @@ class GameTickService
                 'resources_looted' => $battleResult['resources_looted'],
                 'village_id' => $defenderVillage->id,
                 'village_name' => $defenderVillage->name,
+                'defensive_bonus' => $battleResult['defensive_bonus'],
+                'battle_power' => $battleResult['battle_power'],
             ]
         );
 
