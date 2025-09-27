@@ -6,11 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Game\Battle;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
+use App\Traits\GameValidationTrait;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Battle Management
@@ -24,8 +29,9 @@ use Illuminate\Support\Facades\DB;
  * @tag Combat
  * @tag War System
  */
-class BattleController extends Controller
+class BattleController extends CrudController
 {
+    use ApiResponseTrait;
     /**
      * Get all battles
      *
@@ -120,13 +126,21 @@ class BattleController extends Controller
             $battles = $query->orderBy('occurred_at', 'desc')
                 ->paginate($request->input('per_page', 15));
 
-            return response()->json($battles);
+            LoggingUtil::info('Battles retrieved', [
+                'user_id' => auth()->id(),
+                'filters' => $request->only(['attacker_id', 'defender_id', 'result', 'war_id', 'date_from', 'date_to']),
+                'count' => $battles->count(),
+            ], 'battle_system');
+
+            return $this->paginatedResponse($battles, 'Battles retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve battles: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving battles', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'battle_system');
+
+            return $this->errorResponse('Failed to retrieve battles: ' . $e->getMessage(), 500);
         }
     }
 
@@ -196,13 +210,21 @@ class BattleController extends Controller
             $battle = Battle::with(['attacker', 'defender', 'village'])
                 ->findOrFail($id);
 
-            return response()->json($battle);
+            LoggingUtil::info('Battle details retrieved', [
+                'user_id' => auth()->id(),
+                'battle_id' => $id,
+            ], 'battle_system');
+
+            return $this->successResponse($battle, 'Battle details retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Battle not found'
-            ], 404);
+            LoggingUtil::error('Error retrieving battle details', [
+                'error' => $e->getMessage(),
+                'battle_id' => $id,
+                'user_id' => auth()->id(),
+            ], 'battle_system');
+
+            return $this->errorResponse('Battle not found', 404);
         }
     }
 
@@ -268,13 +290,22 @@ class BattleController extends Controller
             $battles = $query->orderBy('occurred_at', 'desc')
                 ->paginate($request->input('per_page', 15));
 
-            return response()->json($battles);
+            LoggingUtil::info('Player battles retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'filters' => $request->only(['role', 'result']),
+                'count' => $battles->count(),
+            ], 'battle_system');
+
+            return $this->paginatedResponse($battles, 'Player battles retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve player battles: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving player battles', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'battle_system');
+
+            return $this->errorResponse('Failed to retrieve player battles: ' . $e->getMessage(), 500);
         }
     }
 
@@ -356,7 +387,7 @@ class BattleController extends Controller
                 ->limit(5)
                 ->get(['id', 'result', 'occurred_at']);
 
-            return response()->json([
+            $stats = [
                 'total_battles' => $totalBattles,
                 'victories' => $victories,
                 'defeats' => $defeats,
@@ -364,13 +395,24 @@ class BattleController extends Controller
                 'win_rate' => round($winRate, 2),
                 'total_loot_gained' => $totalLoot,
                 'recent_battles' => $recentBattles
-            ]);
+            ];
+
+            LoggingUtil::info('Battle statistics retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'total_battles' => $totalBattles,
+                'win_rate' => round($winRate, 2),
+            ], 'battle_system');
+
+            return $this->successResponse($stats, 'Battle statistics retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve battle statistics: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving battle statistics', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'battle_system');
+
+            return $this->errorResponse('Failed to retrieve battle statistics: ' . $e->getMessage(), 500);
         }
     }
 
@@ -413,13 +455,22 @@ class BattleController extends Controller
                 ->orderBy('occurred_at', 'desc')
                 ->get();
 
-            return response()->json(['data' => $battles]);
+            LoggingUtil::info('War battles retrieved', [
+                'user_id' => auth()->id(),
+                'war_id' => $warId,
+                'count' => $battles->count(),
+            ], 'battle_system');
+
+            return $this->successResponse($battles, 'War battles retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve war battles: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving war battles', [
+                'error' => $e->getMessage(),
+                'war_id' => $warId,
+                'user_id' => auth()->id(),
+            ], 'battle_system');
+
+            return $this->errorResponse('Failed to retrieve war battles: ' . $e->getMessage(), 500);
         }
     }
 
@@ -554,6 +605,54 @@ class BattleController extends Controller
                     'result'
                 ])
                 ->union(
+                    DB::table('battles')
+                        ->select([
+                            'defender_id as player_id',
+                            'result'
+                        ])
+                );
+
+            $subQuery = DB::table(DB::raw("({$query->toSql()}) as all_battles"))
+                ->join('players', 'players.id', '=', 'all_battles.player_id')
+                ->select([
+                    'players.id as player_id',
+                    'players.name as player_name',
+                    DB::raw('COUNT(*) as total_battles'),
+                    DB::raw('SUM(CASE WHEN (all_battles.player_id = battles.attacker_id AND battles.result = "victory") OR (all_battles.player_id = battles.defender_id AND battles.result = "defeat") THEN 1 ELSE 0 END) as victories'),
+                    DB::raw('SUM(CASE WHEN (all_battles.player_id = battles.attacker_id AND battles.result = "defeat") OR (all_battles.player_id = battles.defender_id AND battles.result = "victory") THEN 1 ELSE 0 END) as defeats'),
+                    DB::raw('SUM(CASE WHEN battles.result = "draw" THEN 1 ELSE 0 END) as draws')
+                ])
+                ->groupBy('players.id', 'players.name');
+
+            $orderBy = match($metric) {
+                'win_rate' => DB::raw('(victories / total_battles) DESC'),
+                'total_battles' => 'total_battles DESC',
+                default => 'victories DESC'
+            };
+
+            $leaderboard = $subQuery->orderByRaw($orderBy)
+                ->limit($limit)
+                ->get();
+
+            // Calculate win rates
+            $leaderboard = $leaderboard->map(function ($player) {
+                $player->win_rate = $player->total_battles > 0 
+                    ? round(($player->victories / $player->total_battles) * 100, 2)
+                    : 0;
+                return $player;
+            });
+
+            return response()->json(['data' => $leaderboard]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve battle leaderboard: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+}
+
                     DB::table('battles')
                         ->select([
                             'defender_id as player_id',

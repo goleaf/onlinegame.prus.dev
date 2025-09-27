@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\MarketOffer;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\FileProcessingTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
+use LaraUtilX\Utilities\CachingUtil;
+use LaraUtilX\Utilities\FilteringUtil;
+use LaraUtilX\Utilities\LoggingUtil;
+use LaraUtilX\Utilities\RateLimiterUtil;
 
 /**
  * @group Market & Trading Management
@@ -24,8 +31,38 @@ use Illuminate\Support\Facades\DB;
  * @tag Trading
  * @tag Resource Exchange
  */
-class MarketController extends Controller
+class MarketController extends CrudController
 {
+    use ApiResponseTrait;
+    use FileProcessingTrait;
+    use ValidationHelperTrait;
+
+    protected Model $model;
+    protected RateLimiterUtil $rateLimiter;
+    protected array $validationRules = [];
+    protected array $searchableFields = ['offer_type', 'resource_type', 'description'];
+    protected array $relationships = ['player'];
+    protected int $perPage = 15;
+
+    protected function getValidationRules(): array
+    {
+        return [
+            'offer_type' => 'required|in:buy,sell',
+            'resource_type' => 'required|in:wood,clay,iron,crop',
+            'resource_amount' => 'required|integer|min:1|max:100000',
+            'exchange_rate' => 'required|numeric|min:0.1|max:10.0',
+            'description' => 'nullable|string|max:500',
+        ];
+    }
+
+    public function __construct(MarketOffer $marketOffer, RateLimiterUtil $rateLimiter)
+    {
+        $this->model = $marketOffer;
+        $this->rateLimiter = $rateLimiter;
+        $this->validationRules = $this->getValidationRules();
+        parent::__construct($this->model);
+    }
+
     /**
      * Get all market offers
      *
@@ -62,28 +99,55 @@ class MarketController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $query = MarketOffer::with(['player'])
-                ->where('status', 'active');
-
-            // Apply filters
-            if ($request->has('resource_type')) {
-                $query->where('resource_type', $request->input('resource_type'));
+            // Rate limiting for market offers
+            $rateLimitKey = 'market_offers_' . ($request->ip() ?? 'unknown');
+            if (!$this->rateLimiter->attempt($rateLimitKey, 100, 1)) {
+                return $this->errorResponse('Too many requests. Please try again later.', 429);
             }
 
-            if ($request->has('offer_type')) {
-                $query->where('offer_type', $request->input('offer_type'));
-            }
+            $cacheKey = 'market_offers_' . md5(serialize($request->all()));
+            
+            $offers = CachingUtil::remember($cacheKey, now()->addMinutes(5), function () use ($request) {
+                $query = MarketOffer::with($this->relationships)
+                    ->where('status', 'active');
 
-            if ($request->has('min_rate')) {
-                $query->where('exchange_rate', '>=', $request->input('min_rate'));
-            }
+                // Apply filters using FilteringUtil
+                $filters = [];
+                
+                if ($request->has('resource_type')) {
+                    $filters[] = ['target' => 'resource_type', 'type' => '$eq', 'value' => $request->input('resource_type')];
+                }
 
-            if ($request->has('max_rate')) {
-                $query->where('exchange_rate', '<=', $request->input('max_rate'));
-            }
+                if ($request->has('offer_type')) {
+                    $filters[] = ['target' => 'offer_type', 'type' => '$eq', 'value' => $request->input('offer_type')];
+                }
 
-            $offers = $query->orderBy('created_at', 'desc')
-                ->paginate($request->input('per_page', 15));
+                if ($request->has('min_rate')) {
+                    $filters[] = ['target' => 'exchange_rate', 'type' => '$gte', 'value' => $request->input('min_rate')];
+                }
+
+                if ($request->has('max_rate')) {
+                    $filters[] = ['target' => 'exchange_rate', 'type' => '$lte', 'value' => $request->input('max_rate')];
+                }
+
+                if (!empty($filters)) {
+                    $query = $query->filter($filters);
+                }
+
+                // Apply search if provided
+                if ($request->has('search')) {
+                    $searchTerm = $request->get('search');
+                    $query->where(function ($q) use ($searchTerm) {
+                        $q->where('description', 'like', "%{$searchTerm}%")
+                          ->orWhereHas('player', function ($playerQuery) use ($searchTerm) {
+                              $playerQuery->where('name', 'like', "%{$searchTerm}%");
+                          });
+                    });
+                }
+
+                return $query->orderBy('created_at', 'desc')
+                    ->paginate($request->input('per_page', $this->perPage));
+            });
 
             // Add player names to the response
             $offers->getCollection()->transform(function ($offer) {
@@ -91,13 +155,21 @@ class MarketController extends Controller
                 return $offer;
             });
 
-            return response()->json($offers);
+            LoggingUtil::info('Market offers retrieved', [
+                'user_id' => auth()->id(),
+                'filters' => $request->all(),
+                'total_offers' => $offers->total(),
+            ], 'market_system');
+
+            return $this->paginatedResponse($offers, 'Market offers retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve market offers: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving market offers', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 'market_system');
+
+            return $this->errorResponse('Failed to retrieve market offers.', 500);
         }
     }
 
@@ -134,16 +206,28 @@ class MarketController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            $offer = MarketOffer::with(['player'])->findOrFail($id);
+            $cacheKey = "market_offer_{$id}";
+            
+            $offer = CachingUtil::remember($cacheKey, now()->addMinutes(10), function () use ($id) {
+                return MarketOffer::with($this->relationships)->findOrFail($id);
+            });
+            
             $offer->player_name = $offer->player->name ?? 'Unknown';
 
-            return response()->json($offer);
+            LoggingUtil::info('Market offer retrieved', [
+                'user_id' => auth()->id(),
+                'offer_id' => $id,
+            ], 'market_system');
+
+            return $this->successResponse($offer, 'Market offer retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Market offer not found'
-            ], 404);
+            LoggingUtil::error('Error retrieving market offer', [
+                'error' => $e->getMessage(),
+                'offer_id' => $id,
+            ], 'market_system');
+
+            return $this->errorResponse('Market offer not found.', 404);
         }
     }
 
@@ -237,20 +321,13 @@ class MarketController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'offer_type' => 'required|in:buy,sell',
-                'resource_type' => 'required|in:wood,clay,iron,crop',
-                'resource_amount' => 'required|integer|min:1|max:100000',
-                'exchange_rate' => 'required|numeric|min:0.1|max:10.0',
-                'description' => 'nullable|string|max:500',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'The given data was invalid.',
-                    'errors' => $validator->errors()
-                ], 422);
+            // Rate limiting for creating offers
+            $rateLimitKey = 'create_market_offer_' . (auth()->id() ?? 'unknown');
+            if (!$this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
+                return $this->errorResponse('Too many requests. Please try again later.', 429);
             }
+
+            $validated = $this->validateRequest($request, $this->validationRules);
 
             $playerId = Auth::user()->player->id;
             $player = Player::findOrFail($playerId);
@@ -582,6 +659,11 @@ class MarketController extends Controller
             'iron' => 'crop',
             'crop' => 'wood',
         ];
+
+        return $paymentMap[$resourceType] ?? 'wood';
+    }
+}
+
 
         return $paymentMap[$resourceType] ?? 'wood';
     }

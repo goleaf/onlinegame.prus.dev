@@ -17,7 +17,7 @@ use Livewire\WithPagination;
 #[Layout('layouts.game')]
 class MessageManager extends Component
 {
-    use WithPagination;
+    use WithPagination, ApiResponseTrait;
 
     public $activeTab = 'inbox';
     public $selectedMessage = null;

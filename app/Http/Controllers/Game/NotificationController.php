@@ -8,6 +8,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\FilteringUtil;
+use LaraUtilX\Utilities\CachingUtil;
+use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Notification Management
@@ -21,8 +26,9 @@ use Illuminate\Support\Facades\Validator;
  * @tag Game Alerts
  * @tag Real-time Updates
  */
-class NotificationController extends Controller
+class NotificationController extends CrudController
 {
+    use ApiResponseTrait;
     /**
      * Get all notifications
      *

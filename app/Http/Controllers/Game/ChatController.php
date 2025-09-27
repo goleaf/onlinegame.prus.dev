@@ -14,10 +14,15 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use JonPurvis\Squeaky\Rules\Clean;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\FilteringUtil;
+use LaraUtilX\Utilities\CachingUtil;
+use LaraUtilX\Utilities\LoggingUtil;
 
-class ChatController extends Controller
+class ChatController extends CrudController
 {
-    use GameValidationTrait;
+    use ApiResponseTrait, GameValidationTrait;
     
     protected $chatService;
 

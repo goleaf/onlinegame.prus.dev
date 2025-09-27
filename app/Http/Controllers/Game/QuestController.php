@@ -12,6 +12,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\LoggingUtil;
+use LaraUtilX\Utilities\CachingUtil;
+use LaraUtilX\Utilities\FilteringUtil;
 
 /**
  * @group Quest & Achievement Management
@@ -25,8 +31,33 @@ use Illuminate\Support\Facades\DB;
  * @tag Achievement System
  * @tag Player Progression
  */
-class QuestController extends Controller
+class QuestController extends CrudController
 {
+    use ApiResponseTrait;
+
+    protected Model $model;
+    
+    protected array $validationRules = [
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'type' => 'required|in:tutorial,daily,weekly,special,achievement',
+        'difficulty' => 'required|in:easy,medium,hard,epic',
+        'category' => 'required|string|max:100',
+        'requirements' => 'nullable|array',
+        'rewards' => 'nullable|array',
+        'is_active' => 'boolean',
+    ];
+
+    protected array $searchableFields = ['title', 'description', 'category'];
+    protected array $relationships = ['playerQuests'];
+    protected int $perPage = 15;
+
+    public function __construct()
+    {
+        $this->model = new Quest();
+        parent::__construct($this->model);
+    }
+
     /**
      * Get all available quests
      *
@@ -75,29 +106,41 @@ class QuestController extends Controller
         try {
             $query = Quest::where('is_active', true);
 
-            // Apply filters
+            // Apply filters using FilteringUtil
+            $filters = [];
             if ($request->has('type')) {
-                $query->where('type', $request->input('type'));
+                $filters[] = ['target' => 'type', 'type' => '$eq', 'value' => $request->input('type')];
             }
-
             if ($request->has('difficulty')) {
-                $query->where('difficulty', $request->input('difficulty'));
+                $filters[] = ['target' => 'difficulty', 'type' => '$eq', 'value' => $request->input('difficulty')];
             }
-
             if ($request->has('category')) {
-                $query->where('category', $request->input('category'));
+                $filters[] = ['target' => 'category', 'type' => '$eq', 'value' => $request->input('category')];
             }
 
-            $quests = $query->orderBy('created_at', 'desc')
-                ->paginate($request->input('per_page', 15));
+            if (!empty($filters)) {
+                $query = $query->filter($filters);
+            }
 
-            return response()->json($quests);
+            $quests = $query->with($this->relationships)
+                ->orderBy('created_at', 'desc')
+                ->paginate($request->input('per_page', $this->perPage));
+
+            LoggingUtil::info('Quests retrieved', [
+                'user_id' => auth()->id(),
+                'filters' => $request->only(['type', 'difficulty', 'category']),
+                'count' => $quests->count(),
+            ], 'quest_system');
+
+            return $this->paginatedResponse($quests, 'Quests retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve quests: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving quests', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'quest_system');
+
+            return $this->errorResponse('Failed to retrieve quests.', 500);
         }
     }
 
@@ -148,7 +191,7 @@ class QuestController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            $quest = Quest::findOrFail($id);
+            $quest = Quest::with($this->relationships)->findOrFail($id);
             $playerId = Auth::user()->player->id;
 
             // Get player's progress for this quest
@@ -176,13 +219,22 @@ class QuestController extends Controller
                 $questData['status'] = 'available';
             }
 
-            return response()->json($questData);
+            LoggingUtil::info('Quest details retrieved', [
+                'user_id' => auth()->id(),
+                'quest_id' => $id,
+                'quest_title' => $quest->title,
+            ], 'quest_system');
+
+            return $this->successResponse($questData, 'Quest details retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Quest not found'
-            ], 404);
+            LoggingUtil::error('Error retrieving quest details', [
+                'error' => $e->getMessage(),
+                'quest_id' => $id,
+                'user_id' => auth()->id(),
+            ], 'quest_system');
+
+            return $this->errorResponse('Quest not found.', 404);
         }
     }
 

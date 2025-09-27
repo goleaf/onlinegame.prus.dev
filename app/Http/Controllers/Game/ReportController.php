@@ -5,10 +5,15 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use App\Models\Game\Report;
 use App\Models\Game\Player;
+use App\Traits\GameValidationTrait;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Report Management
@@ -22,8 +27,32 @@ use Illuminate\Support\Facades\Validator;
  * @tag Battle Reports
  * @tag Game Events
  */
-class ReportController extends Controller
+class ReportController extends CrudController
 {
+    use ApiResponseTrait, GameValidationTrait;
+
+    protected Model $model;
+
+    protected array $validationRules = [
+        'player_id' => 'required|exists:players,id',
+        'type' => 'required|string|in:battle,resource,construction,attack,defense,system',
+        'title' => 'required|string|max:255',
+        'content' => 'required|string',
+        'data' => 'nullable|json',
+        'status' => 'required|string|in:unread,read,archived',
+        'priority' => 'required|string|in:low,medium,high,critical',
+        'is_important' => 'boolean',
+    ];
+
+    protected array $searchableFields = ['title', 'content', 'type'];
+    protected array $relationships = ['player'];
+    protected int $perPage = 20;
+
+    public function __construct()
+    {
+        $this->model = new Report();
+        parent::__construct($this->model);
+    }
     /**
      * Get all reports
      *

@@ -29,9 +29,33 @@ use LaraUtilX\Utilities\FilteringUtil;
  * @tag Game Items
  * @tag Server Effects
  */
-class ArtifactController extends Controller
+class ArtifactController extends CrudController
 {
     use ApiResponseTrait;
+
+    protected $model;
+
+    protected array $validationRules = [
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'type' => 'required|in:weapon,armor,tool,mystical,relic,crystal',
+        'rarity' => 'required|in:common,uncommon,rare,epic,legendary,mythic',
+        'power_level' => 'nullable|integer|min:1|max:100',
+        'effects' => 'nullable|array',
+        'requirements' => 'nullable|array',
+        'is_server_wide' => 'boolean',
+        'is_unique' => 'boolean',
+    ];
+
+    protected array $searchableFields = ['name', 'description', 'type', 'rarity'];
+    protected array $relationships = ['owner', 'village', 'artifactEffects'];
+    protected int $perPage = 15;
+
+    public function __construct()
+    {
+        $this->model = new Artifact();
+        parent::__construct($this->model);
+    }
 
     /**
      * Get all artifacts
@@ -82,26 +106,36 @@ class ArtifactController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $query = Artifact::with(['owner', 'village', 'artifactEffects']);
+            $cacheKey = 'artifacts_index_' . md5(serialize($request->all()));
+            
+            $artifacts = CachingUtil::remember($cacheKey, 300, function () use ($request) {
+                $query = Artifact::with($this->relationships);
 
-            // Apply filters
-            if ($request->has('type')) {
-                $query->byType($request->input('type'));
-            }
+                // Apply filters using FilteringUtil
+                $filters = [];
+                
+                if ($request->has('type')) {
+                    $filters[] = ['field' => 'type', 'operator' => 'equals', 'value' => $request->input('type')];
+                }
 
-            if ($request->has('rarity')) {
-                $query->byRarity($request->input('rarity'));
-            }
+                if ($request->has('rarity')) {
+                    $filters[] = ['field' => 'rarity', 'operator' => 'equals', 'value' => $request->input('rarity')];
+                }
 
-            if ($request->has('status')) {
-                $query->where('status', $request->input('status'));
-            }
+                if ($request->has('status')) {
+                    $filters[] = ['field' => 'status', 'operator' => 'equals', 'value' => $request->input('status')];
+                }
 
-            if ($request->has('server_wide')) {
-                $query->serverWide();
-            }
+                if ($request->has('server_wide')) {
+                    $filters[] = ['field' => 'is_server_wide', 'operator' => 'equals', 'value' => $request->boolean('server_wide')];
+                }
 
-            $artifacts = $query->paginate($request->input('per_page', 15));
+                if (!empty($filters)) {
+                    $query = FilteringUtil::applyFilters($query, $filters);
+                }
+
+                return $query->paginate($request->input('per_page', $this->perPage));
+            });
 
             LoggingUtil::info('Artifacts retrieved', [
                 'user_id' => auth()->id(),
@@ -109,7 +143,7 @@ class ArtifactController extends Controller
                 'count' => $artifacts->count(),
             ], 'artifact_system');
 
-            return response()->json($artifacts);
+            return $this->paginatedResponse($artifacts, 'Artifacts retrieved successfully.');
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving artifacts', [
                 'error' => $e->getMessage(),
@@ -184,8 +218,11 @@ class ArtifactController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            $artifact = Artifact::with(['owner', 'village', 'artifactEffects'])
-                ->findOrFail($id);
+            $cacheKey = "artifact_{$id}_details";
+            
+            $artifact = CachingUtil::remember($cacheKey, 600, function () use ($id) {
+                return Artifact::with($this->relationships)->findOrFail($id);
+            });
 
             LoggingUtil::info('Artifact details retrieved', [
                 'user_id' => auth()->id(),
@@ -193,7 +230,7 @@ class ArtifactController extends Controller
                 'artifact_name' => $artifact->name,
             ], 'artifact_system');
 
-            return response()->json($artifact);
+            return $this->successResponse($artifact, 'Artifact details retrieved successfully.');
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving artifact details', [
                 'error' => $e->getMessage(),
@@ -254,40 +291,26 @@ class ArtifactController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'type' => 'required|in:weapon,armor,tool,mystical,relic,crystal',
-                'rarity' => 'required|in:common,uncommon,rare,epic,legendary,mythic',
-                'power_level' => 'nullable|integer|min:1|max:100',
-                'effects' => 'nullable|array',
-                'requirements' => 'nullable|array',
-                'is_server_wide' => 'boolean',
-                'is_unique' => 'boolean',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'The given data was invalid.',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
+            $validated = $request->validate($this->validationRules);
 
             $artifact = Artifact::create([
-                'name' => $request->input('name'),
-                'description' => $request->input('description'),
-                'type' => $request->input('type'),
-                'rarity' => $request->input('rarity'),
+                'name' => $validated['name'],
+                'description' => $validated['description'] ?? null,
+                'type' => $validated['type'],
+                'rarity' => $validated['rarity'],
                 'status' => 'inactive',
-                'power_level' => $request->input('power_level', 50),
+                'power_level' => $validated['power_level'] ?? 50,
                 'durability' => 100,
                 'max_durability' => 100,
-                'effects' => $request->input('effects', []),
-                'requirements' => $request->input('requirements', []),
-                'is_server_wide' => $request->boolean('is_server_wide', false),
-                'is_unique' => $request->boolean('is_unique', false),
+                'effects' => $validated['effects'] ?? [],
+                'requirements' => $validated['requirements'] ?? [],
+                'is_server_wide' => $validated['is_server_wide'] ?? false,
+                'is_unique' => $validated['is_unique'] ?? false,
                 'discovered_at' => now(),
             ]);
+
+            // Clear cache
+            CachingUtil::forget('artifacts_index_*');
 
             LoggingUtil::info('Artifact created', [
                 'user_id' => auth()->id(),
@@ -297,10 +320,7 @@ class ArtifactController extends Controller
                 'artifact_rarity' => $artifact->rarity,
             ], 'artifact_system');
 
-            return response()->json([
-                'success' => true,
-                'artifact' => $artifact
-            ], 201);
+            return $this->successResponse($artifact, 'Artifact created successfully.', 201);
         } catch (\Exception $e) {
             LoggingUtil::error('Error creating artifact', [
                 'error' => $e->getMessage(),
@@ -370,6 +390,10 @@ class ArtifactController extends Controller
             $activated = $artifact->activate();
 
             if ($activated) {
+                // Clear cache
+                CachingUtil::forget("artifact_{$id}_details");
+                CachingUtil::forget('artifacts_index_*');
+
                 LoggingUtil::info('Artifact activated', [
                     'user_id' => auth()->id(),
                     'artifact_id' => $artifact->id,
@@ -378,16 +402,9 @@ class ArtifactController extends Controller
                     'village_id' => $artifact->village_id,
                 ], 'artifact_system');
 
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Artifact activated successfully',
-                    'artifact' => $artifact->fresh()
-                ]);
+                return $this->successResponse($artifact->fresh(), 'Artifact activated successfully.');
             } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to activate artifact'
-                ], 400);
+                return $this->errorResponse('Failed to activate artifact', 400);
             }
         } catch (\Exception $e) {
             LoggingUtil::error('Error activating artifact', [
@@ -438,22 +455,19 @@ class ArtifactController extends Controller
             $deactivated = $artifact->deactivate();
 
             if ($deactivated) {
+                // Clear cache
+                CachingUtil::forget("artifact_{$id}_details");
+                CachingUtil::forget('artifacts_index_*');
+
                 LoggingUtil::info('Artifact deactivated', [
                     'user_id' => auth()->id(),
                     'artifact_id' => $artifact->id,
                     'artifact_name' => $artifact->name,
                 ], 'artifact_system');
 
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Artifact deactivated successfully',
-                    'artifact' => $artifact->fresh()
-                ]);
+                return $this->successResponse($artifact->fresh(), 'Artifact deactivated successfully.');
             } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Artifact is not active'
-                ], 400);
+                return $this->errorResponse('Artifact is not active', 400);
             }
         } catch (\Exception $e) {
             LoggingUtil::error('Error deactivating artifact', [
@@ -503,17 +517,21 @@ class ArtifactController extends Controller
     public function serverWide(): JsonResponse
     {
         try {
-            $artifacts = Artifact::serverWide()
-                ->active()
-                ->with(['artifactEffects'])
-                ->get();
+            $cacheKey = 'server_wide_artifacts';
+            
+            $artifacts = CachingUtil::remember($cacheKey, 300, function () {
+                return Artifact::serverWide()
+                    ->active()
+                    ->with(['artifactEffects'])
+                    ->get();
+            });
 
             LoggingUtil::info('Server-wide artifacts retrieved', [
                 'user_id' => auth()->id(),
                 'count' => $artifacts->count(),
             ], 'artifact_system');
 
-            return response()->json(['data' => $artifacts]);
+            return $this->successResponse($artifacts, 'Server-wide artifacts retrieved successfully.');
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving server-wide artifacts', [
                 'error' => $e->getMessage(),
