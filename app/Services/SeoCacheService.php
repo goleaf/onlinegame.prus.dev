@@ -27,13 +27,15 @@ class SeoCacheService
     }
 
     /**
-     * Cache SEO metadata
+     * Cache SEO metadata with SmartCache optimization
      */
     public function put(string $key, array $data, int $ttl = null): bool
     {
         try {
             $ttl = $ttl ?? $this->cacheTtl;
-            Cache::put($this->cachePrefix . $key, $data, $ttl);
+            SmartCache::remember($this->cachePrefix . $key, now()->addSeconds($ttl), function () use ($data) {
+                return $data;
+            });
             return true;
         } catch (\Exception $e) {
             Log::warning("SEO cache put failed for key: {$key}", ['error' => $e->getMessage()]);
