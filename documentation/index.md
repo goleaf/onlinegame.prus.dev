@@ -109,6 +109,8 @@ This index is automatically generated and lists all documentation files:
     * [Documentation: GameSecurityService.php](app/Services/GameSecurityService.md)
     * [Documentation: GeographicAnalysisService.php](app/Services/GeographicAnalysisService.md)
     * [Documentation: GeographicService.php](app/Services/GeographicService.md)
+    * [Documentation: IntrospectService.php](app/Services/IntrospectService.md)
     * [Documentation: QueryOptimizationService.php](app/Services/QueryOptimizationService.md)
+    * [Documentation: RabbitMQService.php](app/Services/RabbitMQService.md)
     * [Documentation: ResourceProductionService.php](app/Services/ResourceProductionService.md)
     * [Documentation: TroopService.php](app/Services/TroopService.md)
