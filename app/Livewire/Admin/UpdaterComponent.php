@@ -6,8 +6,6 @@ use App\Services\UpdaterService;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
-use Jantinnerezo\LivewireAlert\Concerns\SweetAlert2;
-
 #[Title('Application Updater')]
 #[Layout('layouts.app')]
 class UpdaterComponent extends Component
@@ -77,16 +75,16 @@ class UpdaterComponent extends Component
         $this->loadUpdateInfo();
         
         if ($this->updateAvailable) {
-            $this->alert('info', "Update available! Current: {$this->currentVersion}, Latest: {$this->latestVersion}");
+            session()->flash('message', "Update available! Current: {$this->currentVersion}, Latest: {$this->latestVersion}");
         } else {
-            $this->alert('success', 'Application is up to date!');
+            session()->flash('message', 'Application is up to date!');
         }
     }
 
     public function performUpdate()
     {
         if (!$this->updateAvailable) {
-            $this->alert('warning', 'No updates available');
+            session()->flash('error', 'No updates available');
             return;
         }
 
