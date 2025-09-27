@@ -107,26 +107,40 @@ class MarketManager extends Component
             // Clone base query for active offers using QueryOptimizationService
             $activeOffersQuery = QueryOptimizationService::cloneQuery($baseQuery);
 
-            $activeFilters = [
-                $this->filterByType => function ($q) {
-                    return $q->where('type', $this->filterByType);
-                },
-                $this->filterByResource => function ($q) {
-                    return $q->where('resource_type', $this->filterByResource);
-                },
-                $this->searchQuery => function ($q) {
-                    return $q->where(function ($subQ) {
-                        $subQ
-                            ->where('resource_type', 'like', '%' . $this->searchQuery . '%')
-                            ->orWhereHas('seller', function ($sellerQ) {
-                                $sellerQ->where('name', 'like', '%' . $this->searchQuery . '%');
-                            });
-                    });
-                },
-            ];
+            // Build eloquent filters array for active offers
+            $activeFilters = [];
 
-            $activeOffersQuery = QueryOptimizationService::applyConditionalFilters($activeOffersQuery, $activeFilters);
-            $activeOffersQuery = QueryOptimizationService::applyConditionalOrdering($activeOffersQuery, $this->sortBy, $this->sortOrder);
+            if ($this->filterByType) {
+                $activeFilters[] = ['target' => 'type', 'type' => '$eq', 'value' => $this->filterByType];
+            }
+
+            if ($this->filterByResource) {
+                $activeFilters[] = ['target' => 'resource_type', 'type' => '$eq', 'value' => $this->filterByResource];
+            }
+
+            if ($this->searchQuery) {
+                $activeFilters[] = [
+                    'type' => '$or',
+                    'value' => [
+                        ['target' => 'resource_type', 'type' => '$like', 'value' => $this->searchQuery],
+                        [
+                            'type' => '$has',
+                            'target' => 'player',
+                            'value' => [
+                                ['target' => 'name', 'type' => '$like', 'value' => $this->searchQuery]
+                            ]
+                        ]
+                    ]
+                ];
+            }
+
+            // Apply eloquent filtering
+            if (!empty($activeFilters)) {
+                $activeOffersQuery = $activeOffersQuery->filter($activeFilters);
+            }
+
+            // Apply sorting
+            $activeOffersQuery = $activeOffersQuery->orderBy($this->sortBy, $this->sortOrder);
 
             $this->offers = $activeOffersQuery
                 ->where('status', 'active')
