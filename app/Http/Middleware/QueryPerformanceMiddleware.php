@@ -25,6 +25,15 @@ class QueryPerformanceMiddleware
         $startTime = microtime(true);
         $startQueries = count(DB::getQueryLog());
 
+        ds('QueryPerformanceMiddleware: Query monitoring started', [
+            'middleware' => 'QueryPerformanceMiddleware',
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+            'user_id' => auth()->id(),
+            'initial_queries' => $startQueries,
+            'monitoring_start_time' => now()
+        ]);
+
         // Enable query logging
         DB::enableQueryLog();
 
@@ -34,6 +43,15 @@ class QueryPerformanceMiddleware
         $endQueries = count(DB::getQueryLog());
         $executionTime = ($endTime - $startTime) * 1000;  // Convert to milliseconds
         $queryCount = $endQueries - $startQueries;
+
+        ds('QueryPerformanceMiddleware: Query monitoring completed', [
+            'total_execution_time_ms' => round($executionTime, 2),
+            'total_queries_executed' => $queryCount,
+            'final_query_count' => $endQueries,
+            'status_code' => $response->getStatusCode(),
+            'memory_usage' => memory_get_usage(true),
+            'slow_query_detected' => $executionTime > (config('mysql-performance.slow_query_log.long_query_time', 1.0) * 1000)
+        ]);
 
         // Log performance metrics
         $this->logPerformanceMetrics($request, $executionTime, $queryCount);

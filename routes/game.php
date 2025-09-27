@@ -93,6 +93,11 @@ Route::middleware(['auth', 'game.auth'])->group(function () {
     Route::get('/game/messages', function () {
         return view('game.messages');
     })->name('game.messages');
+
+    // Chat management
+    Route::get('/game/chat', function () {
+        return view('game.chat');
+    })->name('game.chat');
 });
 
 // Secure API routes with rate limiting

@@ -6,35 +6,68 @@ use App\Models\Game\ChatMessage;
 use App\Models\Game\ChatChannel;
 use App\Models\Game\Player;
 use App\Models\Game\Alliance;
-use App\Services\RealTimeGameService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ChatService
 {
     /**
+     * Get messages for a channel
+     */
+    public function getChannelMessages(int $channelId, int $limit = 50, int $offset = 0): array
+    {
+        $messages = ChatMessage::with(['sender'])
+            ->byChannel($channelId)
+            ->notDeleted()
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->offset($offset)
+            ->get()
+            ->reverse()
+            ->values();
+
+        return [
+            'messages' => $messages,
+            'total' => ChatMessage::byChannel($channelId)->notDeleted()->count(),
+        ];
+    }
+
+    /**
+     * Get messages by channel type
+     */
+    public function getMessagesByType(string $channelType, int $limit = 50, int $offset = 0): array
+    {
+        $messages = ChatMessage::with(['sender', 'channel'])
+            ->byChannelType($channelType)
+            ->notDeleted()
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->offset($offset)
+            ->get()
+            ->reverse()
+            ->values();
+
+        return [
+            'messages' => $messages,
+            'total' => ChatMessage::byChannelType($channelType)->notDeleted()->count(),
+        ];
+    }
+
+    /**
      * Send a message to a channel
      */
-    public function sendMessage(int $senderId, int $channelId, string $channelType, string $message, string $messageType = ChatMessage::TYPE_TEXT): ChatMessage
+    public function sendMessage(int $senderId, ?int $channelId, string $channelType, string $message, string $messageType = ChatMessage::TYPE_TEXT): ChatMessage
     {
         return DB::transaction(function () use ($senderId, $channelId, $channelType, $message, $messageType) {
-            $chatMessage = ChatMessage::create([
-                'sender_id' => $senderId,
-                'channel_id' => $channelId,
-                'channel_type' => $channelType,
-                'message' => $message,
-                'message_type' => $messageType,
-                'reference_number' => $this->generateReferenceNumber(),
-            ]);
+            $chatMessage = ChatMessage::createMessage(
+                $senderId,
+                $channelId,
+                $channelType,
+                $message,
+                $messageType
+            );
 
-            // Load relationships
-            $chatMessage->load(['sender']);
-
-            // Send real-time update
-            $this->broadcastMessage($chatMessage);
-
-            return $chatMessage;
+            return $chatMessage->load(['sender', 'channel']);
         });
     }
 
@@ -43,9 +76,7 @@ class ChatService
      */
     public function sendGlobalMessage(int $senderId, string $message, string $messageType = ChatMessage::TYPE_TEXT): ChatMessage
     {
-        $globalChannel = ChatChannel::getGlobalChannel();
-        
-        return $this->sendMessage($senderId, $globalChannel->id, ChatMessage::CHANNEL_GLOBAL, $message, $messageType);
+        return $this->sendMessage($senderId, null, ChatMessage::CHANNEL_GLOBAL, $message, $messageType);
     }
 
     /**
@@ -53,22 +84,20 @@ class ChatService
      */
     public function sendAllianceMessage(int $senderId, int $allianceId, string $message, string $messageType = ChatMessage::TYPE_TEXT): ChatMessage
     {
-        $allianceChannel = ChatChannel::getAllianceChannel($allianceId);
-        
-        if (!$allianceChannel) {
-            // Create alliance channel if it doesn't exist
-            $allianceChannel = ChatChannel::create([
-                'name' => 'Alliance Chat',
-                'description' => 'Alliance internal chat',
-                'channel_type' => ChatChannel::TYPE_ALLIANCE,
-                'alliance_id' => $allianceId,
-                'is_public' => false,
-                'is_active' => true,
-                'created_by' => $senderId,
-            ]);
+        $channel = ChatChannel::where('type', ChatMessage::CHANNEL_ALLIANCE)
+            ->where('alliance_id', $allianceId)
+            ->first();
+
+        if (!$channel) {
+            $channel = ChatChannel::createChannel(
+                'Alliance Chat',
+                ChatMessage::CHANNEL_ALLIANCE,
+                $allianceId,
+                $senderId
+            );
         }
-        
-        return $this->sendMessage($senderId, $allianceChannel->id, ChatMessage::CHANNEL_ALLIANCE, $message, $messageType);
+
+        return $this->sendMessage($senderId, $channel->id, ChatMessage::CHANNEL_ALLIANCE, $message, $messageType);
     }
 
     /**
@@ -76,41 +105,48 @@ class ChatService
      */
     public function sendPrivateMessage(int $senderId, int $recipientId, string $message): ChatMessage
     {
-        $privateChannel = ChatChannel::getPrivateChannel($senderId, $recipientId);
-        
-        return $this->sendMessage($senderId, $privateChannel->id, ChatMessage::CHANNEL_PRIVATE, $message);
+        // Create or find private channel between two players
+        $channel = $this->getOrCreatePrivateChannel($senderId, $recipientId);
+
+        return $this->sendMessage($senderId, $channel->id, ChatMessage::CHANNEL_PRIVATE, $message);
     }
 
     /**
-     * Get messages for a channel
+     * Send a trade message
      */
-    public function getChannelMessages(int $channelId, string $channelType, int $limit = 50, int $offset = 0): array
+    public function sendTradeMessage(int $senderId, string $message): ChatMessage
     {
-        return ChatMessage::getChannelMessages($channelId, $channelType, $limit, $offset);
+        $channel = ChatChannel::where('type', ChatMessage::CHANNEL_TRADE)->first();
+
+        if (!$channel) {
+            $channel = ChatChannel::createChannel(
+                'Trade Chat',
+                ChatMessage::CHANNEL_TRADE,
+                null,
+                $senderId
+            );
+        }
+
+        return $this->sendMessage($senderId, $channel->id, ChatMessage::CHANNEL_TRADE, $message);
     }
 
     /**
-     * Get global messages
+     * Send a diplomacy message
      */
-    public function getGlobalMessages(int $limit = 50, int $offset = 0): array
+    public function sendDiplomacyMessage(int $senderId, string $message): ChatMessage
     {
-        return ChatMessage::getGlobalMessages($limit, $offset);
-    }
+        $channel = ChatChannel::where('type', ChatMessage::CHANNEL_DIPLOMACY)->first();
 
-    /**
-     * Get alliance messages
-     */
-    public function getAllianceMessages(int $allianceId, int $limit = 50, int $offset = 0): array
-    {
-        return ChatMessage::getAllianceMessages($allianceId, $limit, $offset);
-    }
+        if (!$channel) {
+            $channel = ChatChannel::createChannel(
+                'Diplomacy Chat',
+                ChatMessage::CHANNEL_DIPLOMACY,
+                null,
+                $senderId
+            );
+        }
 
-    /**
-     * Get private messages between two players
-     */
-    public function getPrivateMessages(int $playerId, int $otherPlayerId, int $limit = 50, int $offset = 0): array
-    {
-        return ChatMessage::getPrivateMessages($playerId, $otherPlayerId, $limit, $offset);
+        return $this->sendMessage($senderId, $channel->id, ChatMessage::CHANNEL_DIPLOMACY, $message);
     }
 
     /**
@@ -119,17 +155,37 @@ class ChatService
     public function deleteMessage(int $messageId, int $playerId): bool
     {
         $message = ChatMessage::find($messageId);
-        
+
         if (!$message || !$message->canBeDeletedBy($playerId)) {
             return false;
         }
 
-        $message->softDelete();
-        
-        // Broadcast deletion
-        $this->broadcastMessageDeletion($message);
-        
-        return true;
+        return $message->softDelete();
+    }
+
+    /**
+     * Get or create a private channel between two players
+     */
+    private function getOrCreatePrivateChannel(int $player1Id, int $player2Id): ChatChannel
+    {
+        // Look for existing private channel
+        $channel = ChatChannel::where('type', ChatMessage::CHANNEL_PRIVATE)
+            ->where('settings->players', function ($query) use ($player1Id, $player2Id) {
+                $query->whereJsonContains('players', [$player1Id, $player2Id]);
+            })
+            ->first();
+
+        if (!$channel) {
+            $channel = ChatChannel::createChannel(
+                'Private Chat',
+                ChatMessage::CHANNEL_PRIVATE,
+                null,
+                $player1Id,
+                ['players' => [$player1Id, $player2Id]]
+            );
+        }
+
+        return $channel;
     }
 
     /**
@@ -137,232 +193,118 @@ class ChatService
      */
     public function getAvailableChannels(int $playerId): array
     {
-        return ChatChannel::getAvailableChannels($playerId);
-    }
-
-    /**
-     * Create a custom channel
-     */
-    public function createChannel(int $creatorId, string $name, string $description, bool $isPublic = true, int $maxMembers = null): ChatChannel
-    {
-        return DB::transaction(function () use ($creatorId, $name, $description, $isPublic, $maxMembers) {
-            $channel = ChatChannel::create([
-                'name' => $name,
-                'description' => $description,
-                'channel_type' => ChatChannel::TYPE_CUSTOM,
-                'is_public' => $isPublic,
-                'is_active' => true,
-                'max_members' => $maxMembers,
-                'created_by' => $creatorId,
-                'settings' => [
-                    'allow_emotes' => true,
-                    'allow_commands' => false,
-                    'moderation_level' => 'normal',
-                ],
-            ]);
-
-            // Send system message
-            $this->sendMessage(
-                $creatorId,
-                $channel->id,
-                ChatChannel::TYPE_CUSTOM,
-                "Channel '{$name}' has been created!",
-                ChatMessage::TYPE_SYSTEM
-            );
-
-            return $channel;
-        });
-    }
-
-    /**
-     * Join a channel
-     */
-    public function joinChannel(int $playerId, int $channelId): bool
-    {
-        $channel = ChatChannel::find($channelId);
-        
-        if (!$channel || !$channel->canJoin($playerId)) {
-            return false;
-        }
-
-        // Send join message
         $player = Player::find($playerId);
-        if ($player) {
-            $this->sendMessage(
-                $playerId,
-                $channelId,
-                $channel->channel_type,
-                "{$player->name} joined the channel",
-                ChatMessage::TYPE_SYSTEM
-            );
+        $channels = [];
+
+        // Global channel
+        $globalChannel = ChatChannel::global()->active()->first();
+        if ($globalChannel) {
+            $channels[] = $globalChannel;
         }
 
-        return true;
+        // Alliance channel
+        if ($player && $player->alliance_id) {
+            $allianceChannel = ChatChannel::alliance()
+                ->where('alliance_id', $player->alliance_id)
+                ->active()
+                ->first();
+            if ($allianceChannel) {
+                $channels[] = $allianceChannel;
+            }
+        }
+
+        // Trade channel
+        $tradeChannel = ChatChannel::trade()->active()->first();
+        if ($tradeChannel) {
+            $channels[] = $tradeChannel;
+        }
+
+        // Diplomacy channel
+        $diplomacyChannel = ChatChannel::diplomacy()->active()->first();
+        if ($diplomacyChannel) {
+            $channels[] = $diplomacyChannel;
+        }
+
+        return $channels;
     }
 
     /**
-     * Leave a channel
+     * Get channel statistics
      */
-    public function leaveChannel(int $playerId, int $channelId): bool
+    public function getChannelStats(int $channelId): array
     {
         $channel = ChatChannel::find($channelId);
-        
         if (!$channel) {
-            return false;
+            return [];
         }
 
-        // Send leave message
-        $player = Player::find($playerId);
-        if ($player) {
-            $this->sendMessage(
-                $playerId,
-                $channelId,
-                $channel->channel_type,
-                "{$player->name} left the channel",
-                ChatMessage::TYPE_SYSTEM
-            );
-        }
-
-        return true;
-    }
-
-    /**
-     * Get chat statistics
-     */
-    public function getChatStats(): array
-    {
         return [
-            'message_stats' => ChatMessage::getMessageStats(),
-            'channel_stats' => ChatChannel::getChannelStats(),
+            'total_messages' => $channel->getMessageCount(),
+            'recent_messages' => $channel->getRecentMessageCount(60),
+            'last_message' => $channel->getLastMessage(),
+            'active_users' => $this->getActiveUsers($channelId),
         ];
     }
 
     /**
-     * Cleanup old messages
+     * Get active users in a channel
+     */
+    private function getActiveUsers(int $channelId): int
+    {
+        return ChatMessage::byChannel($channelId)
+            ->recent(30)
+            ->distinct('sender_id')
+            ->count('sender_id');
+    }
+
+    /**
+     * Clean up old messages
      */
     public function cleanupOldMessages(int $days = 30): int
     {
-        return ChatMessage::cleanupOldMessages($days);
-    }
-
-    /**
-     * Broadcast message to channel members
-     */
-    private function broadcastMessage(ChatMessage $message): void
-    {
-        try {
-            $channel = $message->channel;
-            
-            if (!$channel) {
-                return;
-            }
-
-            $userIds = $this->getChannelMemberIds($channel);
-            
-            if (empty($userIds)) {
-                return;
-            }
-
-            RealTimeGameService::broadcastUpdate($userIds, 'chat_message', [
-                'message_id' => $message->id,
-                'channel_id' => $message->channel_id,
-                'channel_type' => $message->channel_type,
-                'sender_id' => $message->sender_id,
-                'sender_name' => $message->sender->name ?? 'Unknown',
-                'message' => $message->message,
-                'message_type' => $message->message_type,
-                'created_at' => $message->created_at->toISOString(),
-                'reference_number' => $message->reference_number,
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Failed to broadcast chat message', [
-                'message_id' => $message->id,
-                'error' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    /**
-     * Broadcast message deletion
-     */
-    private function broadcastMessageDeletion(ChatMessage $message): void
-    {
-        try {
-            $channel = $message->channel;
-            
-            if (!$channel) {
-                return;
-            }
-
-            $userIds = $this->getChannelMemberIds($channel);
-            
-            if (empty($userIds)) {
-                return;
-            }
-
-            RealTimeGameService::broadcastUpdate($userIds, 'chat_message_deleted', [
-                'message_id' => $message->id,
-                'channel_id' => $message->channel_id,
-                'channel_type' => $message->channel_type,
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Failed to broadcast chat message deletion', [
-                'message_id' => $message->id,
-                'error' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    /**
-     * Get channel member user IDs
-     */
-    private function getChannelMemberIds(ChatChannel $channel): array
-    {
-        switch ($channel->channel_type) {
-            case ChatChannel::TYPE_GLOBAL:
-                // All online users
-                return RealTimeGameService::getOnlineUsers();
-                
-            case ChatChannel::TYPE_ALLIANCE:
-                if ($channel->alliance_id) {
-                    $alliance = Alliance::with('members')->find($channel->alliance_id);
-                    return $alliance ? $alliance->members->pluck('user_id')->toArray() : [];
-                }
-                break;
-                
-            case ChatChannel::TYPE_PRIVATE:
-                // Extract player IDs from channel name
-                $parts = explode('_', $channel->name);
-                if (count($parts) === 2) {
-                    $player1 = Player::find($parts[0]);
-                    $player2 = Player::find($parts[1]);
-                    $userIds = [];
-                    if ($player1) $userIds[] = $player1->user_id;
-                    if ($player2) $userIds[] = $player2->user_id;
-                    return $userIds;
-                }
-                break;
-                
-            case ChatChannel::TYPE_CUSTOM:
-                // For custom channels, you'd need to implement membership tracking
-                // For now, return online users
-                return RealTimeGameService::getOnlineUsers();
-        }
+        $cutoffDate = now()->subDays($days);
         
-        return [];
+        return ChatMessage::where('created_at', '<', $cutoffDate)
+            ->where('is_deleted', true)
+            ->delete();
     }
 
     /**
-     * Generate a unique reference number
+     * Get message statistics
      */
-    private function generateReferenceNumber(): string
+    public function getMessageStats(): array
     {
-        do {
-            $reference = 'CHT-' . strtoupper(Str::random(8));
-        } while (ChatMessage::where('reference_number', $reference)->exists());
+        return [
+            'total_messages' => ChatMessage::notDeleted()->count(),
+            'global_messages' => ChatMessage::global()->notDeleted()->count(),
+            'alliance_messages' => ChatMessage::alliance()->notDeleted()->count(),
+            'private_messages' => ChatMessage::private()->notDeleted()->count(),
+            'trade_messages' => ChatMessage::trade()->notDeleted()->count(),
+            'diplomacy_messages' => ChatMessage::diplomacy()->notDeleted()->count(),
+            'recent_messages' => ChatMessage::recent(60)->notDeleted()->count(),
+        ];
+    }
 
-        return $reference;
+    /**
+     * Search messages
+     */
+    public function searchMessages(string $query, ?string $channelType = null, int $limit = 50): array
+    {
+        $searchQuery = ChatMessage::with(['sender', 'channel'])
+            ->notDeleted()
+            ->where('message', 'like', '%' . $query . '%');
+
+        if ($channelType) {
+            $searchQuery->byChannelType($channelType);
+        }
+
+        $messages = $searchQuery->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+
+        return [
+            'messages' => $messages,
+            'total' => $searchQuery->count(),
+        ];
     }
 }

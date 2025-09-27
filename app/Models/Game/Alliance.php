@@ -8,7 +8,7 @@ namespace App\Models\Game;
 // use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
 // use IndexZer0\EloquentFiltering\Filter\FilterType;
 use App\Traits\Commentable;
-use App\Traits\GameValidationTrait;
+use App\Traits\Commentable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
@@ -23,11 +23,10 @@ use function sbamtr\LaravelQueryEnrich\c;
 
 class Alliance extends Model implements Auditable, IsFilterable
 {
-    use HasNotables, HasReference;
+    use HasNotables, HasReference, Commentable;
     use AuditableTrait;
     use Lift;
     use Filterable;
-    use GameValidationTrait;
 
     // Laravel Lift typed properties
     public int $id;
