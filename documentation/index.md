@@ -101,9 +101,13 @@ This index is automatically generated and lists all documentation files:
     * [Documentation: TelescopeServiceProvider.php](app/Providers/TelescopeServiceProvider.md)
   * **Services/**
     * [Documentation: BuildingService.php](app/Services/BuildingService.md)
+    * [Documentation: CacheEvictionService.php](app/Services/CacheEvictionService.md)
+    * [Documentation: EnhancedCacheService.php](app/Services/EnhancedCacheService.md)
+    * [Documentation: EnhancedSessionService.php](app/Services/EnhancedSessionService.md)
     * [Documentation: FathomAnalytics.php](app/Services/FathomAnalytics.md)
     * [Documentation: GameMechanicsService.php](app/Services/GameMechanicsService.md)
     * [Documentation: GameSecurityService.php](app/Services/GameSecurityService.md)
+    * [Documentation: GeographicAnalysisService.php](app/Services/GeographicAnalysisService.md)
     * [Documentation: GeographicService.php](app/Services/GeographicService.md)
     * [Documentation: QueryOptimizationService.php](app/Services/QueryOptimizationService.md)
     * [Documentation: ResourceProductionService.php](app/Services/ResourceProductionService.md)
