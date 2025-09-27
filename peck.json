@@ -158,6 +158,7 @@
             "tests/",
             "app/ValueObjects/",
             "app/Models/",
+            "app/Livewire/",
             "documentation/",
             "docker/",
             "config/",

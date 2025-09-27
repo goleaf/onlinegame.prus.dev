@@ -24,6 +24,7 @@ class Village extends Model implements Auditable
     use HasFactory;
     use HasNotables;
     use AuditableTrait;
+    use Lift;
 
     protected $fillable = [
         'player_id',
