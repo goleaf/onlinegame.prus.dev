@@ -26,7 +26,7 @@ use function sbamtr\LaravelQueryEnrich\c;
 
 class Player extends Model implements Auditable
 {
-    use HasFactory;
+    use HasFactory, Commentable;
     use HasNotables;
     use AuditableTrait;
 

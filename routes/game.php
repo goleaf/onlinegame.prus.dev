@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Game\AIController;
 use App\Http\Controllers\Game\APIDocumentationController;
+use App\Http\Controllers\Game\ChatController;
 use App\Http\Controllers\Game\GameController;
 use App\Http\Controllers\Game\LarautilxController;
 use App\Http\Controllers\Game\LarautilxDashboardController;

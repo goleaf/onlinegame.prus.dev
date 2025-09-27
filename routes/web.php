@@ -143,6 +143,24 @@ Route::get('decompose', function () {
     }
 })->name('decompose');
 
+// Laravel Decomposer API route - JSON report
+Route::get('decompose/json', function () {
+    try {
+        $report = \Lubusin\Decomposer\Decomposer::getReportAsArray();
+        return response()->json([
+            'success' => true,
+            'data' => $report,
+            'generated_at' => now()->toISOString()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'generated_at' => now()->toISOString()
+        ], 500);
+    }
+})->name('decompose.json');
+
 // Admin routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', App\Livewire\Admin\AdminDashboard::class)->name('dashboard');
