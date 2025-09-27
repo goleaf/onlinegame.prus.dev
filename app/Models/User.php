@@ -216,7 +216,20 @@ class User extends Authenticatable implements Auditable
      */
     public function getVillages()
     {
-        return $this->player ? $this->player->villages : collect();
+        $startTime = microtime(true);
+        
+        $villages = $this->player ? $this->player->villages : collect();
+        
+        ds('User villages retrieved', [
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'has_player' => (bool) $this->player,
+            'village_count' => $villages->count(),
+            'villages' => $villages->pluck('name')->toArray(),
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Villages');
+
+        return $villages;
     }
 
     /**
