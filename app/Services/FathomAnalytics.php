@@ -37,7 +37,8 @@ class FathomAnalytics
         }
 
         return sprintf(
-            '<script src="https://cdn.usefathom.com/script.js" data-site="%s" defer></script>',
+            '<script src="%s" data-site="%s" defer></script>',
+            basset('https://cdn.usefathom.com/script.js'),
             $this->siteId
         );
     }
