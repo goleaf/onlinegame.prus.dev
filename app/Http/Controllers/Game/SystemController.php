@@ -4,29 +4,44 @@ namespace App\Http\Controllers\Game;
 
 use App\Http\Controllers\Controller;
 use App\Services\LarautilxIntegrationService;
+use App\Traits\GameValidationTrait;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\ConfigUtil;
 use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\QueryParameterUtil;
 use LaraUtilX\Utilities\SchedulerUtil;
 
-class SystemController extends Controller
+class SystemController extends CrudController
 {
-    use ApiResponseTrait;
+    use ApiResponseTrait, GameValidationTrait;
 
+    protected Model $model;
     protected ConfigUtil $configUtil;
     protected SchedulerUtil $schedulerUtil;
     protected LarautilxIntegrationService $integrationService;
+    protected CachingUtil $cachingUtil;
+
+    protected array $validationRules = [];
+    protected array $searchableFields = [];
+    protected array $relationships = [];
+    protected int $perPage = 10;
 
     public function __construct(
         ConfigUtil $configUtil,
         SchedulerUtil $schedulerUtil,
-        LarautilxIntegrationService $integrationService
+        LarautilxIntegrationService $integrationService,
+        CachingUtil $cachingUtil
     ) {
         $this->configUtil = $configUtil;
         $this->schedulerUtil = $schedulerUtil;
         $this->integrationService = $integrationService;
+        $this->cachingUtil = $cachingUtil;
+        // System Controller doesn't have a specific model
+        parent::__construct();
     }
 
     /**
@@ -183,8 +198,8 @@ class SystemController extends Controller
 
             // Cache system check
             try {
-                \Cache::put('health_check', 'ok', 60);
-                $cacheValue = \Cache::get('health_check');
+                $this->cachingUtil->cache('health_check', 'ok', 60);
+                $cacheValue = $this->cachingUtil->get('health_check');
                 $health['checks']['cache'] = [
                     'status' => $cacheValue === 'ok' ? 'healthy' : 'unhealthy',
                     'message' => $cacheValue === 'ok' ? 'Cache system working' : 'Cache system not responding',

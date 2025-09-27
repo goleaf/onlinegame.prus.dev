@@ -4,22 +4,39 @@ namespace App\Http\Controllers\Game;
 
 use App\Http\Controllers\Controller;
 use App\Services\AIService;
+use App\Traits\GameValidationTrait;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
 
-class AIController extends Controller
+class AIController extends CrudController
 {
-    use ApiResponseTrait;
+    use ApiResponseTrait, GameValidationTrait;
 
+    protected Model $model;
     protected AIService $aiService;
     protected RateLimiterUtil $rateLimiter;
+
+    protected array $validationRules = [
+        'prompt' => 'required|string|max:1000',
+        'model' => 'nullable|string|in:gpt-3.5-turbo,gpt-4,gemini-pro',
+        'temperature' => 'nullable|numeric|min:0|max:2',
+        'max_tokens' => 'nullable|integer|min:1|max:4000',
+    ];
+
+    protected array $searchableFields = ['prompt'];
+    protected array $relationships = [];
+    protected int $perPage = 10;
 
     public function __construct(AIService $aiService, RateLimiterUtil $rateLimiter)
     {
         $this->aiService = $aiService;
         $this->rateLimiter = $rateLimiter;
+        // AI Controller doesn't have a specific model, so we'll use a generic approach
+        parent::__construct();
     }
 
     /**

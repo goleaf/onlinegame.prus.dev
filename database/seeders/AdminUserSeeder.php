@@ -30,15 +30,17 @@ class AdminUserSeeder extends Seeder
         );
 
         // Create default world
-        $world = World::create([
-            'name' => 'Travian World 1',
-            'description' => 'The main Travian world',
-            'max_players' => 1000,
-            'is_active' => true,
-            'speed' => 1,
-            'start_date' => now(),
-            'end_date' => now()->addMonths(6),
-        ]);
+        $world = World::firstOrCreate(
+            ['name' => 'Travian World 1'],
+            [
+                'description' => 'The main Travian world',
+                'max_players' => 1000,
+                'is_active' => true,
+                'speed' => 1,
+                'start_date' => now(),
+                'end_date' => now()->addMonths(6),
+            ]
+        );
 
         // Create admin player
         $adminPlayer = Player::create([

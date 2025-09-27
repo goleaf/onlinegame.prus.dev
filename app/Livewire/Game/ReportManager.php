@@ -21,6 +21,8 @@ use App\Exports\ReportsExport;
 
 class ReportManager extends Component
 {
+    use ApiResponseTrait;
+{
     use WithPagination;
 
     public $world;

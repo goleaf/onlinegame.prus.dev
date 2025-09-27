@@ -23,20 +23,47 @@ class User extends Authenticatable implements Auditable
     use Notifiable;
     use HasNotables;
     use AuditableTrait;
-    use Lift;
+    // use Lift;
     use HasReference;
 
-    // Laravel Lift typed properties
-    public int $id;
-    public string $name;
-    public string $email;
-    public ?string $phone;
-    public ?string $phone_country;
-    public ?\Carbon\Carbon $email_verified_at;
-    public string $password;
-    public ?string $remember_token;
-    public \Carbon\Carbon $created_at;
-    public \Carbon\Carbon $updated_at;
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'phone',
+        'phone_country',
+        'reference_number',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'phone' => \Propaganistas\LaravelPhone\Casts\RawPhoneNumberCast::class . ':phone_country',
+            'reference_number' => 'string',
+        ];
+    }
 
     /**
      * Attributes to exclude from the Audit.
@@ -84,44 +111,6 @@ class User extends Authenticatable implements Auditable
         return $this->isAuditingDisabled();
     }
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'phone',
-        'phone_country',
-        'reference_number',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'phone' => \Propaganistas\LaravelPhone\Casts\RawPhoneNumberCast::class . ':phone_country',
-            'reference_number' => 'string',
-        ];
-    }
 
     public function players()
     {

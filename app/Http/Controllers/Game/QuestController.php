@@ -3,21 +3,21 @@
 namespace App\Http\Controllers\Game;
 
 use App\Http\Controllers\Controller;
-use App\Models\Game\Quest;
-use App\Models\Game\PlayerQuest;
 use App\Models\Game\Achievement;
 use App\Models\Game\PlayerAchievement;
+use App\Models\Game\PlayerQuest;
+use App\Models\Game\Quest;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\FilteringUtil;
+use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Quest & Achievement Management
@@ -33,10 +33,10 @@ use LaraUtilX\Utilities\FilteringUtil;
  */
 class QuestController extends CrudController
 {
-    use ApiResponseTrait;
+    use ApiResponseTrait, ValidationHelperTrait;
 
     protected Model $model;
-    
+
     protected array $validationRules = [
         'title' => 'required|string|max:255',
         'description' => 'nullable|string',
@@ -122,7 +122,8 @@ class QuestController extends CrudController
                 $query = $query->filter($filters);
             }
 
-            $quests = $query->with($this->relationships)
+            $quests = $query
+                ->with($this->relationships)
                 ->orderBy('created_at', 'desc')
                 ->paginate($request->input('per_page', $this->perPage));
 
@@ -133,7 +134,6 @@ class QuestController extends CrudController
             ], 'quest_system');
 
             return $this->paginatedResponse($quests, 'Quests retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving quests', [
                 'error' => $e->getMessage(),
@@ -205,7 +205,7 @@ class QuestController extends CrudController
                 $questData['progress'] = [
                     'current' => $playerQuest->progress,
                     'required' => $quest->requirements['count'] ?? 1,
-                    'percentage' => $quest->requirements['count'] > 0 
+                    'percentage' => $quest->requirements['count'] > 0
                         ? round(($playerQuest->progress / $quest->requirements['count']) * 100, 2)
                         : 0
                 ];
@@ -226,7 +226,6 @@ class QuestController extends CrudController
             ], 'quest_system');
 
             return $this->successResponse($questData, 'Quest details retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving quest details', [
                 'error' => $e->getMessage(),
@@ -301,16 +300,18 @@ class QuestController extends CrudController
                 });
             }
 
-            $playerQuests = $query->orderBy('started_at', 'desc')
+            $playerQuests = $query
+                ->orderBy('started_at', 'desc')
                 ->get();
 
-            return response()->json(['data' => $playerQuests]);
-
+            return $this->successResponse($playerQuests, 'Player quests retrieved successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve player quests: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving player quests', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'quest_system');
+
+            return $this->errorResponse('Failed to retrieve player quests: ' . $e->getMessage(), 500);
         }
     }
 
@@ -350,10 +351,7 @@ class QuestController extends CrudController
             $quest = Quest::findOrFail($id);
 
             if (!$quest->is_active) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Quest is not available'
-                ], 400);
+                return $this->errorResponse('Quest is not available', 400);
             }
 
             // Check if player already has this quest
@@ -381,7 +379,6 @@ class QuestController extends CrudController
                 'message' => 'Quest started successfully',
                 'player_quest' => $playerQuest
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -454,7 +451,7 @@ class QuestController extends CrudController
 
             // Grant rewards
             $rewards = $quest->rewards ?? [];
-            
+
             // Add experience
             if (isset($rewards['experience'])) {
                 $player = Auth::user()->player;
@@ -473,7 +470,6 @@ class QuestController extends CrudController
                 'message' => 'Quest completed successfully',
                 'rewards' => $rewards
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -535,11 +531,11 @@ class QuestController extends CrudController
                 });
             }
 
-            $achievements = $query->orderBy('unlocked_at', 'desc')
+            $achievements = $query
+                ->orderBy('unlocked_at', 'desc')
                 ->get();
 
             return response()->json(['data' => $achievements]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -596,7 +592,6 @@ class QuestController extends CrudController
                 ->get();
 
             return response()->json(['data' => $leaderboard]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -670,7 +665,7 @@ class QuestController extends CrudController
                     'total_completed' => $totalCompleted,
                     'completion_rate' => round($completionRate, 2),
                     'active_quests' => $activeQuests,
-                    'total_experience_gained' => 0 // Would need to calculate from quest rewards
+                    'total_experience_gained' => 0  // Would need to calculate from quest rewards
                 ],
                 'achievements' => [
                     'total_unlocked' => $totalAchievements,
@@ -678,7 +673,6 @@ class QuestController extends CrudController
                     'by_rarity' => $achievementsByRarity
                 ]
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -694,7 +688,7 @@ class QuestController extends CrudController
     {
         // Get player's main village
         $village = $player->villages()->first();
-        
+
         if ($village) {
             foreach ($resources as $resource => $amount) {
                 DB::table('resources')

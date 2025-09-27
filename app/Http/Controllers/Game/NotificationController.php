@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\FilteringUtil;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\LoggingUtil;
@@ -28,7 +29,7 @@ use LaraUtilX\Utilities\LoggingUtil;
  */
 class NotificationController extends CrudController
 {
-    use ApiResponseTrait;
+    use ApiResponseTrait, ValidationHelperTrait;
     /**
      * Get all notifications
      *
@@ -88,13 +89,15 @@ class NotificationController extends CrudController
             $notifications = $query->orderBy('created_at', 'desc')
                 ->paginate($request->input('per_page', 15));
 
-            return response()->json($notifications);
+            return $this->paginatedResponse($notifications, 'Notifications retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve notifications: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving notifications', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'notification_system');
+
+            return $this->errorResponse('Failed to retrieve notifications: ' . $e->getMessage(), 500);
         }
     }
 
@@ -143,13 +146,16 @@ class NotificationController extends CrudController
                 $notification->update(['is_read' => true]);
             }
 
-            return response()->json($notification);
+            return $this->successResponse($notification, 'Notification retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Notification not found'
-            ], 404);
+            LoggingUtil::error('Error retrieving notification', [
+                'error' => $e->getMessage(),
+                'notification_id' => $id,
+                'user_id' => auth()->id(),
+            ], 'notification_system');
+
+            return $this->errorResponse('Notification not found', 404);
         }
     }
 
@@ -182,16 +188,16 @@ class NotificationController extends CrudController
 
             $notification->update(['is_read' => true]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Notification marked as read'
-            ]);
+            return $this->successResponse(null, 'Notification marked as read');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Notification not found'
-            ], 404);
+            LoggingUtil::error('Error marking notification as read', [
+                'error' => $e->getMessage(),
+                'notification_id' => $id,
+                'user_id' => auth()->id(),
+            ], 'notification_system');
+
+            return $this->errorResponse('Notification not found', 404);
         }
     }
 
@@ -218,17 +224,15 @@ class NotificationController extends CrudController
                 ->where('is_read', false)
                 ->update(['is_read' => true]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'All notifications marked as read',
-                'updated_count' => $updatedCount
-            ]);
+            return $this->successResponse(['updated_count' => $updatedCount], 'All notifications marked as read');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to mark notifications as read: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error marking all notifications as read', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'notification_system');
+
+            return $this->errorResponse('Failed to mark notifications as read: ' . $e->getMessage(), 500);
         }
     }
 
@@ -261,16 +265,16 @@ class NotificationController extends CrudController
 
             $notification->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Notification deleted successfully'
-            ]);
+            return $this->successResponse(null, 'Notification deleted successfully');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Notification not found'
-            ], 404);
+            LoggingUtil::error('Error deleting notification', [
+                'error' => $e->getMessage(),
+                'notification_id' => $id,
+                'user_id' => auth()->id(),
+            ], 'notification_system');
+
+            return $this->errorResponse('Notification not found', 404);
         }
     }
 
@@ -295,15 +299,15 @@ class NotificationController extends CrudController
                 ->where('is_read', false)
                 ->count();
 
-            return response()->json([
-                'unread_count' => $unreadCount
-            ]);
+            return $this->successResponse(['unread_count' => $unreadCount], 'Unread count retrieved successfully');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve unread count: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving unread count', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'notification_system');
+
+            return $this->errorResponse('Failed to retrieve unread count: ' . $e->getMessage(), 500);
         }
     }
 
@@ -359,19 +363,21 @@ class NotificationController extends CrudController
                 ->pluck('count', 'priority')
                 ->toArray();
 
-            return response()->json([
+            return $this->successResponse([
                 'total_notifications' => $totalNotifications,
                 'unread_notifications' => $unreadNotifications,
                 'read_notifications' => $readNotifications,
                 'by_type' => $notificationsByType,
                 'by_priority' => $notificationsByPriority
-            ]);
+            ], 'Notification statistics retrieved successfully');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve notification statistics: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving notification statistics', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'notification_system');
+
+            return $this->errorResponse('Failed to retrieve notification statistics: ' . $e->getMessage(), 500);
         }
     }
 
@@ -417,7 +423,7 @@ class NotificationController extends CrudController
     public function store(Request $request): JsonResponse
     {
         try {
-            $validator = Validator::make($request->all(), [
+            $validationRules = [
                 'player_id' => 'required|exists:players,id',
                 'type' => 'required|string|max:255',
                 'title' => 'required|string|max:255',
@@ -425,13 +431,11 @@ class NotificationController extends CrudController
                 'data' => 'nullable|array',
                 'priority' => 'nullable|in:low,normal,high,urgent',
                 'expires_at' => 'nullable|date',
-            ]);
+            ];
 
+            $validator = $this->validateRequest($request, $validationRules);
             if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'The given data was invalid.',
-                    'errors' => $validator->errors()
-                ], 422);
+                return $this->validationErrorResponse($validator->errors());
             }
 
             $notification = Notification::create([
@@ -445,16 +449,16 @@ class NotificationController extends CrudController
                 'is_read' => false,
             ]);
 
-            return response()->json([
-                'success' => true,
-                'notification' => $notification
-            ], 201);
+            return $this->successResponse($notification, 'Notification created successfully.', 201);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create notification: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error creating notification', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'request_data' => $request->all(),
+            ], 'notification_system');
+
+            return $this->errorResponse('Failed to create notification: ' . $e->getMessage(), 500);
         }
     }
 }

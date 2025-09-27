@@ -26,6 +26,8 @@ use Intervention\Validation\Rules\Longitude;
 use JonPurvis\Squeaky\Rules\Clean;
 use sbamtr\LaravelQueryEnrich\QE;
 use function sbamtr\LaravelQueryEnrich\c;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Game API
@@ -47,6 +49,7 @@ use function sbamtr\LaravelQueryEnrich\c;
  */
 class GameApiController extends Controller
 {
+    use ApiResponseTrait;
     /**
      * Get authenticated user
      *

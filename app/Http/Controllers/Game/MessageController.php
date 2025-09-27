@@ -14,11 +14,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\LoggingUtil;
 
 class MessageController extends CrudController
 {
-    use ApiResponseTrait;
+    use ApiResponseTrait, ValidationHelperTrait;
     protected $messageService;
 
     public function __construct()

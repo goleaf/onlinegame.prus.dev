@@ -4,19 +4,30 @@ namespace App\Http\Controllers\Game;
 
 use App\Http\Controllers\Controller;
 use App\Services\LarautilxIntegrationService;
+use App\Traits\GameValidationTrait;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\LoggingUtil;
 
-class APIDocumentationController extends Controller
+class APIDocumentationController extends CrudController
 {
-    use ApiResponseTrait;
+    use ApiResponseTrait, GameValidationTrait;
 
+    protected Model $model;
     protected LarautilxIntegrationService $integrationService;
+
+    protected array $validationRules = [];
+    protected array $searchableFields = [];
+    protected array $relationships = [];
+    protected int $perPage = 10;
 
     public function __construct(LarautilxIntegrationService $integrationService)
     {
         $this->integrationService = $integrationService;
+        // API Documentation Controller doesn't have a specific model
+        parent::__construct();
     }
 
     /**

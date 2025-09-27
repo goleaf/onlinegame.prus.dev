@@ -457,18 +457,12 @@ class MarketController extends CrudController
 
             // Cannot accept your own offer
             if ($offer->player_id === $playerId) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Cannot accept your own offer'
-                ], 400);
+                return $this->errorResponse('Cannot accept your own offer', 400);
             }
 
             // Check if accept amount is valid
             if ($acceptAmount > $offer->resource_amount) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Accept amount cannot exceed offer amount'
-                ], 400);
+                return $this->errorResponse('Accept amount cannot exceed offer amount', 400);
             }
 
             $player = Player::findOrFail($playerId);
@@ -479,67 +473,80 @@ class MarketController extends CrudController
 
             DB::beginTransaction();
 
-            if ($offer->offer_type === 'sell') {
-                // Player is buying from the offer
-                // Check if player has enough resources to pay
-                $paymentResource = $this->getPaymentResource($offer->resource_type);
-                if ($player->{$paymentResource} < $receivedAmount) {
-                    DB::rollBack();
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Insufficient resources to complete trade'
-                    ], 400);
+            try {
+                if ($offer->offer_type === 'sell') {
+                    // Player is buying from the offer
+                    // Check if player has enough resources to pay
+                    $paymentResource = $this->getPaymentResource($offer->resource_type);
+                    if ($player->{$paymentResource} < $receivedAmount) {
+                        DB::rollBack();
+                        return $this->errorResponse('Insufficient resources to complete trade', 400);
+                    }
+
+                    // Transfer resources
+                    $player->decrement($paymentResource, $receivedAmount);
+                    $player->increment($offer->resource_type, $acceptAmount);
+                    $offerPlayer->increment($paymentResource, $receivedAmount);
+                } else {
+                    // Player is selling to the offer
+                    // Check if player has enough resources to sell
+                    if ($player->{$offer->resource_type} < $acceptAmount) {
+                        DB::rollBack();
+                        return $this->errorResponse('Insufficient resources to complete trade', 400);
+                    }
+
+                    // Transfer resources
+                    $player->decrement($offer->resource_type, $acceptAmount);
+                    $player->increment($this->getPaymentResource($offer->resource_type), $receivedAmount);
+                    $offerPlayer->increment($offer->resource_type, $acceptAmount);
                 }
 
-                // Transfer resources
-                $player->decrement($paymentResource, $receivedAmount);
-                $player->increment($offer->resource_type, $acceptAmount);
-                $offerPlayer->increment($paymentResource, $receivedAmount);
-            } else {
-                // Player is selling to the offer
-                // Check if player has enough resources to sell
-                if ($player->{$offer->resource_type} < $acceptAmount) {
-                    DB::rollBack();
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Insufficient resources to complete trade'
-                    ], 400);
+                // Update offer
+                $remainingAmount = $offer->resource_amount - $acceptAmount;
+                if ($remainingAmount <= 0) {
+                    $offer->update(['status' => 'completed']);
+                } else {
+                    $offer->decrement('resource_amount', $acceptAmount);
+                    $offer->decrement('total_amount', $receivedAmount);
                 }
 
-                // Transfer resources
-                $player->decrement($offer->resource_type, $acceptAmount);
-                $player->increment($this->getPaymentResource($offer->resource_type), $receivedAmount);
-                $offerPlayer->increment($offer->resource_type, $acceptAmount);
-            }
+                // Clear related caches
+                CachingUtil::forget("market_offer_{$id}");
+                CachingUtil::forget('market_offers_' . md5(serialize($request->all())));
+                CachingUtil::forget("player_offers_{$playerId}");
+                CachingUtil::forget("player_offers_{$offer->player_id}");
 
-            // Update offer
-            $remainingAmount = $offer->resource_amount - $acceptAmount;
-            if ($remainingAmount <= 0) {
-                $offer->update(['status' => 'completed']);
-            } else {
-                $offer->decrement('resource_amount', $acceptAmount);
-                $offer->decrement('total_amount', $receivedAmount);
-            }
+                DB::commit();
 
-            DB::commit();
+                LoggingUtil::info('Market offer accepted', [
+                    'user_id' => auth()->id(),
+                    'offer_id' => $id,
+                    'accepted_amount' => $acceptAmount,
+                    'received_amount' => $receivedAmount,
+                    'offer_player_id' => $offer->player_id,
+                ], 'market_system');
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Trade completed successfully',
-                'trade_details' => [
+                return $this->successResponse([
                     'offer_id' => $id,
                     'accepted_amount' => $acceptAmount,
                     'received_amount' => $receivedAmount,
                     'cost' => $receivedAmount,
-                ]
-            ]);
+                ], 'Trade completed successfully.');
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
 
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to accept offer: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error accepting market offer', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => auth()->id(),
+                'offer_id' => $id,
+            ], 'market_system');
+
+            return $this->errorResponse('Failed to accept offer.', 500);
         }
     }
 
@@ -577,26 +584,44 @@ class MarketController extends CrudController
 
             DB::beginTransaction();
 
-            // If it's a sell offer, refund the reserved resources
-            if ($offer->offer_type === 'sell') {
-                $player->increment($offer->resource_type, $offer->resource_amount);
+            try {
+                // If it's a sell offer, refund the reserved resources
+                if ($offer->offer_type === 'sell') {
+                    $player->increment($offer->resource_type, $offer->resource_amount);
+                }
+
+                $offer->update(['status' => 'cancelled']);
+
+                // Clear related caches
+                CachingUtil::forget("market_offer_{$id}");
+                CachingUtil::forget("player_offers_{$playerId}");
+
+                DB::commit();
+
+                LoggingUtil::info('Market offer cancelled', [
+                    'user_id' => auth()->id(),
+                    'offer_id' => $id,
+                    'offer_type' => $offer->offer_type,
+                    'resource_type' => $offer->resource_type,
+                    'resource_amount' => $offer->resource_amount,
+                ], 'market_system');
+
+                return $this->successResponse(null, 'Market offer cancelled successfully.');
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
             }
 
-            $offer->update(['status' => 'cancelled']);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Market offer cancelled successfully'
-            ]);
-
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to cancel offer: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error cancelling market offer', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => auth()->id(),
+                'offer_id' => $id,
+            ], 'market_system');
+
+            return $this->errorResponse('Failed to cancel offer.', 500);
         }
     }
 
@@ -634,42 +659,56 @@ class MarketController extends CrudController
     public function statistics(): JsonResponse
     {
         try {
-            $totalOffers = MarketOffer::count();
-            $activeOffers = MarketOffer::where('status', 'active')->count();
-            $completedOffers = MarketOffer::where('status', 'completed')->count();
-            $cancelledOffers = MarketOffer::where('status', 'cancelled')->count();
-
-            // Calculate average exchange rates
-            $averageRates = [];
-            $resourceTypes = ['wood', 'clay', 'iron', 'crop'];
+            $cacheKey = 'market_statistics';
             
-            foreach ($resourceTypes as $resourceType) {
-                $avgRate = MarketOffer::where('resource_type', $resourceType)
-                    ->where('status', 'active')
-                    ->avg('exchange_rate');
-                $averageRates[$resourceType] = round($avgRate ?? 1.0, 2);
-            }
+            $statistics = CachingUtil::remember($cacheKey, now()->addMinutes(15), function () {
+                $totalOffers = MarketOffer::count();
+                $activeOffers = MarketOffer::where('status', 'active')->count();
+                $completedOffers = MarketOffer::where('status', 'completed')->count();
+                $cancelledOffers = MarketOffer::where('status', 'cancelled')->count();
 
-            // Get recent trades (completed offers)
-            $recentTrades = MarketOffer::where('status', 'completed')
-                ->orderBy('updated_at', 'desc')
-                ->limit(10)
-                ->get(['id', 'resource_type', 'resource_amount', 'exchange_rate', 'updated_at']);
+                // Calculate average exchange rates
+                $averageRates = [];
+                $resourceTypes = ['wood', 'clay', 'iron', 'crop'];
+                
+                foreach ($resourceTypes as $resourceType) {
+                    $avgRate = MarketOffer::where('resource_type', $resourceType)
+                        ->where('status', 'active')
+                        ->avg('exchange_rate');
+                    $averageRates[$resourceType] = round($avgRate ?? 1.0, 2);
+                }
 
-            return response()->json([
-                'total_offers' => $totalOffers,
-                'active_offers' => $activeOffers,
-                'completed_offers' => $completedOffers,
-                'cancelled_offers' => $cancelledOffers,
-                'average_exchange_rates' => $averageRates,
-                'recent_trades' => $recentTrades,
-            ]);
+                // Get recent trades (completed offers)
+                $recentTrades = MarketOffer::where('status', 'completed')
+                    ->orderBy('updated_at', 'desc')
+                    ->limit(10)
+                    ->get(['id', 'resource_type', 'resource_amount', 'exchange_rate', 'updated_at']);
+
+                return [
+                    'total_offers' => $totalOffers,
+                    'active_offers' => $activeOffers,
+                    'completed_offers' => $completedOffers,
+                    'cancelled_offers' => $cancelledOffers,
+                    'average_exchange_rates' => $averageRates,
+                    'recent_trades' => $recentTrades,
+                ];
+            });
+
+            LoggingUtil::info('Market statistics retrieved', [
+                'user_id' => auth()->id(),
+                'total_offers' => $statistics['total_offers'],
+                'active_offers' => $statistics['active_offers'],
+            ], 'market_system');
+
+            return $this->successResponse($statistics, 'Market statistics retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve market statistics: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving market statistics', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ], 'market_system');
+
+            return $this->errorResponse('Failed to retrieve market statistics.', 500);
         }
     }
 
@@ -684,11 +723,6 @@ class MarketController extends CrudController
             'iron' => 'crop',
             'crop' => 'wood',
         ];
-
-        return $paymentMap[$resourceType] ?? 'wood';
-    }
-}
-
 
         return $paymentMap[$resourceType] ?? 'wood';
     }
