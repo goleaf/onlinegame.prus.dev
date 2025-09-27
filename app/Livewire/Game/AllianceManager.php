@@ -92,6 +92,12 @@ class AllianceManager extends Component
         'applicationDeclined',
         'villageSelected',
         'gameTickProcessed',
+        'diplomacyProposed',
+        'diplomacyAccepted',
+        'diplomacyDeclined',
+        'warDeclared',
+        'warEnded',
+        'messagePosted',
     ];
 
     public function mount($worldId = null)

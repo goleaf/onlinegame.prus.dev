@@ -46,6 +46,60 @@ class Movement extends Model implements Auditable
         'metadata' => 'array',
     ];
 
+    /**
+     * Get the troops as a value object
+     */
+    protected function troops(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? new TroopCounts(
+                legionnaires: $value['legionnaires'] ?? 0,
+                praetorians: $value['praetorians'] ?? 0,
+                imperians: $value['imperians'] ?? 0,
+                equitesLegati: $value['equites_legati'] ?? 0,
+                equitesImperatoris: $value['equites_imperatoris'] ?? 0,
+                equitesCaesaris: $value['equites_caesaris'] ?? 0,
+                batteringRams: $value['battering_rams'] ?? 0,
+                fireCatapults: $value['fire_catapults'] ?? 0,
+                senators: $value['senators'] ?? 0,
+                settlers: $value['settlers'] ?? 0
+            ) : null,
+            set: fn (TroopCounts $troops = null) => $troops ? [
+                'legionnaires' => $troops->legionnaires,
+                'praetorians' => $troops->praetorians,
+                'imperians' => $troops->imperians,
+                'equites_legati' => $troops->equitesLegati,
+                'equites_imperatoris' => $troops->equitesImperatoris,
+                'equites_caesaris' => $troops->equitesCaesaris,
+                'battering_rams' => $troops->batteringRams,
+                'fire_catapults' => $troops->fireCatapults,
+                'senators' => $troops->senators,
+                'settlers' => $troops->settlers,
+            ] : null
+        );
+    }
+
+    /**
+     * Get the resources as a value object
+     */
+    protected function resources(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? new ResourceAmounts(
+                wood: $value['wood'] ?? 0,
+                clay: $value['clay'] ?? 0,
+                iron: $value['iron'] ?? 0,
+                crop: $value['crop'] ?? 0
+            ) : null,
+            set: fn (ResourceAmounts $resources = null) => $resources ? [
+                'wood' => $resources->wood,
+                'clay' => $resources->clay,
+                'iron' => $resources->iron,
+                'crop' => $resources->crop,
+            ] : null
+        );
+    }
+
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
     protected $referenceStrategy = 'template';

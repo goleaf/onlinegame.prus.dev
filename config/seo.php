@@ -13,7 +13,7 @@ return [
 
     'default_title' => 'Travian Online Game - Laravel Edition',
     'default_description' => 'Play the legendary browser-based strategy MMO Travian built with Laravel 12 and Livewire 3. Build villages, manage resources, and conquer the ancient world.',
-    'default_image' => '/img/travian/game-logo.png',
+    'default_image' => '/img/travian/game-logo.svg',
     'default_keywords' => 'travian, strategy game, mmo, browser game, laravel, livewire, ancient world, village building, resource management',
 
     /*

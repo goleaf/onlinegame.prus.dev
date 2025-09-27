@@ -411,7 +411,7 @@ class Village extends Model implements Auditable
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
-            Filter::field('name', ['$eq', '$contains']),
+            Filter::field('name', ['$eq', '$like']),
             Filter::field('population', ['$eq', '$gt', '$lt']),
             Filter::field('x_coordinate', ['$eq', '$gt', '$lt']),
             Filter::field('y_coordinate', ['$eq', '$gt', '$lt']),

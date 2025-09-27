@@ -12,12 +12,14 @@ class SeoCacheService
     protected int $cacheTtl = 3600; // 1 hour
 
     /**
-     * Get cached SEO metadata
+     * Get cached SEO metadata with SmartCache optimization
      */
     public function get(string $key): ?array
     {
         try {
-            return Cache::get($this->cachePrefix . $key);
+            return SmartCache::remember($this->cachePrefix . $key, now()->addHour(), function () use ($key) {
+                return Cache::get($this->cachePrefix . $key);
+            });
         } catch (\Exception $e) {
             Log::warning("SEO cache get failed for key: {$key}", ['error' => $e->getMessage()]);
             return null;
