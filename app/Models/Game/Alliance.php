@@ -12,7 +12,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 
 class Alliance extends Model implements Auditable
 {
-    use HasNotables;
+    use HasNotables, HasReference;
     use AuditableTrait;
 
     protected $fillable = [

@@ -185,7 +185,8 @@ class GeographicService
     public function decodeGeohash(string $geohash): array
     {
         $geohashObj = new Geohash();
-        $coordinate = $geohashObj->decode($geohash);
+        $geohashObj->decode($geohash);
+        $coordinate = $geohashObj->getCoordinate();
 
         return [
             'lat' => $coordinate->getLatitude(),

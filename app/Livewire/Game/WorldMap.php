@@ -39,7 +39,7 @@ class WorldMap extends Component
     public $mapMode = 'normal';  // normal, alliance, tribe, player
     public $highlightedVillages = [];
     public $mapStats = [];
-    
+
     // Enhanced map features
     public $showGrid = true;
     public $showDistance = false;
@@ -653,7 +653,7 @@ class WorldMap extends Component
             'world' => $this->world,
             'mapData' => $this->mapData,
             'selectedVillage' => $this->selectedVillage,
-            'visibleVillages' => $this->getVisibleVillages(),
+            'visibleVillages' => $this->visibleVillages,
             'viewCenter' => $this->viewCenter,
             'zoomLevel' => $this->zoomLevel,
             'showCoordinates' => $this->showCoordinates,
@@ -674,6 +674,22 @@ class WorldMap extends Component
             'mapMode' => $this->mapMode,
             'highlightedVillages' => $this->highlightedVillages,
             'mapStats' => $this->mapStats,
+            'showGrid' => $this->showGrid,
+            'showDistance' => $this->showDistance,
+            'showMovementPaths' => $this->showMovementPaths,
+            'showResourceFields' => $this->showResourceFields,
+            'showOasis' => $this->showOasis,
+            'showBarbarianVillages' => $this->showBarbarianVillages,
+            'showNatarianVillages' => $this->showNatarianVillages,
+            'coordinateSystem' => $this->coordinateSystem,
+            'mapTheme' => $this->mapTheme,
+            'showPlayerStats' => $this->showPlayerStats,
+            'showAllianceStats' => $this->showAllianceStats,
+            'showBattleHistory' => $this->showBattleHistory,
+            'showTradeRoutes' => $this->showTradeRoutes,
+            'selectedCoordinates' => $this->selectedCoordinates,
+            'mapBounds' => $this->mapBounds,
+            'mapLayers' => $this->mapLayers,
         ]);
     }
 }

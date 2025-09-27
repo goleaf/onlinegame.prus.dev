@@ -38,7 +38,7 @@ class VillageFormComponent extends Component
     public function store()
     {
         $validated = $this->validate([
-            'form.name' => 'required|string|max:50',
+            'form.name' => ['required', 'string', 'max:50', new Clean],
             'form.player_id' => 'required|exists:players,id',
             'form.world_id' => 'required|exists:worlds,id',
             'form.x_coordinate' => 'required|integer|min:0|max:1000',

@@ -393,7 +393,6 @@ class QuestSystemCommand extends Command
             // Generate new daily quests
             $dailyQuests = Quest::where('category', 'daily')
                 ->where('is_active', true)
-                ->where('world_id', $player->world_id)
                 ->get();
 
             foreach ($dailyQuests as $quest) {
