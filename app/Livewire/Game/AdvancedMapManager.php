@@ -10,8 +10,8 @@ use App\Services\LarautilxIntegrationService;
 use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\FilteringUtil;
+use SmartCache\Facades\SmartCache;
 use Livewire\Component;
 
 class AdvancedMapManager extends Component

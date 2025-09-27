@@ -111,7 +111,7 @@ class MovementManager extends Component
             $this->loadMovementData();
             $this->initializeMovementFeatures();
         }
-        
+
         // Track component load time
         $this->dispatch('fathom-track', name: 'component_load_time', value: round((microtime(true) - $startTime) * 1000));
     }
@@ -192,7 +192,7 @@ class MovementManager extends Component
         ]);
 
         $targetVillage = Village::find($this->targetVillageId);
-        if (! $targetVillage) {
+        if (!$targetVillage) {
             $this->addNotification('Target village not found.', 'error');
 
             return;
@@ -260,7 +260,7 @@ class MovementManager extends Component
         $this->loadMovementData();
         $this->addNotification('Movement created successfully!', 'success');
         $this->dispatch('movementCreated', ['movementId' => $movement->id]);
-        
+
         // Track movement creation
         $totalTroops = array_sum($this->troopQuantities);
         $this->dispatch('fathom-track', name: 'movement created', value: $totalTroops);
@@ -269,7 +269,7 @@ class MovementManager extends Component
     public function cancelMovement($movementId)
     {
         $movement = Movement::find($movementId);
-        if (! $movement || $movement->status !== 'travelling') {
+        if (!$movement || $movement->status !== 'travelling') {
             $this->addNotification('Movement not found or cannot be cancelled.', 'error');
 
             return;
@@ -311,7 +311,7 @@ class MovementManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = ! $this->showDetails;
+        $this->showDetails = !$this->showDetails;
     }
 
     public function setTargetVillage($villageId)
@@ -329,7 +329,7 @@ class MovementManager extends Component
     public function selectTroop($troopId, $quantity = 1)
     {
         $troop = Troop::find($troopId);
-        if (! $troop || $troop->village_id !== $this->village->id) {
+        if (!$troop || $troop->village_id !== $this->village->id) {
             $this->addNotification("Invalid troop ID: {$troopId}", 'error');
 
             return;
@@ -408,7 +408,7 @@ class MovementManager extends Component
 
     public function toggleMyMovementsFilter()
     {
-        $this->showOnlyMyMovements = ! $this->showOnlyMyMovements;
+        $this->showOnlyMyMovements = !$this->showOnlyMyMovements;
         $this->addNotification(
             $this->showOnlyMyMovements ? 'Showing only my movements' : 'Showing all movements',
             'info'
@@ -417,7 +417,7 @@ class MovementManager extends Component
 
     public function toggleTravellingFilter()
     {
-        $this->showOnlyTravelling = ! $this->showOnlyTravelling;
+        $this->showOnlyTravelling = !$this->showOnlyTravelling;
         $this->addNotification(
             $this->showOnlyTravelling ? 'Showing only travelling movements' : 'Showing all movements',
             'info'
@@ -426,7 +426,7 @@ class MovementManager extends Component
 
     public function toggleCompletedFilter()
     {
-        $this->showOnlyCompleted = ! $this->showOnlyCompleted;
+        $this->showOnlyCompleted = !$this->showOnlyCompleted;
         $this->addNotification(
             $this->showOnlyCompleted ? 'Showing only completed movements' : 'Showing all movements',
             'info'
@@ -669,7 +669,7 @@ class MovementManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = ! $this->realTimeUpdates;
+        $this->realTimeUpdates = !$this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -678,7 +678,7 @@ class MovementManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'

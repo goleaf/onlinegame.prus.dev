@@ -268,7 +268,7 @@ class RealTimeUpdater extends Component
             $message = $name;
             $name = 'error';
         }
-        
+
         $this->errors[] = [
             'id' => uniqid(),
             'message' => $message,
