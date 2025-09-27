@@ -6,6 +6,8 @@ use App\Http\Controllers\Game\AIController;
 use App\Http\Controllers\Game\AllianceController;
 use App\Http\Controllers\Game\APIDocumentationController;
 use App\Http\Controllers\Game\ArtifactController;
+use App\Http\Controllers\Game\BattleController;
+use App\Http\Controllers\Game\QuestController;
 use App\Http\Controllers\Game\LarautilxController;
 use App\Http\Controllers\Game\LarautilxDashboardController;
 use App\Http\Controllers\Game\MessageController;
