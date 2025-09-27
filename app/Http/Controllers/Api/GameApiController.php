@@ -754,4 +754,14 @@ class GameApiController extends Controller
             'travel_time_minutes' => $travelTime
         ]);
     }
+
+    /**
+     * Calculate player rank based on points
+     */
+    private function calculatePlayerRank(Player $player): int
+    {
+        return Player::where('world_id', $player->world_id)
+            ->where('points', '>', $player->points)
+            ->count() + 1;
+    }
 }

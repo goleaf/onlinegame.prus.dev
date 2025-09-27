@@ -4,17 +4,10 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\Commenter;
-use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
-use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
-use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
-use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
@@ -332,6 +325,18 @@ class User extends Authenticatable implements Auditable, IsFilterable
         );
     }
 }
+
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'has_player' => (bool) $this->player,
+            'has_capital' => (bool) $capitalVillage,
+            'capital_village_id' => $capitalVillage ? $capitalVillage->id : null,
+            'capital_village_name' => $capitalVillage ? $capitalVillage->name : null,
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Capital Village');
+
+        return $capitalVillage;
+    }
 
     /**
      * Scope to get users with game players

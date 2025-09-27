@@ -19,7 +19,7 @@ class EloquentFilteringUnitTest extends TestCase
         
         // Test that the model has the Filterable trait
         $traits = class_uses_recursive(Player::class);
-        $this->assertContains('EloquentFiltering\Filterable', $traits);
+        $this->assertContains('IndexZer0\EloquentFiltering\Filter\Traits\Filterable', $traits);
     }
 
     public function test_village_model_implements_filterable_interface()
@@ -31,7 +31,7 @@ class EloquentFilteringUnitTest extends TestCase
         
         // Test that the model has the Filterable trait
         $traits = class_uses_recursive(Village::class);
-        $this->assertContains('EloquentFiltering\Filterable', $traits);
+        $this->assertContains('IndexZer0\EloquentFiltering\Filter\Traits\Filterable', $traits);
     }
 
     public function test_alliance_model_implements_filterable_interface()
@@ -43,7 +43,7 @@ class EloquentFilteringUnitTest extends TestCase
         
         // Test that the model has the Filterable trait
         $traits = class_uses_recursive(Alliance::class);
-        $this->assertContains('EloquentFiltering\Filterable', $traits);
+        $this->assertContains('IndexZer0\EloquentFiltering\Filter\Traits\Filterable', $traits);
     }
 
     public function test_user_model_implements_filterable_interface()
@@ -55,7 +55,7 @@ class EloquentFilteringUnitTest extends TestCase
         
         // Test that the model has the Filterable trait
         $traits = class_uses_recursive(User::class);
-        $this->assertContains('EloquentFiltering\Filterable', $traits);
+        $this->assertContains('IndexZer0\EloquentFiltering\Filter\Traits\Filterable', $traits);
     }
 
     public function test_player_allowed_filters_returns_correct_structure()

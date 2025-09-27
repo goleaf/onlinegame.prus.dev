@@ -32,6 +32,17 @@ class UserProfileManager extends Component
             'email' => 'required|email|unique:users,email',
             'phone' => ['nullable', 'string'],
             'phone_country' => ['nullable', 'string', 'size:2'],
+            'currentPassword' => 'required_with:newPassword',
+            'newPassword' => [
+                'required_with:currentPassword',
+                'confirmed',
+                'min:8',
+                new ZxcvbnRule([
+                    $this->email,
+                    $this->name,
+                ]),
+            ],
+            'newPasswordConfirmation' => 'required_with:newPassword',
         ];
     }
 

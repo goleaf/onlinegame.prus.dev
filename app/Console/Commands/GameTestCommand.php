@@ -415,6 +415,83 @@ class GameTestCommand extends Command
         $this->info('Integration test completed successfully');
     }
 
+    private function testErrorHandling(bool $verbose = false)
+    {
+        if ($verbose)
+            $this->line('Testing error handling system...');
+
+        $testUserId = $this->option('player') ?: 1;
+
+        // Test error logging
+        try {
+            GameErrorHandler::logGameAction('test_error_handling', [
+                'test' => true,
+                'user_id' => $testUserId,
+            ]);
+        } catch (\Exception $e) {
+            throw new \Exception('Error logging failed: ' . $e->getMessage());
+        }
+
+        // Test error statistics
+        $errorStats = GameErrorHandler::getErrorStatistics();
+        if (empty($errorStats)) {
+            throw new \Exception('Error statistics failed');
+        }
+
+        // Test error trends
+        $errorTrends = GameErrorHandler::getErrorTrends(7);
+        if (!is_array($errorTrends)) {
+            throw new \Exception('Error trends failed');
+        }
+
+        if ($verbose) {
+            $this->line('Error statistics: ' . json_encode($errorStats));
+            $this->line('Error trends: ' . json_encode($errorTrends));
+        }
+
+        $this->info('Error handling system test completed successfully');
+    }
+
+    private function testOptimization(bool $verbose = false)
+    {
+        if ($verbose)
+            $this->line('Testing performance optimization...');
+
+        $testUserId = $this->option('player') ?: 1;
+
+        // Test performance optimizer
+        $optimizer = app(\App\Services\GamePerformanceOptimizer::class);
+        
+        // Test game data optimization
+        $optimizedData = $optimizer->optimizeGameData($testUserId, ['user_stats', 'village_data']);
+        if (empty($optimizedData)) {
+            throw new \Exception('Game data optimization failed');
+        }
+
+        // Test performance metrics
+        $metrics = $optimizer->getPerformanceMetrics();
+        if (empty($metrics)) {
+            throw new \Exception('Performance metrics failed');
+        }
+
+        // Test cache warm-up
+        $optimizer->warmUpGameCache([$testUserId]);
+
+        // Test cleanup
+        $cleanupResults = $optimizer->cleanupExpiredData();
+        if (!isset($cleanupResults['execution_time'])) {
+            throw new \Exception('Cleanup operation failed');
+        }
+
+        if ($verbose) {
+            $this->line('Optimized data: ' . json_encode($optimizedData));
+            $this->line('Performance metrics: ' . json_encode($metrics));
+            $this->line('Cleanup results: ' . json_encode($cleanupResults));
+        }
+
+        $this->info('Performance optimization test completed successfully');
+    }
+
     private function showHelp()
     {
         $this->info('Available tests:');
