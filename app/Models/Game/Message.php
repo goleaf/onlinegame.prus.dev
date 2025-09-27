@@ -11,7 +11,7 @@ use SmartCache\Facades\SmartCache;
 
 class Message extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory, HasReference, Commentable;
 
     protected $fillable = [
         'sender_id',
