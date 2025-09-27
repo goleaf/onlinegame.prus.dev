@@ -297,6 +297,26 @@ $movements = SmartCache::remember($cacheKey, now()->addMinutes(2), function () {
 });
 ```
 
+### Analytics Tracking Examples
+```php
+// Battle target selection tracking
+$this->dispatch('fathom-track', name: 'battle target selected', value: $villageId);
+
+// Attack launch tracking
+$totalAttackPower = array_sum(array_column($this->attackingTroops, 'attack'));
+$this->dispatch('fathom-track', name: 'attack launched', value: $totalAttackPower);
+
+// Movement creation tracking
+$totalTroops = array_sum($this->troopQuantities);
+$this->dispatch('fathom-track', name: 'movement created', value: $totalTroops);
+
+// Task completion tracking
+$this->dispatch('fathom-track', name: 'task completed', value: $taskId);
+
+// Village selection tracking
+$this->dispatch('fathom-track', name: 'village selected', value: $villageId);
+```
+
 ## Future Enhancements
 
 Potential improvements:

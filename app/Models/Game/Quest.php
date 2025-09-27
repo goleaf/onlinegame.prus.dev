@@ -10,7 +10,7 @@ use MohamedSaid\Notable\Traits\HasNotables;
 
 class Quest extends Model
 {
-    use HasFactory, HasTaxonomy, HasNotables;
+    use HasFactory, HasTaxonomy, HasNotables, HasReference;
 
     protected $fillable = [
         'name',
