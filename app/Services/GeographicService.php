@@ -6,6 +6,7 @@ use League\Geotools\Convert\Convert;
 use League\Geotools\Coordinate\Coordinate;
 use League\Geotools\Distance\Distance;
 use League\Geotools\Geohash\Geohash;
+use League\Geotools\Vertex\Vertex;
 
 class GeographicService
 {
