@@ -150,17 +150,24 @@ class MarketManager extends Component
             // Clone base query for my offers using QueryOptimizationService
             $myOffersQuery = QueryOptimizationService::cloneQuery($baseQuery);
 
-            $myFilters = [
-                $this->showOnlyActive => function ($q) {
-                    return $q->where('status', 'active');
-                },
-                $this->showOnlyExpired => function ($q) {
-                    return $q->where('status', 'expired');
-                },
-            ];
+            // Build eloquent filters array for my offers
+            $myFilters = [];
 
-            $myOffersQuery = QueryOptimizationService::applyConditionalFilters($myOffersQuery, $myFilters);
-            $myOffersQuery = QueryOptimizationService::applyConditionalOrdering($myOffersQuery, 'created_at', 'desc');
+            if ($this->showOnlyActive) {
+                $myFilters[] = ['target' => 'status', 'type' => '$eq', 'value' => 'active'];
+            }
+
+            if ($this->showOnlyExpired) {
+                $myFilters[] = ['target' => 'status', 'type' => '$eq', 'value' => 'expired'];
+            }
+
+            // Apply eloquent filtering
+            if (!empty($myFilters)) {
+                $myOffersQuery = $myOffersQuery->filter($myFilters);
+            }
+
+            // Apply sorting
+            $myOffersQuery = $myOffersQuery->orderBy('created_at', 'desc');
 
             $this->myOffers = $myOffersQuery
                 ->where('seller_id', $this->village->player_id)

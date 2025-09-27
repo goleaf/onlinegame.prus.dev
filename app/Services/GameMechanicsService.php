@@ -34,26 +34,66 @@ class GameMechanicsService
      */
     public function processWorldMechanics(World $world)
     {
+        $startTime = microtime(true);
+        
+        ds('GameMechanicsService: Processing world mechanics', [
+            'service' => 'GameMechanicsService',
+            'method' => 'processWorldMechanics',
+            'world_id' => $world->id,
+            'world_name' => $world->name,
+            'processing_time' => now()
+        ]);
+        
         try {
             DB::beginTransaction();
 
             // Process all villages in the world
+            $villageQueryStart = microtime(true);
             $villages = Village::where('world_id', $world->id)
                 ->with(['resources', 'buildings', 'player'])
                 ->get();
+            $villageQueryTime = round((microtime(true) - $villageQueryStart) * 1000, 2);
+            
+            ds('GameMechanicsService: Villages loaded for processing', [
+                'world_id' => $world->id,
+                'villages_count' => $villages->count(),
+                'village_query_time_ms' => $villageQueryTime
+            ]);
 
+            $villageProcessingStart = microtime(true);
             foreach ($villages as $village) {
                 $this->processVillageMechanics($village);
             }
+            $villageProcessingTime = round((microtime(true) - $villageProcessingStart) * 1000, 2);
 
             // Process world-wide events
+            $worldEventsStart = microtime(true);
             $this->processWorldEvents($world);
+            $worldEventsTime = round((microtime(true) - $worldEventsStart) * 1000, 2);
 
             DB::commit();
+
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            ds('GameMechanicsService: World mechanics processed successfully', [
+                'world_id' => $world->id,
+                'villages_processed' => $villages->count(),
+                'village_processing_time_ms' => $villageProcessingTime,
+                'world_events_time_ms' => $worldEventsTime,
+                'total_time_ms' => $totalTime
+            ]);
 
             Log::info("World mechanics processed for world {$world->id}");
         } catch (\Exception $e) {
             DB::rollBack();
+            
+            ds('GameMechanicsService: World mechanics processing failed', [
+                'world_id' => $world->id,
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            ]);
+            
             Log::error('Failed to process world mechanics: ' . $e->getMessage());
 
             throw $e;

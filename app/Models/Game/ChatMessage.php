@@ -12,7 +12,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 
 class ChatMessage extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait;
+    use HasFactory, HasReference, AuditableTrait, Commentable;
 
     protected $fillable = [
         'sender_id',

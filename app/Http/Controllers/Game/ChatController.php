@@ -8,10 +8,12 @@ use App\Models\Game\ChatChannel;
 use App\Services\ChatService;
 use App\Services\GameIntegrationService;
 use App\Services\GameNotificationService;
+use App\Traits\GameValidationTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use JonPurvis\Squeaky\Rules\Clean;
 
 class ChatController extends Controller
 {

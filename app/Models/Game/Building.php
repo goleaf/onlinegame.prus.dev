@@ -47,6 +47,7 @@ class Building extends Model implements Auditable
         'upgrade_started_at',
         'upgrade_completed_at',
         'metadata',
+        'reference_number',
     ];
 
     protected $casts = [
