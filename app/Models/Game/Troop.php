@@ -14,6 +14,18 @@ class Troop extends Model
 {
     use HasFactory, Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public int $village_id;
+    public int $unit_type_id;
+    public int $count;
+    public int $in_village;
+    public int $in_attack;
+    public int $in_defense;
+    public int $in_support;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $fillable = [
         'village_id',
         'unit_type_id',

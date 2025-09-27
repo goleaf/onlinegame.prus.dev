@@ -9,7 +9,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class PlayerNote extends Model
 {
-    use HasReference;
+    use HasReference, Commentable;
 
     protected $fillable = [
         'player_id',

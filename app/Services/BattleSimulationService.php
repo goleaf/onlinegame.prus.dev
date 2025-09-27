@@ -202,6 +202,28 @@ class BattleSimulationService
             $defenderLosses = $this->calculateTroopLosses($defendingTroops, $lossRate);
         }
 
+        // Create value objects for better type safety
+        $attackerTroopCounts = $this->createTroopCountsFromArray($attackingTroops);
+        $defenderTroopCounts = $this->createTroopCountsFromArray($defendingTroops);
+        $resourceLoot = new ResourceAmounts(
+            wood: $resourcesLooted['wood'] ?? 0,
+            clay: $resourcesLooted['clay'] ?? 0,
+            iron: $resourcesLooted['iron'] ?? 0,
+            crop: $resourcesLooted['crop'] ?? 0
+        );
+
+        $battleResult = new BattleResult(
+            result: $result,
+            attackerPower: $attackerPower,
+            defenderPower: $defenderPower,
+            attackerLosses: $attackerLosses,
+            defenderLosses: $defenderLosses,
+            resourcesLooted: $resourceLoot,
+            defensiveBonus: $defensiveBonus,
+            casualties: count($attackerLosses) + count($defenderLosses),
+            resourcesGained: $resourceLoot->getTotalResources()
+        );
+
         return [
             'result' => $result,
             'attacker_losses' => $attackerLosses,
@@ -212,6 +234,7 @@ class BattleSimulationService
                 'defender' => $defenderPower,
             ],
             'defensive_bonus' => $defensiveBonus,
+            'battle_result_object' => $battleResult,
         ];
     }
 
