@@ -570,10 +570,25 @@ class MovementManager extends Component
 
     private function calculateDistance(Village $village1, Village $village2)
     {
-        $dx = $village1->x - $village2->x;
-        $dy = $village1->y - $village2->y;
-
-        return sqrt($dx * $dx + $dy * $dy);
+        $geoService = app(GeographicService::class);
+        
+        // Use real-world coordinates if available, otherwise fall back to game coordinates
+        if ($village1->latitude && $village1->longitude && $village2->latitude && $village2->longitude) {
+            return $geoService->calculateDistance(
+                $village1->latitude,
+                $village1->longitude,
+                $village2->latitude,
+                $village2->longitude
+            );
+        }
+        
+        // Fallback to game coordinate distance
+        return $geoService->calculateGameDistance(
+            $village1->x_coordinate,
+            $village1->y_coordinate,
+            $village2->x_coordinate,
+            $village2->y_coordinate
+        );
     }
 
     private function calculateTravelTime($distance)
