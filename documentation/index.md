@@ -211,6 +211,7 @@ This index is automatically generated and lists all documentation files:
 * **database/**
   * **factories/**
     * **Game/**
+      * [Documentation: AchievementTemplateFactory.php](database/factories/Game/AchievementTemplateFactory.md)
       * [Documentation: AllianceFactory.php](database/factories/Game/AllianceFactory.md)
       * [Documentation: BuildingFactory.php](database/factories/Game/BuildingFactory.md)
       * [Documentation: BuildingQueueFactory.php](database/factories/Game/BuildingQueueFactory.md)
@@ -218,8 +219,11 @@ This index is automatically generated and lists all documentation files:
       * [Documentation: GameEventFactory.php](database/factories/Game/GameEventFactory.md)
       * [Documentation: MovementFactory.php](database/factories/Game/MovementFactory.md)
       * [Documentation: PlayerFactory.php](database/factories/Game/PlayerFactory.md)
+      * [Documentation: PlayerQuestFactory.php](database/factories/Game/PlayerQuestFactory.md)
+      * [Documentation: QuestTemplateFactory.php](database/factories/Game/QuestTemplateFactory.md)
       * [Documentation: ReportFactory.php](database/factories/Game/ReportFactory.md)
       * [Documentation: ResourceFactory.php](database/factories/Game/ResourceFactory.md)
+      * [Documentation: TaskFactory.php](database/factories/Game/TaskFactory.md)
       * [Documentation: TrainingQueueFactory.php](database/factories/Game/TrainingQueueFactory.md)
       * [Documentation: TroopFactory.php](database/factories/Game/TroopFactory.md)
       * [Documentation: UnitTypeFactory.php](database/factories/Game/UnitTypeFactory.md)
