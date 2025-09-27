@@ -6,7 +6,7 @@ use App\Services\UpdaterService;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
-use Jantinnerezo\LivewireAlert\Traits\LivewireAlert;
+use Jantinnerezo\LivewireAlert\Concerns\SweetAlert2;
 
 #[Title('Application Updater')]
 #[Layout('layouts.app')]
