@@ -47,6 +47,17 @@ class Tournament extends Model implements Auditable
         'allow_spectators' => 'boolean',
     ];
 
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+
+    protected $referenceTemplate = [
+        'format' => 'TRN-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+
+    protected $referencePrefix = 'TRN';
+
     public function participants(): HasMany
     {
         return $this->hasMany(TournamentParticipant::class);

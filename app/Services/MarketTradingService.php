@@ -258,20 +258,10 @@ class MarketTradingService
     /**
      * Calculate market fee
      */
-    private function calculateMarketFee(array $offering, array $requesting): int
+    private function calculateMarketFee(ResourceAmounts $offering, ResourceAmounts $requesting): int
     {
-        // Calculate total value of offering (using base resource values)
-        $baseValues = [
-            'wood' => 1,
-            'clay' => 1,
-            'iron' => 1,
-            'crop' => 1,
-        ];
-
-        $totalValue = 0;
-        foreach ($offering as $resource => $amount) {
-            $totalValue += $amount * ($baseValues[$resource] ?? 1);
-        }
+        // Calculate total value of offering using value object methods
+        $totalValue = $offering->getTotalResources();
 
         // Market fee is 5% of total value, minimum 1 crop
         $fee = max(1, (int) ($totalValue * 0.05));

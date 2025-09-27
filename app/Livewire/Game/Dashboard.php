@@ -141,6 +141,59 @@ class Dashboard extends Component
         }
     }
 
+    /**
+     * Initialize real-time features for the player
+     */
+    public function initializePlayerRealTime()
+    {
+        try {
+            if ($this->player) {
+                // Initialize real-time features for the user
+                GameIntegrationService::initializeUserRealTime($this->player->id);
+                
+                $this->dispatch('dashboard-initialized', [
+                    'message' => 'Game dashboard real-time features activated',
+                    'player_id' => $this->player->id,
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to initialize dashboard real-time features: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Create village with real-time integration
+     */
+    public function createVillageWithIntegration()
+    {
+        try {
+            $this->createVillage();
+
+            if ($this->player) {
+                // Send notification about village creation
+                GameNotificationService::sendNotification(
+                    $this->player->id,
+                    'village_created',
+                    [
+                        'player_id' => $this->player->id,
+                        'village_count' => $this->villages->count(),
+                        'timestamp' => now()->toISOString(),
+                    ]
+                );
+
+                $this->dispatch('village-created', [
+                    'message' => 'Village created successfully with notifications',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to create village: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
     public function render()
     {
         return view('livewire.game.dashboard');

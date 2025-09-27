@@ -27,7 +27,6 @@ class EloquentFilteringUnitTest extends TestCase
         $village = new Village();
         
         $this->assertTrue(method_exists($village, 'allowedFilters'));
-        $this->assertTrue(method_exists($village, 'allowedFilters'));
         
         // Test that the model has the Filterable trait
         $traits = class_uses_recursive(Village::class);
