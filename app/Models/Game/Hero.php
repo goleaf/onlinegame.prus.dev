@@ -5,6 +5,7 @@ namespace App\Models\Game;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Hero extends Model
 {
