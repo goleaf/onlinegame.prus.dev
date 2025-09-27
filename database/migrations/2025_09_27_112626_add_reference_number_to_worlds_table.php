@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('worlds', function (Blueprint $table) {
-            //
+            $table->string('reference_number')->nullable()->unique()->after('is_active');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('worlds', function (Blueprint $table) {
-            //
+            $table->dropColumn('reference_number');
         });
     }
 };
