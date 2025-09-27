@@ -102,7 +102,7 @@ class LarautilxIntegrationService
     }
 
     /**
-     * Cache village-specific data
+     * Cache village-specific data using SmartCache
      *
      * @param int $villageId
      * @param string $key
@@ -112,8 +112,8 @@ class LarautilxIntegrationService
      */
     public function cacheVillageData(int $villageId, string $key, callable $callback, ?int $expiration = null)
     {
-        $tags = array_merge($this->defaultCacheTags, ['village', "village_{$villageId}"]);
-        return $this->cacheGameData("village_{$villageId}_{$key}", $callback, $expiration, $tags);
+        $expiration = $expiration ?? $this->defaultCacheExpiration;
+        return SmartCache::remember("village_{$villageId}_{$key}", now()->addSeconds($expiration), $callback);
     }
 
     /**
