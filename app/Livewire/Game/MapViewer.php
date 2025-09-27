@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Game;
 
+use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Services\GeographicService;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
