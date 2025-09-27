@@ -59,6 +59,11 @@ Route::middleware(['auth', 'game.auth'])->group(function () {
         return view('game.ai-management');
     })->name('game.ai');
 
+    // Larautilx Dashboard
+    Route::get('/game/larautilx', function () {
+        return view('game.larautilx-dashboard');
+    })->name('game.larautilx');
+
     // Statistics
     Route::get('/game/statistics', [GameController::class, 'statistics'])->name('game.statistics');
 
@@ -181,6 +186,11 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::post('/ai/strategy-suggestion', [AIController::class, 'generateStrategySuggestion'])->name('game.api.ai.strategy-suggestion');
     Route::post('/ai/custom-content', [AIController::class, 'generateCustomContent'])->name('game.api.ai.custom-content');
     Route::post('/ai/switch-provider', [AIController::class, 'switchProvider'])->name('game.api.ai.switch-provider');
+
+    // Larautilx dashboard
+    Route::get('/larautilx/dashboard', [LarautilxDashboardController::class, 'getDashboardData'])->name('game.api.larautilx.dashboard');
+    Route::get('/larautilx/integration-summary', [LarautilxDashboardController::class, 'getIntegrationSummary'])->name('game.api.larautilx.integration-summary');
+    Route::post('/larautilx/test-components', [LarautilxDashboardController::class, 'testComponents'])->name('game.api.larautilx.test-components');
 });
 
 // Error pages

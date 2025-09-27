@@ -201,6 +201,29 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="phone_country">Country (Optional)</label>
+                    <select id="phone_country" name="phone_country" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;">
+                        <option value="">Select Country</option>
+                        <option value="US" {{ old('phone_country') == 'US' ? 'selected' : '' }}>United States</option>
+                        <option value="CA" {{ old('phone_country') == 'CA' ? 'selected' : '' }}>Canada</option>
+                        <option value="GB" {{ old('phone_country') == 'GB' ? 'selected' : '' }}>United Kingdom</option>
+                        <option value="DE" {{ old('phone_country') == 'DE' ? 'selected' : '' }}>Germany</option>
+                        <option value="FR" {{ old('phone_country') == 'FR' ? 'selected' : '' }}>France</option>
+                        <option value="IT" {{ old('phone_country') == 'IT' ? 'selected' : '' }}>Italy</option>
+                        <option value="ES" {{ old('phone_country') == 'ES' ? 'selected' : '' }}>Spain</option>
+                        <option value="AU" {{ old('phone_country') == 'AU' ? 'selected' : '' }}>Australia</option>
+                        <option value="BE" {{ old('phone_country') == 'BE' ? 'selected' : '' }}>Belgium</option>
+                        <option value="NL" {{ old('phone_country') == 'NL' ? 'selected' : '' }}>Netherlands</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number (Optional)</label>
+                    <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" placeholder="Enter phone number">
+                    <small style="color: #666; font-size: 0.9em;">Include country code if entering international number</small>
+                </div>
+
+                <div class="form-group">
                     <label for="password">Password</label>
                     <input id="password" type="password" name="password" required>
                     <div id="password-strength" class="password-strength"></div>

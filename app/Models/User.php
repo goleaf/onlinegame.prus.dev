@@ -148,7 +148,20 @@ class User extends Authenticatable implements Auditable
      */
     public function hasActiveGameSession(): bool
     {
-        return $this->player && $this->player->is_active;
+        $startTime = microtime(true);
+        
+        $hasActiveSession = $this->player && $this->player->is_active;
+        
+        ds('User active game session check', [
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'has_player' => (bool) $this->player,
+            'player_active' => $this->player ? $this->player->is_active : false,
+            'has_active_session' => $hasActiveSession,
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Active Session Check');
+
+        return $hasActiveSession;
     }
 
     /**
