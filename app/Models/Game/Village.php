@@ -133,7 +133,7 @@ class Village extends Model implements Auditable
     protected function villageResources(): Attribute
     {
         return Attribute::make(
-            get: fn() => {
+            get: function () {
                 $resource = $this->resources()->first();
                 if (!$resource) {
                     return new \App\ValueObjects\VillageResources(0, 0, 0, 0);
