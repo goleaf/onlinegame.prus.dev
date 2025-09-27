@@ -2,18 +2,19 @@
 
 namespace App\Models\Game;
 
-use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use App\Traits\Commentable;
 use App\Traits\GameValidationTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
 
-class Task extends Model
+class Task extends Model implements Auditable
 {
-    use HasFactory, HasReference, Commentable, Lift, GameValidationTrait;
+    use HasFactory, HasReference, Commentable, Lift, GameValidationTrait, AuditableTrait;
 
     // Laravel Lift typed properties
     public int $id;
