@@ -18,7 +18,27 @@ use WendellAdriel\Lift\Lift;
 
 class Report extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait, Commentable;
+    use HasFactory, HasReference, AuditableTrait, Commentable, Lift;
+
+    // Laravel Lift typed properties
+    public int $id;
+    public int $world_id;
+    public ?int $attacker_id;
+    public ?int $defender_id;
+    public ?int $from_village_id;
+    public ?int $to_village_id;
+    public string $title;
+    public ?string $content;
+    public string $type;
+    public string $status;
+    public ?array $battle_data;
+    public ?array $attachments;
+    public bool $is_read;
+    public bool $is_important;
+    public ?\Carbon\Carbon $read_at;
+    public ?string $reference_number;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
 
     protected $fillable = [
         'world_id',

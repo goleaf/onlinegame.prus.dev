@@ -103,12 +103,20 @@ class User extends Authenticatable implements Auditable
      */
     public function getGameStats()
     {
+        $startTime = microtime(true);
+        
         $player = $this->player;
         if (!$player) {
+            ds('User has no player', [
+                'user_id' => $this->id,
+                'user_name' => $this->name,
+                'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            ])->label('User Game Stats - No Player');
+            
             return null;
         }
 
-        return [
+        $stats = [
             'player_id' => $player->id,
             'player_name' => $player->name,
             'world_id' => $player->world_id,
@@ -121,6 +129,18 @@ class User extends Authenticatable implements Auditable
             'is_online' => $player->is_online,
             'last_active_at' => $player->last_active_at,
         ];
+
+        ds('User game statistics retrieved', [
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'player_id' => $player->id,
+            'village_count' => $stats['village_count'],
+            'total_population' => $stats['total_population'],
+            'points' => $stats['points'],
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Game Stats');
+
+        return $stats;
     }
 
     /**
