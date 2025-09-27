@@ -36,6 +36,17 @@ class TournamentParticipant extends Model implements Auditable
         'eliminated_at' => 'datetime',
     ];
 
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+
+    protected $referenceTemplate = [
+        'format' => 'TP-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+
+    protected $referencePrefix = 'TP';
+
     public function tournament(): BelongsTo
     {
         return $this->belongsTo(Tournament::class);

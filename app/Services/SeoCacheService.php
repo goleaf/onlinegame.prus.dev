@@ -12,6 +12,14 @@ class SeoCacheService
 {
     protected string $cachePrefix = 'seo_metadata_';
     protected int $cacheTtl = 3600;  // 1 hour
+    protected CachingUtil $cachingUtil;
+    protected LoggingUtil $loggingUtil;
+
+    public function __construct()
+    {
+        $this->cachingUtil = new CachingUtil($this->cacheTtl, ['seo_cache']);
+        $this->loggingUtil = new LoggingUtil();
+    }
 
     /**
      * Get cached SEO metadata with SmartCache optimization

@@ -54,14 +54,15 @@ class CombatService
         // Apply battle consequences
         $this->applyBattleConsequences($attackerVillage, $defenderVillage, $attackerCasualties, $defenderCasualties, $loot, $battleResult);
 
-        return [
-            'success' => true,
-            'battle' => $battle,
-            'result' => $battleResult,
-            'attacker_casualties' => $attackerCasualties,
-            'defender_casualties' => $defenderCasualties,
-            'loot' => $loot,
-        ];
+            return [
+                'success' => true,
+                'battle' => $battle,
+                'result' => $battleResult,
+                'attacker_casualties' => $attackerCasualties,
+                'defender_casualties' => $defenderCasualties,
+                'loot' => $loot,
+            ];
+        }, 'CombatService::executeBattle');
     }
 
     /**
