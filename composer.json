@@ -119,7 +119,7 @@
             "./vendor/bin/peck"
         ],
         "peck:check": [
-            "./vendor/bin/peck --check"
+            "./vendor/bin/peck --no-interaction"
         ],
         "spell-check": [
             "./vendor/bin/peck"

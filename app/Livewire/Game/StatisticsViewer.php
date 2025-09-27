@@ -170,14 +170,23 @@ class StatisticsViewer extends Component
 
     private function loadOverviewStats()
     {
-        // Use subquery optimization to get all stats in one query
+        // Use Query Enrich to get all stats in one query
         $playerStats = Player::where('id', $this->player->id)
             ->with(['villages' => function ($query) {
                 $query
-                    ->selectRaw('player_id, COUNT(*) as village_count, SUM(population) as total_population, 
-                    SUM(wood) as total_wood, SUM(clay) as total_clay, SUM(iron) as total_iron, SUM(crop) as total_crop,
-                    SUM(wood_production) as wood_prod, SUM(clay_production) as clay_prod, 
-                    SUM(iron_production) as iron_prod, SUM(crop_production) as crop_prod')
+                    ->select([
+                        'player_id',
+                        QE::count(c('id'))->as('village_count'),
+                        QE::sum(c('population'))->as('total_population'),
+                        QE::sum(c('wood'))->as('total_wood'),
+                        QE::sum(c('clay'))->as('total_clay'),
+                        QE::sum(c('iron'))->as('total_iron'),
+                        QE::sum(c('crop'))->as('total_crop'),
+                        QE::sum(c('wood_production'))->as('wood_prod'),
+                        QE::sum(c('clay_production'))->as('clay_prod'),
+                        QE::sum(c('iron_production'))->as('iron_prod'),
+                        QE::sum(c('crop_production'))->as('crop_prod')
+                    ])
                     ->groupBy('player_id');
             }])
             ->with(['alliance:id,name'])

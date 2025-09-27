@@ -26,6 +26,10 @@ class Village extends Model implements Auditable
     use AuditableTrait;
     use Lift;
 
+    protected $auditExclude = [
+        'auditingDisabled'
+    ];
+
     protected $fillable = [
         'player_id',
         'world_id',

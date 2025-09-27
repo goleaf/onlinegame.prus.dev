@@ -157,11 +157,20 @@ class Player extends Model implements Auditable
                 ->from('reports')
                 ->where(function($q) {
                     $q->whereColumn('attacker_id', c('players.id'))
-)
+                      ->orWhereColumn('defender_id', c('players.id'));
+                })
+                ->as('total_battles'),
+            QE::select(
+                QE::sum(QE::case()
+                    ->when(QE::and(
+                        QE::eq(c('attacker_id'), c('players.id')),
+                        QE::eq(c('status'), 'victory')
+                    ), 1)
+                    ->else(0)))
                 ->from('reports')
                 ->whereColumn('attacker_id', c('players.id'))
                 ->as('victories')
-        ];
+        ]);
     }
 
     public function scopeByWorld($query, $worldId)

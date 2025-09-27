@@ -11,6 +11,7 @@ use Illuminate\Validation\Rules\Password;
 use Intervention\Validation\Rules\Username;
 use JonPurvis\Squeaky\Rules\Clean;
 use Ziming\LaravelZxcvbn\Rules\ZxcvbnRule;
+use Propaganistas\LaravelPhone\Rules\Phone;
 
 class RegisterController extends Controller
 {
