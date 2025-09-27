@@ -277,20 +277,20 @@ class Player extends Model implements Auditable
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
-            Filter::field('name', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::field('tribe', [FilterType::EQUAL]),
-            Filter::field('points', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('population', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('villages_count', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('is_active', [FilterType::EQUAL]),
-            Filter::field('is_online', [FilterType::EQUAL]),
-            Filter::field('world_id', [FilterType::EQUAL]),
-            Filter::field('alliance_id', [FilterType::EQUAL]),
-            Filter::field('last_login', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('last_active_at', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::relation('alliance', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('villages', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('user', [FilterType::HAS])->includeRelationFields()
+            Filter::field('name', ['$eq', '$contains']),
+            Filter::field('tribe', ['$eq']),
+            Filter::field('points', ['$eq', '$gt', '$lt']),
+            Filter::field('population', ['$eq', '$gt', '$lt']),
+            Filter::field('villages_count', ['$eq', '$gt', '$lt']),
+            Filter::field('is_active', ['$eq']),
+            Filter::field('is_online', ['$eq']),
+            Filter::field('world_id', ['$eq']),
+            Filter::field('alliance_id', ['$eq']),
+            Filter::field('last_login', ['$eq', '$gt', '$lt']),
+            Filter::field('last_active_at', ['$eq', '$gt', '$lt']),
+            Filter::relation('alliance', ['$has']),
+            Filter::relation('villages', ['$has']),
+            Filter::relation('user', ['$has'])
         );
     }
 }

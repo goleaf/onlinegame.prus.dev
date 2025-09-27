@@ -155,23 +155,23 @@ class Alliance extends Model implements Auditable
     /**
      * Define allowed filters for the Alliance model
      */
-    public function allowedFilters(): AllowedFilterList
-    {
-        return Filter::only(
-            Filter::field('name', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::field('tag', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::field('description', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::field('points', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('villages_count', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('members_count', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('is_active', [FilterType::EQUAL]),
-            Filter::field('world_id', [FilterType::EQUAL]),
-            Filter::field('leader_id', [FilterType::EQUAL]),
-            Filter::field('reference_number', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::relation('world', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('leader', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('members', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('players', [FilterType::HAS])->includeRelationFields()
-        );
-    }
+    // public function allowedFilters(): AllowedFilterList
+    // {
+    //     return Filter::only(
+    //         Filter::field('name', [FilterType::EQUAL, FilterType::CONTAINS]),
+    //         Filter::field('tag', [FilterType::EQUAL, FilterType::CONTAINS]),
+    //         Filter::field('description', [FilterType::EQUAL, FilterType::CONTAINS]),
+    //         Filter::field('points', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+    //         Filter::field('villages_count', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+    //         Filter::field('members_count', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+    //         Filter::field('is_active', [FilterType::EQUAL]),
+    //         Filter::field('world_id', [FilterType::EQUAL]),
+    //         Filter::field('leader_id', [FilterType::EQUAL]),
+    //         Filter::field('reference_number', [FilterType::EQUAL, FilterType::CONTAINS]),
+    //         Filter::relation('world', [FilterType::HAS])->includeRelationFields(),
+    //         Filter::relation('leader', [FilterType::HAS])->includeRelationFields(),
+    //         Filter::relation('members', [FilterType::HAS])->includeRelationFields(),
+    //         Filter::relation('players', [FilterType::HAS])->includeRelationFields()
+    //     );
+    // }
 }

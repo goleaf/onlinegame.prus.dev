@@ -61,5 +61,8 @@ class AppServiceProvider extends ServiceProvider
             error_reporting(E_ALL);
             ini_set('display_errors', '1');
         }
+
+        // Register model observers
+        User::observe(UserObserver::class);
     }
 }

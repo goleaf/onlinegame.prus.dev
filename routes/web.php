@@ -46,6 +46,11 @@ Route::get('/debug-login', function () {
 // Debug route to test GameController directly
 Route::get('/debug-game', [GameController::class, 'index']);
 
+// Query Enrich Demo Route
+Route::get('/query-enrich-demo', function () {
+    return view('livewire.game.query-enrich-demo');
+})->middleware('auth')->name('query-enrich-demo');
+
 // Debug route to test game dashboard
 Route::get('/debug-game-dashboard', function () {
     try {
