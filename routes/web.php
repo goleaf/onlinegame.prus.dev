@@ -161,6 +161,23 @@ Route::get('decompose/json', function () {
     }
 })->name('decompose.json');
 
+// Laravel Decomposer markdown report route
+Route::get('decompose/markdown', function () {
+    try {
+        $report = \Lubusin\Decomposer\Decomposer::getReportAsMarkdown();
+        return response($report, 200, [
+            'Content-Type' => 'text/markdown',
+            'Content-Disposition' => 'attachment; filename="laravel-decomposer-report.md"'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'generated_at' => now()->toISOString()
+        ], 500);
+    }
+})->name('decompose.markdown');
+
 // Admin routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', App\Livewire\Admin\AdminDashboard::class)->name('dashboard');
