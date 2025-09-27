@@ -320,7 +320,7 @@ class UserController extends CrudController
     /**
      * Get user's game history
      */
-    public function getUserGameHistory($userId)
+    public function gameHistory($userId)
     {
         $user = User::with(['player'])->findOrFail($userId);
 

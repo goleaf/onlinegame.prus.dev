@@ -11,8 +11,10 @@
     <!-- SEO Metadata -->
     @metadata
 
+    <!-- Performance Optimization -->
+    <x-performance-optimizer :enable-preconnect="true" :enable-dns-prefetch="true" :enable-performance-monitoring="true" />
+
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="{{ basset('https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap') }}" rel="stylesheet" />
 
     <!-- Scripts -->

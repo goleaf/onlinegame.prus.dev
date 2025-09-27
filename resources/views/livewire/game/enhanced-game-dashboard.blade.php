@@ -157,6 +157,14 @@
                         <span class="font-semibold">{{ $gameStats['total_villages'] }}</span>
                     </div>
                     <div class="flex justify-between">
+                        <span class="text-gray-400">Geographic Coverage:</span>
+                        <span class="font-semibold">{{ $gameStats['geographic_coverage'] ?? 'N/A' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Avg Distance:</span>
+                        <span class="font-semibold">{{ $gameStats['avg_distance'] ?? 'N/A' }} km</span>
+                    </div>
+                    <div class="flex justify-between">
                         <span class="text-gray-400">Points:</span>
                         <span class="font-semibold">{{ number_format($gameStats['total_points']) }}</span>
                     </div>
