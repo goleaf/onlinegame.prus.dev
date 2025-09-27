@@ -1001,4 +1001,358 @@ class AllianceManager extends Component
             'applicationStats' => $this->applicationStats,
         ]);
     }
+
+    // Diplomacy methods
+    public function loadAllianceDiplomacy()
+    {
+        if (!$this->myAlliance) {
+            return;
+        }
+
+        $this->allianceDiplomacy = AllianceDiplomacy::byAlliance($this->myAlliance->id)
+            ->with(['alliance', 'targetAlliance'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->toArray();
+    }
+
+    public function loadAllianceWars()
+    {
+        if (!$this->myAlliance) {
+            return;
+        }
+
+        $this->allianceWars = AllianceWar::where('attacker_alliance_id', $this->myAlliance->id)
+            ->orWhere('defender_alliance_id', $this->myAlliance->id)
+            ->with(['attackerAlliance', 'defenderAlliance'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->toArray();
+    }
+
+    public function loadAllianceMessages()
+    {
+        if (!$this->myAlliance) {
+            return;
+        }
+
+        $this->allianceMessages = AllianceMessage::where('alliance_id', $this->myAlliance->id)
+            ->with('sender')
+            ->orderBy('is_pinned', 'desc')
+            ->orderBy('is_important', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get()
+            ->toArray();
+    }
+
+    public function loadAllianceLogs()
+    {
+        if (!$this->myAlliance) {
+            return;
+        }
+
+        $this->allianceLogs = AllianceLog::where('alliance_id', $this->myAlliance->id)
+            ->with('player')
+            ->orderBy('created_at', 'desc')
+            ->limit(100)
+            ->get()
+            ->toArray();
+    }
+
+    public function proposeDiplomacy()
+    {
+        $player = Player::where('user_id', Auth::id())->first();
+        if (!$player->alliance || !in_array($player->alliance_rank, ['leader', 'co_leader'])) {
+            $this->addNotification('You do not have permission to propose diplomacy', 'error');
+            return;
+        }
+
+        if (empty($this->diplomacyForm['target_alliance_id'])) {
+            $this->addNotification('Please select a target alliance', 'error');
+            return;
+        }
+
+        $targetAlliance = Alliance::find($this->diplomacyForm['target_alliance_id']);
+        if (!$targetAlliance) {
+            $this->addNotification('Target alliance not found', 'error');
+            return;
+        }
+
+        if ($targetAlliance->id === $player->alliance_id) {
+            $this->addNotification('Cannot propose diplomacy with your own alliance', 'error');
+            return;
+        }
+
+        // Check if diplomacy already exists
+        $existingDiplomacy = AllianceDiplomacy::where(function ($query) use ($player, $targetAlliance) {
+            $query->where('alliance_id', $player->alliance_id)
+                  ->where('target_alliance_id', $targetAlliance->id);
+        })->orWhere(function ($query) use ($player, $targetAlliance) {
+            $query->where('alliance_id', $targetAlliance->id)
+                  ->where('target_alliance_id', $player->alliance_id);
+        })->first();
+
+        if ($existingDiplomacy && $existingDiplomacy->isPending()) {
+            $this->addNotification('Diplomacy proposal already exists', 'error');
+            return;
+        }
+
+        try {
+            $diplomacy = AllianceDiplomacy::create([
+                'alliance_id' => $player->alliance_id,
+                'target_alliance_id' => $targetAlliance->id,
+                'status' => $this->diplomacyForm['status'],
+                'proposed_by' => 'alliance',
+                'message' => $this->diplomacyForm['message'],
+                'proposed_at' => now(),
+                'expires_at' => $this->diplomacyForm['expires_at'] ? now()->addDays($this->diplomacyForm['expires_at']) : null,
+            ]);
+
+            // Log the action
+            AllianceLog::logDiplomacyProposed(
+                $player->alliance_id,
+                $player->id,
+                $player->name,
+                $targetAlliance->name,
+                $this->diplomacyForm['status']
+            );
+
+            $this->loadAllianceDiplomacy();
+            $this->resetDiplomacyForm();
+            $this->addNotification("Diplomacy proposal sent to {$targetAlliance->name}", 'success');
+
+            $this->dispatch('diplomacyProposed', [
+                'alliance_id' => $player->alliance_id,
+                'target_alliance_id' => $targetAlliance->id,
+                'status' => $this->diplomacyForm['status'],
+            ]);
+        } catch (\Exception $e) {
+            $this->addNotification('Failed to propose diplomacy: ' . $e->getMessage(), 'error');
+        }
+    }
+
+    public function respondToDiplomacy($diplomacyId, $response)
+    {
+        $player = Player::where('user_id', Auth::id())->first();
+        if (!$player->alliance || !in_array($player->alliance_rank, ['leader', 'co_leader'])) {
+            $this->addNotification('You do not have permission to respond to diplomacy', 'error');
+            return;
+        }
+
+        $diplomacy = AllianceDiplomacy::find($diplomacyId);
+        if (!$diplomacy || !$diplomacy->canRespond($player->alliance_id)) {
+            $this->addNotification('Invalid diplomacy proposal', 'error');
+            return;
+        }
+
+        try {
+            $diplomacy->update([
+                'response_status' => $response,
+                'responded_at' => now(),
+            ]);
+
+            $otherAlliance = $diplomacy->getOtherAlliance($player->alliance_id);
+            
+            $this->loadAllianceDiplomacy();
+            $this->addNotification("Diplomacy proposal {$response}", 'success');
+
+            $this->dispatch('diplomacy' . ucfirst($response), [
+                'alliance_id' => $player->alliance_id,
+                'target_alliance_id' => $otherAlliance->id,
+                'status' => $diplomacy->status,
+            ]);
+        } catch (\Exception $e) {
+            $this->addNotification('Failed to respond to diplomacy: ' . $e->getMessage(), 'error');
+        }
+    }
+
+    public function declareWar()
+    {
+        $player = Player::where('user_id', Auth::id())->first();
+        if (!$player->alliance || $player->alliance_rank !== 'leader') {
+            $this->addNotification('Only the leader can declare war', 'error');
+            return;
+        }
+
+        if (empty($this->warForm['target_alliance_id'])) {
+            $this->addNotification('Please select a target alliance', 'error');
+            return;
+        }
+
+        $targetAlliance = Alliance::find($this->warForm['target_alliance_id']);
+        if (!$targetAlliance) {
+            $this->addNotification('Target alliance not found', 'error');
+            return;
+        }
+
+        if ($targetAlliance->id === $player->alliance_id) {
+            $this->addNotification('Cannot declare war on your own alliance', 'error');
+            return;
+        }
+
+        // Check if war already exists
+        $existingWar = AllianceWar::where(function ($query) use ($player, $targetAlliance) {
+            $query->where('attacker_alliance_id', $player->alliance_id)
+                  ->where('defender_alliance_id', $targetAlliance->id);
+        })->orWhere(function ($query) use ($player, $targetAlliance) {
+            $query->where('attacker_alliance_id', $targetAlliance->id)
+                  ->where('defender_alliance_id', $player->alliance_id);
+        })->where('status', 'active')->first();
+
+        if ($existingWar) {
+            $this->addNotification('War already exists with this alliance', 'error');
+            return;
+        }
+
+        try {
+            $war = AllianceWar::create([
+                'attacker_alliance_id' => $player->alliance_id,
+                'defender_alliance_id' => $targetAlliance->id,
+                'status' => 'declared',
+                'declaration_message' => $this->warForm['declaration_message'],
+                'declared_at' => now(),
+                'started_at' => now()->addHours(24), // 24 hour preparation period
+            ]);
+
+            // Log the action
+            AllianceLog::logWarDeclared(
+                $player->alliance_id,
+                $player->id,
+                $player->name,
+                $targetAlliance->name
+            );
+
+            $this->loadAllianceWars();
+            $this->resetWarForm();
+            $this->addNotification("War declared on {$targetAlliance->name}", 'success');
+
+            $this->dispatch('warDeclared', [
+                'attacker_alliance_id' => $player->alliance_id,
+                'defender_alliance_id' => $targetAlliance->id,
+            ]);
+        } catch (\Exception $e) {
+            $this->addNotification('Failed to declare war: ' . $e->getMessage(), 'error');
+        }
+    }
+
+    public function postMessage()
+    {
+        $player = Player::where('user_id', Auth::id())->first();
+        if (!$player->alliance) {
+            $this->addNotification('You are not in an alliance', 'error');
+            return;
+        }
+
+        if (empty($this->messageForm['title']) || empty($this->messageForm['content'])) {
+            $this->addNotification('Title and content are required', 'error');
+            return;
+        }
+
+        // Check permissions for certain message types
+        if (in_array($this->messageForm['type'], ['announcement', 'leadership']) && 
+            !in_array($player->alliance_rank, ['leader', 'co_leader'])) {
+            $this->addNotification('You do not have permission to post this type of message', 'error');
+            return;
+        }
+
+        try {
+            $message = AllianceMessage::create([
+                'alliance_id' => $player->alliance_id,
+                'sender_id' => $player->id,
+                'type' => $this->messageForm['type'],
+                'title' => $this->messageForm['title'],
+                'content' => $this->messageForm['content'],
+                'is_pinned' => $this->messageForm['is_pinned'],
+                'is_important' => $this->messageForm['is_important'],
+            ]);
+
+            $this->loadAllianceMessages();
+            $this->resetMessageForm();
+            $this->addNotification('Message posted successfully', 'success');
+
+            $this->dispatch('messagePosted', [
+                'alliance_id' => $player->alliance_id,
+                'message_id' => $message->id,
+                'type' => $message->type,
+            ]);
+        } catch (\Exception $e) {
+            $this->addNotification('Failed to post message: ' . $e->getMessage(), 'error');
+        }
+    }
+
+    public function markMessageAsRead($messageId)
+    {
+        $player = Player::where('user_id', Auth::id())->first();
+        if (!$player->alliance) {
+            return;
+        }
+
+        $message = AllianceMessage::where('alliance_id', $player->alliance_id)->find($messageId);
+        if ($message) {
+            $message->markAsReadBy($player->id);
+            $this->loadAllianceMessages();
+        }
+    }
+
+    public function toggleDiplomacy()
+    {
+        $this->showDiplomacy = !$this->showDiplomacy;
+        if ($this->showDiplomacy) {
+            $this->loadAllianceDiplomacy();
+        }
+    }
+
+    public function toggleWars()
+    {
+        $this->showWars = !$this->showWars;
+        if ($this->showWars) {
+            $this->loadAllianceWars();
+        }
+    }
+
+    public function toggleMessages()
+    {
+        $this->showMessages = !$this->showMessages;
+        if ($this->showMessages) {
+            $this->loadAllianceMessages();
+        }
+    }
+
+    public function toggleLogs()
+    {
+        $this->showLogs = !$this->showLogs;
+        if ($this->showLogs) {
+            $this->loadAllianceLogs();
+        }
+    }
+
+    public function resetDiplomacyForm()
+    {
+        $this->diplomacyForm = [
+            'target_alliance_id' => null,
+            'status' => 'ally',
+            'message' => '',
+            'expires_at' => null,
+        ];
+    }
+
+    public function resetWarForm()
+    {
+        $this->warForm = [
+            'target_alliance_id' => null,
+            'declaration_message' => '',
+        ];
+    }
+
+    public function resetMessageForm()
+    {
+        $this->messageForm = [
+            'type' => 'general',
+            'title' => '',
+            'content' => '',
+            'is_pinned' => false,
+            'is_important' => false,
+        ];
+    }
 }
