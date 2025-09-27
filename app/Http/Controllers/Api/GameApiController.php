@@ -83,6 +83,8 @@ class GameApiController extends Controller
      * @response 401 {
      *   "message": "Unauthenticated."
      * }
+     * 
+     * @tag Village Management
      */
     public function getVillages(Request $request): JsonResponse
     {
