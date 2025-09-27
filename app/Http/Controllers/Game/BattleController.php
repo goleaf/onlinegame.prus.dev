@@ -533,10 +533,7 @@ class BattleController extends CrudController
             ]);
 
             if ($validator->fails()) {
-                return response()->json([
-                    'message' => 'The given data was invalid.',
-                    'errors' => $validator->errors()
-                ], 422);
+                return $this->validationErrorResponse($validator->errors());
             }
 
             $battle = Battle::create([
@@ -553,16 +550,24 @@ class BattleController extends CrudController
                 'occurred_at' => now(),
             ]);
 
-            return response()->json([
-                'success' => true,
-                'battle' => $battle
-            ], 201);
+            LoggingUtil::info('Battle report created', [
+                'user_id' => auth()->id(),
+                'battle_id' => $battle->id,
+                'attacker_id' => $battle->attacker_id,
+                'defender_id' => $battle->defender_id,
+                'result' => $battle->result,
+            ], 'battle_system');
+
+            return $this->successResponse($battle, 'Battle report created successfully.', 201);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create battle report: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error creating battle report', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+                'request_data' => $request->all(),
+            ], 'battle_system');
+
+            return $this->errorResponse('Failed to create battle report: ' . $e->getMessage(), 500);
         }
     }
 

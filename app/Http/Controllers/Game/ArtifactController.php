@@ -604,10 +604,10 @@ class ArtifactController extends CrudController
                 'options' => $options,
             ], 'artifact_system');
 
-            return response()->json([
-                'success' => true,
-                'artifact' => $artifact
-            ], 201);
+            // Clear cache
+            CachingUtil::forget('artifacts_index_*');
+
+            return $this->successResponse($artifact, 'Random artifact generated successfully.', 201);
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating random artifact', [
                 'error' => $e->getMessage(),
@@ -666,7 +666,7 @@ class ArtifactController extends CrudController
                 'effects_count' => $effects->count(),
             ], 'artifact_system');
 
-            return response()->json(['data' => $effects]);
+            return $this->successResponse($effects, 'Artifact effects retrieved successfully.');
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving artifact effects', [
                 'error' => $e->getMessage(),
@@ -736,6 +736,10 @@ class ArtifactController extends CrudController
                 'name', 'description', 'power_level', 'durability', 'effects', 'requirements'
             ]));
 
+            // Clear cache
+            CachingUtil::forget("artifact_{$id}_details");
+            CachingUtil::forget('artifacts_index_*');
+
             LoggingUtil::info('Artifact updated', [
                 'user_id' => auth()->id(),
                 'artifact_id' => $artifact->id,
@@ -745,11 +749,7 @@ class ArtifactController extends CrudController
                 ])),
             ], 'artifact_system');
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Artifact updated successfully',
-                'artifact' => $artifact->fresh()
-            ]);
+            return $this->successResponse($artifact->fresh(), 'Artifact updated successfully.');
         } catch (\Exception $e) {
             LoggingUtil::error('Error updating artifact', [
                 'error' => $e->getMessage(),
@@ -801,16 +801,17 @@ class ArtifactController extends CrudController
             $artifactName = $artifact->name;
             $artifact->delete();
 
+            // Clear cache
+            CachingUtil::forget("artifact_{$id}_details");
+            CachingUtil::forget('artifacts_index_*');
+
             LoggingUtil::info('Artifact deleted', [
                 'user_id' => auth()->id(),
                 'artifact_id' => $id,
                 'artifact_name' => $artifactName,
             ], 'artifact_system');
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Artifact deleted successfully'
-            ]);
+            return $this->successResponse(null, 'Artifact deleted successfully.');
         } catch (\Exception $e) {
             LoggingUtil::error('Error deleting artifact', [
                 'error' => $e->getMessage(),

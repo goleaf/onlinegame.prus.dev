@@ -262,21 +262,34 @@ class MarketController extends CrudController
         try {
             $playerId = Auth::user()->player->id;
             
-            $query = MarketOffer::where('player_id', $playerId);
+            $cacheKey = "player_offers_{$playerId}_" . md5(serialize($request->all()));
+            
+            $offers = CachingUtil::remember($cacheKey, now()->addMinutes(2), function () use ($request, $playerId) {
+                $query = MarketOffer::where('player_id', $playerId);
 
-            if ($request->has('status')) {
-                $query->where('status', $request->input('status'));
-            }
+                if ($request->has('status')) {
+                    $query->where('status', $request->input('status'));
+                }
 
-            $offers = $query->orderBy('created_at', 'desc')->get();
+                return $query->orderBy('created_at', 'desc')->get();
+            });
 
-            return response()->json(['data' => $offers]);
+            LoggingUtil::info('Player market offers retrieved', [
+                'user_id' => auth()->id(),
+                'player_id' => $playerId,
+                'status_filter' => $request->get('status'),
+                'offers_count' => $offers->count(),
+            ], 'market_system');
+
+            return $this->successResponse($offers, 'Your market offers retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve your market offers: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error retrieving player market offers', [
+                'error' => $e->getMessage(),
+                'player_id' => auth()->user()->player->id ?? null,
+            ], 'market_system');
+
+            return $this->errorResponse('Failed to retrieve your market offers.', 500);
         }
     }
 
@@ -333,51 +346,64 @@ class MarketController extends CrudController
             $player = Player::findOrFail($playerId);
 
             // Calculate total amount based on exchange rate
-            $totalAmount = $request->input('resource_amount') * $request->input('exchange_rate');
+            $totalAmount = $validated['resource_amount'] * $validated['exchange_rate'];
 
             // For sell offers, check if player has enough resources
-            if ($request->input('offer_type') === 'sell') {
-                $resourceType = $request->input('resource_type');
-                if ($player->{$resourceType} < $request->input('resource_amount')) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Insufficient resources for this offer'
-                    ], 400);
+            if ($validated['offer_type'] === 'sell') {
+                $resourceType = $validated['resource_type'];
+                if ($player->{$resourceType} < $validated['resource_amount']) {
+                    return $this->errorResponse('Insufficient resources for this offer', 400);
                 }
             }
 
             DB::beginTransaction();
 
-            // If it's a sell offer, reserve the resources
-            if ($request->input('offer_type') === 'sell') {
-                $player->decrement($request->input('resource_type'), $request->input('resource_amount'));
+            try {
+                // If it's a sell offer, reserve the resources
+                if ($validated['offer_type'] === 'sell') {
+                    $player->decrement($validated['resource_type'], $validated['resource_amount']);
+                }
+
+                $offer = MarketOffer::create([
+                    'player_id' => $playerId,
+                    'offer_type' => $validated['offer_type'],
+                    'resource_type' => $validated['resource_type'],
+                    'resource_amount' => $validated['resource_amount'],
+                    'exchange_rate' => $validated['exchange_rate'],
+                    'total_amount' => $totalAmount,
+                    'description' => $validated['description'] ?? null,
+                    'status' => 'active',
+                ]);
+
+                // Clear related caches
+                CachingUtil::forget('market_offers_' . md5(serialize($request->all())));
+                CachingUtil::forget("player_offers_{$playerId}");
+
+                DB::commit();
+
+                LoggingUtil::info('Market offer created', [
+                    'user_id' => auth()->id(),
+                    'offer_id' => $offer->id,
+                    'offer_type' => $offer->offer_type,
+                    'resource_type' => $offer->resource_type,
+                    'resource_amount' => $offer->resource_amount,
+                ], 'market_system');
+
+                return $this->successResponse($offer, 'Market offer created successfully.', 201);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
             }
 
-            $offer = MarketOffer::create([
-                'player_id' => $playerId,
-                'offer_type' => $request->input('offer_type'),
-                'resource_type' => $request->input('resource_type'),
-                'resource_amount' => $request->input('resource_amount'),
-                'exchange_rate' => $request->input('exchange_rate'),
-                'total_amount' => $totalAmount,
-                'description' => $request->input('description'),
-                'status' => 'active',
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Market offer created successfully',
-                'offer' => $offer
-            ], 201);
-
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create market offer: ' . $e->getMessage()
-            ], 500);
+            LoggingUtil::error('Error creating market offer', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => auth()->id(),
+            ], 'market_system');
+
+            return $this->errorResponse('Failed to create market offer.', 500);
         }
     }
 
