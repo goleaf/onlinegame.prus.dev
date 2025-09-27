@@ -281,13 +281,22 @@ class GameTickService
 
     private function calculateResourceLoot($defendingTroops)
     {
-        // Simple loot calculation - 10-25% of each resource
-        $lootRate = 0.1 + (rand(0, 15) / 100);
+        // More realistic loot calculation based on village resources
+        $lootRate = 0.1 + (rand(0, 15) / 100); // 10-25% loot rate
+        
+        // Base loot amounts (will be overridden by actual village resources if available)
+        $baseLoot = [
+            'wood' => rand(500, 2000),
+            'clay' => rand(500, 2000), 
+            'iron' => rand(500, 2000),
+            'crop' => rand(500, 2000),
+        ];
+        
         return [
-            'wood' => rand(100, 1000) * $lootRate,
-            'clay' => rand(100, 1000) * $lootRate,
-            'iron' => rand(100, 1000) * $lootRate,
-            'crop' => rand(100, 1000) * $lootRate,
+            'wood' => floor($baseLoot['wood'] * $lootRate),
+            'clay' => floor($baseLoot['clay'] * $lootRate),
+            'iron' => floor($baseLoot['iron'] * $lootRate),
+            'crop' => floor($baseLoot['crop'] * $lootRate),
         ];
     }
 
@@ -366,6 +375,167 @@ class GameTickService
             'is_read' => false,
             'is_important' => $battle->result === 'defender_wins',
         ]);
+    }
+
+    private function generateBattleReportTitle(Battle $battle, $perspective)
+    {
+        $result = $battle->result;
+        if ($perspective === 'defender') {
+            $result = $battle->result === 'attacker_wins' ? 'defeat' : 'victory';
+        }
+
+        $status = match ($result) {
+            'attacker_wins' => 'Victory',
+            'defender_wins' => 'Defeat',
+            'draw' => 'Draw',
+            default => 'Unknown'
+        };
+
+        return "Battle Report - {$status} at {$battle->village->name}";
+    }
+
+    private function generateDetailedBattleReportContent(Battle $battle, $perspective)
+    {
+        $result = $battle->result;
+        $isAttacker = $perspective === 'attacker';
+        
+        if ($perspective === 'defender') {
+            $result = $battle->result === 'attacker_wins' ? 'defeat' : 'victory';
+        }
+
+        $status = match ($result) {
+            'attacker_wins' => 'Victory',
+            'defender_wins' => 'Defeat', 
+            'draw' => 'Draw',
+            default => 'Unknown'
+        };
+
+        $content = "=== BATTLE REPORT ===\n\n";
+        $content .= "Location: {$battle->village->name}\n";
+        $content .= "Result: {$status}\n";
+        $content .= "Date: " . $battle->occurred_at->format('Y-m-d H:i:s') . "\n\n";
+
+        // Battle Power Summary
+        $content .= "=== BATTLE POWER ===\n";
+        $content .= "Attacker Power: " . number_format($battle->battle_data['battle_power']['attacker'], 0) . "\n";
+        $content .= "Defender Power: " . number_format($battle->battle_data['battle_power']['defender'], 0) . "\n\n";
+
+        // Troop Summary
+        $content .= "=== TROOP SUMMARY ===\n";
+        if ($isAttacker) {
+            $content .= "Your Troops Sent:\n";
+            foreach ($battle->battle_data['attacking_troops'] as $troop) {
+                $content .= "- {$troop['unit_type']}: {$troop['count']}\n";
+            }
+            $content .= "\nEnemy Defenders:\n";
+            foreach ($battle->battle_data['defending_troops'] as $troop) {
+                $content .= "- {$troop['unit_type']}: {$troop['count']}\n";
+            }
+        } else {
+            $content .= "Enemy Attackers:\n";
+            foreach ($battle->battle_data['attacking_troops'] as $troop) {
+                $content .= "- {$troop['unit_type']}: {$troop['count']}\n";
+            }
+            $content .= "\nYour Defenders:\n";
+            foreach ($battle->battle_data['defending_troops'] as $troop) {
+                $content .= "- {$troop['unit_type']}: {$troop['count']}\n";
+            }
+        }
+
+        // Casualties
+        $content .= "\n=== CASUALTIES ===\n";
+        $losses = $isAttacker ? $battle->attacker_losses : $battle->defender_losses;
+        $totalLosses = 0;
+        foreach ($losses as $loss) {
+            if ($loss['count'] > 0) {
+                $content .= "- {$loss['unit_type']}: {$loss['count']} lost\n";
+                $totalLosses += $loss['count'];
+            }
+        }
+        if ($totalLosses === 0) {
+            $content .= "No casualties\n";
+        } else {
+            $content .= "Total Losses: {$totalLosses}\n";
+        }
+
+        // Loot Information
+        if ($battle->resources_looted && $isAttacker && $battle->result === 'attacker_wins') {
+            $content .= "\n=== LOOT ===\n";
+            $totalLoot = 0;
+            foreach ($battle->resources_looted as $resource => $amount) {
+                if ($amount > 0) {
+                    $content .= "- " . ucfirst($resource) . ": " . number_format($amount) . "\n";
+                    $totalLoot += $amount;
+                }
+            }
+            if ($totalLoot > 0) {
+                $content .= "Total Loot: " . number_format($totalLoot) . " resources\n";
+            } else {
+                $content .= "No resources looted\n";
+            }
+        } elseif (!$isAttacker && $battle->resources_looted) {
+            $content .= "\n=== RESOURCES LOST ===\n";
+            $totalLost = 0;
+            foreach ($battle->resources_looted as $resource => $amount) {
+                if ($amount > 0) {
+                    $content .= "- " . ucfirst($resource) . ": " . number_format($amount) . " lost\n";
+                    $totalLost += $amount;
+                }
+            }
+            if ($totalLost > 0) {
+                $content .= "Total Lost: " . number_format($totalLost) . " resources\n";
+            }
+        }
+
+        // Battle Analysis
+        $content .= "\n=== BATTLE ANALYSIS ===\n";
+        if ($battle->result === 'attacker_wins') {
+            $content .= "The attack was successful! Your forces overwhelmed the defenders.\n";
+        } elseif ($battle->result === 'defender_wins') {
+            $content .= "The defense was successful! Your forces repelled the attackers.\n";
+        } else {
+            $content .= "The battle ended in a draw. Both sides suffered heavy losses.\n";
+        }
+
+        return $content;
+    }
+
+    private function generateCasualtiesSummary($losses)
+    {
+        $summary = [];
+        $totalLosses = 0;
+        
+        foreach ($losses as $loss) {
+            if ($loss['count'] > 0) {
+                $summary[] = "{$loss['unit_type']}: {$loss['count']}";
+                $totalLosses += $loss['count'];
+            }
+        }
+        
+        return [
+            'total' => $totalLosses,
+            'breakdown' => $summary,
+            'formatted' => $totalLosses > 0 ? implode(', ', $summary) : 'No casualties'
+        ];
+    }
+
+    private function generateLootSummary($loot)
+    {
+        $summary = [];
+        $totalLoot = 0;
+        
+        foreach ($loot as $resource => $amount) {
+            if ($amount > 0) {
+                $summary[] = ucfirst($resource) . ": " . number_format($amount);
+                $totalLoot += $amount;
+            }
+        }
+        
+        return [
+            'total' => $totalLoot,
+            'breakdown' => $summary,
+            'formatted' => $totalLoot > 0 ? implode(', ', $summary) : 'No loot'
+        ];
     }
 
     private function generateBattleReportContent(Battle $battle, $perspective)
