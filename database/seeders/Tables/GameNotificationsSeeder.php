@@ -15,7 +15,7 @@ class GameNotificationsSeeder extends Seeder
     {
         /**
          * Command :
-         * artisan seed:generate --table-mode --tables=game_notifications
+         * artisan seed:generate --table-mode --all-tables
          *
          */
 

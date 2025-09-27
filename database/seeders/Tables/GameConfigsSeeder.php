@@ -15,7 +15,7 @@ class GameConfigsSeeder extends Seeder
     {
         /**
          * Command :
-         * artisan seed:generate --table-mode --tables=game_configs
+         * artisan seed:generate --table-mode --all-tables
          *
          */
 

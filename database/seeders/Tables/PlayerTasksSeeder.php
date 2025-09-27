@@ -4,7 +4,7 @@ namespace Database\Seeders\Tables;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class GameTasksSeeder extends Seeder
+class PlayerTasksSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -23,6 +23,6 @@ class GameTasksSeeder extends Seeder
             
         ];
         
-        DB::table("game_tasks")->insert($dataTables);
+        DB::table("player_tasks")->insert($dataTables);
     }
 }

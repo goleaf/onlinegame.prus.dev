@@ -1,10 +1,10 @@
 <?php
-namespace ;
+namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class GameEvents extends Seeder
+class GameEventsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,7 +15,7 @@ class GameEvents extends Seeder
     {
         /**
          * Command :
-         * artisan seed:generate --table-mode --tables=game_events
+         * artisan seed:generate --table-mode --all-tables
          *
          */
 

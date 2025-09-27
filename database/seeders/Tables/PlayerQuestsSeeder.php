@@ -15,7 +15,7 @@ class PlayerQuestsSeeder extends Seeder
     {
         /**
          * Command :
-         * artisan seed:generate --table-mode --tables=player_quests
+         * artisan seed:generate --table-mode --all-tables
          *
          */
 

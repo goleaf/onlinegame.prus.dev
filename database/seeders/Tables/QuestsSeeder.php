@@ -15,13 +15,14 @@ class QuestsSeeder extends Seeder
     {
         /**
          * Command :
-         * artisan seed:generate --table-mode --tables=buildings,building_types,unit_types,achievements,quests
+         * artisan seed:generate --table-mode --all-tables
          *
          */
 
         $dataTables = [
             [
                 'id' => 1,
+                'reference_number' => '',
                 'name' => 'Welcome to Travian',
                 'key' => 'welcome',
                 'description' => 'Welcome to the world of Travian! Complete this quest to get started.',
@@ -40,6 +41,7 @@ class QuestsSeeder extends Seeder
             ],
             [
                 'id' => 2,
+                'reference_number' => '',
                 'name' => 'First Building',
                 'key' => 'first_building',
                 'description' => 'Build your first building to expand your village.',
@@ -58,6 +60,7 @@ class QuestsSeeder extends Seeder
             ],
             [
                 'id' => 3,
+                'reference_number' => '',
                 'name' => 'Resource Production',
                 'key' => 'resource_production',
                 'description' => 'Upgrade your resource buildings to increase production.',
@@ -76,6 +79,7 @@ class QuestsSeeder extends Seeder
             ],
             [
                 'id' => 4,
+                'reference_number' => '',
                 'name' => 'Military Training',
                 'key' => 'military_training',
                 'description' => 'Train your first military units.',
@@ -94,6 +98,7 @@ class QuestsSeeder extends Seeder
             ],
             [
                 'id' => 5,
+                'reference_number' => '',
                 'name' => 'Village Expansion',
                 'key' => 'village_expansion',
                 'description' => 'Expand your village by building more structures.',
@@ -109,15 +114,142 @@ class QuestsSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => '2025-09-25 23:37:48',
                 'updated_at' => '2025-09-25 23:37:48',
+            ],
+            [
+                'id' => 6,
+                'reference_number' => '68d7336eca473',
+                'name' => 'Resource Storage',
+                'key' => 'resource_storage',
+                'description' => 'Build storage buildings to increase your resource capacity.',
+                'instructions' => NULL,
+                'category' => 'building',
+                'difficulty' => 1,
+                'requirements' => '"{\\"build_warehouse\\":1,\\"build_granary\\":1}"',
+                'rewards' => '"{\\"wood\\":1000,\\"clay\\":1000,\\"iron\\":1000,\\"crop\\":1000}"',
+                'experience_reward' => 75,
+                'gold_reward' => 0,
+                'resource_rewards' => '"{\\"wood\\":1000,\\"clay\\":1000,\\"iron\\":1000,\\"crop\\":1000}"',
+                'is_repeatable' => 0,
+                'is_active' => 1,
+                'created_at' => '2025-09-27 00:44:30',
+                'updated_at' => '2025-09-27 00:44:30',
+            ],
+            [
+                'id' => 7,
+                'reference_number' => '68d7336ecbc28',
+                'name' => 'Research and Development',
+                'key' => 'research_development',
+                'description' => 'Learn about research and technology.',
+                'instructions' => NULL,
+                'category' => 'building',
+                'difficulty' => 2,
+                'requirements' => '"{\\"build_academy\\":1,\\"research_first_tech\\":true}"',
+                'rewards' => '"{\\"wood\\":3000,\\"clay\\":3000,\\"iron\\":3000,\\"crop\\":3000}"',
+                'experience_reward' => 200,
+                'gold_reward' => 0,
+                'resource_rewards' => '"{\\"wood\\":3000,\\"clay\\":3000,\\"iron\\":3000,\\"crop\\":3000}"',
+                'is_repeatable' => 0,
+                'is_active' => 1,
+                'created_at' => '2025-09-27 00:44:30',
+                'updated_at' => '2025-09-27 00:44:30',
+            ],
+            [
+                'id' => 8,
+                'reference_number' => '68d7336eccd6d',
+                'name' => 'First Battle',
+                'key' => 'first_battle',
+                'description' => 'Launch your first attack on another village.',
+                'instructions' => NULL,
+                'category' => 'combat',
+                'difficulty' => 3,
+                'requirements' => '"{\\"launch_attack\\":1}"',
+                'rewards' => '"{\\"wood\\":5000,\\"clay\\":5000,\\"iron\\":5000,\\"crop\\":5000}"',
+                'experience_reward' => 300,
+                'gold_reward' => 0,
+                'resource_rewards' => '"{\\"wood\\":5000,\\"clay\\":5000,\\"iron\\":5000,\\"crop\\":5000}"',
+                'is_repeatable' => 0,
+                'is_active' => 1,
+                'created_at' => '2025-09-27 00:44:30',
+                'updated_at' => '2025-09-27 00:44:30',
+            ],
+            [
+                'id' => 9,
+                'reference_number' => '68d7336ecda74',
+                'name' => 'Exploration',
+                'key' => 'exploration',
+                'description' => 'Explore the world map and discover new villages.',
+                'instructions' => NULL,
+                'category' => 'exploration',
+                'difficulty' => 2,
+                'requirements' => '"{\\"explore_villages\\":5}"',
+                'rewards' => '"{\\"wood\\":1000,\\"clay\\":1000,\\"iron\\":1000,\\"crop\\":1000}"',
+                'experience_reward' => 100,
+                'gold_reward' => 0,
+                'resource_rewards' => '"{\\"wood\\":1000,\\"clay\\":1000,\\"iron\\":1000,\\"crop\\":1000}"',
+                'is_repeatable' => 0,
+                'is_active' => 1,
+                'created_at' => '2025-09-27 00:44:30',
+                'updated_at' => '2025-09-27 00:44:30',
+            ],
+            [
+                'id' => 10,
+                'reference_number' => '68d7336ece758',
+                'name' => 'Trade Master',
+                'key' => 'trade_master',
+                'description' => 'Complete your first trade on the market.',
+                'instructions' => NULL,
+                'category' => 'trade',
+                'difficulty' => 2,
+                'requirements' => '"{\\"complete_trade\\":1}"',
+                'rewards' => '"{\\"wood\\":2000,\\"clay\\":2000,\\"iron\\":2000,\\"crop\\":2000}"',
+                'experience_reward' => 150,
+                'gold_reward' => 0,
+                'resource_rewards' => '"{\\"wood\\":2000,\\"clay\\":2000,\\"iron\\":2000,\\"crop\\":2000}"',
+                'is_repeatable' => 0,
+                'is_active' => 1,
+                'created_at' => '2025-09-27 00:44:30',
+                'updated_at' => '2025-09-27 00:44:30',
+            ],
+            [
+                'id' => 11,
+                'reference_number' => '68d7336ecf4b0',
+                'name' => 'Alliance Builder',
+                'key' => 'alliance_builder',
+                'description' => 'Join or create an alliance.',
+                'instructions' => NULL,
+                'category' => 'alliance',
+                'difficulty' => 3,
+                'requirements' => '"{\\"join_alliance\\":1}"',
+                'rewards' => '"{\\"wood\\":3000,\\"clay\\":3000,\\"iron\\":3000,\\"crop\\":3000}"',
+                'experience_reward' => 250,
+                'gold_reward' => 0,
+                'resource_rewards' => '"{\\"wood\\":3000,\\"clay\\":3000,\\"iron\\":3000,\\"crop\\":3000}"',
+                'is_repeatable' => 0,
+                'is_active' => 1,
+                'created_at' => '2025-09-27 00:44:30',
+                'updated_at' => '2025-09-27 00:44:30',
+            ],
+            [
+                'id' => 12,
+                'reference_number' => '68d7336ed024f',
+                'name' => 'Special Mission',
+                'key' => 'special_mission',
+                'description' => 'Complete a special mission for extra rewards.',
+                'instructions' => NULL,
+                'category' => 'special',
+                'difficulty' => 4,
+                'requirements' => '"{\\"complete_special_task\\":1}"',
+                'rewards' => '"{\\"wood\\":10000,\\"clay\\":10000,\\"iron\\":10000,\\"crop\\":10000}"',
+                'experience_reward' => 500,
+                'gold_reward' => 100,
+                'resource_rewards' => '"{\\"wood\\":10000,\\"clay\\":10000,\\"iron\\":10000,\\"crop\\":10000}"',
+                'is_repeatable' => 1,
+                'is_active' => 1,
+                'created_at' => '2025-09-27 00:44:30',
+                'updated_at' => '2025-09-27 00:44:30',
             ]
         ];
         
-        // Use updateOrInsert to avoid duplicate key errors
-        foreach ($dataTables as $data) {
-            DB::table("quests")->updateOrInsert(
-                ['id' => $data['id']],
-                $data
-            );
-        }
+        DB::table("quests")->insert($dataTables);
     }
 }

@@ -15,7 +15,7 @@ class ReportsSeeder extends Seeder
     {
         /**
          * Command :
-         * artisan seed:generate --table-mode --tables=reports
+         * artisan seed:generate --table-mode --all-tables
          *
          */
 

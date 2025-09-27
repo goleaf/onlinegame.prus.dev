@@ -15,7 +15,7 @@ class UnitTypesSeeder extends Seeder
     {
         /**
          * Command :
-         * artisan seed:generate --table-mode --tables=buildings,building_types,unit_types,achievements,quests
+         * artisan seed:generate --table-mode --all-tables
          *
          */
 
@@ -508,12 +508,6 @@ class UnitTypesSeeder extends Seeder
             ]
         ];
         
-        // Use updateOrInsert to avoid duplicate key errors
-        foreach ($dataTables as $data) {
-            DB::table("unit_types")->updateOrInsert(
-                ['id' => $data['id']],
-                $data
-            );
-        }
+        DB::table("unit_types")->insert($dataTables);
     }
 }

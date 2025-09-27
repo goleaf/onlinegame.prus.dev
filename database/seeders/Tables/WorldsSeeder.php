@@ -15,7 +15,7 @@ class WorldsSeeder extends Seeder
     {
         /**
          * Command :
-         * artisan seed:generate --table-mode --tables=worlds --where=is_active,=,1
+         * artisan seed:generate --table-mode --all-tables
          *
          */
 
