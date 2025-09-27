@@ -274,4 +274,84 @@ class DefenseCalculationService
 
         return $recommendations;
     }
+
+    /**
+     * Calculate geographic defensive bonus based on village location
+     */
+    public function calculateGeographicDefenseBonus(Village $village): float
+    {
+        if (!$village->latitude || !$village->longitude) {
+            return 0;
+        }
+
+        $geoService = app(GeographicService::class);
+        $bonus = 0;
+
+        // Elevation bonus (higher elevation = better defense)
+        if ($village->elevation) {
+            $elevationBonus = min($village->elevation / 1000, 0.1); // Max 10% bonus
+            $bonus += $elevationBonus;
+        }
+
+        // Terrain bonus based on geohash (simplified terrain analysis)
+        if ($village->geohash) {
+            $terrainBonus = $this->getTerrainDefenseBonus($village->geohash);
+            $bonus += $terrainBonus;
+        }
+
+        return min($bonus, 0.15); // Cap at 15% geographic bonus
+    }
+
+    /**
+     * Get terrain defense bonus based on geohash
+     */
+    private function getTerrainDefenseBonus(string $geohash): float
+    {
+        // Simplified terrain analysis based on geohash characters
+        $terrainScore = 0;
+        
+        // Analyze geohash for terrain characteristics
+        for ($i = 0; $i < min(strlen($geohash), 6); $i++) {
+            $char = $geohash[$i];
+            $terrainScore += ord($char) % 10;
+        }
+        
+        // Convert to percentage bonus (0-5%)
+        return ($terrainScore % 5) / 100;
+    }
+
+    /**
+     * Calculate distance-based defense bonus for nearby villages
+     */
+    public function calculateAllianceDefenseBonus(Village $village, array $alliedVillages): float
+    {
+        if (empty($alliedVillages)) {
+            return 0;
+        }
+
+        $geoService = app(GeographicService::class);
+        $bonus = 0;
+
+        foreach ($alliedVillages as $alliedVillage) {
+            if (!$alliedVillage->latitude || !$alliedVillage->longitude) {
+                continue;
+            }
+
+            $distance = $geoService->calculateDistance(
+                $village->latitude,
+                $village->longitude,
+                $alliedVillage->latitude,
+                $alliedVillage->longitude
+            );
+
+            // Closer villages provide more defense bonus
+            if ($distance <= 10) { // Within 10km
+                $bonus += 0.02; // 2% per nearby village
+            } elseif ($distance <= 25) { // Within 25km
+                $bonus += 0.01; // 1% per nearby village
+            }
+        }
+
+        return min($bonus, 0.1); // Cap at 10% alliance bonus
+    }
 }
