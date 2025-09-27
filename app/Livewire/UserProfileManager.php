@@ -20,12 +20,15 @@ class UserProfileManager extends Component
     public $phone_country = 'US';
     public $showPhoneForm = false;
 
-    protected $rules = [
-        'name' => ['required', 'string', 'max:255', new Username(), new Clean],
-        'email' => 'required|email|unique:users,email',
-        'phone' => ['nullable', 'string'],
-        'phone_country' => ['nullable', 'string', 'size:2'],
-    ];
+    protected function rules()
+    {
+        return [
+            'name' => ['required', 'string', 'max:255', new Username(), new Clean],
+            'email' => 'required|email|unique:users,email',
+            'phone' => ['nullable', 'string'],
+            'phone_country' => ['nullable', 'string', 'size:2'],
+        ];
+    }
 
     public function mount(User $user = null)
     {

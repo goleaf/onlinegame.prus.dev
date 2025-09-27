@@ -48,7 +48,7 @@ class UpdaterComponent extends Component
             
         } catch (\Exception $e) {
             $this->error = 'Failed to check for updates: ' . $e->getMessage();
-            $this->alert('error', $this->error);
+            session()->flash('error', $this->error);
         }
     }
 
@@ -135,9 +135,9 @@ class UpdaterComponent extends Component
             \Artisan::call('route:cache');
             \Artisan::call('view:cache');
             
-            $this->alert('success', 'Application optimized successfully!');
+            session()->flash('message', 'Application optimized successfully!');
         } catch (\Exception $e) {
-            $this->alert('error', 'Failed to optimize application: ' . $e->getMessage());
+            session()->flash('error', 'Failed to optimize application: ' . $e->getMessage());
         }
     }
 
