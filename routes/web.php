@@ -178,6 +178,12 @@ Route::get('decompose/markdown', function () {
     }
 })->name('decompose.markdown');
 
+// Chat routes
+Route::middleware(['auth'])->prefix('game')->name('game.')->group(function () {
+    Route::get('/chat', App\Livewire\Game\ChatManager::class)->name('chat');
+    Route::get('/messages', App\Livewire\Game\MessageManager::class)->name('messages');
+});
+
 // Admin routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', App\Livewire\Admin\AdminDashboard::class)->name('dashboard');

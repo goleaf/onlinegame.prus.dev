@@ -11,7 +11,7 @@ use WendellAdriel\Lift\Lift;
 
 class UnitType extends Model
 {
-    use HasFactory, HasTaxonomy;
+    use HasFactory, HasTaxonomy, Lift;
 
     protected $fillable = [
         'name',

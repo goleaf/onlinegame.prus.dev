@@ -457,15 +457,22 @@ class GameApiController extends Controller
     {
         $user = $request->user();
         $village = Village::with(['buildings', 'resources', 'player'])
-            ->selectRaw('
-                villages.*,
-                latitude,
-                longitude,
-                geohash,
-                elevation,
-                (SELECT COUNT(*) FROM buildings WHERE village_id = villages.id) as building_count,
-                (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as troop_count
-            ')
+            ->select([
+                'villages.*',
+                'latitude',
+                'longitude',
+                'geohash',
+                'elevation',
+                QE::select(QE::count(c('id')))
+                    ->from('buildings')
+                    ->whereColumn('village_id', c('villages.id'))
+                    ->as('building_count'),
+                QE::select(QE::count(c('id')))
+                    ->from('troops')
+                    ->whereColumn('village_id', c('villages.id'))
+                    ->where('quantity', '>', 0)
+                    ->as('troop_count')
+            ])
             ->find($id);
 
         if (!$village) {

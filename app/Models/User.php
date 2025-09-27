@@ -7,8 +7,6 @@ use App\Traits\Commenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
 use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
@@ -25,7 +23,7 @@ class User extends Authenticatable implements Auditable
     use AuditableTrait;
     use Lift;
     use HasReference;
-    use Filterable;
+    // use Filterable;
 
     // Laravel Lift typed properties
     public int $id;
@@ -322,6 +320,15 @@ class User extends Authenticatable implements Auditable
             Filter::field('email', ['$eq', '$like']),
             Filter::field('phone', ['$eq', '$like']),
             Filter::field('phone_country', ['$eq']),
+            Filter::field('phone_normalized', ['$eq', '$like']),
+            Filter::field('phone_e164', ['$eq', '$like']),
+            Filter::field('email_verified_at', ['$eq', '$gt', '$lt']),
+            Filter::relation('players', ['$has']),
+            Filter::relation('player', ['$has'])
+        );
+    }
+}
+
             Filter::field('phone_normalized', ['$eq', '$like']),
             Filter::field('phone_e164', ['$eq', '$like']),
             Filter::field('email_verified_at', ['$eq', '$gt', '$lt']),

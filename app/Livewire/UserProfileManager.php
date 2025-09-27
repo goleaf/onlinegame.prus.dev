@@ -182,7 +182,7 @@ class UserProfileManager extends Component
     /**
      * Initialize user profile with real-time integration
      */
-    public function mount()
+    public function initializeUserRealTime()
     {
         try {
             // Initialize real-time features for the user
