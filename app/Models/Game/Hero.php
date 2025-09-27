@@ -9,7 +9,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Hero extends Model
 {
-    use HasFactory;
+    use HasFactory, HasReference;
 
     protected $fillable = [
         'player_id',
