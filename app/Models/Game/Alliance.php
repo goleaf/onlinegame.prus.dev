@@ -2,8 +2,8 @@
 
 namespace App\Models\Game;
 
-// use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-// use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+// // use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
+// // use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 // use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
 // use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
 // use IndexZer0\EloquentFiltering\Filter\FilterType;
@@ -19,7 +19,7 @@ class Alliance extends Model implements Auditable
 {
     use HasNotables, HasReference;
     use AuditableTrait;
-    // use Filterable;
+    // // use Filterable;
 
     protected $fillable = [
         'name',

@@ -2,8 +2,8 @@
 
 namespace App\Models\Game;
 
-use EloquentFiltering\Filterable;
-use EloquentFiltering\Contracts\IsFilterable;
+// use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
+// use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 use EloquentFiltering\AllowedFilterList;
 use EloquentFiltering\Filter;
 use EloquentFiltering\FilterType;
@@ -13,11 +13,11 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Battle extends Model implements Auditable, IsFilterable
+class Battle extends Model implements Auditable
 {
     use HasReference;
     use AuditableTrait;
-    use Filterable;
+    // use Filterable;
 
     protected $fillable = [
         'attacker_id',

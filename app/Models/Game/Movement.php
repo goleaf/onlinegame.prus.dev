@@ -2,7 +2,7 @@
 
 namespace App\Models\Game;
 
-use EloquentFiltering\Filterable;
+// use EloquentFiltering\Filterable;
 use EloquentFiltering\Contracts\IsFilterable;
 use EloquentFiltering\AllowedFilterList;
 use EloquentFiltering\Filter;
