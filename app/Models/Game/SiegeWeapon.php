@@ -22,6 +22,7 @@ class SiegeWeapon extends Model
         'cost',
         'description',
         'is_active',
+        'reference_number',
     ];
 
     protected $casts = [

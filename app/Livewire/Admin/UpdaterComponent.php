@@ -98,17 +98,17 @@ class UpdaterComponent extends Component
             $this->updateSteps = $updateResult['steps'] ?? [];
             
             if ($updateResult['success']) {
-                $this->alert('success', 'Application updated successfully!');
+                session()->flash('message', 'Application updated successfully!');
                 $this->loadUpdateInfo(); // Refresh version info
                 $this->loadUpdateHistory(); // Refresh history
             } else {
                 $this->error = $updateResult['error'] ?? 'Update failed';
-                $this->alert('error', $this->error);
+                session()->flash('error', $this->error);
             }
             
         } catch (\Exception $e) {
             $this->error = 'Update failed: ' . $e->getMessage();
-            $this->alert('error', $this->error);
+            session()->flash('error', $this->error);
         } finally {
             $this->isUpdating = false;
         }

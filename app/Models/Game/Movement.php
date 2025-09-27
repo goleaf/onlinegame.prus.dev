@@ -7,6 +7,7 @@ use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 use EloquentFiltering\AllowedFilterList;
 use EloquentFiltering\Filter;
 use EloquentFiltering\FilterType;
+use App\Services\GeographicService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;

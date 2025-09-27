@@ -112,11 +112,13 @@ class GameTestCommand extends Command
     {
         if ($verbose) $this->line('Testing cache system...');
 
-        // Test cache storage
+        // Test SmartCache storage
         $testData = ['test' => 'data', 'timestamp' => now()->toISOString()];
-        Cache::put('game_test_cache', $testData, 60);
+        $cacheKey = 'game_test_smartcache';
         
-        $retrieved = Cache::get('game_test_cache');
+        $retrieved = SmartCache::remember($cacheKey, now()->addMinutes(1), function () use ($testData) {
+            return $testData;
+        });
         if ($retrieved !== $testData) {
             throw new \Exception('Cache storage/retrieval failed');
         }
@@ -139,8 +141,8 @@ class GameTestCommand extends Command
             $this->line('Cache statistics: ' . json_encode($stats));
         }
 
-        Cache::forget('game_test_cache');
-        $this->info('Cache system test completed successfully');
+        SmartCache::forget($cacheKey);
+        $this->info('SmartCache system test completed successfully');
     }
 
     private function testPerformanceMonitoring(bool $verbose = false)

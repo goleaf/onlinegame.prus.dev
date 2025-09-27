@@ -351,7 +351,7 @@ class Artifact extends Model
         $this->removeEffects();
     }
 
-    public function destroy(): void
+    public function destroyArtifact(): void
     {
         $this->removeEffects();
         $this->delete();

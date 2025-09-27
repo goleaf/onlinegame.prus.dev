@@ -37,6 +37,10 @@ return new class extends Migration
             $table->index(['owner_id', 'status']);
             $table->index(['village_id', 'status']);
             $table->index(['expires_at']);
+            $table->index(['discovered_at']);
+            $table->index(['activated_at']);
+            $table->index(['power_level']);
+            $table->index(['durability']);
         });
     }
 

@@ -120,11 +120,19 @@ class VillageManager extends Component
                 ];
 
                 return BuildingType::filter($filters)
-                    ->selectRaw('
-                        building_types.*,
-                        (SELECT COUNT(*) FROM buildings b WHERE b.building_type_id = building_types.id AND b.is_active = 1) as total_buildings,
-                        (SELECT AVG(level) FROM buildings b2 WHERE b2.building_type_id = building_types.id AND b2.is_active = 1) as avg_level
-                    ')
+                    ->select([
+                        'building_types.*',
+                        QE::select(QE::count(c('id')))
+                            ->from('buildings', 'b')
+                            ->whereColumn('b.building_type_id', c('building_types.id'))
+                            ->where('b.is_active', '=', 1)
+                            ->as('total_buildings'),
+                        QE::select(QE::avg(c('level')))
+                            ->from('buildings', 'b2')
+                            ->whereColumn('b2.building_type_id', c('building_types.id'))
+                            ->where('b2.is_active', '=', 1)
+                            ->as('avg_level')
+                    ])
                     ->get();
             });
 

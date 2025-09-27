@@ -66,6 +66,11 @@ Route::middleware(['auth', 'game.auth'])->group(function () {
         return view('game.larautilx-dashboard');
     })->name('game.larautilx');
 
+    // API Documentation
+    Route::get('/game/api-docs', function () {
+        return view('game.api-documentation');
+    })->name('game.api-docs');
+
     // Statistics
     Route::get('/game/statistics', [GameController::class, 'statistics'])->name('game.statistics');
 
