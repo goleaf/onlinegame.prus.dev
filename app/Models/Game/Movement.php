@@ -16,7 +16,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 
 class Movement extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait, Filterable;
+    use HasFactory, HasReference, AuditableTrait;
 
     protected $fillable = [
         'player_id',
