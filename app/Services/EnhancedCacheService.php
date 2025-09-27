@@ -27,22 +27,13 @@ class EnhancedCacheService
     }
 
     /**
-     * Enhanced cache with compression and serialization
+     * Enhanced cache with SmartCache optimization
      */
     public function remember(string $key, int $ttl, callable $callback): mixed
     {
         $fullKey = $this->prefix . $key;
-
-        return Cache::store('redis')->remember($fullKey, $ttl, function () use ($callback) {
-            $data = $callback();
-
-            // Apply compression for large data
-            if (is_array($data) && count($data) > 100) {
-                $data = $this->compressData($data);
-            }
-
-            return $data;
-        });
+        
+        return SmartCache::remember($fullKey, now()->addSeconds($ttl), $callback);
     }
 
     /**

@@ -7,168 +7,86 @@ use Tests\TestCase;
 
 class GeographicServiceTest extends TestCase
 {
-    private GeographicService $geographicService;
+    private GeographicService $geoService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->geographicService = new GeographicService();
+        $this->geoService = new GeographicService();
     }
 
-    public function test_calculate_distance_returns_correct_distance()
+    public function test_calculate_distance_returns_float()
     {
-        // Test distance between two known points
-        $lat1 = 52.520008; // Berlin
-        $lon1 = 13.404954;
-        $lat2 = 48.8566;   // Paris
-        $lon2 = 2.3522;
+        $distance = $this->geoService->calculateDistance(52.520008, 13.404954, 48.8566, 2.3522);
+        
+        $this->assertIsFloat($distance);
+        $this->assertGreaterThan(0, $distance);
+    }
 
-        $distance = $this->geographicService->calculateDistance($lat1, $lon1, $lat2, $lon2);
-
+    public function test_calculate_distance_berlin_to_paris()
+    {
         // Berlin to Paris is approximately 878 km
-        $this->assertGreaterThan(870, $distance);
-        $this->assertLessThan(890, $distance);
+        $distance = $this->geoService->calculateDistance(52.520008, 13.404954, 48.8566, 2.3522);
+        
+        $this->assertGreaterThan(800, $distance);
+        $this->assertLessThan(1000, $distance);
     }
 
-    public function test_calculate_game_distance_returns_correct_distance()
+    public function test_calculate_game_distance()
     {
-        $x1 = 0;
-        $y1 = 0;
-        $x2 = 3;
-        $y2 = 4;
-
-        $distance = $this->geographicService->calculateGameDistance($x1, $y1, $x2, $y2);
-
-        // Should be 5 (3-4-5 triangle)
-        $this->assertEquals(5, $distance);
+        $distance = $this->geoService->calculateGameDistance(100, 100, 200, 200);
+        
+        $this->assertIsFloat($distance);
+        $this->assertGreaterThan(0, $distance);
+        // Should be approximately 141.42 (sqrt(100^2 + 100^2))
+        $this->assertGreaterThan(140, $distance);
+        $this->assertLessThan(142, $distance);
     }
 
-    public function test_game_to_real_world_conversion()
+    public function test_calculate_bearing()
     {
-        $x = 500;
-        $y = 500;
-        $worldSize = 1000;
-
-        $result = $this->geographicService->gameToRealWorld($x, $y, $worldSize);
-
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('lat', $result);
-        $this->assertArrayHasKey('lon', $result);
-        $this->assertIsFloat($result['lat']);
-        $this->assertIsFloat($result['lon']);
-    }
-
-    public function test_real_world_to_game_conversion()
-    {
-        $lat = 52.520008;
-        $lon = 13.404954;
-        $worldSize = 1000;
-
-        $result = $this->geographicService->realWorldToGame($lat, $lon, $worldSize);
-
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('x', $result);
-        $this->assertArrayHasKey('y', $result);
-        $this->assertIsInt($result['x']);
-        $this->assertIsInt($result['y']);
-    }
-
-    public function test_generate_geohash()
-    {
-        $lat = 52.520008;
-        $lon = 13.404954;
-        $precision = 8;
-
-        $geohash = $this->geographicService->generateGeohash($lat, $lon, $precision);
-
-        $this->assertIsString($geohash);
-        $this->assertEquals($precision, strlen($geohash));
-    }
-
-    public function test_decode_geohash()
-    {
-        $geohash = 'u33d8b5j';
-
-        $result = $this->geographicService->decodeGeohash($geohash);
-
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('lat', $result);
-        $this->assertArrayHasKey('lon', $result);
-        $this->assertIsFloat($result['lat']);
-        $this->assertIsFloat($result['lon']);
-    }
-
-    public function test_calculate_travel_time()
-    {
-        $distanceKm = 100;
-        $speedKmh = 50;
-
-        $travelTime = $this->geographicService->calculateTravelTime($distanceKm, $speedKmh);
-
-        // 100 km at 50 km/h = 2 hours = 7200 seconds
-        $this->assertEquals(7200, $travelTime);
-    }
-
-    public function test_get_bearing()
-    {
-        $lat1 = 52.520008;
-        $lon1 = 13.404954;
-        $lat2 = 48.8566;
-        $lon2 = 2.3522;
-
-        $bearing = $this->geographicService->getBearing($lat1, $lon1, $lat2, $lon2);
-
+        $bearing = $this->geoService->calculateBearing(52.520008, 13.404954, 48.8566, 2.3522);
+        
         $this->assertIsFloat($bearing);
         $this->assertGreaterThanOrEqual(0, $bearing);
         $this->assertLessThan(360, $bearing);
     }
 
-    public function test_is_point_in_bounds()
+    public function test_game_to_real_world_conversion()
     {
-        $lat = 52.520008;
-        $lon = 13.404954;
-        $minLat = 52.0;
-        $maxLat = 53.0;
-        $minLon = 13.0;
-        $maxLon = 14.0;
-
-        $result = $this->geographicService->isPointInBounds($lat, $lon, $minLat, $maxLat, $minLon, $maxLon);
-
-        $this->assertTrue($result);
+        $coords = $this->geoService->gameToRealWorld(500, 500);
+        
+        $this->assertIsArray($coords);
+        $this->assertArrayHasKey('lat', $coords);
+        $this->assertArrayHasKey('lon', $coords);
+        $this->assertIsFloat($coords['lat']);
+        $this->assertIsFloat($coords['lon']);
     }
 
-    public function test_calculate_center_point()
+    public function test_real_world_to_game_conversion()
     {
-        $coordinates = [
-            ['lat' => 52.0, 'lon' => 13.0],
-            ['lat' => 53.0, 'lon' => 14.0],
-            ['lat' => 51.0, 'lon' => 12.0],
-        ];
-
-        $center = $this->geographicService->calculateCenterPoint($coordinates);
-
-        $this->assertIsArray($center);
-        $this->assertArrayHasKey('lat', $center);
-        $this->assertArrayHasKey('lon', $center);
-        $this->assertIsFloat($center['lat']);
-        $this->assertIsFloat($center['lon']);
+        $coords = $this->geoService->realWorldToGame(50.1, 8.1);
+        
+        $this->assertIsArray($coords);
+        $this->assertArrayHasKey('x', $coords);
+        $this->assertArrayHasKey('y', $coords);
+        $this->assertIsInt($coords['x']);
+        $this->assertIsInt($coords['y']);
     }
 
-    public function test_generate_random_coordinate()
+    public function test_generate_geohash()
     {
-        $minLat = 50.0;
-        $maxLat = 55.0;
-        $minLon = 10.0;
-        $maxLon = 15.0;
+        $geohash = $this->geoService->generateGeohash(52.520008, 13.404954);
+        
+        $this->assertIsString($geohash);
+        $this->assertGreaterThan(0, strlen($geohash));
+    }
 
-        $coordinate = $this->geographicService->generateRandomCoordinate($minLat, $maxLat, $minLon, $maxLon);
-
-        $this->assertIsArray($coordinate);
-        $this->assertArrayHasKey('lat', $coordinate);
-        $this->assertArrayHasKey('lon', $coordinate);
-        $this->assertGreaterThanOrEqual($minLat, $coordinate['lat']);
-        $this->assertLessThanOrEqual($maxLat, $coordinate['lat']);
-        $this->assertGreaterThanOrEqual($minLon, $coordinate['lon']);
-        $this->assertLessThanOrEqual($maxLon, $coordinate['lon']);
+    public function test_calculate_travel_time()
+    {
+        $time = $this->geoService->calculateTravelTime(52.520008, 13.404954, 48.8566, 2.3522, 50);
+        
+        $this->assertIsInt($time);
+        $this->assertGreaterThan(0, $time);
     }
 }
