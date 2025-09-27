@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Game;
 
 use App\Http\Controllers\Controller;
+use App\Services\GameQueryEnrichService;
 use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
