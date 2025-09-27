@@ -20,6 +20,7 @@ class AllianceWar extends Model
         'ended_at',
         'war_score',
         'war_data',
+        'reference_number',
     ];
 
     protected $casts = [

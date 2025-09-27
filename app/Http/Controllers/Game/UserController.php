@@ -91,10 +91,15 @@ class UserController extends CrudController
         // Apply search
         if ($request->has('search')) {
             $searchTerm = $request->get('search');
-            $query->where(function ($q) use ($searchTerm) {
+            $cleanSearchTerm = preg_replace('/[^0-9+]/', '', $searchTerm);
+            
+            $query->where(function ($q) use ($searchTerm, $cleanSearchTerm) {
                 $q
                     ->where('name', 'like', "%{$searchTerm}%")
                     ->orWhere('email', 'like', "%{$searchTerm}%")
+                    ->orWhere('phone', 'like', "%{$searchTerm}%")
+                    ->orWhere('phone_normalized', 'like', "%{$cleanSearchTerm}%")
+                    ->orWhere('phone_e164', 'like', "%{$cleanSearchTerm}%")
                     ->orWhereHas('player', function ($playerQuery) use ($searchTerm) {
                         $playerQuery->where('name', 'like', "%{$searchTerm}%");
                     });

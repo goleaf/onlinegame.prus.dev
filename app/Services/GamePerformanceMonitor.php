@@ -113,33 +113,34 @@ class GamePerformanceMonitor
             $responseStats = Cache::get('response_stats', []);
             $memoryStats = Cache::get('memory_stats', []);
 
-        return [
-            'queries' => [
-                'total' => count($queryStats),
-                'average_time' => count($queryStats) > 0 ? 
-                    round(array_sum(array_column($queryStats, 'execution_time')) / count($queryStats), 4) : 0,
-                'slow_queries' => count(array_filter($queryStats, function($q) {
-                    return $q['execution_time'] > 1.0;
-                })),
-            ],
-            'responses' => [
-                'total' => count($responseStats),
-                'average_time' => count($responseStats) > 0 ? 
-                    round(array_sum(array_column($responseStats, 'response_time')) / count($responseStats), 4) : 0,
-                'slow_responses' => count(array_filter($responseStats, function($r) {
-                    return $r['response_time'] > 2.0;
-                })),
-            ],
-            'memory' => [
-                'current_usage_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
-                'peak_usage_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
-                'limit_mb' => round(ini_get('memory_limit') ?: 128, 2),
-            ],
-            'database' => [
-                'active_connections' => DB::select('SHOW STATUS LIKE "Threads_connected"')[0]->Value ?? 0,
-                'slow_queries' => DB::select('SHOW STATUS LIKE "Slow_queries"')[0]->Value ?? 0,
-            ],
-        ];
+            return [
+                'queries' => [
+                    'total' => count($queryStats),
+                    'average_time' => count($queryStats) > 0 ? 
+                        round(array_sum(array_column($queryStats, 'execution_time')) / count($queryStats), 4) : 0,
+                    'slow_queries' => count(array_filter($queryStats, function($q) {
+                        return $q['execution_time'] > 1.0;
+                    })),
+                ],
+                'responses' => [
+                    'total' => count($responseStats),
+                    'average_time' => count($responseStats) > 0 ? 
+                        round(array_sum(array_column($responseStats, 'response_time')) / count($responseStats), 4) : 0,
+                    'slow_responses' => count(array_filter($responseStats, function($r) {
+                        return $r['response_time'] > 2.0;
+                    })),
+                ],
+                'memory' => [
+                    'current_usage_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
+                    'peak_usage_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
+                    'limit_mb' => round(ini_get('memory_limit') ?: 128, 2),
+                ],
+                'database' => [
+                    'active_connections' => DB::select('SHOW STATUS LIKE "Threads_connected"')[0]->Value ?? 0,
+                    'slow_queries' => DB::select('SHOW STATUS LIKE "Slow_queries"')[0]->Value ?? 0,
+                ],
+            ];
+        });
     }
 
     /**
