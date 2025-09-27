@@ -12,6 +12,7 @@ use Jantinnerezo\LivewireAlert\Traits\LivewireAlert;
 #[Layout('layouts.app')]
 class UpdaterComponent extends Component
 {
+    use LivewireAlert;
 
     public $currentVersion = '';
     public $latestVersion = '';
