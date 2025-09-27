@@ -106,6 +106,10 @@ class GameDashboard extends Component
             if ($this->player) {
                 $this->villages = $this->player->villages;
                 $this->currentVillage = $this->villages->first();
+                
+                // Set SEO metadata for dashboard
+                $this->seoService->setDashboardSeo($this->player);
+                
                 $this->loadRecentEvents();
                 $this->loadGameStats();
             } else {
