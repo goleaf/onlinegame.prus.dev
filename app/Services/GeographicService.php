@@ -245,7 +245,7 @@ class GeographicService
             return 0;
         }
 
-        $timeHours = $distanceKm / $speedKmh;
+        $timeHours = $distance / $speedKmh;
         return (int) ($timeHours * 3600);  // Convert to seconds
     }
 
