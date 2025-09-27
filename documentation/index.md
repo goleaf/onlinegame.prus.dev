@@ -29,10 +29,14 @@ This index is automatically generated and lists all documentation files:
   * **Livewire/**
     * **Game/**
       * [Documentation: AllianceManager.php](app/Livewire/Game/AllianceManager.md)
+      * [Documentation: BattleManager.php](app/Livewire/Game/BattleManager.md)
       * [Documentation: Dashboard.php](app/Livewire/Game/Dashboard.md)
+      * [Documentation: EnhancedGameDashboard.php](app/Livewire/Game/EnhancedGameDashboard.md)
       * [Documentation: GameDashboard.php](app/Livewire/Game/GameDashboard.md)
+      * [Documentation: GameNavigation.php](app/Livewire/Game/GameNavigation.md)
       * [Documentation: Map.php](app/Livewire/Game/Map.md)
       * [Documentation: MapViewer.php](app/Livewire/Game/MapViewer.md)
+      * [Documentation: MarketManager.php](app/Livewire/Game/MarketManager.md)
       * [Documentation: MovementManager.php](app/Livewire/Game/MovementManager.md)
       * [Documentation: QuestManager.php](app/Livewire/Game/QuestManager.md)
       * [Documentation: RealTimeUpdater.php](app/Livewire/Game/RealTimeUpdater.md)
