@@ -68,3 +68,4 @@ class GameEvent implements ShouldBroadcast
         return true;
     }
 }
+

@@ -241,3 +241,4 @@ class RealTimeGameComponent extends Component
         $this->stopAutoRefresh();
     }
 }
+

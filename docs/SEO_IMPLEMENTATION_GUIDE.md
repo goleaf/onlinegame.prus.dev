@@ -287,3 +287,4 @@ php artisan seo:generate-sitemap
 ---
 
 This SEO implementation provides a solid foundation for search engine optimization and social media sharing. Regular maintenance and updates will ensure optimal performance and visibility for the Travian Online Game.
+
