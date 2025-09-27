@@ -2,46 +2,40 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
+/**
+ * Game Performance Monitor
+ * Tracks and monitors game performance metrics
+ */
 class GamePerformanceMonitor
 {
     /**
-     * Monitor database query performance
+     * Monitor response time for operations
      */
-    public static function monitorQuery(string $query, float $executionTime): void
+    public static function monitorResponseTime(string $operation, float $startTime): array
     {
-        $threshold = config('game.performance.query_threshold', 1.0);  // 1 second threshold
+        $endTime = microtime(true);
+        $responseTime = ($endTime - $startTime) * 1000; // Convert to milliseconds
 
-        if ($executionTime > $threshold) {
-            Log::channel('performance')->warning('Slow Query Detected', [
-                'query' => $query,
-                'execution_time' => $executionTime,
-                'threshold' => $threshold,
-                'timestamp' => now()->toISOString(),
-            ]);
+        $metrics = [
+            'operation' => $operation,
+            'response_time_ms' => round($responseTime, 2),
+            'timestamp' => now()->toISOString(),
+            'memory_usage' => memory_get_usage(true),
+        ];
+
+        // Log slow operations
+        if ($responseTime > 1000) { // More than 1 second
+            Log::warning('Slow operation detected', $metrics);
         }
 
-        // Store query statistics with SmartCache optimization
-        $stats = SmartCache::remember('query_stats', now()->addHour(), function () use ($query, $executionTime) {
-            $existingStats = Cache::get('query_stats', []);
-            $newStats = [
-                'query' => substr($query, 0, 100),  // Truncate for storage
-                'execution_time' => $executionTime,
-                'timestamp' => now()->timestamp,
-            ];
+        // Cache performance data
+        self::cachePerformanceData($operation, $metrics);
 
-            $allStats = array_merge($existingStats, [$newStats]);
-
-            // Keep only last 100 queries
-            if (count($allStats) > 100) {
-                $allStats = array_slice($allStats, -100);
-            }
-
-            return $allStats;
-        });
+        return $metrics;
     }
 
     /**
@@ -50,170 +44,156 @@ class GamePerformanceMonitor
     public static function monitorMemory(string $operation): array
     {
         $memoryUsage = memory_get_usage(true);
-        $memoryPeak = memory_get_peak_usage(true);
+        $peakMemory = memory_get_peak_usage(true);
 
         $metrics = [
             'operation' => $operation,
-            'memory_usage_mb' => round($memoryUsage / 1024 / 1024, 2),
-            'memory_peak_mb' => round($memoryPeak / 1024 / 1024, 2),
+            'current_memory' => $memoryUsage,
+            'peak_memory' => $peakMemory,
+            'formatted_current' => self::formatBytes($memoryUsage),
+            'formatted_peak' => self::formatBytes($peakMemory),
             'timestamp' => now()->toISOString(),
         ];
 
-        Log::channel('performance')->info('Memory Usage', $metrics);
+        // Log high memory usage
+        if ($memoryUsage > 128 * 1024 * 1024) { // More than 128MB
+            Log::warning('High memory usage detected', $metrics);
+        }
 
         return $metrics;
     }
 
     /**
-     * Monitor response time for game actions
+     * Monitor database query performance
      */
-    public static function monitorResponseTime(string $action, float $startTime): void
+    public static function monitorDatabaseQueries(): array
     {
-        $responseTime = microtime(true) - $startTime;
-        $threshold = config('game.performance.response_threshold', 2.0);  // 2 seconds threshold
+        $queries = DB::getQueryLog();
+        $totalTime = 0;
+        $slowQueries = [];
 
-        if ($responseTime > $threshold) {
-            Log::channel('performance')->warning('Slow Response Time', [
-                'action' => $action,
-                'response_time' => $responseTime,
-                'threshold' => $threshold,
-                'timestamp' => now()->toISOString(),
-            ]);
+        foreach ($queries as $query) {
+            $totalTime += $query['time'];
+            
+            if ($query['time'] > 100) { // More than 100ms
+                $slowQueries[] = [
+                    'query' => $query['query'],
+                    'time' => $query['time'],
+                    'bindings' => $query['bindings'],
+                ];
+            }
         }
 
-        // Store response time statistics with SmartCache optimization
-        $stats = SmartCache::remember('response_stats', now()->addHour(), function () use ($action, $responseTime) {
-            $existingStats = Cache::get('response_stats', []);
-            $newStats = [
-                'action' => $action,
-                'response_time' => $responseTime,
-                'timestamp' => now()->timestamp,
-            ];
+        $metrics = [
+            'total_queries' => count($queries),
+            'total_time_ms' => round($totalTime, 2),
+            'average_time_ms' => count($queries) > 0 ? round($totalTime / count($queries), 2) : 0,
+            'slow_queries' => $slowQueries,
+            'timestamp' => now()->toISOString(),
+        ];
 
-            $allStats = array_merge($existingStats, [$newStats]);
+        // Log slow queries
+        if (!empty($slowQueries)) {
+            Log::warning('Slow database queries detected', $metrics);
+        }
 
-            // Keep only last 100 responses
-            if (count($allStats) > 100) {
-                $allStats = array_slice($allStats, -100);
-            }
-
-            return $allStats;
-        });
+        return $metrics;
     }
 
     /**
-     * Get performance statistics with SmartCache optimization
+     * Get comprehensive performance statistics
      */
     public static function getPerformanceStats(): array
     {
-        $cacheKey = 'performance_stats_' . now()->format('Y-m-d-H');
+        return [
+            'memory' => self::monitorMemory('performance_stats'),
+            'database' => self::monitorDatabaseQueries(),
+            'cache' => self::getCachePerformance(),
+            'system' => self::getSystemMetrics(),
+            'timestamp' => now()->toISOString(),
+        ];
+    }
 
-        return SmartCache::remember($cacheKey, now()->addMinutes(30), function () {
-            $queryStats = Cache::get('query_stats', []);
-            $responseStats = Cache::get('response_stats', []);
-            $memoryStats = Cache::get('memory_stats', []);
+    /**
+     * Get cache performance metrics
+     */
+    private static function getCachePerformance(): array
+    {
+        try {
+            $cacheStats = Cache::getStore() instanceof \Illuminate\Cache\RedisStore
+                ? \Illuminate\Support\Facades\Redis::info('stats')
+                : [];
 
             return [
-                'queries' => [
-                    'total' => count($queryStats),
-                    'average_time' => count($queryStats) > 0
-                        ? round(array_sum(array_column($queryStats, 'execution_time')) / count($queryStats), 4)
-                        : 0,
-                    'slow_queries' => count(array_filter($queryStats, function ($q) {
-                        return $q['execution_time'] > 1.0;
-                    })),
-                ],
-                'responses' => [
-                    'total' => count($responseStats),
-                    'average_time' => count($responseStats) > 0
-                        ? round(array_sum(array_column($responseStats, 'response_time')) / count($responseStats), 4)
-                        : 0,
-                    'slow_responses' => count(array_filter($responseStats, function ($r) {
-                        return $r['response_time'] > 2.0;
-                    })),
-                ],
-                'memory' => [
-                    'current_usage_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
-                    'peak_usage_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
-                    'limit_mb' => round(ini_get('memory_limit') ?: 128, 2),
-                ],
-                'database' => [
-                    'active_connections' => DB::select('SHOW STATUS LIKE "Threads_connected"')[0]->Value ?? 0,
-                    'slow_queries' => DB::select('SHOW STATUS LIKE "Slow_queries"')[0]->Value ?? 0,
-                ],
+                'hits' => $cacheStats['keyspace_hits'] ?? 0,
+                'misses' => $cacheStats['keyspace_misses'] ?? 0,
+                'hit_ratio' => self::calculateHitRatio($cacheStats),
+                'memory_used' => $cacheStats['used_memory'] ?? 0,
+                'formatted_memory' => isset($cacheStats['used_memory']) 
+                    ? self::formatBytes($cacheStats['used_memory']) 
+                    : 'N/A',
             ];
-        });
-    }
-
-    /**
-     * Monitor concurrent users
-     */
-    public static function monitorConcurrentUsers(): int
-    {
-        $activeUsers = Cache::get('active_users', []);
-        $currentTime = now()->timestamp;
-
-        // Remove users inactive for more than 5 minutes
-        $activeUsers = array_filter($activeUsers, function ($lastActivity) use ($currentTime) {
-            return ($currentTime - $lastActivity) < 300;  // 5 minutes
-        });
-
-        Cache::put('active_users', $activeUsers, 600);  // Cache for 10 minutes
-
-        return count($activeUsers);
-    }
-
-    /**
-     * Track user activity
-     */
-    public static function trackUserActivity(int $userId): void
-    {
-        $activeUsers = Cache::get('active_users', []);
-        $activeUsers[$userId] = now()->timestamp;
-
-        // Clean up old entries
-        $currentTime = now()->timestamp;
-        $activeUsers = array_filter($activeUsers, function ($lastActivity) use ($currentTime) {
-            return ($currentTime - $lastActivity) < 300;  // 5 minutes
-        });
-
-        Cache::put('active_users', $activeUsers, 600);
-    }
-
-    /**
-     * Monitor game server load
-     */
-    public static function monitorServerLoad(): array
-    {
-        $loadAvg = sys_getloadavg();
-        $memoryInfo = [
-            'total' => 0,
-            'free' => 0,
-            'used' => 0,
-        ];
-
-        if (is_readable('/proc/meminfo')) {
-            $meminfo = file_get_contents('/proc/meminfo');
-            preg_match('/MemTotal:\s+(\d+)/', $meminfo, $total);
-            preg_match('/MemAvailable:\s+(\d+)/', $meminfo, $available);
-
-            if (isset($total[1]) && isset($available[1])) {
-                $memoryInfo['total'] = $total[1] * 1024;  // Convert from KB to bytes
-                $memoryInfo['free'] = $available[1] * 1024;
-                $memoryInfo['used'] = $memoryInfo['total'] - $memoryInfo['free'];
-            }
+        } catch (\Exception $e) {
+            return [
+                'error' => 'Unable to retrieve cache performance',
+                'message' => $e->getMessage(),
+            ];
         }
+    }
 
+    /**
+     * Get system metrics
+     */
+    private static function getSystemMetrics(): array
+    {
         return [
-            'load_average' => $loadAvg,
-            'memory' => $memoryInfo,
-            'cpu_count' => PHP_OS_FAMILY === 'Linux'
-                ? (int) shell_exec('nproc')
-                : 1,
-            'uptime' => PHP_OS_FAMILY === 'Linux'
-                ? trim(shell_exec('uptime'))
-                : 'Unknown',
+            'load_average' => sys_getloadavg(),
+            'disk_free' => disk_free_space('/'),
+            'disk_total' => disk_total_space('/'),
+            'formatted_disk_free' => self::formatBytes(disk_free_space('/')),
+            'formatted_disk_total' => self::formatBytes(disk_total_space('/')),
+            'php_version' => PHP_VERSION,
+            'laravel_version' => app()->version(),
         ];
+    }
+
+    /**
+     * Cache performance data
+     */
+    private static function cachePerformanceData(string $operation, array $metrics): void
+    {
+        $cacheKey = "performance:{$operation}:" . now()->format('Y-m-d-H');
+        
+        Cache::remember($cacheKey, now()->addHour(), function () use ($metrics) {
+            return $metrics;
+        });
+    }
+
+    /**
+     * Calculate cache hit ratio
+     */
+    private static function calculateHitRatio(array $stats): float
+    {
+        $hits = $stats['keyspace_hits'] ?? 0;
+        $misses = $stats['keyspace_misses'] ?? 0;
+        $total = $hits + $misses;
+
+        return $total > 0 ? round(($hits / $total) * 100, 2) : 0;
+    }
+
+    /**
+     * Format bytes to human readable format
+     */
+    private static function formatBytes(int $bytes): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+
+        $bytes /= pow(1024, $pow);
+
+        return round($bytes, 2) . ' ' . $units[$pow];
     }
 
     /**
@@ -221,13 +201,16 @@ class GamePerformanceMonitor
      */
     public static function generatePerformanceReport(): array
     {
-        return [
-            'timestamp' => now()->toISOString(),
-            'performance_stats' => self::getPerformanceStats(),
-            'concurrent_users' => self::monitorConcurrentUsers(),
-            'server_load' => self::monitorServerLoad(),
+        $report = [
+            'summary' => self::getPerformanceStats(),
             'recommendations' => self::getPerformanceRecommendations(),
+            'generated_at' => now()->toISOString(),
         ];
+
+        // Log the report
+        Log::info('Performance report generated', $report);
+
+        return $report;
     }
 
     /**
@@ -235,38 +218,29 @@ class GamePerformanceMonitor
      */
     private static function getPerformanceRecommendations(): array
     {
-        $stats = self::getPerformanceStats();
         $recommendations = [];
+        $stats = self::getPerformanceStats();
 
-        if ($stats['queries']['average_time'] > 0.5) {
-            $recommendations[] = 'Consider optimizing database queries - average query time is high.';
+        // Memory recommendations
+        if ($stats['memory']['current_memory'] > 64 * 1024 * 1024) {
+            $recommendations[] = 'Consider optimizing memory usage - current usage is high';
         }
 
-        if ($stats['responses']['average_time'] > 1.0) {
-            $recommendations[] = 'Consider optimizing response times - average response time is high.';
+        // Database recommendations
+        if ($stats['database']['average_time_ms'] > 50) {
+            $recommendations[] = 'Database queries are slow - consider adding indexes or optimizing queries';
         }
 
-        if ($stats['memory']['current_usage_mb'] > 100) {
-            $recommendations[] = 'High memory usage detected - consider implementing caching or memory optimization.';
+        // Cache recommendations
+        if ($stats['cache']['hit_ratio'] < 80) {
+            $recommendations[] = 'Cache hit ratio is low - consider increasing cache duration or improving cache keys';
         }
 
-        if ($stats['database']['slow_queries'] > 10) {
-            $recommendations[] = 'High number of slow queries detected - review database indexes.';
+        // System recommendations
+        if ($stats['system']['load_average'][0] > 2.0) {
+            $recommendations[] = 'System load is high - consider scaling or optimizing resource usage';
         }
 
         return $recommendations;
-    }
-
-    /**
-     * Clear performance statistics
-     */
-    public static function clearPerformanceStats(): void
-    {
-        Cache::forget('query_stats');
-        Cache::forget('response_stats');
-        Cache::forget('memory_stats');
-        Cache::forget('active_users');
-
-        Log::info('Performance statistics cleared');
     }
 }
