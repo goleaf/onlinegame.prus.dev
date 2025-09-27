@@ -9,6 +9,7 @@ use App\Services\RealTimeGameService;
 use App\Services\GameCacheService;
 use App\Services\GameErrorHandler;
 use App\Services\GamePerformanceMonitor;
+use App\Services\GameIntegrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

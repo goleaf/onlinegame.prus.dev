@@ -150,6 +150,37 @@ Authorization: Bearer your-token-here
 | POST | `/api/game/artifacts/{id}/deactivate` | Deactivate artifact |
 | GET | `/api/game/artifacts/{id}/effects` | Get artifact effects |
 
+### Message System
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/game/messages/inbox` | Get inbox messages |
+| GET | `/api/game/messages/sent` | Get sent messages |
+| GET | `/api/game/messages/alliance` | Get alliance messages |
+| GET | `/api/game/messages/conversation/{otherPlayerId}` | Get conversation with player |
+| GET | `/api/game/messages/stats` | Get message statistics |
+| GET | `/api/game/messages/players` | Get players for messaging |
+| POST | `/api/game/messages/send` | Send private message |
+| POST | `/api/game/messages/send-alliance` | Send alliance message |
+| POST | `/api/game/messages/bulk-mark-read` | Bulk mark messages as read |
+| POST | `/api/game/messages/bulk-delete` | Bulk delete messages |
+| GET | `/api/game/messages/{messageId}` | Get specific message |
+| POST | `/api/game/messages/{messageId}/mark-read` | Mark message as read |
+| DELETE | `/api/game/messages/{messageId}` | Delete message |
+
+### Alliance System
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/game/alliances` | List all alliances |
+| POST | `/api/game/alliances` | Create new alliance |
+| GET | `/api/game/alliances/{id}` | Get specific alliance |
+| PUT | `/api/game/alliances/{id}` | Update alliance |
+| DELETE | `/api/game/alliances/{id}` | Disband alliance |
+| POST | `/api/game/alliances/{id}/join` | Join alliance |
+| POST | `/api/game/alliances/leave` | Leave alliance |
+| GET | `/api/game/alliances/{id}/members` | Get alliance members |
+| GET | `/api/game/alliances/{id}/wars` | Get alliance wars |
+| GET | `/api/game/alliances/{id}/diplomacy` | Get alliance diplomacy |
+
 ## Response Format
 
 ### Success Response
