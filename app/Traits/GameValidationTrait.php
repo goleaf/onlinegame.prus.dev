@@ -136,7 +136,7 @@ trait GameValidationTrait
     protected function validatePlayerData(array $data)
     {
         $rules = [
-            'name' => ['required', 'string', 'max:255', 'unique:players,name', new Clean],
+            'name' => ['required', 'string', 'max:255', 'unique:players,name', new Username(), new Clean],
             'tribe' => 'required|in:roman,teuton,gaul',
             'alliance_id' => 'nullable|exists:alliances,id',
             'world_id' => 'required|exists:worlds,id',

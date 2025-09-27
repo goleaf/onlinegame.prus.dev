@@ -185,17 +185,29 @@
             <p>Loading map data...</p>
         </div>
     @else
-        <div class="map-viewport"
+        <div class="map-viewport {{ $this->getMapThemeClass() }}"
              style="width: 100%; height: 600px; position: relative; background: url('{{ asset('img/travian/interface/map_background.jpg') }}') center/cover; border: 2px solid #8B4513;">
 
+            <!-- Grid Overlay -->
+            @if ($showGrid)
+                <div class="map-grid" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                    <!-- Grid lines would be rendered here via JavaScript -->
+                </div>
+            @endif
+
+            <!-- Coordinate Selection Overlay -->
+            <div class="coordinate-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                <!-- Coordinate selection would be handled via JavaScript -->
+            </div>
+
             @foreach ($visibleVillages as $village)
-                <div class="village-marker"
+                <div class="village-marker {{ $this->getVillageColor($village) }}"
                      style="position: absolute; 
                             left: {{ ($village['x'] - $viewCenter['x'] + 200) * $zoomLevel }}px; 
                             top: {{ ($village['y'] - $viewCenter['y'] + 200) * $zoomLevel }}px;
                             transform: translate(-50%, -50%);"
                      wire:click="selectVillage({{ $village['id'] }})"
-                     title="{{ $village['name'] }} ({{ $village['x'] }}, {{ $village['y'] }})">
+                     title="{{ $village['name'] }} {{ $this->getCoordinateDisplay($village['x'], $village['y']) }}">
 
                     <img src="{{ asset('img/travian/interface/village_' . $village['tribe'] . '.png') }}"
                          alt="{{ $village['name'] }}"
@@ -210,7 +222,7 @@
 
                     @if ($showCoordinates)
                         <div class="village-coords" style="font-size: {{ 8 * $zoomLevel }}px;">
-                            ({{ $village['x'] }}, {{ $village['y'] }})
+                            {{ $this->getCoordinateDisplay($village['x'], $village['y']) }}
                         </div>
                     @endif
 
@@ -219,8 +231,34 @@
                             [{{ $village['alliance_tag'] }}]
                         </div>
                     @endif
+
+                    @if ($showDistance && $selectedVillage)
+                        @php
+                            $distance = $this->getVillageDistance($village['id']);
+                        @endphp
+                        @if ($distance)
+                            <div class="village-distance" style="font-size: {{ 7 * $zoomLevel }}px;">
+                                {{ number_format($distance, 1) }}
+                            </div>
+                        @endif
+                    @endif
                 </div>
             @endforeach
+
+            <!-- Selected Coordinates Marker -->
+            @if ($selectedCoordinates)
+                <div class="coordinate-marker"
+                     style="position: absolute; 
+                            left: {{ ($selectedCoordinates['x'] - $viewCenter['x'] + 200) * $zoomLevel }}px; 
+                            top: {{ ($selectedCoordinates['y'] - $viewCenter['y'] + 200) * $zoomLevel }}px;
+                            transform: translate(-50%, -50%);
+                            width: {{ 10 * $zoomLevel }}px; 
+                            height: {{ 10 * $zoomLevel }}px;
+                            background: red; 
+                            border: 2px solid white; 
+                            border-radius: 50%;">
+                </div>
+            @endif
         </div>
     @endif
 

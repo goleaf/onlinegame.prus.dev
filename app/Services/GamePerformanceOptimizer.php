@@ -6,7 +6,7 @@ use App\Services\EnhancedCacheService;
 use App\Services\EnhancedSessionService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Iazaran\SmartCache\Facades\SmartCache;
+use SmartCache\Facades\SmartCache;
 
 /**
  * Game Performance Optimizer using Laravel 12.29.0+ features
