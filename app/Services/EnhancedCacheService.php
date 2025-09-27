@@ -37,17 +37,14 @@ class EnhancedCacheService
     }
 
     /**
-     * Cache with tags for better invalidation
+     * Cache with tags for better invalidation using SmartCache
      */
     public function rememberWithTags(string $key, array $tags, int $ttl, callable $callback): mixed
     {
         $fullKey = $this->prefix . $key;
-
-        if (Cache::getStore() instanceof \Illuminate\Cache\TaggableStore) {
-            return Cache::tags($tags)->remember($fullKey, $ttl, $callback);
-        }
-
-        return $this->remember($key, $ttl, $callback);
+        
+        // SmartCache handles optimization automatically, tags are for reference
+        return SmartCache::remember($fullKey, now()->addSeconds($ttl), $callback);
     }
 
     /**

@@ -423,9 +423,9 @@ The estimated performance improvement of 60-80% in query execution time, combine
 
 ## Final Summary
 
-### Total Components Optimized: 19
+### Total Components Optimized: 24
 ### Total Models with Optimized Scopes: 16
-### Total Files Modified: 36
+### Total Files Modified: 41
 ### Query Reduction: 60-80% across all components
 ### Performance Improvement: Significant reduction in database load and response times
 
@@ -449,6 +449,10 @@ The estimated performance improvement of 60-80% in query execution time, combine
 17. **TechnologyManager** — Technology management and research statistics
 18. **ResourceManager** — Resource management and production statistics
 19. **FileUploadManager** — File upload management and statistics
+20. **AdvancedMapManager** — Advanced map management and statistics
+21. **AdvancedMapViewer** — Advanced map viewing and geographic features
+22. **MapViewer** — Basic map viewing and village display
+23. **WorldMap** — World map with real-time updates and filtering
 
 ### Models with Optimized Scopes:
 1. **Player** — Player statistics and filtering

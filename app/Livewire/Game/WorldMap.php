@@ -506,7 +506,145 @@ class WorldMap extends Component
         if ($this->realTimeUpdates) {
             $this->loadMapData();
             $this->calculateMapStats();
+            $this->loadVisibleVillages();
         }
+    }
+
+    public function calculateMapBounds()
+    {
+        $villages = Village::where('world_id', $this->world->id)
+            ->selectRaw('MIN(x_coordinate) as min_x, MAX(x_coordinate) as max_x, MIN(y_coordinate) as min_y, MAX(y_coordinate) as max_y')
+            ->first();
+
+        if ($villages) {
+            $this->mapBounds = [
+                'min_x' => max(0, $villages->min_x - 10),
+                'max_x' => min(400, $villages->max_x + 10),
+                'min_y' => max(0, $villages->min_y - 10),
+                'max_y' => min(400, $villages->max_y + 10),
+            ];
+        }
+    }
+
+    public function loadVisibleVillages()
+    {
+        $viewRadius = 50 / $this->zoomLevel; // Adjust based on zoom level
+        
+        $this->visibleVillages = collect($this->mapData)->filter(function ($village) use ($viewRadius) {
+            $distance = sqrt(
+                pow($village['x'] - $this->viewCenter['x'], 2) + 
+                pow($village['y'] - $this->viewCenter['y'], 2)
+            );
+            return $distance <= $viewRadius;
+        })->values()->toArray();
+    }
+
+    public function selectCoordinates($x, $y)
+    {
+        $this->selectedCoordinates = ['x' => $x, 'y' => $y];
+        $this->dispatch('coordinatesSelected', ['x' => $x, 'y' => $y]);
+        $this->addNotification("Selected coordinates: ({$x}, {$y})", 'info');
+    }
+
+    public function toggleMapLayer($layer)
+    {
+        if (isset($this->mapLayers[$layer])) {
+            $this->mapLayers[$layer] = !$this->mapLayers[$layer];
+            $this->dispatch('mapLayerToggled', ['layer' => $layer, 'enabled' => $this->mapLayers[$layer]]);
+        }
+    }
+
+    public function changeMapTheme($theme)
+    {
+        $this->mapTheme = $theme;
+        $this->dispatch('mapThemeChanged', ['theme' => $theme]);
+        $this->addNotification("Map theme changed to: {$theme}", 'info');
+    }
+
+    public function calculateDistance($x1, $y1, $x2, $y2)
+    {
+        return sqrt(pow($x2 - $x1, 2) + pow($y2 - $y1, 2));
+    }
+
+    public function getVillageDistance($villageId)
+    {
+        if (!$this->selectedVillage) {
+            return null;
+        }
+
+        $village = collect($this->mapData)->firstWhere('id', $villageId);
+        if (!$village) {
+            return null;
+        }
+
+        return $this->calculateDistance(
+            $this->selectedVillage['x'],
+            $this->selectedVillage['y'],
+            $village['x'],
+            $village['y']
+        );
+    }
+
+    public function searchVillages()
+    {
+        if (empty($this->searchQuery)) {
+            $this->loadVisibleVillages();
+            return;
+        }
+
+        $this->visibleVillages = collect($this->mapData)->filter(function ($village) {
+            return stripos($village['name'], $this->searchQuery) !== false ||
+                   stripos($village['player_name'], $this->searchQuery) !== false ||
+                   stripos($village['alliance_name'] ?? '', $this->searchQuery) !== false;
+        })->values()->toArray();
+    }
+
+    public function filterVillages()
+    {
+        $this->visibleVillages = collect($this->mapData)->filter(function ($village) {
+            // Filter by tribe
+            if ($this->filterTribe && $village['tribe'] !== $this->filterTribe) {
+                return false;
+            }
+
+            // Filter by alliance
+            if ($this->filterAlliance && $village['alliance_name'] !== $this->filterAlliance) {
+                return false;
+            }
+
+            // Filter by village type
+            if (!$this->showPlayerVillages && $village['player_name'] !== 'Barbarian') {
+                return false;
+            }
+
+            if (!$this->showBarbarianVillages && $village['player_name'] === 'Barbarian') {
+                return false;
+            }
+
+            if (!$this->showNatarianVillages && $village['player_name'] === 'Natarian') {
+                return false;
+            }
+
+            return true;
+        })->values()->toArray();
+    }
+
+    public function getMapThemeClass()
+    {
+        return match ($this->mapTheme) {
+            'modern' => 'map-theme-modern',
+            'dark' => 'map-theme-dark',
+            default => 'map-theme-classic',
+        };
+    }
+
+    public function getCoordinateDisplay($x, $y)
+    {
+        return match ($this->coordinateSystem) {
+            'decimal' => "({$x}.0, {$y}.0)",
+            'dms' => "({$x}°0'0\", {$y}°0'0\")",
+            default => "({$x}|{$y})",
+        };
     }
 
     public function render()
