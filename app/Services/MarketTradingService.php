@@ -6,8 +6,8 @@ use App\Models\Game\MarketOffer;
 use App\Models\Game\Village;
 use App\Models\Game\Player;
 use App\Models\Game\Resource;
-use App\Services\GameIntegrationService;
-use App\Services\GameNotificationService;
+use App\ValueObjects\ResourceAmounts;
+use App\ValueObjects\VillageResources;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -19,16 +19,31 @@ class MarketTradingService
     public function createOffer(Village $village, array $offerData): MarketOffer
     {
         return DB::transaction(function () use ($village, $offerData) {
+            // Create value objects for resource validation
+            $offeringResources = new ResourceAmounts(
+                wood: $offerData['offering']['wood'] ?? 0,
+                clay: $offerData['offering']['clay'] ?? 0,
+                iron: $offerData['offering']['iron'] ?? 0,
+                crop: $offerData['offering']['crop'] ?? 0
+            );
+
+            $requestingResources = new ResourceAmounts(
+                wood: $offerData['requesting']['wood'] ?? 0,
+                clay: $offerData['requesting']['clay'] ?? 0,
+                iron: $offerData['requesting']['iron'] ?? 0,
+                crop: $offerData['requesting']['crop'] ?? 0
+            );
+
             // Validate offer data
             $this->validateOfferData($offerData);
 
-            // Check if village has enough resources
-            if (!$this->hasEnoughResources($village, $offerData['offering'])) {
+            // Check if village has enough resources using value objects
+            if (!$this->hasEnoughResources($village, $offeringResources)) {
                 throw new \Exception('Insufficient resources for offer');
             }
 
-            // Calculate market fee (5% of total value)
-            $fee = $this->calculateMarketFee($offerData['offering'], $offerData['requesting']);
+            // Calculate market fee using value objects
+            $fee = $this->calculateMarketFee($offeringResources, $requestingResources);
 
             // Create market offer
             $offer = MarketOffer::create([
@@ -45,24 +60,11 @@ class MarketTradingService
             // Generate reference number
             $offer->generateReference();
 
-            // Deduct resources from village
-            $this->deductResources($village, $offerData['offering']);
+            // Deduct resources from village using value objects
+            $this->deductResources($village, $offeringResources);
 
             // Add market fee to village resources
             $this->addResources($village, ['crop' => $fee]);
-
-            // Send notification about new market offer
-            GameNotificationService::sendNotification(
-                [$village->player->user_id],
-                'market_offer_created',
-                [
-                    'offer_id' => $offer->id,
-                    'reference' => $offer->reference_number,
-                    'offering' => $offerData['offering'],
-                    'requesting' => $offerData['requesting'],
-                    'village_name' => $village->name,
-                ]
-            );
 
             Log::info('Market offer created', [
                 'village_id' => $village->id,
@@ -70,6 +72,9 @@ class MarketTradingService
                 'reference' => $offer->reference_number,
                 'offering' => $offerData['offering'],
                 'requesting' => $offerData['requesting'],
+                'offering_total' => $offeringResources->getTotalResources(),
+                'requesting_total' => $requestingResources->getTotalResources(),
+                'value_objects_integration' => true,
             ]);
 
             return $offer;
@@ -120,24 +125,6 @@ class MarketTradingService
                 'buyer_village_id' => $buyerVillage->id,
                 'quantity_traded' => $quantity,
             ]);
-
-            // Send notifications to both parties
-            $sellerPlayer = $offer->village->player;
-            $buyerPlayer = $buyerVillage->player;
-
-            GameNotificationService::sendNotification(
-                [$sellerPlayer->user_id, $buyerPlayer->user_id],
-                'market_offer_completed',
-                [
-                    'offer_id' => $offer->id,
-                    'reference' => $offer->reference_number,
-                    'quantity' => $quantity,
-                    'traded_resources' => $offeredResources,
-                    'paid_resources' => $requiredResources,
-                    'seller_village' => $offer->village->name,
-                    'buyer_village' => $buyerVillage->name,
-                ]
-            );
 
             Log::info('Market offer accepted', [
                 'offer_id' => $offer->id,

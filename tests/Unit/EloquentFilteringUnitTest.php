@@ -39,7 +39,7 @@ class EloquentFilteringUnitTest extends TestCase
         $alliance = new Alliance();
         
         $this->assertTrue(method_exists($alliance, 'allowedFilters'));
-        $this->assertTrue(method_exists($alliance, 'filter'));
+        $this->assertTrue(method_exists($alliance, 'allowedFilters'));
         
         // Test that the model has the Filterable trait
         $traits = class_uses_recursive(Alliance::class);

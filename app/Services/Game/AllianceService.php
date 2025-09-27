@@ -3,513 +3,405 @@
 namespace App\Services\Game;
 
 use App\Models\Game\Alliance;
-use App\Models\Game\Player;
 use App\Models\Game\AllianceMember;
-use App\Models\Game\AllianceDiplomacy;
+use App\Models\Game\Player;
 use App\Models\Game\AllianceWar;
-use App\Models\Game\Message;
+use App\Models\Game\AllianceDiplomacy;
+use App\Services\Game\RealTimeGameService;
 use Illuminate\Support\Facades\DB;
-use SmartCache\Facades\SmartCache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AllianceService
 {
     /**
      * Create a new alliance
      */
-    public function createAlliance(Player $founder, string $name, string $tag, string $description = null): array
+    public function createAlliance(int $leaderId, string $name, string $description, array $settings = []): Alliance
     {
-        // Validate alliance creation
-        $validation = $this->validateAllianceCreation($founder, $name, $tag);
-        if (!$validation['valid']) {
-            return $validation;
-        }
-
-        DB::transaction(function () use ($founder, $name, $tag, $description) {
-            // Create alliance
+        return DB::transaction(function () use ($leaderId, $name, $description, $settings) {
             $alliance = Alliance::create([
                 'name' => $name,
-                'tag' => $tag,
                 'description' => $description,
-                'world_id' => $founder->world_id,
-                'leader_id' => $founder->id,
-                'points' => $founder->points,
-                'villages_count' => $founder->villages()->count(),
-                'members_count' => 1,
+                'tag' => $this->generateUniqueTag(),
+                'leader_id' => $leaderId,
+                'member_count' => 1,
+                'max_members' => $settings['max_members'] ?? 100,
                 'is_active' => true,
+                'settings' => array_merge([
+                    'allow_invites' => true,
+                    'auto_accept' => false,
+                    'war_declaration' => 'leader_only',
+                    'diplomacy_level' => 'full',
+                ], $settings),
             ]);
 
-            // Add founder as member
+            // Add leader as member
             AllianceMember::create([
                 'alliance_id' => $alliance->id,
-                'player_id' => $founder->id,
-                'role' => 'leader',
+                'player_id' => $leaderId,
+                'rank' => 'leader',
                 'joined_at' => now(),
+                'reference_number' => $this->generateReferenceNumber(),
             ]);
 
             // Update player's alliance
-            $founder->update(['alliance_id' => $alliance->id]);
+            Player::where('id', $leaderId)->update(['alliance_id' => $alliance->id]);
+
+            // Broadcast alliance creation
+            $this->broadcastAllianceUpdate($alliance, 'created');
+
+            return $alliance;
         });
-
-        // Clear cache
-        $this->clearAllianceCache($founder->world_id);
-
-        return [
-            'success' => true,
-            'message' => 'Alliance created successfully',
-            'alliance' => $alliance,
-        ];
     }
 
     /**
-     * Invite player to alliance
+     * Invite a player to the alliance
      */
-    public function invitePlayer(Alliance $alliance, Player $inviter, Player $invitee): array
+    public function invitePlayer(int $allianceId, int $inviterId, int $playerId, string $message = ''): bool
     {
-        // Validate invitation
-        $validation = $this->validateInvitation($alliance, $inviter, $invitee);
-        if (!$validation['valid']) {
-            return $validation;
+        $alliance = Alliance::find($allianceId);
+        $inviter = AllianceMember::where('alliance_id', $allianceId)
+            ->where('player_id', $inviterId)
+            ->first();
+
+        if (!$alliance || !$inviter || !$this->canInvitePlayers($inviter)) {
+            return false;
         }
 
-        // Create invitation message
-        Message::create([
-            'sender_id' => $inviter->id,
-            'recipient_id' => $invitee->id,
-            'subject' => "Invitation to join {$alliance->name}",
-            'body' => "You have been invited to join the alliance {$alliance->name} ({$alliance->tag}).",
-            'message_type' => Message::TYPE_DIPLOMACY,
-            'priority' => Message::PRIORITY_NORMAL,
+        $player = Player::find($playerId);
+        if (!$player || $player->alliance_id) {
+            return false;
+        }
+
+        // Create invitation
+        $invitation = AllianceMember::create([
+            'alliance_id' => $allianceId,
+            'player_id' => $playerId,
+            'rank' => 'pending',
+            'joined_at' => null,
+            'invitation_message' => $message,
+            'invited_by' => $inviterId,
+            'invited_at' => now(),
+            'reference_number' => $this->generateReferenceNumber(),
         ]);
 
-        return [
-            'success' => true,
-            'message' => 'Invitation sent successfully',
-        ];
+        // Broadcast invitation
+        $this->broadcastAllianceInvitation($alliance, $player, $invitation);
+
+        return true;
     }
 
     /**
-     * Accept alliance invitation
+     * Accept an alliance invitation
      */
-    public function acceptInvitation(Player $player, Alliance $alliance): array
+    public function acceptInvitation(int $playerId, int $allianceId): bool
     {
-        // Validate acceptance
-        $validation = $this->validateAcceptance($player, $alliance);
-        if (!$validation['valid']) {
-            return $validation;
+        $invitation = AllianceMember::where('alliance_id', $allianceId)
+            ->where('player_id', $playerId)
+            ->where('rank', 'pending')
+            ->first();
+
+        if (!$invitation) {
+            return false;
         }
 
-        DB::transaction(function () use ($player, $alliance) {
-            // Add player to alliance
-            AllianceMember::create([
-                'alliance_id' => $alliance->id,
-                'player_id' => $player->id,
-                'role' => 'member',
+        return DB::transaction(function () use ($invitation, $playerId, $allianceId) {
+            // Update invitation to accepted
+            $invitation->update([
+                'rank' => 'member',
                 'joined_at' => now(),
             ]);
 
             // Update player's alliance
-            $player->update(['alliance_id' => $alliance->id]);
+            Player::where('id', $playerId)->update(['alliance_id' => $allianceId]);
 
-            // Update alliance statistics
-            $alliance->increment('members_count');
-            $alliance->increment('points', $player->points);
-            $alliance->increment('villages_count', $player->villages()->count());
+            // Update alliance member count
+            Alliance::where('id', $allianceId)->increment('member_count');
+
+            // Broadcast acceptance
+            $alliance = Alliance::find($allianceId);
+            $player = Player::find($playerId);
+            $this->broadcastAllianceUpdate($alliance, 'member_joined', $player);
+
+            return true;
         });
-
-        // Clear cache
-        $this->clearAllianceCache($alliance->world_id);
-
-        return [
-            'success' => true,
-            'message' => 'Successfully joined the alliance',
-        ];
     }
 
     /**
-     * Leave alliance
+     * Remove a player from the alliance
      */
-    public function leaveAlliance(Player $player): array
+    public function removePlayer(int $allianceId, int $removerId, int $playerId, string $reason = ''): bool
     {
-        if (!$player->alliance_id) {
-            return [
-                'success' => false,
-                'message' => 'Player is not in an alliance',
-            ];
+        $alliance = Alliance::find($allianceId);
+        $remover = AllianceMember::where('alliance_id', $allianceId)
+            ->where('player_id', $removerId)
+            ->first();
+
+        $member = AllianceMember::where('alliance_id', $allianceId)
+            ->where('player_id', $playerId)
+            ->first();
+
+        if (!$alliance || !$member || !$this->canRemovePlayers($remover, $member)) {
+            return false;
         }
 
-        $alliance = $player->alliance;
-
-        // Check if player is the leader
-        if ($alliance->leader_id === $player->id) {
-            return [
-                'success' => false,
-                'message' => 'Leader cannot leave alliance. Transfer leadership first.',
-            ];
-        }
-
-        DB::transaction(function () use ($player, $alliance) {
-            // Remove player from alliance
-            AllianceMember::where('alliance_id', $alliance->id)
-                ->where('player_id', $player->id)
-                ->delete();
+        return DB::transaction(function () use ($alliance, $member, $playerId, $reason) {
+            // Remove from alliance
+            $member->delete();
 
             // Update player's alliance
-            $player->update(['alliance_id' => null]);
+            Player::where('id', $playerId)->update(['alliance_id' => null]);
 
-            // Update alliance statistics
-            $alliance->decrement('members_count');
-            $alliance->decrement('points', $player->points);
-            $alliance->decrement('villages_count', $player->villages()->count());
+            // Update alliance member count
+            Alliance::where('id', $alliance->id)->decrement('member_count');
+
+            // Broadcast removal
+            $player = Player::find($playerId);
+            $this->broadcastAllianceUpdate($alliance, 'member_left', $player, $reason);
+
+            return true;
         });
-
-        // Clear cache
-        $this->clearAllianceCache($alliance->world_id);
-
-        return [
-            'success' => true,
-            'message' => 'Successfully left the alliance',
-        ];
-    }
-
-    /**
-     * Kick player from alliance
-     */
-    public function kickPlayer(Alliance $alliance, Player $kicker, Player $target): array
-    {
-        // Validate kick
-        $validation = $this->validateKick($alliance, $kicker, $target);
-        if (!$validation['valid']) {
-            return $validation;
-        }
-
-        DB::transaction(function () use ($alliance, $target) {
-            // Remove player from alliance
-            AllianceMember::where('alliance_id', $alliance->id)
-                ->where('player_id', $target->id)
-                ->delete();
-
-            // Update player's alliance
-            $target->update(['alliance_id' => null]);
-
-            // Update alliance statistics
-            $alliance->decrement('members_count');
-            $alliance->decrement('points', $target->points);
-            $alliance->decrement('villages_count', $target->villages()->count());
-        });
-
-        // Clear cache
-        $this->clearAllianceCache($alliance->world_id);
-
-        return [
-            'success' => true,
-            'message' => 'Player kicked from alliance',
-        ];
-    }
-
-    /**
-     * Transfer leadership
-     */
-    public function transferLeadership(Alliance $alliance, Player $currentLeader, Player $newLeader): array
-    {
-        // Validate transfer
-        $validation = $this->validateLeadershipTransfer($alliance, $currentLeader, $newLeader);
-        if (!$validation['valid']) {
-            return $validation;
-        }
-
-        DB::transaction(function () use ($alliance, $currentLeader, $newLeader) {
-            // Update alliance leader
-            $alliance->update(['leader_id' => $newLeader->id]);
-
-            // Update member roles
-            AllianceMember::where('alliance_id', $alliance->id)
-                ->where('player_id', $currentLeader->id)
-                ->update(['role' => 'member']);
-
-            AllianceMember::where('alliance_id', $alliance->id)
-                ->where('player_id', $newLeader->id)
-                ->update(['role' => 'leader']);
-        });
-
-        // Clear cache
-        $this->clearAllianceCache($alliance->world_id);
-
-        return [
-            'success' => true,
-            'message' => 'Leadership transferred successfully',
-        ];
     }
 
     /**
      * Declare war on another alliance
      */
-    public function declareWar(Alliance $attacker, Alliance $defender, string $reason = null): array
+    public function declareWar(int $allianceId, int $targetAllianceId, string $reason = ''): AllianceWar
     {
-        // Validate war declaration
-        $validation = $this->validateWarDeclaration($attacker, $defender);
-        if (!$validation['valid']) {
-            return $validation;
+        $alliance = Alliance::find($allianceId);
+        $targetAlliance = Alliance::find($targetAllianceId);
+
+        if (!$alliance || !$targetAlliance || $allianceId === $targetAllianceId) {
+            throw new \InvalidArgumentException('Invalid alliance war declaration');
         }
 
-        $war = AllianceWar::create([
-            'attacker_alliance_id' => $attacker->id,
-            'defender_alliance_id' => $defender->id,
-            'reason' => $reason,
-            'status' => 'active',
-            'started_at' => now(),
-        ]);
+        return DB::transaction(function () use ($alliance, $targetAlliance, $reason) {
+            $war = AllianceWar::create([
+                'attacker_alliance_id' => $alliance->id,
+                'defender_alliance_id' => $targetAlliance->id,
+                'reason' => $reason,
+                'status' => 'active',
+                'declared_at' => now(),
+                'attacker_score' => 0,
+                'defender_score' => 0,
+                'reference_number' => $this->generateReferenceNumber(),
+            ]);
 
-        // Create diplomacy record
-        AllianceDiplomacy::create([
-            'alliance_id' => $attacker->id,
-            'target_alliance_id' => $defender->id,
-            'relationship_type' => 'war',
-            'status' => 'active',
-            'started_at' => now(),
-        ]);
+            // Update alliance settings
+            $alliance->update(['at_war' => true]);
+            $targetAlliance->update(['at_war' => true]);
 
-        // Clear cache
-        $this->clearAllianceCache($attacker->world_id);
+            // Broadcast war declaration
+            $this->broadcastWarDeclaration($war);
 
-        return [
-            'success' => true,
-            'message' => 'War declared successfully',
-            'war' => $war,
-        ];
+            return $war;
+        });
     }
 
     /**
      * Get alliance statistics
      */
-    public function getAllianceStatistics(Alliance $alliance): array
+    public function getAllianceStats(int $allianceId): array
     {
-        $cacheKey = "alliance_stats:{$alliance->id}";
+        $alliance = Alliance::with(['members', 'wars'])->find($allianceId);
+        
+        if (!$alliance) {
+            return [];
+        }
 
-        return SmartCache::remember($cacheKey, 600, function () use ($alliance) {
-            $members = $alliance->members()->with('player')->get();
-            $villages = $alliance->players()->with('villages')->get()->pluck('villages')->flatten();
+        $members = $alliance->members;
+        $totalPopulation = $members->sum('population');
+        $totalVillages = $members->sum('village_count');
+        $totalPoints = $members->sum('points');
 
-            return [
-                'id' => $alliance->id,
-                'name' => $alliance->name,
-                'tag' => $alliance->tag,
-                'description' => $alliance->description,
-                'leader' => $alliance->leader->name,
-                'members_count' => $alliance->members_count,
-                'villages_count' => $alliance->villages_count,
-                'total_points' => $alliance->points,
-                'average_points' => $alliance->members_count > 0 ? $alliance->points / $alliance->members_count : 0,
-                'active_members' => $members->where('player.last_active_at', '>=', now()->subDays(7))->count(),
-                'total_population' => $villages->sum('population'),
-                'average_population' => $villages->count() > 0 ? $villages->sum('population') / $villages->count() : 0,
-                'created_at' => $alliance->created_at,
-                'wars' => $alliance->allWars()->count(),
-                'active_wars' => $alliance->allWars()->where('status', 'active')->count(),
-            ];
-        });
+        return [
+            'alliance' => $alliance,
+            'member_count' => $members->count(),
+            'total_population' => $totalPopulation,
+            'total_villages' => $totalVillages,
+            'total_points' => $totalPoints,
+            'average_points' => $members->count() > 0 ? $totalPoints / $members->count() : 0,
+            'war_count' => $alliance->wars->where('status', 'active')->count(),
+            'diplomatic_relations' => $this->getDiplomaticRelations($allianceId),
+            'rank' => $this->getAllianceRank($allianceId),
+        ];
     }
 
     /**
      * Get alliance rankings
      */
-    public function getAllianceRankings(int $worldId, int $limit = 50): array
+    public function getAllianceRankings(int $limit = 50): array
     {
-        $cacheKey = "alliance_rankings:{$worldId}:{$limit}";
-
-        return SmartCache::remember($cacheKey, 300, function () use ($worldId, $limit) {
-            return Alliance::where('world_id', $worldId)
-                ->active()
-                ->orderBy('points', 'desc')
-                ->limit($limit)
-                ->get()
-                ->map(function ($alliance, $index) {
-                    return [
-                        'rank' => $index + 1,
-                        'id' => $alliance->id,
-                        'name' => $alliance->name,
-                        'tag' => $alliance->tag,
-                        'points' => $alliance->points,
-                        'members_count' => $alliance->members_count,
-                        'villages_count' => $alliance->villages_count,
-                        'leader' => $alliance->leader->name,
-                    ];
-                })
-                ->toArray();
-        });
+        return Alliance::where('is_active', true)
+            ->orderBy('total_points', 'desc')
+            ->limit($limit)
+            ->get()
+            ->map(function ($alliance, $index) {
+                return [
+                    'rank' => $index + 1,
+                    'alliance' => $alliance,
+                    'stats' => $this->getAllianceStats($alliance->id),
+                ];
+            })
+            ->toArray();
     }
 
     /**
-     * Validate alliance creation
+     * Check if alliance can invite players
      */
-    private function validateAllianceCreation(Player $founder, string $name, string $tag): array
+    private function canInvitePlayers($member): bool
     {
-        if ($founder->alliance_id) {
-            return [
-                'valid' => false,
-                'message' => 'Player is already in an alliance',
-            ];
-        }
-
-        if (strlen($name) < 3 || strlen($name) > 50) {
-            return [
-                'valid' => false,
-                'message' => 'Alliance name must be between 3 and 50 characters',
-            ];
-        }
-
-        if (strlen($tag) < 2 || strlen($tag) > 10) {
-            return [
-                'valid' => false,
-                'message' => 'Alliance tag must be between 2 and 10 characters',
-            ];
-        }
-
-        if (Alliance::where('name', $name)->where('world_id', $founder->world_id)->exists()) {
-            return [
-                'valid' => false,
-                'message' => 'Alliance name already exists',
-            ];
-        }
-
-        if (Alliance::where('tag', $tag)->where('world_id', $founder->world_id)->exists()) {
-            return [
-                'valid' => false,
-                'message' => 'Alliance tag already exists',
-            ];
-        }
-
-        return ['valid' => true];
+        return in_array($member->rank, ['leader', 'co_leader', 'elder']);
     }
 
     /**
-     * Validate invitation
+     * Check if member can remove other players
      */
-    private function validateInvitation(Alliance $alliance, Player $inviter, Player $invitee): array
+    private function canRemovePlayers($remover, $target): bool
     {
-        if ($invitee->alliance_id) {
-            return [
-                'valid' => false,
-                'message' => 'Player is already in an alliance',
-            ];
+        $leaderRanks = ['leader', 'co_leader'];
+        $elderRanks = ['leader', 'co_leader', 'elder'];
+
+        // Leaders can remove anyone
+        if (in_array($remover->rank, $leaderRanks)) {
+            return true;
         }
 
-        if ($alliance->members_count >= 50) {
-            return [
-                'valid' => false,
-                'message' => 'Alliance is full',
-            ];
+        // Elders can only remove members (not other elders or leaders)
+        if ($remover->rank === 'elder' && $target->rank === 'member') {
+            return true;
         }
 
-        return ['valid' => true];
+        return false;
     }
 
     /**
-     * Validate acceptance
+     * Get diplomatic relations
      */
-    private function validateAcceptance(Player $player, Alliance $alliance): array
+    private function getDiplomaticRelations(int $allianceId): array
     {
-        if ($player->alliance_id) {
-            return [
-                'valid' => false,
-                'message' => 'Player is already in an alliance',
-            ];
-        }
-
-        if ($alliance->members_count >= 50) {
-            return [
-                'valid' => false,
-                'message' => 'Alliance is full',
-            ];
-        }
-
-        return ['valid' => true];
+        return AllianceDiplomacy::where('alliance_id', $allianceId)
+            ->orWhere('target_alliance_id', $allianceId)
+            ->with(['alliance', 'targetAlliance'])
+            ->get()
+            ->map(function ($relation) use ($allianceId) {
+                $isInitiator = $relation->alliance_id === $allianceId;
+                return [
+                    'relation' => $relation,
+                    'target_alliance' => $isInitiator ? $relation->targetAlliance : $relation->alliance,
+                    'is_initiator' => $isInitiator,
+                ];
+            })
+            ->toArray();
     }
 
     /**
-     * Validate kick
+     * Get alliance rank
      */
-    private function validateKick(Alliance $alliance, Player $kicker, Player $target): array
+    private function getAllianceRank(int $allianceId): int
     {
-        if ($target->alliance_id !== $alliance->id) {
-            return [
-                'valid' => false,
-                'message' => 'Player is not in this alliance',
-            ];
+        $alliance = Alliance::find($allianceId);
+        if (!$alliance) {
+            return 0;
         }
 
-        if ($target->id === $alliance->leader_id) {
-            return [
-                'valid' => false,
-                'message' => 'Cannot kick the leader',
-            ];
-        }
+        $rank = Alliance::where('is_active', true)
+            ->where('total_points', '>', $alliance->total_points)
+            ->count() + 1;
 
-        return ['valid' => true];
+        return $rank;
     }
 
     /**
-     * Validate leadership transfer
+     * Generate unique alliance tag
      */
-    private function validateLeadershipTransfer(Alliance $alliance, Player $currentLeader, Player $newLeader): array
+    private function generateUniqueTag(): string
     {
-        if ($currentLeader->id !== $alliance->leader_id) {
-            return [
-                'valid' => false,
-                'message' => 'Player is not the current leader',
-            ];
-        }
+        do {
+            $tag = strtoupper(Str::random(3));
+        } while (Alliance::where('tag', $tag)->exists());
 
-        if ($newLeader->alliance_id !== $alliance->id) {
-            return [
-                'valid' => false,
-                'message' => 'New leader is not in this alliance',
-            ];
-        }
-
-        return ['valid' => true];
+        return $tag;
     }
 
     /**
-     * Validate war declaration
+     * Generate reference number
      */
-    private function validateWarDeclaration(Alliance $attacker, Alliance $defender): array
+    private function generateReferenceNumber(): string
     {
-        if ($attacker->id === $defender->id) {
-            return [
-                'valid' => false,
-                'message' => 'Cannot declare war on yourself',
-            ];
-        }
+        do {
+            $reference = 'ALL-' . strtoupper(Str::random(8));
+        } while (AllianceMember::where('reference_number', $reference)->exists());
 
-        if ($attacker->world_id !== $defender->world_id) {
-            return [
-                'valid' => false,
-                'message' => 'Alliances must be in the same world',
-            ];
-        }
-
-        // Check if already at war
-        $existingWar = AllianceWar::where('attacker_alliance_id', $attacker->id)
-            ->where('defender_alliance_id', $defender->id)
-            ->where('status', 'active')
-            ->exists();
-
-        if ($existingWar) {
-            return [
-                'valid' => false,
-                'message' => 'Already at war with this alliance',
-            ];
-        }
-
-        return ['valid' => true];
+        return $reference;
     }
 
     /**
-     * Clear alliance cache
+     * Broadcast alliance update
      */
-    private function clearAllianceCache(int $worldId): void
+    private function broadcastAllianceUpdate(Alliance $alliance, string $action, $data = null): void
     {
-        SmartCache::forget("alliance_rankings:{$worldId}:50");
-        // Clear other alliance-related caches as needed
+        try {
+            $userIds = $alliance->members->pluck('user_id')->toArray();
+            
+            RealTimeGameService::broadcastUpdate($userIds, 'alliance_update', [
+                'alliance_id' => $alliance->id,
+                'action' => $action,
+                'data' => $data,
+                'timestamp' => now()->toISOString(),
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to broadcast alliance update', [
+                'alliance_id' => $alliance->id,
+                'action' => $action,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Broadcast alliance invitation
+     */
+    private function broadcastAllianceInvitation(Alliance $alliance, Player $player, AllianceMember $invitation): void
+    {
+        try {
+            RealTimeGameService::broadcastUpdate([$player->user_id], 'alliance_invitation', [
+                'alliance' => $alliance,
+                'invitation' => $invitation,
+                'timestamp' => now()->toISOString(),
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to broadcast alliance invitation', [
+                'alliance_id' => $alliance->id,
+                'player_id' => $player->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Broadcast war declaration
+     */
+    private function broadcastWarDeclaration(AllianceWar $war): void
+    {
+        try {
+            $attackerUserIds = $war->attackerAlliance->members->pluck('user_id')->toArray();
+            $defenderUserIds = $war->defenderAlliance->members->pluck('user_id')->toArray();
+            $allUserIds = array_merge($attackerUserIds, $defenderUserIds);
+            
+            RealTimeGameService::broadcastUpdate($allUserIds, 'war_declared', [
+                'war' => $war,
+                'timestamp' => now()->toISOString(),
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to broadcast war declaration', [
+                'war_id' => $war->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

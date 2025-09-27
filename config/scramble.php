@@ -44,7 +44,7 @@ return [
 - **Authentication**: Secure API access with Laravel Sanctum tokens
 
 ## API Endpoints
-- **104+ Endpoints** across 11 main categories
+- **117+ Endpoints** across 13 main categories
 - **RESTful Design** following industry best practices
 - **Comprehensive Documentation** with examples and error handling
 - **Real-time Capabilities** for game updates and notifications

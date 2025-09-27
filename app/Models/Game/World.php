@@ -33,6 +33,7 @@ class World extends Model implements Auditable
         'name',
         'description',
         'is_active',
+        'reference_number',
     ];
 
     protected $casts = [

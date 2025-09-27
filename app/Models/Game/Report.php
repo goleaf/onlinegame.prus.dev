@@ -19,7 +19,7 @@ use WendellAdriel\Lift\Lift;
 
 class Report extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait, Commentable, Lift;
+    use HasFactory, HasTaxonomy, HasReference, AuditableTrait, Commentable, Lift;
 
     // Laravel Lift typed properties
     public int $id;
