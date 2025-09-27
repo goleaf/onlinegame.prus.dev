@@ -26,6 +26,7 @@ class TournamentParticipant extends Model implements Auditable
         'registered_at',
         'eliminated_at',
         'final_rank',
+        'reference_number',
     ];
 
     protected $casts = [

@@ -11,7 +11,7 @@ use WendellAdriel\Lift\Lift;
 
 class Achievement extends Model
 {
-    use HasFactory, HasTaxonomy, HasReference;
+    use HasFactory, HasTaxonomy, HasReference, Lift;
 
     protected $table = 'achievements';
 

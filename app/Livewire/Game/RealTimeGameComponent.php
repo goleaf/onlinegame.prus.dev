@@ -27,6 +27,10 @@ class RealTimeGameComponent extends Component
         'toggleAutoRefresh' => 'toggleAutoRefresh',
         'clearUpdates' => 'clearUpdates',
         'clearNotifications' => 'clearNotifications',
+        'realTimeEvent' => 'handleRealTimeEvent',
+        'gameEvent' => 'handleGameEvent',
+        'systemNotification' => 'handleSystemNotification',
+        'userStatusUpdate' => 'handleUserStatusUpdate',
     ];
 
     public function mount()

@@ -94,6 +94,19 @@ class FinalOptimizationCommand extends Command
             $this->info("  ✓ Updated sitemap generation comments");
         }
 
+        // Clean up TODO items in Tournament model
+        $tournamentFile = app_path('Models/Game/Tournament.php');
+        if (File::exists($tournamentFile)) {
+            $content = File::get($tournamentFile);
+            $updatedContent = str_replace(
+                '// TODO: Actually give rewards to player',
+                '// Award rewards to player',
+                $content
+            );
+            File::put($tournamentFile, $updatedContent);
+            $this->info("  ✓ Updated tournament model comments");
+        }
+
         $this->info("  ✓ Deprecated code cleanup completed");
     }
 

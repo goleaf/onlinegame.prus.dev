@@ -27,7 +27,7 @@ class UserController extends CrudController
     protected RateLimiterUtil $rateLimiter;
 
     protected array $validationRules = [
-        'name' => 'required|string|max:255',
+        'name' => ['required', 'string', 'max:255', new Username(), new Clean],
         'email' => 'required|email|unique:users,email',
         'password' => 'required|string|min:8',
         'phone' => 'nullable|string',
