@@ -102,8 +102,6 @@ class PlayersSeeder extends Seeder
             ]
         ];
         
-        foreach ($dataTables as $data) {
-            DB::table("players")->updateOrInsert(['id' => $data['id']], $data);
-        }
+        DB::table("players")->insert($dataTables);
     }
 }
