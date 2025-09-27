@@ -21,6 +21,9 @@
 
     <!-- Livewire Styles -->
     @livewireStyles
+    
+    <!-- Formello Styles -->
+    @formelloStyles
 
     <!-- Additional Styles -->
     <style>
@@ -340,6 +343,9 @@
 
     <!-- Livewire Scripts -->
     @livewireScripts
+    
+    <!-- Formello Scripts -->
+    @formelloScripts
 
     <!-- Game JavaScript -->
     <script>

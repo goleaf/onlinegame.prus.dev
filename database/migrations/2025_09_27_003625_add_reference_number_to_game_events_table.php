@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('game_events', function (Blueprint $table) {
-            //
+            $table->string('reference_number')->unique()->index()->after('id');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('game_events', function (Blueprint $table) {
-            //
+            $table->dropColumn('reference_number');
         });
     }
 };

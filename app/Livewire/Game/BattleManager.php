@@ -13,7 +13,6 @@ use LaraUtilX\Traits\ApiResponseTrait;
 use Livewire\Component;
 use Livewire\WithPagination;
 use SmartCache\Facades\SmartCache;
-use SmartCache\Facades\SmartCache;
 
 class BattleManager extends Component
 {
