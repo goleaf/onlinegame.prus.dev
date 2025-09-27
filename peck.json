@@ -131,7 +131,20 @@
             "fancybox",
             "treeview",
             "changefreq",
-            "lastmod"
+            "lastmod",
+            "smartcache",
+            "laradumps",
+            "activitylog",
+            "heroicons",
+            "debugbar",
+            "docudoodle",
+            "sortable",
+            "filesystems",
+            "formello",
+            "referenceable",
+            "zxcvbn",
+            "supervisord",
+            "pgsql"
         ],
         "paths": [
             "vendor/",

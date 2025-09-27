@@ -12,6 +12,7 @@ use LaraUtilX\Utilities\FeatureToggleUtil;
 use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\QueryParameterUtil;
 use LaraUtilX\Utilities\SchedulerUtil;
+use SmartCache\Facades\SmartCache;
 
 class LarautilxDashboardController extends Controller
 {
