@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Game;
 
+use App\Models\Game\Player;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Traits\FileProcessingTrait;

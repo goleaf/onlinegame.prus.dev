@@ -83,6 +83,31 @@ class QuestManager extends Component
         }
     }
 
+    public function loadTaxonomies()
+    {
+        $this->questCategories = Taxonomy::findByType('quest_category')
+            ->map(function ($taxonomy) {
+                return [
+                    'id' => $taxonomy->id,
+                    'name' => $taxonomy->name,
+                    'slug' => $taxonomy->slug,
+                    'description' => $taxonomy->description,
+                    'meta' => $taxonomy->meta,
+                ];
+            })->toArray();
+
+        $this->questDifficulties = Taxonomy::findByType('quest_difficulty')
+            ->map(function ($taxonomy) {
+                return [
+                    'id' => $taxonomy->id,
+                    'name' => $taxonomy->name,
+                    'slug' => $taxonomy->slug,
+                    'description' => $taxonomy->description,
+                    'meta' => $taxonomy->meta,
+                ];
+            })->toArray();
+    }
+
     public function initializeQuestFeatures()
     {
         $this->calculateQuestStats();

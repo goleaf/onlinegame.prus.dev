@@ -71,3 +71,6 @@ Route::get('/game-simple', function () {
 });
 
 // Auth::routes();
+
+// Laravel Decomposer route
+Route::get('decompose', '\Lubusin\Decomposer\Controllers\DecomposerController@index');

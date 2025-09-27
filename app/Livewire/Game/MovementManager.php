@@ -385,6 +385,9 @@ class MovementManager extends Component
         $this->loadMovementData();
         $this->addNotification("Movement {$movementId} cancelled.", 'info');
         $this->dispatch('movementCancelled', ['movementId' => $movementId]);
+        
+        // Track movement cancellation
+        $this->dispatch('fathom-track', name: 'movement cancelled', value: $movementId);
     }
 
     public function selectMovement($movementId)

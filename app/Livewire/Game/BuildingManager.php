@@ -100,31 +100,34 @@ class BuildingManager extends Component
 
     public function loadAvailableBuildings()
     {
-        $this->availableBuildings = [
-            'wood' => [
-                'name' => 'Woodcutter',
-                'description' => 'Produces wood',
-                'base_cost' => ['wood' => 50, 'clay' => 30, 'iron' => 20, 'crop' => 10],
-                'production_bonus' => 10,
-            ],
-            'clay' => [
-                'name' => 'Clay Pit',
-                'description' => 'Produces clay',
-                'base_cost' => ['wood' => 30, 'clay' => 50, 'iron' => 20, 'crop' => 10],
-                'production_bonus' => 10,
-            ],
-            'iron' => [
-                'name' => 'Iron Mine',
-                'description' => 'Produces iron',
-                'base_cost' => ['wood' => 20, 'clay' => 30, 'iron' => 50, 'crop' => 10],
-                'production_bonus' => 10,
-            ],
-            'crop' => [
-                'name' => 'Cropland',
-                'description' => 'Produces crop',
-                'base_cost' => ['wood' => 10, 'clay' => 20, 'iron' => 10, 'crop' => 50],
-                'production_bonus' => 10,
-            ],
+        // Use SmartCache for available buildings with automatic optimization
+        $availableBuildingsCacheKey = "available_buildings_data";
+        $this->availableBuildings = SmartCache::remember($availableBuildingsCacheKey, now()->addMinutes(30), function () {
+            return [
+                'wood' => [
+                    'name' => 'Woodcutter',
+                    'description' => 'Produces wood',
+                    'base_cost' => ['wood' => 50, 'clay' => 30, 'iron' => 20, 'crop' => 10],
+                    'production_bonus' => 10,
+                ],
+                'clay' => [
+                    'name' => 'Clay Pit',
+                    'description' => 'Produces clay',
+                    'base_cost' => ['wood' => 30, 'clay' => 50, 'iron' => 20, 'crop' => 10],
+                    'production_bonus' => 10,
+                ],
+                'iron' => [
+                    'name' => 'Iron Mine',
+                    'description' => 'Produces iron',
+                    'base_cost' => ['wood' => 20, 'clay' => 30, 'iron' => 50, 'crop' => 10],
+                    'production_bonus' => 10,
+                ],
+                'crop' => [
+                    'name' => 'Cropland',
+                    'description' => 'Produces crop',
+                    'base_cost' => ['wood' => 10, 'clay' => 20, 'iron' => 10, 'crop' => 50],
+                    'production_bonus' => 10,
+                ],
             'warehouse' => [
                 'name' => 'Warehouse',
                 'description' => 'Increases storage capacity',

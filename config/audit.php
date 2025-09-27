@@ -194,5 +194,5 @@ return [
     |
     */
 
-    'console' => true,
+    'console' => false,
 ];

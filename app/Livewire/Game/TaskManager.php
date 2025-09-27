@@ -415,6 +415,9 @@ class TaskManager extends Component
             $this->loadTasks();
             $this->addNotification("Task '{$task->title}' started", 'success');
             $this->dispatch('taskStarted', ['taskId' => $taskId]);
+            
+            // Track task start
+            $this->dispatch('fathom-track', name: 'task started', value: $taskId);
 
             ds('Task started successfully', [
                 'task_id' => $taskId,

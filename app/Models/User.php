@@ -55,7 +55,7 @@ class User extends Authenticatable implements Auditable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime_immutable',
+            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
