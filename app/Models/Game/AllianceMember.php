@@ -20,8 +20,6 @@ class AllianceMember extends Model
 
     protected $casts = [
         'joined_at' => 'datetime',
-        'left_at' => 'datetime',
-        'is_active' => 'boolean',
     ];
 
     // Referenceable configuration
