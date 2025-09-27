@@ -52,7 +52,6 @@ class SystemManagement extends Component
             if ($response && isset($response['data'])) {
                 $this->systemConfig = $response['data'];
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading system configuration', [
                 'error' => $e->getMessage(),
@@ -74,7 +73,6 @@ class SystemManagement extends Component
             if ($response && isset($response['data'])) {
                 $this->scheduledTasks = $response['data'];
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading scheduled tasks', [
                 'error' => $e->getMessage(),
@@ -96,7 +94,6 @@ class SystemManagement extends Component
             if ($response && isset($response['data'])) {
                 $this->systemHealth = $response['data'];
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading system health', [
                 'error' => $e->getMessage(),
@@ -118,7 +115,6 @@ class SystemManagement extends Component
             if ($response && isset($response['data'])) {
                 $this->systemMetrics = $response['data'];
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading system metrics', [
                 'error' => $e->getMessage(),
@@ -144,7 +140,6 @@ class SystemManagement extends Component
             if ($response && isset($response['data'])) {
                 $this->systemLogs = $response['data'];
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading system logs', [
                 'error' => $e->getMessage(),
@@ -169,7 +164,6 @@ class SystemManagement extends Component
                 $this->loadSystemConfig();
                 $this->dispatch('systemConfigUpdated', ['key' => $key, 'value' => $value]);
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error updating system configuration', [
                 'error' => $e->getMessage(),
@@ -192,7 +186,6 @@ class SystemManagement extends Component
                 $this->addNotification('System caches cleared successfully', 'success');
                 $this->dispatch('cachesCleared', ['cleared_caches' => $response['data']['cleared_caches']]);
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error clearing system caches', [
                 'error' => $e->getMessage(),
@@ -282,7 +275,6 @@ class SystemManagement extends Component
             }
 
             throw new \Exception('API request failed: ' . $response->body());
-
         } catch (\Exception $e) {
             LoggingUtil::error('API request failed', [
                 'method' => $method,

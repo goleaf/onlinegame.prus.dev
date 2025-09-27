@@ -56,7 +56,7 @@ class GamePerformanceOptimizer
     public function optimizeSessionData(string $userId, array $sessionData): void
     {
         $sessionKey = "optimized_game_session_{$userId}";
-        $tags = ["user:{$userId}", "session_data"];
+        $tags = ["user:{$userId}", 'session_data'];
 
         $this->sessionService->putWithTags($sessionKey, $sessionData, $tags);
     }
@@ -151,11 +151,11 @@ class GamePerformanceOptimizer
         try {
             // Clean up expired cache entries using SmartCache
             SmartCache::flush();
-            
+
             // Clean up expired sessions
             $results['sessions_cleaned'] = $this->sessionService->cleanupExpiredSessions();
-            
-            $results['cache_cleaned'] = 1; // Cache cleanup completed
+
+            $results['cache_cleaned'] = 1;  // Cache cleanup completed
         } catch (\Exception $e) {
             Log::error('Game performance optimizer cleanup failed', [
                 'error' => $e->getMessage(),
@@ -193,7 +193,7 @@ class GamePerformanceOptimizer
             ])
             ->where('id', $userId)
             ->first();
-            
+
         return $user ? (array) $user : [];
     }
 
@@ -208,7 +208,7 @@ class GamePerformanceOptimizer
                 ->select(['id', 'name', 'created_at'])
                 ->where('user_id', $userId)
                 ->get();
-                
+
             return $villages ? $villages->toArray() : [];
         } catch (\Exception $e) {
             // Return empty array if table doesn't exist
@@ -226,7 +226,7 @@ class GamePerformanceOptimizer
                 ->select(['id', 'created_at'])
                 ->where('user_id', $userId)
                 ->get();
-                
+
             return $troops ? $troops->toArray() : [];
         } catch (\Exception $e) {
             return [];
@@ -243,7 +243,7 @@ class GamePerformanceOptimizer
                 ->select(['id', 'created_at'])
                 ->where('user_id', $userId)
                 ->get();
-                
+
             return $buildings ? $buildings->toArray() : [];
         } catch (\Exception $e) {
             return [];
@@ -260,7 +260,7 @@ class GamePerformanceOptimizer
                 ->select(['id', 'created_at'])
                 ->where('user_id', $userId)
                 ->get();
-                
+
             return $resources ? $resources->toArray() : [];
         } catch (\Exception $e) {
             return [];
@@ -287,13 +287,13 @@ class GamePerformanceOptimizer
     protected function getUserRankings(array $params): array
     {
         $limit = $params['limit'] ?? 100;
-        
+
         $users = DB::table('users')
             ->select(['id', 'name', 'created_at'])
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
-            
+
         return $users ? $users->toArray() : [];
     }
 
@@ -318,14 +318,14 @@ class GamePerformanceOptimizer
     protected function getBattleHistory(array $params): array
     {
         $limit = $params['limit'] ?? 50;
-        
+
         try {
             $battles = DB::table('battles')
                 ->select(['id', 'created_at'])
                 ->orderBy('created_at', 'desc')
                 ->limit($limit)
                 ->get();
-                
+
             return $battles ? $battles->toArray() : [];
         } catch (\Exception $e) {
             return [];
@@ -355,7 +355,7 @@ class GamePerformanceOptimizer
         try {
             $queryCount = DB::getQueryLog();
             $connectionCount = DB::getConnections();
-            
+
             return [
                 'total_queries' => count($queryCount),
                 'active_connections' => count($connectionCount),
@@ -378,9 +378,9 @@ class GamePerformanceOptimizer
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
-        
+
         $bytes /= pow(1024, $pow);
-        
+
         return round($bytes, 2) . ' ' . $units[$pow];
     }
 }

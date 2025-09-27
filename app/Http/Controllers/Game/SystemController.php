@@ -74,7 +74,6 @@ class SystemController extends Controller
             ], 'system_management');
 
             return $this->successResponse($config, 'System configuration retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving system configuration', [
                 'error' => $e->getMessage(),
@@ -110,7 +109,6 @@ class SystemController extends Controller
                 'value' => $validated['value'],
                 'updated_at' => now()->toDateTimeString(),
             ], 'System configuration updated successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error updating system configuration', [
                 'error' => $e->getMessage(),
@@ -147,7 +145,6 @@ class SystemController extends Controller
             ], 'system_management');
 
             return $this->successResponse($response, 'Scheduled tasks information retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving scheduled tasks', [
                 'error' => $e->getMessage(),
@@ -270,7 +267,6 @@ class SystemController extends Controller
             ], 'system_management');
 
             return $this->successResponse($health, 'System health status retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error performing system health check', [
                 'error' => $e->getMessage(),
@@ -332,7 +328,6 @@ class SystemController extends Controller
             ], 'system_management');
 
             return $this->successResponse($metrics, 'System metrics retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving system metrics', [
                 'error' => $e->getMessage(),
@@ -392,7 +387,6 @@ class SystemController extends Controller
                 'cleared_caches' => $cleared,
                 'timestamp' => now()->toDateTimeString(),
             ], 'System caches cleared successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error clearing system caches', [
                 'error' => $e->getMessage(),
@@ -423,22 +417,23 @@ class SystemController extends Controller
             if (file_exists($logFile)) {
                 $logContent = file_get_contents($logFile);
                 $logLines = explode("\n", $logContent);
-                
+
                 // Filter and limit logs
                 $filteredLogs = array_filter($logLines, function ($line) use ($level, $since) {
-                    if (empty($line)) return false;
-                    
+                    if (empty($line))
+                        return false;
+
                     // Simple level filtering
                     if ($level !== 'all' && !str_contains(strtolower($line), strtolower($level))) {
                         return false;
                     }
-                    
+
                     // Simple time filtering (basic implementation)
                     if (str_contains($line, $since)) {
                         return true;
                     }
-                    
-                    return true; // Include all logs for now
+
+                    return true;  // Include all logs for now
                 });
 
                 $logs = array_slice($filteredLogs, -$limit);
@@ -460,7 +455,6 @@ class SystemController extends Controller
                     'total_retrieved' => count($logs),
                 ],
             ], 'System logs retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving system logs', [
                 'error' => $e->getMessage(),

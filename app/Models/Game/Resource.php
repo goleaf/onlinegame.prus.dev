@@ -93,22 +93,22 @@ class Resource extends Model implements Auditable
     public static function getCachedResources($villageId, $filters = [])
     {
         $cacheKey = "village_{$villageId}_resources_" . md5(serialize($filters));
-        
+
         return SmartCache::remember($cacheKey, now()->addMinutes(2), function () use ($villageId, $filters) {
             $query = static::byVillage($villageId)->withStats();
-            
+
             if (isset($filters['type'])) {
                 $query->byType($filters['type']);
             }
-            
+
             if (isset($filters['min_amount'])) {
                 $query->byAmount($filters['min_amount']);
             }
-            
+
             if (isset($filters['min_production'])) {
                 $query->byProductionRate($filters['min_production']);
             }
-            
+
             return $query->get();
         });
     }

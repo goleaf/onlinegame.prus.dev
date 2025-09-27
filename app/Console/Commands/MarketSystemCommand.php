@@ -34,7 +34,7 @@ class MarketSystemCommand extends Command
     public function handle()
     {
         $action = $this->argument('action');
-        
+
         $this->info('🏪 Market System Management');
         $this->info('===========================');
 
@@ -71,11 +71,11 @@ class MarketSystemCommand extends Command
         $resourceType = $this->option('resource-type');
 
         $query = Player::with(['villages.resources']);
-        
+
         if ($worldId) {
             $query->where('world_id', $worldId);
         }
-        
+
         if ($playerId) {
             $query->where('id', $playerId);
         }
@@ -103,9 +103,9 @@ class MarketSystemCommand extends Command
         foreach ($player->villages as $village) {
             foreach ($resourceTypes as $type) {
                 $resource = $village->resources()->where('type', $type)->first();
-                
+
                 if (!$resource || $resource->amount < 1000) {
-                    continue; // Skip if not enough resources
+                    continue;  // Skip if not enough resources
                 }
 
                 // Generate sell offers (player has excess resources)
@@ -188,7 +188,7 @@ class MarketSystemCommand extends Command
         ];
 
         $baseRatio = $ratios[$offerType][$demandType] ?? 1.0;
-        $randomFactor = 0.8 + (rand(0, 40) / 100); // 80-120% variation
+        $randomFactor = 0.8 + (rand(0, 40) / 100);  // 80-120% variation
 
         return (int) round($offerAmount * $baseRatio * $randomFactor);
     }
@@ -206,7 +206,7 @@ class MarketSystemCommand extends Command
         ];
 
         $baseRatio = $ratios[$demandType][$offerType] ?? 1.0;
-        $randomFactor = 0.8 + (rand(0, 40) / 100); // 80-120% variation
+        $randomFactor = 0.8 + (rand(0, 40) / 100);  // 80-120% variation
 
         return (int) round($demandAmount * $baseRatio * $randomFactor);
     }
@@ -227,7 +227,7 @@ class MarketSystemCommand extends Command
 
         foreach ($activeOffers as $offer) {
             $matches = $this->findMatchingOffers($offer);
-            
+
             foreach ($matches as $match) {
                 if ($this->executeTrade($offer, $match)) {
                     $processedCount++;
@@ -311,7 +311,7 @@ class MarketSystemCommand extends Command
             DB::table('market_trades')
                 ->where('id', $offer1->id)
                 ->update(['status' => 'completed', 'updated_at' => now()]);
-            
+
             DB::table('market_trades')
                 ->where('id', $offer2->id)
                 ->update(['status' => 'completed', 'updated_at' => now()]);
@@ -320,10 +320,9 @@ class MarketSystemCommand extends Command
 
             $this->line("  → Trade completed: {$tradeAmount} {$offer1->offer_type} ↔ {$tradeAmount} {$offer2->offer_type}");
             return true;
-
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->error("Trade failed: " . $e->getMessage());
+            $this->error('Trade failed: ' . $e->getMessage());
             return false;
         }
     }

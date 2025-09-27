@@ -4,6 +4,7 @@ namespace App\Forms;
 
 use App\Models\Game\Player;
 use App\Models\Game\World;
+use Intervention\Validation\Rules\Username;
 use Metalogico\Formello\Formello;
 
 class VillageForm extends Formello

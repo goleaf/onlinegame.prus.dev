@@ -62,7 +62,7 @@ class AdvancedMapManager extends Component
                 ')
                 ->get();
         });
-        
+
         if ($this->worlds->isNotEmpty()) {
             $this->selectedWorld = $this->worlds->first()->id;
         }
@@ -447,9 +447,9 @@ class AdvancedMapManager extends Component
 
     public function getVillageData()
     {
-        return $this->villages->map(function($village) {
+        return $this->villages->map(function ($village) {
             $geoService = app(GeographicService::class);
-            
+
             return [
                 'id' => $village->id,
                 'name' => $village->name,
@@ -479,7 +479,7 @@ class AdvancedMapManager extends Component
     {
         $deltaX = $x - $this->centerX;
         $deltaY = $y - $this->centerY;
-        
+
         $bearing = atan2($deltaY, $deltaX) * 180 / pi();
         return ($bearing + 360) % 360;
     }

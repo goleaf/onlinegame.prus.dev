@@ -105,22 +105,22 @@ class Building extends Model implements Auditable
     public static function getCachedBuildings($villageId, $filters = [])
     {
         $cacheKey = "village_{$villageId}_buildings_" . md5(serialize($filters));
-        
+
         return SmartCache::remember($cacheKey, now()->addMinutes(5), function () use ($villageId, $filters) {
             $query = static::byVillage($villageId)->withStats();
-            
+
             if (isset($filters['type'])) {
                 $query->byType($filters['type']);
             }
-            
+
             if (isset($filters['active'])) {
                 $query->active();
             }
-            
+
             if (isset($filters['upgradeable'])) {
                 $query->upgradeable();
             }
-            
+
             return $query->get();
         });
     }

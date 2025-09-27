@@ -32,7 +32,7 @@ class EnhancedCacheService
     public function remember(string $key, int $ttl, callable $callback): mixed
     {
         $fullKey = $this->prefix . $key;
-        
+
         return SmartCache::remember($fullKey, now()->addSeconds($ttl), $callback);
     }
 
@@ -42,7 +42,7 @@ class EnhancedCacheService
     public function rememberWithTags(string $key, array $tags, int $ttl, callable $callback): mixed
     {
         $fullKey = $this->prefix . $key;
-        
+
         // SmartCache handles optimization automatically, tags are for reference
         return SmartCache::remember($fullKey, now()->addSeconds($ttl), $callback);
     }

@@ -39,7 +39,6 @@ class WorldMap extends Component
     public $mapMode = 'normal';  // normal, alliance, tribe, player
     public $highlightedVillages = [];
     public $mapStats = [];
-
     // Enhanced map features
     public $showGrid = true;
     public $showDistance = false;
@@ -225,9 +224,6 @@ class WorldMap extends Component
         }
     }
 
-
-
-
     public function toggleCoordinates()
     {
         $this->showCoordinates = !$this->showCoordinates;
@@ -254,7 +250,6 @@ class WorldMap extends Component
         $this->filterTribe = $tribe;
         $this->addNotification("Filtered by tribe: {$tribe}", 'info');
     }
-
 
     public function getFilteredMapData()
     {
@@ -528,12 +523,12 @@ class WorldMap extends Component
 
     public function loadVisibleVillages()
     {
-        $viewRadius = 50 / $this->zoomLevel; // Adjust based on zoom level
-        
+        $viewRadius = 50 / $this->zoomLevel;  // Adjust based on zoom level
+
         $this->visibleVillages = collect($this->mapData)->filter(function ($village) use ($viewRadius) {
             $distance = sqrt(
-                pow($village['x'] - $this->viewCenter['x'], 2) + 
-                pow($village['y'] - $this->viewCenter['y'], 2)
+                pow($village['x'] - $this->viewCenter['x'], 2)
+                + pow($village['y'] - $this->viewCenter['y'], 2)
             );
             return $distance <= $viewRadius;
         })->values()->toArray();
@@ -594,8 +589,8 @@ class WorldMap extends Component
 
         $this->visibleVillages = collect($this->mapData)->filter(function ($village) {
             return stripos($village['name'], $this->searchQuery) !== false ||
-                   stripos($village['player_name'], $this->searchQuery) !== false ||
-                   stripos($village['alliance_name'] ?? '', $this->searchQuery) !== false;
+                stripos($village['player_name'], $this->searchQuery) !== false ||
+                stripos($village['alliance_name'] ?? '', $this->searchQuery) !== false;
         })->values()->toArray();
     }
 

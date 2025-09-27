@@ -22,7 +22,7 @@ class DefenseCalculator extends Component
     {
         $this->defenseService = new DefenseCalculationService();
         $this->villageId = $villageId;
-        
+
         if ($this->villageId) {
             $this->loadVillage();
         }
@@ -32,7 +32,7 @@ class DefenseCalculator extends Component
     {
         $this->village = Village::with(['buildings.buildingType', 'resources'])
             ->find($this->villageId);
-            
+
         if ($this->village) {
             $this->calculateDefense();
         }
@@ -55,19 +55,21 @@ class DefenseCalculator extends Component
         }
 
         $this->simulationResults = [];
-        
+
         // Simulate upgrades from current level to level 20
-        $currentBuilding = $this->village->buildings()
+        $currentBuilding = $this
+            ->village
+            ->buildings()
             ->whereHas('buildingType', function ($query) {
                 $query->where('key', $this->selectedBuilding);
             })
             ->first();
 
         $currentLevel = $currentBuilding ? $currentBuilding->level : 0;
-        
+
         for ($level = $currentLevel + 1; $level <= min($currentLevel + 10, 20); $level++) {
             $bonus = $this->defenseService->getBuildingDefenseBonus($this->selectedBuilding, $level);
-            
+
             $this->simulationResults[] = [
                 'level' => $level,
                 'bonus' => $bonus,
@@ -81,21 +83,21 @@ class DefenseCalculator extends Component
     {
         $totalBonus = 0;
         $buildings = $this->village->buildings()->with('buildingType')->get();
-        
+
         foreach ($buildings as $building) {
             $buildingType = $building->buildingType;
             $level = $building->level;
-            
+
             // Use new level for the selected building
             if ($buildingType->key === $this->selectedBuilding) {
                 $level = $newLevel;
             }
-            
+
             $bonus = $this->defenseService->getBuildingDefenseBonus($buildingType->key, $level);
             $totalBonus += $bonus;
         }
-        
-        return min($totalBonus, 0.5) * 100; // Return as percentage
+
+        return min($totalBonus, 0.5) * 100;  // Return as percentage
     }
 
     public function getBuildingTypesProperty()

@@ -22,6 +22,7 @@ class PlayerQuest extends Model
         'started_at',
         'completed_at',
         'expires_at',
+        'reference_number',
     ];
 
     protected $casts = [

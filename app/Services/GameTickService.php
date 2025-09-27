@@ -11,8 +11,8 @@ use App\Models\Game\Report;
 use App\Models\Game\Resource;
 use App\Models\Game\TrainingQueue;
 use App\Models\Game\Village;
-use App\Services\RabbitMQService;
 use App\Services\DefenseCalculationService;
+use App\Services\RabbitMQService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -653,11 +653,13 @@ class GameTickService
                 [
                     'target_village_id' => $targetVillage->id,
                     'target_village_name' => $targetVillage->name,
-                    'trap_level' => $targetVillage->buildings()
+                    'trap_level' => $targetVillage
+                        ->buildings()
                         ->whereHas('buildingType', function ($query) {
                             $query->where('key', 'trap');
                         })
-                        ->first()?->level ?? 0,
+                        ->first()
+                        ?->level ?? 0,
                     'spy_defense' => $spyDefense,
                 ]
             );

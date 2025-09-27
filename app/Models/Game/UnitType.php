@@ -107,26 +107,26 @@ class UnitType extends Model
     public static function getCachedUnitTypes($tribe = null, $filters = [])
     {
         $cacheKey = "unit_types_{$tribe}_" . md5(serialize($filters));
-        
+
         return SmartCache::remember($cacheKey, now()->addMinutes(15), function () use ($tribe, $filters) {
             $query = static::active()->withStats();
-            
+
             if ($tribe) {
                 $query->byTribe($tribe);
             }
-            
+
             if (isset($filters['special'])) {
                 $query->special();
             }
-            
+
             if (isset($filters['min_attack'])) {
                 $query->byAttackPower($filters['min_attack']);
             }
-            
+
             if (isset($filters['min_defense'])) {
                 $query->byDefensePower($filters['min_defense']);
             }
-            
+
             return $query->get();
         });
     }

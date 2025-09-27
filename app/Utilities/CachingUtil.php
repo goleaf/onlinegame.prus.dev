@@ -28,7 +28,7 @@ class CachingUtil
     public function cache(string $key, mixed $data, int $minutes = null, array $tags = null)
     {
         $minutes = $minutes ?? $this->defaultExpiration;
-        
+
         return SmartCache::remember($key, now()->addMinutes($minutes), function () use ($data) {
             return $data;
         });
