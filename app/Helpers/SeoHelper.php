@@ -263,7 +263,7 @@ class SeoHelper
             $imagePath = public_path(str_replace(asset(''), '', $metadata['image']));
             if (file_exists($imagePath)) {
                 $imageSize = getimagesize($imagePath);
-                if ($imageSize[0] < 1200 || $imageSize[1] < 630) {
+                if ($imageSize && ($imageSize[0] < 1200 || $imageSize[1] < 630)) {
                     $errors[] = 'Image should be at least 1200x630 pixels for optimal social sharing';
                 }
             }
