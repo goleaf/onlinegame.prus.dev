@@ -97,7 +97,7 @@
             "public/build/",
             "public/hot",
             "public/storage/",
-            "tests/Coverage/",
+            "tests/",
             "app/ValueObjects/",
             "app/Models/"
         ]
