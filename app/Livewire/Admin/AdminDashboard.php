@@ -28,15 +28,19 @@ class AdminDashboard extends Component
         $this->isLoading = true;
         
         try {
-            $this->systemStats = [
-                'total_users' => \App\Models\User::count(),
-                'total_players' => \App\Models\Game\Player::count(),
-                'total_villages' => \App\Models\Game\Village::count(),
-                'active_sessions' => \App\Models\Game\Player::where('last_activity', '>', now()->subMinutes(30))->count(),
-                'system_uptime' => $this->getSystemUptime(),
-                'memory_usage' => $this->getMemoryUsage(),
-                'disk_usage' => $this->getDiskUsage(),
-            ];
+            $cacheKey = "admin_system_stats_" . now()->format('Y-m-d-H-i');
+            
+            $this->systemStats = SmartCache::remember($cacheKey, now()->addMinutes(5), function () {
+                return [
+                    'total_users' => \App\Models\User::count(),
+                    'total_players' => \App\Models\Game\Player::count(),
+                    'total_villages' => \App\Models\Game\Village::count(),
+                    'active_sessions' => \App\Models\Game\Player::where('last_activity', '>', now()->subMinutes(30))->count(),
+                    'system_uptime' => $this->getSystemUptime(),
+                    'memory_usage' => $this->getMemoryUsage(),
+                    'disk_usage' => $this->getDiskUsage(),
+                ];
+            });
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to load system statistics: ' . $e->getMessage());
         } finally {

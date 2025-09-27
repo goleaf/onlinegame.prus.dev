@@ -287,7 +287,7 @@ class ArtifactEffectService
     }
 
     /**
-     * Get active effects for a target with optimized query
+     * Get active effects for a target with query optimization
      */
     public function getActiveEffects($target): \Illuminate\Database\Eloquent\Collection
     {
@@ -300,19 +300,19 @@ class ArtifactEffectService
             true => function ($q) {
                 return $q->valid();
             },
-            $targetType => function ($q) use ($targetType, $targetId) {
-                return $q->byTarget($targetType, $targetId);
+            $targetType => function ($q) use ($targetType) {
+                return $q->byTarget($targetType, $this->getTargetId($target));
             }
         ];
 
         return QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
             ->selectRaw('
                 artifact_effects.*,
-                (SELECT COUNT(*) FROM artifact_effects ae2 WHERE ae2.artifact_id = artifact_effects.artifact_id) as artifact_total_effects,
-                (SELECT COUNT(*) FROM artifact_effects ae3 WHERE ae3.target_type = artifact_effects.target_type AND ae3.target_id = artifact_effects.target_id) as target_total_effects,
-                (SELECT SUM(magnitude) FROM artifact_effects ae4 WHERE ae4.target_type = artifact_effects.target_type AND ae4.target_id = artifact_effects.target_id AND ae4.is_active = 1) as total_magnitude
+                (SELECT COUNT(*) FROM artifact_effects ae2 WHERE ae2.artifact_id = artifact_effects.artifact_id AND ae2.is_active = 1) as artifact_active_effects,
+                (SELECT SUM(magnitude) FROM artifact_effects ae3 WHERE ae3.artifact_id = artifact_effects.artifact_id AND ae3.is_active = 1) as total_magnitude,
+                (SELECT AVG(magnitude) FROM artifact_effects ae4 WHERE ae4.artifact_id = artifact_effects.artifact_id AND ae4.is_active = 1) as avg_magnitude
             ')
-            ->with(['artifact:id,name,type'])
+            ->with(['artifact:id,name,description'])
             ->get();
     }
 
