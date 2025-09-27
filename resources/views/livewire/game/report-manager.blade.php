@@ -159,6 +159,7 @@
                     Mark All Read
                 </button>
                 <button wire:click="deleteAllRead"
+                        wire:confirm="Are you sure you want to delete all read reports? This action cannot be undone."
                         class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
                     Delete Read
                 </button>

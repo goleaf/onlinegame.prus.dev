@@ -158,7 +158,9 @@
             "hsv",
             "ds",
             "deinitialize",
-            "krt"
+            "krt",
+            "praetorians",
+            "trainings"
         ],
         "paths": [
             "vendor/",

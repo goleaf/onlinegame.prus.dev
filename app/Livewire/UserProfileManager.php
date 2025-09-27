@@ -240,7 +240,7 @@ class UserProfileManager extends Component
 
             // Send notification about phone update
             GameNotificationService::sendNotification(
-                [$this->user->id],
+                $this->user->id,
                 'phone_updated',
                 [
                     'user_id' => $this->user->id,
