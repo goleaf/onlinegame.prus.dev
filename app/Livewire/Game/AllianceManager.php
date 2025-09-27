@@ -1046,4 +1046,23 @@ class AllianceManager extends Component
 
         return $totalMembers > 0 ? round(($membersWithPhone / $totalMembers) * 100, 2) : 0;
     }
+
+    public function getLogBorderColor($action)
+    {
+        $colors = [
+            'member_joined' => 'border-green-400',
+            'member_left' => 'border-yellow-400',
+            'member_kicked' => 'border-red-400',
+            'member_promoted' => 'border-blue-400',
+            'member_demoted' => 'border-orange-400',
+            'diplomacy_proposed' => 'border-purple-400',
+            'diplomacy_accepted' => 'border-green-400',
+            'diplomacy_declined' => 'border-red-400',
+            'war_declared' => 'border-red-600',
+            'war_ended' => 'border-gray-400',
+            'message_posted' => 'border-blue-400',
+        ];
+
+        return $colors[$action] ?? 'border-gray-300';
+    }
 }
