@@ -108,7 +108,16 @@ class VillageManager extends Component
             // Use SmartCache for building types with automatic optimization
             $buildingTypesCacheKey = 'building_types_active';
             $this->buildingTypes = SmartCache::remember($buildingTypesCacheKey, now()->addMinutes(15), function () {
-                return BuildingType::where('is_active', true)
+                // Use the new eloquent filtering system for building types
+                $filters = [
+                    [
+                        'target' => 'is_active',
+                        'type' => '$eq',
+                        'value' => true
+                    ]
+                ];
+
+                return BuildingType::filter($filters)
                     ->selectRaw('
                         building_types.*,
                         (SELECT COUNT(*) FROM buildings b WHERE b.building_type_id = building_types.id AND b.is_active = 1) as total_buildings,

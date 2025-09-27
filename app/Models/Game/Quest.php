@@ -13,7 +13,7 @@ use SmartCache\Facades\SmartCache;
 
 class Quest extends Model
 {
-    use HasFactory, HasTaxonomy, HasNotables, HasReference;
+    use HasFactory, HasTaxonomy, HasNotables, HasReference, Commentable;
 
     protected $fillable = [
         'name',
