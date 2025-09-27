@@ -262,9 +262,51 @@
         </div>
     @endif
 
+    <!-- Map Statistics -->
+    <div class="map-stats mt-3">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">Total Villages</h6>
+                        <p class="card-text">{{ count($mapData) }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">Visible Villages</h6>
+                        <p class="card-text">{{ count($visibleVillages) }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">Map Center</h6>
+                        <p class="card-text">{{ $this->getCoordinateDisplay($viewCenter['x'], $viewCenter['y']) }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">Zoom Level</h6>
+                        <p class="card-text">{{ $zoomLevel }}x</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @if ($selectedVillage)
-        <div class="village-details">
-            <h4>Selected Village</h4>
+        <div class="village-details mt-3">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Selected Village</h4>
+                </div>
+                <div class="card-body">
             <div class="village-info">
                 <div class="info-row">
                     <span class="label">Name:</span>
@@ -272,7 +314,7 @@
                 </div>
                 <div class="info-row">
                     <span class="label">Coordinates:</span>
-                    <span class="value">({{ $selectedVillage['x'] }}, {{ $selectedVillage['y'] }})</span>
+                    <span class="value">{{ $this->getCoordinateDisplay($selectedVillage['x'], $selectedVillage['y']) }}</span>
                 </div>
                 <div class="info-row">
                     <span class="label">Population:</span>

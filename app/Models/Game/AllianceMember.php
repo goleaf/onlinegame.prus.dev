@@ -4,6 +4,7 @@ namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 class AllianceMember extends Model
 {
