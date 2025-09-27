@@ -262,6 +262,35 @@ $bearing = $village1->bearingTo($village2);
 // Returns: 45.5 (degrees)
 ```
 
+## Performance Optimizations
+
+### Caching Strategy
+- **SmartCache Integration**: Automatic query optimization
+- **Context-Aware Keys**: Unique cache keys based on filters and parameters
+- **Optimized TTL**: Different cache durations for different data types
+- **Database Load Reduction**: Significant performance improvements
+
+### Reference Number System
+- **Unique Identifiers**: MOV-YYYYMM#### and TSK-YYYYMM#### formats
+- **Automatic Generation**: Reference numbers generated on creation
+- **Debug Tracking**: Easy identification of specific operations
+- **Audit Trail**: Complete tracking of game actions
+
+### Cache Examples
+```php
+// Village target data caching
+$cacheKey = "village_{$villageId}_battle_target_data";
+$target = SmartCache::remember($cacheKey, now()->addMinutes(1), function () use ($villageId) {
+    return Village::with(['player', 'troops.unitType'])->find($villageId);
+});
+
+// Movement data caching
+$cacheKey = "village_{$villageId}_movements_{$filterByType}_{$filterByStatus}";
+$movements = SmartCache::remember($cacheKey, now()->addMinutes(2), function () {
+    return Movement::byVillage($villageId)->withVillageInfo()->get();
+});
+```
+
 ## Future Enhancements
 
 Potential improvements:
@@ -272,6 +301,8 @@ Potential improvements:
 - Integrate with error reporting systems
 - **Geographic Features**: Map visualization, route planning, territory analysis
 - **Real-World Integration**: Weather data, time zones, seasonal effects
+- **Advanced Caching**: Redis clustering, cache warming, intelligent invalidation
+- **Reference System**: Extended to all game entities, barcode generation
 
 ---
 

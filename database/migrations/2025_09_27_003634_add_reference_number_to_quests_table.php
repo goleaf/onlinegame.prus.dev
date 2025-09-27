@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('quests', function (Blueprint $table) {
-            $table->string('reference_number')->unique()->index()->after('id');
+            $table->string('reference_number')->nullable()->index()->after('id');
+        });
+        
+        // Add unique constraint after populating existing records
+        Schema::table('quests', function (Blueprint $table) {
+            $table->unique('reference_number');
         });
     }
 

@@ -97,30 +97,40 @@ class TroopManager extends Component
         $this->isLoading = true;
 
         try {
-            $this->troops = $this->village->troops;
+            // Use SmartCache for troop data with automatic optimization
+            $troopsCacheKey = "village_{$this->village->id}_troops_data";
+            $this->troops = SmartCache::remember($troopsCacheKey, now()->addMinutes(2), function () {
+                return $this->village->troops;
+            });
 
-            // Use optimized query for unit types
-            $this->unitTypes = UnitType::where('is_active', true)
-                ->where('tribe', $this->village->player->tribe)
-                ->selectRaw('
-                    unit_types.*,
-                    (SELECT COUNT(*) FROM troops t WHERE t.unit_type_id = unit_types.id AND t.quantity > 0) as total_troops,
-                    (SELECT SUM(quantity) FROM troops t2 WHERE t2.unit_type_id = unit_types.id) as total_quantity,
-                    (SELECT AVG(quantity) FROM troops t3 WHERE t3.unit_type_id = unit_types.id AND t3.quantity > 0) as avg_quantity
-                ')
-                ->get();
+            // Use SmartCache for unit types with automatic optimization
+            $unitTypesCacheKey = "tribe_{$this->village->player->tribe}_unit_types";
+            $this->unitTypes = SmartCache::remember($unitTypesCacheKey, now()->addMinutes(10), function () {
+                return UnitType::where('is_active', true)
+                    ->where('tribe', $this->village->player->tribe)
+                    ->selectRaw('
+                        unit_types.*,
+                        (SELECT COUNT(*) FROM troops t WHERE t.unit_type_id = unit_types.id AND t.quantity > 0) as total_troops,
+                        (SELECT SUM(quantity) FROM troops t2 WHERE t2.unit_type_id = unit_types.id) as total_quantity,
+                        (SELECT AVG(quantity) FROM troops t3 WHERE t3.unit_type_id = unit_types.id AND t3.quantity > 0) as avg_quantity
+                    ')
+                    ->get();
+            });
 
-            // Use optimized query for training queues
-            $this->trainingQueues = $this
-                ->village
-                ->trainingQueues()
-                ->where('is_completed', false)
-                ->with('unitType:id,name,attack_power,defense_power,speed')
-                ->selectRaw('
-                    training_queues.*,
-                    (SELECT COUNT(*) FROM training_queues tq2 WHERE tq2.village_id = training_queues.village_id AND tq2.is_completed = 0) as total_active_queues
-                ')
-                ->get();
+            // Use SmartCache for training queues with automatic optimization
+            $trainingQueuesCacheKey = "village_{$this->village->id}_training_queues";
+            $this->trainingQueues = SmartCache::remember($trainingQueuesCacheKey, now()->addMinutes(1), function () {
+                return $this
+                    ->village
+                    ->trainingQueues()
+                    ->where('is_completed', false)
+                    ->with('unitType:id,name,attack_power,defense_power,speed')
+                    ->selectRaw('
+                        training_queues.*,
+                        (SELECT COUNT(*) FROM training_queues tq2 WHERE tq2.village_id = training_queues.village_id AND tq2.is_completed = 0) as total_active_queues
+                    ')
+                    ->get();
+            });
         } finally {
             $this->isLoading = false;
         }

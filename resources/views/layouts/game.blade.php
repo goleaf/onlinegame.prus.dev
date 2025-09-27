@@ -194,6 +194,17 @@
                 console.error('Game tick error:', data.message);
                 // You can add an error toast here
             });
+
+            // Fathom Analytics event tracking
+            Livewire.on('fathom-track', function(data) {
+                if (typeof fathom !== 'undefined') {
+                    if (data.value !== undefined) {
+                        fathom.trackGoal(data.name, data.value);
+                    } else {
+                        fathom.trackGoal(data.name);
+                    }
+                }
+            });
         });
     </script>
 </body>

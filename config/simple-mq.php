@@ -58,7 +58,7 @@ return [
     */
     'queues' => [
 
-        'simple' => [
+        'game_events' => [
             // Specifies the name of the connection to be used for this queue.
             'connection' => 'default',
 
@@ -70,15 +70,15 @@ return [
              */
             'arguments' => [
                 /**
-                 * Sets the time-to-live for messages in this queue to 60000 milliseconds (60 seconds).
+                 * Sets the time-to-live for messages in this queue to 1 hour.
                  *
                  * 1 min = 60000
                  * 1 hour = 3600000
                  * 1 day = 3600000 * 24
                  */
                 'x-message-ttl' => 3600000,
-                // Limits the maximum number of messages in the queue to 1000.
-                'x-max-length' => 1000,
+                // Limits the maximum number of messages in the queue to 10000 for game events.
+                'x-max-length' => 10000,
                 // Specifies the dead-letter exchange to which messages will be sent if they expire.
                 'x-dead-letter-exchange' => null,
                 // Routing key for messages that are routed to the dead-letter exchange.

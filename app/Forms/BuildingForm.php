@@ -12,7 +12,7 @@ class BuildingForm extends Formello
     {
         return [
             'method' => 'POST',
-            'action' => route('buildings.store'),
+            'action' => route('game.api.buildings.store'),
         ];
     }
 
@@ -20,7 +20,7 @@ class BuildingForm extends Formello
     {
         return [
             'method' => 'PATCH',
-            'action' => route('buildings.update', $this->model->id),
+            'action' => route('game.api.buildings.update', $this->model->id),
         ];
     }
 

@@ -15,11 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'game.auth' => \App\Http\Middleware\GameAuthMiddleware::class,
             'game.rate_limit' => \App\Http\Middleware\GameRateLimitMiddleware::class,
             'access.log' => \LaraUtilX\Http\Middleware\AccessLogMiddleware::class,
+            'query.performance' => \App\Http\Middleware\QueryPerformanceMiddleware::class,
         ]);
         
-        // Add AccessLogMiddleware to web middleware group
+        // Add middleware to web middleware group
         $middleware->web(append: [
             \LaraUtilX\Http\Middleware\AccessLogMiddleware::class,
+            \App\Http\Middleware\QueryPerformanceMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
