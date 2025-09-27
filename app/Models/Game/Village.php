@@ -5,6 +5,7 @@ namespace App\Models\Game;
 use App\Services\GeographicService;
 use App\Traits\Commentable;
 use App\ValueObjects\Coordinates;
+use App\ValueObjects\VillageResources;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -125,6 +126,27 @@ class Village extends Model implements Auditable
     }
 
     public function resources(): HasMany
+
+    /**
+     * Get the village resources as a value object
+     */
+    protected function villageResources(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => {
+                $resource = $this->resources()->first();
+                if (!$resource) {
+                    return new \App\ValueObjects\VillageResources(0, 0, 0, 0);
+                }
+                return new \App\ValueObjects\VillageResources(
+                    wood: $resource->wood,
+                    clay: $resource->clay,
+                    iron: $resource->iron,
+                    crop: $resource->crop
+                );
+            }
+        );
+    }
     {
         return $this->hasMany(Resource::class);
     }

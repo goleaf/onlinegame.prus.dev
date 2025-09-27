@@ -404,6 +404,7 @@
                     @endif
 
                     <button wire:click="deleteReport({{ $selectedReport['id'] }})"
+                            wire:confirm="Are you sure you want to delete this report? This action cannot be undone."
                             class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
                         Delete
                     </button>
