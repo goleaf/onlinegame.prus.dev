@@ -101,6 +101,36 @@ class UnitType extends Model
         });
     }
 
+    /**
+     * Get unit types with SmartCache optimization
+     */
+    public static function getCachedUnitTypes($tribe = null, $filters = [])
+    {
+        $cacheKey = "unit_types_{$tribe}_" . md5(serialize($filters));
+        
+        return SmartCache::remember($cacheKey, now()->addMinutes(15), function () use ($tribe, $filters) {
+            $query = static::active()->withStats();
+            
+            if ($tribe) {
+                $query->byTribe($tribe);
+            }
+            
+            if (isset($filters['special'])) {
+                $query->special();
+            }
+            
+            if (isset($filters['min_attack'])) {
+                $query->byAttackPower($filters['min_attack']);
+            }
+            
+            if (isset($filters['min_defense'])) {
+                $query->byDefensePower($filters['min_defense']);
+            }
+            
+            return $query->get();
+        });
+    }
+
     public function scopeTopAttack($query, $limit = 10)
     {
         return $query->orderBy('attack_power', 'desc')->limit($limit);
