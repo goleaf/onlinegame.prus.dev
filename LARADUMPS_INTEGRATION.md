@@ -170,6 +170,18 @@ ds('Creating movement', [
 - **Performance Metrics**: User engagement analytics
 - **Custom Events**: Battle, movement, task, and village interactions
 
+### Error Handling (New)
+- **Comprehensive Validation**: Input validation and error checking
+- **Exception Handling**: Try-catch blocks with detailed error logging
+- **User-Friendly Messages**: Clear error notifications
+- **Debug Information**: Detailed error context in Laradumps
+
+### Performance Monitoring (New)
+- **Component Load Times**: Mount time tracking
+- **Database Query Optimization**: Performance metrics
+- **Memory Usage**: Resource consumption monitoring
+- **Response Time Tracking**: Real-time performance insights
+
 ## Usage Instructions
 
 ### 1. Install Laradumps Desktop App
