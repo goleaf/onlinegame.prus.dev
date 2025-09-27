@@ -97,23 +97,21 @@ class User extends Authenticatable implements Auditable, IsFilterable
     public function player()
     {
         return $this->hasOne(\App\Models\Game\Player::class);
-    }
-
-    /**
-     * Get user's game statistics
-     */
     public function getGameStats()
     {
-        $startTime = microtime(true);
-
         $player = $this->player;
         if (!$player) {
-            ds('User has no player', [
-                'user_id' => $this->id,
-                'user_name' => $this->name,
-                'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
-            ])->label('User Game Stats - No Player');
-
+            return null;
+        }
+        return [
+            'is_active' => $player->is_active,
+            'is_online' => $player->is_online,
+            'last_active_at' => $player->last_active_at,
+            'points' => $player->points,
+            'village_count' => $player->villages->count(),
+            'total_population' => $player->villages->sum('population'),
+        ];
+    }
             return null;
         }
 

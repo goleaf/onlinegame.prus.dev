@@ -23,6 +23,7 @@
                         </div>
 
                         <div class="text-center">
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-primary me-2">Admin Panel</a>
                             <a href="{{ route('logout') }}" class="btn btn-secondary">@text('game.logout', 'Logout')</a>
                         </div>
                     </div>
