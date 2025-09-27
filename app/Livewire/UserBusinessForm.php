@@ -40,7 +40,7 @@ class UserBusinessForm extends Component
         'registration_number' => 'nullable|string|max:50',
         'business_address' => 'nullable|string|max:500',
         'business_city' => 'nullable|string|max:100',
-        'business_country' => ['required', 'string', 'size:2'],
+        'business_country' => 'required|string|size:2',
         'business_phone' => 'nullable|string|max:20',
         'business_email' => 'nullable|email|max:255',
         'business_website' => 'nullable|url|max:255',

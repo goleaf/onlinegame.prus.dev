@@ -39,12 +39,12 @@ class SeoAnalyticsService
     }
 
     /**
-     * Store metrics in cache
+     * Store metrics in cache using LaraUtilX
      */
     protected function storeMetrics(string $page, array $metrics): void
     {
         $key = "seo_metrics_{$page}_" . date('Y-m-d');
-        $existingMetrics = Cache::get($key, []);
+        $existingMetrics = $this->cachingUtil->get($key, []);
         $existingMetrics[] = $metrics;
         
         // Keep only last 100 entries per day
@@ -52,7 +52,8 @@ class SeoAnalyticsService
             $existingMetrics = array_slice($existingMetrics, -100);
         }
         
-        Cache::put($key, $existingMetrics, 86400); // 24 hours
+        $this->cachingUtil->put($key, $existingMetrics, 86400); // 24 hours
+        $this->loggingUtil->info("SEO metrics stored for page: {$page}", $metrics);
     }
 
     /**
