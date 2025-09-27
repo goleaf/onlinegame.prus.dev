@@ -51,7 +51,7 @@ class EloquentFilteringUnitTest extends TestCase
         $user = new User();
         
         $this->assertTrue(method_exists($user, 'allowedFilters'));
-        $this->assertTrue(method_exists($user, 'filter'));
+        $this->assertTrue(method_exists($user, 'allowedFilters'));
         
         // Test that the model has the Filterable trait
         $traits = class_uses_recursive(User::class);

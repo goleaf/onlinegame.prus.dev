@@ -55,9 +55,20 @@ class AIService
      */
     public function generateGameContent(string $prompt, array $options = [])
     {
+        $startTime = microtime(true);
+        
+        ds('AIService: Game content generation started', [
+            'service' => 'AIService',
+            'method' => 'generateGameContent',
+            'prompt_length' => strlen($prompt),
+            'options' => $options,
+            'default_provider' => $this->defaultProvider,
+            'generation_time' => now()
+        ]);
+        
         $cacheKey = 'ai_game_content_' . md5($prompt . serialize($options));
 
-        return CachingUtil::get($cacheKey, function () use ($prompt, $options) {
+        return CachingUtil::get($cacheKey, function () use ($prompt, $options, $startTime) {
             $messages = [
                 [
                     'role' => 'system',
