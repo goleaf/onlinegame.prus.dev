@@ -6,10 +6,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use LaraUtilX\Traits\LarautilxAuditable;
 
 class User extends Authenticatable implements Auditable
 {
@@ -125,9 +125,9 @@ class User extends Authenticatable implements Auditable
             return false;
         }
 
-        return $this->player->is_online && 
-               $this->player->last_active_at && 
-               $this->player->last_active_at->diffInMinutes(now()) <= 15;
+        return $this->player->is_online &&
+            $this->player->last_active_at &&
+            $this->player->last_active_at->diffInMinutes(now()) <= 15;
     }
 
     /**
@@ -170,8 +170,9 @@ class User extends Authenticatable implements Auditable
     public function scopeOnlineUsers($query)
     {
         return $query->whereHas('player', function ($q) {
-            $q->where('is_online', true)
-              ->where('last_active_at', '>=', now()->subMinutes(15));
+            $q
+                ->where('is_online', true)
+                ->where('last_active_at', '>=', now()->subMinutes(15));
         });
     }
 

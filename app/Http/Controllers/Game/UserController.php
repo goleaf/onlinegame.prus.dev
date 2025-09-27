@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\FeatureToggleUtil;
 use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
-use LaraUtilX\Utilities\FeatureToggleUtil;
 
 class UserController extends CrudController
 {
@@ -69,8 +69,9 @@ class UserController extends CrudController
                 $query->onlineUsers();
             } else {
                 $query->whereDoesntHave('player', function ($q) {
-                    $q->where('is_online', true)
-                      ->where('last_active_at', '>=', now()->subMinutes(15));
+                    $q
+                        ->where('is_online', true)
+                        ->where('last_active_at', '>=', now()->subMinutes(15));
                 });
             }
         }
@@ -89,11 +90,12 @@ class UserController extends CrudController
         if ($request->has('search')) {
             $searchTerm = $request->get('search');
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'like', "%{$searchTerm}%")
-                  ->orWhere('email', 'like', "%{$searchTerm}%")
-                  ->orWhereHas('player', function ($playerQuery) use ($searchTerm) {
-                      $playerQuery->where('name', 'like', "%{$searchTerm}%");
-                  });
+                $q
+                    ->where('name', 'like', "%{$searchTerm}%")
+                    ->orWhere('email', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('player', function ($playerQuery) use ($searchTerm) {
+                        $playerQuery->where('name', 'like', "%{$searchTerm}%");
+                    });
             });
         }
 
@@ -105,9 +107,10 @@ class UserController extends CrudController
             if (in_array($sortBy, ['name', 'email', 'created_at'])) {
                 $query->orderBy($sortBy, $direction);
             } elseif ($sortBy === 'player_points') {
-                $query->join('players', 'users.id', '=', 'players.user_id')
-                      ->orderBy('players.points', $direction)
-                      ->select('users.*');
+                $query
+                    ->join('players', 'users.id', '=', 'players.user_id')
+                    ->orderBy('players.points', $direction)
+                    ->select('users.*');
             }
         } else {
             $query->orderBy('created_at', 'desc');
@@ -143,8 +146,9 @@ class UserController extends CrudController
             $query->byWorld($request->get('world_id'));
         }
 
-        $users = $query->orderBy('players.last_active_at', 'desc')
-                      ->paginate($request->get('per_page', 50));
+        $users = $query
+            ->orderBy('players.last_active_at', 'desc')
+            ->paginate($request->get('per_page', 50));
 
         // Log the request
         LoggingUtil::info('Online users retrieved', [
@@ -165,7 +169,7 @@ class UserController extends CrudController
 
         $stats = $integrationService->cacheGameData(
             'user_activity_stats',
-            function() {
+            function () {
                 return [
                     'total_users' => User::count(),
                     'users_with_players' => User::withGamePlayers()->count(),
@@ -187,7 +191,7 @@ class UserController extends CrudController
                     })->count(),
                 ];
             },
-            300 // 5 minutes cache
+            300  // 5 minutes cache
         );
 
         return $this->successResponse($stats, 'User activity statistics retrieved successfully.');
@@ -276,7 +280,7 @@ class UserController extends CrudController
             'village_count' => $user->player->villages->count(),
             'alliance_history' => $user->player->alliance_id ? [
                 'current_alliance_id' => $user->player->alliance_id,
-                'joined_at' => $user->player->updated_at, // This would need a proper field
+                'joined_at' => $user->player->updated_at,  // This would need a proper field
             ] : null,
             'world_info' => $user->player->world ? [
                 'world_id' => $user->player->world->id,
@@ -341,8 +345,9 @@ class UserController extends CrudController
         $sortDirection = $request->get('sort_direction', 'desc');
         $query->orderBy($sortBy, $sortDirection);
 
-        $users = $query->with(['player.world', 'player.alliance'])
-                      ->paginate($request->get('per_page', $this->perPage));
+        $users = $query
+            ->with(['player.world', 'player.alliance'])
+            ->paginate($request->get('per_page', $this->perPage));
 
         // Add game stats to each user
         $users->getCollection()->transform(function ($user) {

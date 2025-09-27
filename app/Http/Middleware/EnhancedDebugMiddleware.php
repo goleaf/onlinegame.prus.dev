@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Closure;
 
 /**
  * Enhanced Debug Middleware for Laravel 12.29.0+ features
@@ -34,13 +34,13 @@ class EnhancedDebugMiddleware
     {
         // Detect user's preferred color scheme
         $prefersDark = $this->detectDarkMode($request);
-        
+
         // Add debug enhancement headers
         $response->headers->set('X-Debug-Enhanced', 'true');
         $response->headers->set('X-Debug-Theme', $prefersDark ? 'dark' : 'light');
         $response->headers->set('X-Debug-Version', '12.29.0+');
         $response->headers->set('X-Debug-Features', 'enhanced-ui,auto-theme,performance-metrics');
-        
+
         // Add performance metrics
         $this->addPerformanceMetrics($response);
     }
@@ -84,7 +84,7 @@ class EnhancedDebugMiddleware
         $response->headers->set('X-Debug-Execution-Time', $executionTime . 'ms');
         $response->headers->set('X-Debug-Memory-Usage', $this->formatBytes(memory_get_usage(true)));
         $response->headers->set('X-Debug-Peak-Memory', $this->formatBytes(memory_get_peak_usage(true)));
-        
+
         // Add query count if available
         if (class_exists('\Illuminate\Database\Events\QueryExecuted')) {
             $queryCount = $this->getQueryCount();
@@ -100,11 +100,11 @@ class EnhancedDebugMiddleware
         try {
             $events = app('events');
             $queryCount = 0;
-            
+
             $events->listen('Illuminate\Database\Events\QueryExecuted', function () use (&$queryCount) {
                 $queryCount++;
             });
-            
+
             return $queryCount;
         } catch (\Exception $e) {
             return 0;
@@ -120,9 +120,9 @@ class EnhancedDebugMiddleware
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
-        
+
         $bytes /= pow(1024, $pow);
-        
+
         return round($bytes, 2) . ' ' . $units[$pow];
     }
 }
