@@ -225,8 +225,6 @@ return [
     'base64' => 'The :attribute field must be valid Base64 encoded data.',
     'datauri' => 'The :attribute field must be a valid data URI.',
     'hsv' => 'The :attribute field must be a valid HSV color value.',
-    'base64' => 'The :attribute field must be valid Base64 encoded data.',
-    'datauri' => 'The :attribute field must be a valid data URI.',
     'phone' => 'The :attribute field must be a valid phone number.',
     'hsl' => 'The :attribute field must be a valid HSL color value.',
 
