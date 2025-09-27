@@ -2,9 +2,7 @@
 
 namespace App\ValueObjects;
 
-use Bag\Bag;
-
-readonly class PlayerStats extends Bag
+readonly class PlayerStats
 {
     public function __construct(
         public int $points = 0,
