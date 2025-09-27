@@ -8,8 +8,12 @@ use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\CachingUtil;
 
 class ResourceManager extends Component
+{
+    use ApiResponseTrait;
 {
     public $village;
 

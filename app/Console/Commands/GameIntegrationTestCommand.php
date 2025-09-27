@@ -18,7 +18,7 @@ class GameIntegrationTestCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'game:integration-test {--user-id=1 : User ID to test with} {--verbose : Show detailed output}';
+    protected $signature = 'game:integration-test {--user-id=1 : User ID to test with} {--detailed : Show detailed output}';
 
     /**
      * The console command description.

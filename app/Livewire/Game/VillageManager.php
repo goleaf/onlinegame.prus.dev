@@ -10,6 +10,9 @@ use App\Models\Game\Village;
 use App\Services\QueryOptimizationService;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\CachingUtil;
+use LaraUtilX\Utilities\FilteringUtil;
 use Livewire\WithPagination;
 use sbamtr\LaravelQueryEnrich\QE;
 use SmartCache\Facades\SmartCache;
@@ -17,6 +20,8 @@ use SmartCache\Facades\SmartCache;
 use function sbamtr\LaravelQueryEnrich\c;
 
 class VillageManager extends Component
+{
+    use ApiResponseTrait;
 {
     use WithPagination;
 
