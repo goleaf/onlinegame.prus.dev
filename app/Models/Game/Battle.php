@@ -13,11 +13,11 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Battle extends Model implements Auditable
+class Battle extends Model implements Auditable, IsFilterable
 {
     use HasReference;
     use AuditableTrait;
-    // use Filterable;
+    use Filterable;
 
     protected $fillable = [
         'attacker_id',
