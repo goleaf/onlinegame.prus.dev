@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
+use WendellAdriel\Lift\Lift;
 
 class Notification extends Model
 {
-    use HasFactory, HasTaxonomy, HasReference;
+    use HasFactory, HasReference;
 
     protected $fillable = [
         'player_id',
