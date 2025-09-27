@@ -36,8 +36,8 @@ class Player extends Model implements Auditable
     ];
 
     protected $casts = [
-        'last_login' => 'datetime_immutable',
-        'last_active_at' => 'datetime_immutable',
+        'last_login' => 'datetime',
+        'last_active_at' => 'datetime',
         'is_active' => 'boolean',
         'is_online' => 'boolean',
     ];

@@ -222,6 +222,9 @@ class EnhancedGameDashboard extends Component
             $this->pollingEnabled ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
         );
+        
+        // Track polling toggle
+        $this->dispatch('fathom-track', name: 'polling toggled', value: $this->pollingEnabled ? 1 : 0);
     }
 
     public function initializeRealTimeFeatures()
