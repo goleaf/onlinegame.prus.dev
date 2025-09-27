@@ -12,7 +12,7 @@ use WendellAdriel\Lift\Lift;
 
 class Task extends Model
 {
-    use HasFactory, HasReference, Commentable, Lift;
+    use HasFactory, HasReference, Commentable, Lift, GameValidationTrait;
 
     // Laravel Lift typed properties
     public int $id;

@@ -153,3 +153,48 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::get('/{id}/effects', [ArtifactController::class, 'effects']);
     });
 });
+
+// WebSocket/Real-time API Routes
+Route::middleware('auth:sanctum')->prefix('websocket')->group(function () {
+    // Connection Management
+    Route::post('/subscribe', [WebSocketController::class, 'subscribe']);
+    Route::post('/unsubscribe', [WebSocketController::class, 'unsubscribe']);
+    Route::post('/auth', [WebSocketController::class, 'auth']);
+    
+    // Update Management
+    Route::get('/updates', [WebSocketController::class, 'getUpdates']);
+    Route::post('/test-message', [WebSocketController::class, 'sendTestMessage']);
+    
+    // Statistics
+    Route::get('/stats', [WebSocketController::class, 'getStats']);
+    
+    // Admin Features
+    Route::post('/broadcast-announcement', [WebSocketController::class, 'broadcastAnnouncement']);
+});
+
+// Public API Routes (no authentication required)
+Route::prefix('public')->group(function () {
+    Route::get('/health', function () {
+        return response()->json([
+            'success' => true,
+            'status' => 'healthy',
+            'data' => [
+                'timestamp' => now()->toISOString(),
+                'version' => config('game.version', '1.0.0'),
+                'name' => config('game.name', 'Online Strategy Game'),
+            ],
+        ]);
+    });
+    
+    Route::get('/statistics', function () {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'total_players' => \App\Models\User::count(),
+                'server_status' => 'online',
+                'uptime' => \App\Services\GamePerformanceMonitor::monitorServerLoad()['uptime'] ?? 'Unknown',
+            ],
+            'timestamp' => now()->toISOString(),
+        ]);
+    });
+});

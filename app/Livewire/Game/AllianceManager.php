@@ -1003,6 +1003,17 @@ class AllianceManager extends Component
             'memberStats' => $this->memberStats,
             'inviteStats' => $this->inviteStats,
             'applicationStats' => $this->applicationStats,
+            'allianceDiplomacy' => $this->allianceDiplomacy,
+            'allianceWars' => $this->allianceWars,
+            'allianceMessages' => $this->allianceMessages,
+            'allianceLogs' => $this->allianceLogs,
+            'showDiplomacy' => $this->showDiplomacy,
+            'showWars' => $this->showWars,
+            'showMessages' => $this->showMessages,
+            'showLogs' => $this->showLogs,
+            'diplomacyForm' => $this->diplomacyForm,
+            'messageForm' => $this->messageForm,
+            'warForm' => $this->warForm,
         ]);
     }
 }

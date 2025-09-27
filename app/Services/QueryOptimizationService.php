@@ -128,12 +128,6 @@ class QueryOptimizationService
      * @param  string  $sortOrder
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public static function applyConditionalOrdering(Builder $query, string $sortBy, string $sortOrder): Builder
-    {
-        return $query->orderBy($sortBy, $sortOrder);
-    }
-
-
     /**
      * Create conditional ordering
      */

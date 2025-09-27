@@ -533,54 +533,57 @@ class Artifact extends Model
     public static function generateArtifactEffects(string $type, string $rarity): array
     {
         $effects = [];
+        $rarityMultiplier = match($rarity) {
+            'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
+        };
 
         switch ($type) {
             case 'weapon':
                 $effects[] = [
                     'type' => 'combat_bonus',
-                    'value' => rand(5, 25) * (match($rarity) {
-                        'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
-                    }),
+                    'value' => rand(5, 25) * $rarityMultiplier,
+                    'target_type' => 'village',
+                    'duration_type' => 'permanent',
                 ];
                 break;
             case 'armor':
                 $effects[] = [
                     'type' => 'defense_bonus',
-                    'value' => rand(5, 25) * (match($rarity) {
-                        'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
-                    }),
+                    'value' => rand(5, 25) * $rarityMultiplier,
+                    'target_type' => 'village',
+                    'duration_type' => 'permanent',
                 ];
                 break;
             case 'tool':
                 $effects[] = [
-                    'type' => 'building_speed',
-                    'value' => rand(10, 50) * (match($rarity) {
-                        'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
-                    }),
+                    'type' => 'building_bonus',
+                    'value' => rand(10, 50) * $rarityMultiplier,
+                    'target_type' => 'village',
+                    'duration_type' => 'permanent',
                 ];
                 break;
             case 'mystical':
                 $effects[] = [
-                    'type' => 'resource_production',
-                    'value' => rand(15, 75) * (match($rarity) {
-                        'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
-                    }),
+                    'type' => 'resource_bonus',
+                    'value' => rand(15, 75) * $rarityMultiplier,
+                    'target_type' => 'village',
+                    'duration_type' => 'permanent',
                 ];
                 break;
             case 'relic':
                 $effects[] = [
-                    'type' => 'research_speed',
-                    'value' => rand(20, 100) * (match($rarity) {
-                        'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
-                    }),
+                    'type' => 'production_bonus',
+                    'value' => rand(20, 100) * $rarityMultiplier,
+                    'target_type' => 'village',
+                    'duration_type' => 'permanent',
                 ];
                 break;
             case 'crystal':
                 $effects[] = [
-                    'type' => 'storage_capacity',
-                    'value' => rand(25, 125) * (match($rarity) {
-                        'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
-                    }),
+                    'type' => 'trade_bonus',
+                    'value' => rand(25, 125) * $rarityMultiplier,
+                    'target_type' => 'village',
+                    'duration_type' => 'permanent',
                 ];
                 break;
         }

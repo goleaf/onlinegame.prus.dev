@@ -42,7 +42,7 @@ class TaskController extends CrudController
     /**
      * Get tasks with advanced filtering
      */
-    public function getTasksWithStats(Request $request)
+    public function withStats(Request $request)
     {
         $query = Task::withStats()
             ->with($this->relationships);

@@ -71,6 +71,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.updater') ? 'active' : '' }}"
+                           href="{{ route('admin.updater') }}">
+                            <i class="fas fa-sync-alt"></i> Updater
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('game.statistics') ? 'active' : '' }}"
                            href="{{ route('game.statistics') }}">
                             <i class="fas fa-chart-bar"></i> Statistics

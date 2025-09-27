@@ -322,10 +322,10 @@ class User extends Authenticatable implements Auditable
         return Filter::only(
             Filter::field('name', ['$eq', '$like']),
             Filter::field('email', ['$eq', '$like']),
-            Filter::field('phone', ['$eq', '$contains']),
+            Filter::field('phone', ['$eq', '$like']),
             Filter::field('phone_country', ['$eq']),
-            Filter::field('phone_normalized', ['$eq', '$contains']),
-            Filter::field('phone_e164', ['$eq', '$contains']),
+            Filter::field('phone_normalized', ['$eq', '$like']),
+            Filter::field('phone_e164', ['$eq', '$like']),
             Filter::field('email_verified_at', ['$eq', '$gt', '$lt']),
             Filter::relation('players', ['$has']),
             Filter::relation('player', ['$has'])
