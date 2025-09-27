@@ -120,6 +120,7 @@ class TaskManager extends Component
         ])->label('TaskManager Mount');
 
         if ($this->world) {
+            $this->loadTaxonomies();
             $this->loadPlayerData();
             $this->loadTasks();
             $this->initializeTaskFeatures();

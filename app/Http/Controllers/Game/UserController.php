@@ -319,6 +319,77 @@ class UserController extends CrudController
     }
 
     /**
+     * Create user with password strength validation
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => [
+                'required',
+                'confirmed',
+                'min:8',
+                new ZxcvbnRule([
+                    $request->email,
+                    $request->name,
+                ]),
+            ],
+            'phone' => 'nullable|string',
+            'phone_country' => 'nullable|string|size:2',
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+            'phone' => $validated['phone'] ?? null,
+            'phone_country' => $validated['phone_country'] ?? null,
+        ]);
+
+        // Log the user creation
+        LoggingUtil::info('User created via admin', [
+            'created_by' => auth()->id(),
+            'new_user_id' => $user->id,
+            'new_user_email' => $user->email,
+        ], 'user_management');
+
+        return $this->successResponse($user, 'User created successfully.');
+    }
+
+    /**
+     * Update user password with strength validation
+     */
+    public function updatePassword(Request $request, $userId)
+    {
+        $user = User::findOrFail($userId);
+
+        $validated = $request->validate([
+            'password' => [
+                'required',
+                'confirmed',
+                'min:8',
+                new ZxcvbnRule([
+                    $user->email,
+                    $user->name,
+                ]),
+            ],
+        ]);
+
+        $user->update([
+            'password' => bcrypt($validated['password']),
+        ]);
+
+        // Log the password update
+        LoggingUtil::info('User password updated via admin', [
+            'updated_by' => auth()->id(),
+            'target_user_id' => $userId,
+        ], 'user_management');
+
+        return $this->successResponse($user, 'User password updated successfully.');
+    }
+
+    /**
      * Get user's game history
      */
     public function gameHistory($userId)
