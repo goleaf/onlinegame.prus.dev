@@ -179,8 +179,8 @@ trait GameValidationTrait
     protected function validateQuestData(array $data)
     {
         $rules = [
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
+            'name' => ['required', 'string', 'max:255', new Clean],
+            'description' => ['required', 'string', 'max:1000', new Clean],
             'category' => 'required|in:tutorial,main,side,daily,weekly,special',
             'difficulty' => 'required|in:easy,medium,hard,expert',
             'requirements' => 'nullable|json',

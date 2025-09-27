@@ -19,6 +19,102 @@
     </div>
 
     <div class="map-filters">
+        <!-- Enhanced Map Controls -->
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Map Theme:</label>
+                    <select wire:model="mapTheme" class="form-control form-control-sm">
+                        <option value="classic">Classic</option>
+                        <option value="modern">Modern</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Coordinate System:</label>
+                    <select wire:model="coordinateSystem" class="form-control form-control-sm">
+                        <option value="game">Game (X|Y)</option>
+                        <option value="decimal">Decimal</option>
+                        <option value="dms">DMS</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Map Layers:</label>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary" 
+                                wire:click="toggleMapLayer('villages')"
+                                :class="{'active': mapLayers.villages}">
+                            Villages
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" 
+                                wire:click="toggleMapLayer('alliances')"
+                                :class="{'active': mapLayers.alliances}">
+                            Alliances
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" 
+                                wire:click="toggleMapLayer('resources')"
+                                :class="{'active': mapLayers.resources}">
+                            Resources
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" 
+                                wire:click="toggleMapLayer('movements')"
+                                :class="{'active': mapLayers.movements}">
+                            Movements
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Quick Actions:</label>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary" 
+                                wire:click="$set('showGrid', !showGrid)">
+                            {{ $showGrid ? 'Hide' : 'Show' }} Grid
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" 
+                                wire:click="$set('showDistance', !showDistance)">
+                            {{ $showDistance ? 'Hide' : 'Show' }} Distance
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Coordinate Selection -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Center X:</label>
+                    <input type="number" wire:model="viewCenter.x" class="form-control form-control-sm" 
+                           min="0" max="400">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Center Y:</label>
+                    <input type="number" wire:model="viewCenter.y" class="form-control form-control-sm" 
+                           min="0" max="400">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Actions:</label>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-primary" wire:click="loadVisibleVillages">
+                            Refresh
+                        </button>
+                        <button type="button" class="btn btn-secondary" wire:click="calculateMapBounds">
+                            Auto Bounds
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="filter-group">
             <label class="filter-label">Show:</label>
             <button wire:click="toggleCoordinates"

@@ -17,7 +17,7 @@ class CachingUtil
     }
 
     /**
-     * Cache data with configurable options.
+     * Cache data with SmartCache optimization.
      *
      * @param  string  $key
      * @param  mixed   $data
@@ -27,13 +27,9 @@ class CachingUtil
      */
     public function cache(string $key, mixed $data, int $minutes = null, array $tags = null)
     {
-        if (Cache::getStore() instanceof \Illuminate\Cache\TaggableStore) {
-            return Cache::tags($tags)->remember($key, $minutes, function () use ($data) {
-                return $data;
-            });
-        }
-
-        return Cache::remember($key, $minutes, function () use ($data) {
+        $minutes = $minutes ?? $this->defaultExpiration;
+        
+        return SmartCache::remember($key, now()->addMinutes($minutes), function () use ($data) {
             return $data;
         });
     }
