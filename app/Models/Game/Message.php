@@ -14,7 +14,7 @@ use WendellAdriel\Lift\Lift;
 
 class Message extends Model implements Auditable
 {
-    use HasFactory, HasReference, Commentable, AuditableTrait;
+    use HasFactory, HasReference, Commentable, AuditableTrait, Lift;
 
     protected $fillable = [
         'sender_id',

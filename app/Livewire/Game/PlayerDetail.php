@@ -20,11 +20,9 @@ class PlayerDetail extends Component
     public $recentMovements = [];
     public $playerStats = [];
 
-    public function mount($playerId)
+    public function mount(Player $player)
     {
-        $this->player = Player::with(['villages', 'alliance'])
-            ->findOrFail($playerId);
-        
+        $this->player = $player->load(['villages', 'alliance']);
         $this->loadPlayerData();
     }
 
