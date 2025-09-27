@@ -32,12 +32,35 @@ class RealTimeGameComponent extends Component
     public function mount()
     {
         $this->userId = Auth::id();
+        $this->initializeWithIntegration();
         $this->loadUpdates();
         $this->loadNotifications();
         $this->loadOnlineStats();
 
         if ($this->autoRefresh) {
             $this->startAutoRefresh();
+        }
+    }
+
+    /**
+     * Initialize component with real-time integration
+     */
+    public function initializeWithIntegration(): void
+    {
+        try {
+            // Initialize real-time features for the user
+            GameIntegrationService::initializeUserRealTime($this->userId);
+            
+            $this->dispatch('realtime-initialized', [
+                'message' => 'Real-time game component initialized',
+                'user_id' => $this->userId,
+                'refresh_interval' => $this->refreshInterval,
+            ]);
+
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to initialize real-time features: ' . $e->getMessage(),
+            ]);
         }
     }
 
