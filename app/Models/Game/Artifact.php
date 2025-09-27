@@ -421,6 +421,17 @@ class Artifact extends Model
 
     public function getEffectValue(string $effectType): float
     {
+        // Get active effect from ArtifactEffect records
+        $activeEffect = $this->artifactEffects()
+            ->where('effect_type', $effectType)
+            ->where('is_active', true)
+            ->first();
+
+        if ($activeEffect) {
+            return $activeEffect->magnitude;
+        }
+
+        // Fallback to legacy effects array
         if (empty($this->effects)) {
             return 0;
         }

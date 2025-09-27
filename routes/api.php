@@ -175,6 +175,20 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::post('/{messageId}/mark-read', [MessageController::class, 'markAsRead']);
         Route::delete('/{messageId}', [MessageController::class, 'deleteMessage']);
     });
+    
+    // Alliance System
+    Route::prefix('alliances')->group(function () {
+        Route::get('/', [AllianceController::class, 'index']);
+        Route::post('/', [AllianceController::class, 'store']);
+        Route::get('/{id}', [AllianceController::class, 'show']);
+        Route::put('/{id}', [AllianceController::class, 'update']);
+        Route::delete('/{id}', [AllianceController::class, 'destroy']);
+        Route::post('/{id}/join', [AllianceController::class, 'join']);
+        Route::post('/leave', [AllianceController::class, 'leave']);
+        Route::get('/{id}/members', [AllianceController::class, 'members']);
+        Route::get('/{id}/wars', [AllianceController::class, 'wars']);
+        Route::get('/{id}/diplomacy', [AllianceController::class, 'diplomacy']);
+    });
 });
 
 // WebSocket/Real-time API Routes

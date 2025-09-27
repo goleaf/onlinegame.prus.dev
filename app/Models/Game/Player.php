@@ -262,7 +262,19 @@ class Player extends Model implements Auditable
                 $query = $query->filter($eloquentFilters);
             }
             
-            return $query->get();
+            $players = $query->get();
+            
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            ds('Player: Cached players retrieved', [
+                'players_count' => $players->count(),
+                'world_id' => $worldId,
+                'filters_applied' => count($eloquentFilters),
+                'query_time_ms' => $totalTime,
+                'cache_hit' => false // This is a cache miss since we're in the closure
+            ]);
+            
+            return $players;
         });
     }
 
