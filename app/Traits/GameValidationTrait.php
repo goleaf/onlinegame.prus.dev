@@ -191,6 +191,28 @@ trait GameValidationTrait
     }
 
     /**
+     * Validate phone number data
+     */
+    protected function validatePhoneData(array $data, $country = null)
+    {
+        $rules = [
+            'phone' => ['nullable', 'string'],
+            'phone_country' => ['nullable', 'string', 'size:2'],
+        ];
+
+        if (!empty($data['phone'])) {
+            if ($country) {
+                $rules['phone'][] = (new Phone)->country($country);
+            } else {
+                $rules['phone'][] = new Phone;
+            }
+            $rules['phone_country'][] = 'required_with:phone';
+        }
+
+        return $this->validateGameData($data, $rules);
+    }
+
+    /**
      * Validate building data
      */
     protected function validateBuildingData(array $data)
