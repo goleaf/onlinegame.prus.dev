@@ -5,6 +5,7 @@ use App\Http\Controllers\Game\LarautilxController;
 use App\Http\Controllers\Game\PlayerController;
 use App\Http\Controllers\Game\SecureGameController;
 use App\Http\Controllers\Game\TaskController;
+use App\Http\Controllers\Game\UserController;
 use App\Http\Controllers\Game\VillageController;
 use Illuminate\Support\Facades\Route;
 

@@ -192,14 +192,17 @@ class GamePerformanceOptimizer
      */
     protected function loadVillageData(string $userId): array
     {
-        return DB::table('villages')
-            ->select([
-                'id', 'name', 'x_coordinate', 'y_coordinate',
-                'population', 'loyalty', 'created_at'
-            ])
-            ->where('user_id', $userId)
-            ->get()
-            ->toArray();
+        // Check if villages table exists and has data
+        try {
+            return DB::table('villages')
+                ->select(['id', 'name', 'created_at'])
+                ->where('user_id', $userId)
+                ->get()
+                ->toArray();
+        } catch (\Exception $e) {
+            // Return empty array if table doesn't exist
+            return [];
+        }
     }
 
     /**

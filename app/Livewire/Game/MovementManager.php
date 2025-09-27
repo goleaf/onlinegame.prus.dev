@@ -245,6 +245,17 @@ class MovementManager extends Component
         // Generate reference number for the movement
         $movement->generateReference();
 
+        ds('Movement created successfully', [
+            'movement_id' => $movement->id,
+            'reference_number' => $movement->reference_number,
+            'movement_type' => $this->movementType,
+            'from_village' => $this->village->name,
+            'to_village' => $targetVillage->name,
+            'troops_data' => $troopsData,
+            'travel_time' => $this->travelTime,
+            'arrives_at' => $this->arrivalTime
+        ])->label('MovementManager Movement Created');
+
         $this->reset(['targetVillageId', 'selectedTroops', 'troopQuantities', 'movementTime', 'arrivalTime']);
         $this->loadMovementData();
         $this->addNotification('Movement created successfully!', 'success');
