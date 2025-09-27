@@ -11,11 +11,14 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\FilteringUtil;
+use LaraUtilX\Utilities\PaginationUtil;
 use Livewire\WithPagination;
 
 class QuestManager extends Component
 {
-    use WithPagination;
+    use WithPagination, ApiResponseTrait;
 
     #[Reactive]
     public $world;
