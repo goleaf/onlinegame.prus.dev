@@ -317,15 +317,21 @@ class ArtifactEffectService
     }
 
     /**
-     * Get effect magnitude for a specific effect type
+     * Get effect magnitude for a specific effect type with query optimization
      */
     public function getEffectMagnitude($target, string $effectType): float
     {
-        $effects = $this->getActiveEffects($target);
-        
-        return $effects
+        $targetType = $this->getTargetType($target);
+        $targetId = $this->getTargetId($target);
+
+        $result = ArtifactEffect::selectRaw('SUM(magnitude) as total_magnitude')
+            ->valid()
+            ->byTarget($targetType, $targetId)
             ->where('effect_type', $effectType)
-            ->sum('magnitude');
+            ->where('is_active', true)
+            ->first();
+
+        return $result->total_magnitude ?? 0.0;
     }
 
     /**
