@@ -3,23 +3,14 @@
 namespace App\Livewire\Game;
 
 use App\Models\Game\Alliance;
-use App\Models\Game\AllianceDiplomacy;
-use App\Models\Game\AllianceLog;
-use App\Models\Game\AllianceMessage;
-use App\Models\Game\AllianceWar;
 use App\Models\Game\Player;
 use App\Models\Game\World;
 use App\Services\QueryOptimizationService;
-use App\Services\GameIntegrationService;
-use App\Services\GameNotificationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithPagination;
-use SmartCache\Facades\SmartCache;
-use sbamtr\LaravelQueryEnrich\QE;
-use function sbamtr\LaravelQueryEnrich\c;
 
 class AllianceManager extends Component
 {
@@ -53,40 +44,6 @@ class AllianceManager extends Component
     public $memberStats = [];
     public $inviteStats = [];
     public $applicationStats = [];
-    // Diplomacy and communication features
-    public $allianceDiplomacy = [];
-    public $allianceWars = [];
-    public $allianceMessages = [];
-    public $allianceLogs = [];
-    public $selectedDiplomacy = null;
-    public $selectedWar = null;
-    public $selectedMessage = null;
-    public $showDiplomacy = false;
-    public $showWars = false;
-    public $showMessages = false;
-    public $showLogs = false;
-
-    public $diplomacyForm = [
-        'target_alliance_id' => null,
-        'status' => 'ally',
-        'message' => '',
-        'expires_at' => null,
-    ];
-
-    public $messageForm = [
-        'message_type' => 'general',
-        'subject' => '',
-        'body' => '',
-        'priority' => 'normal',
-        'is_pinned' => false,
-        'is_announcement' => false,
-        'expires_at' => null,
-    ];
-
-    public $warForm = [
-        'target_alliance_id' => null,
-        'declaration_message' => '',
-    ];
 
     protected $listeners = [
         'allianceUpdated',
@@ -100,12 +57,6 @@ class AllianceManager extends Component
         'applicationDeclined',
         'villageSelected',
         'gameTickProcessed',
-        'diplomacyProposed',
-        'diplomacyAccepted',
-        'diplomacyDeclined',
-        'warDeclared',
-        'warEnded',
-        'messagePosted',
     ];
 
     public function mount($worldId = null)
@@ -142,93 +93,30 @@ class AllianceManager extends Component
         $this->isLoading = true;
 
         try {
-            // Use SmartCache for alliance data with automatic optimization
-            $alliancesCacheKey = "world_{$this->world->id}_alliances_data";
-            $this->alliances = SmartCache::remember($alliancesCacheKey, now()->addMinutes(5), function () {
-                $query = Alliance::where('world_id', $this->world->id)
-                    ->with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status'])
-                    ->select([
-                        'alliances.*',
-                        QE::select(QE::count(c('id')))
-                            ->from('players', 'p')
-                            ->whereColumn('p.alliance_id', c('alliances.id'))
-                            ->as('member_count'),
-                        QE::select(QE::sum(c('points')))
-                            ->from('players', 'p2')
-                            ->whereColumn('p2.alliance_id', c('alliances.id'))
-                            ->as('total_points'),
-                        QE::select(QE::avg(c('points')))
-                            ->from('players', 'p3')
-                            ->whereColumn('p3.alliance_id', c('alliances.id'))
-                            ->as('avg_points'),
-                        QE::select(QE::max(c('points')))
-                            ->from('players', 'p4')
-                            ->whereColumn('p4.alliance_id', c('alliances.id'))
-                            ->as('max_points')
-                    ]);
+            // Use optimized query with selectRaw for alliance stats
+            $this->alliances = Alliance::where('world_id', $this->world->id)
+                ->with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status'])
+                ->selectRaw('
+                    alliances.*,
+                    (SELECT COUNT(*) FROM players p WHERE p.alliance_id = alliances.id) as member_count,
+                    (SELECT SUM(points) FROM players p2 WHERE p2.alliance_id = alliances.id) as total_points,
+                    (SELECT AVG(points) FROM players p3 WHERE p3.alliance_id = alliances.id) as avg_points,
+                    (SELECT MAX(points) FROM players p4 WHERE p4.alliance_id = alliances.id) as max_points
+                ')
+                ->get()
+                ->toArray();
 
-                // Apply filters using the new eloquent filtering system
-                $filters = [];
-
-                if ($this->searchQuery) {
-                    $filters[] = [
-                        'target' => 'name',
-                        'type' => '$contains',
-                        'value' => $this->searchQuery
-                    ];
-                }
-
-                if ($this->showOnlyActive) {
-                    $filters[] = [
-                        'target' => 'is_active',
-                        'type' => '$eq',
-                        'value' => true
-                    ];
-                }
-
-                if ($this->filterByRank) {
-                    $filters[] = [
-                        'type' => '$has',
-                        'target' => 'members',
-                        'value' => [
-                            [
-                                'target' => 'alliance_rank',
-                                'type' => '$eq',
-                                'value' => $this->filterByRank
-                            ]
-                        ]
-                    ];
-                }
-
-                if (!empty($filters)) {
-                    $query = $query->filter($filters);
-                }
-
-                // Apply sorting
-                $query = $query->orderBy($this->sortBy, $this->sortOrder);
-
-                return $query->get()->toArray();
-            });
-
-            // Use SmartCache for player alliance data with automatic optimization
-            $playerAllianceCacheKey = 'player_' . Auth::id() . '_alliance_data';
-            $player = SmartCache::remember($playerAllianceCacheKey, now()->addMinutes(3), function () {
-                return Player::where('user_id', Auth::id())
-                    ->with(['alliance' => function ($query) {
-                        $query->with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status']);
-                    }])
-                    ->first();
-            });
+            $player = Player::where('user_id', Auth::id())
+                ->with(['alliance' => function ($query) {
+                    $query->with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status']);
+                }])
+                ->first();
 
             if ($player && $player->alliance) {
                 $this->myAlliance = $player->alliance;
                 $this->allianceMembers = $player->alliance->members;
                 $this->allianceInvites = $player->alliance->invites;
                 $this->allianceApplications = $player->alliance->applications;
-                $this->loadAllianceDiplomacy();
-                $this->loadAllianceWars();
-                $this->loadAllianceMessages();
-                $this->loadAllianceLogs();
             }
 
             $this->addNotification('Alliance data loaded successfully', 'success');
@@ -241,31 +129,15 @@ class AllianceManager extends Component
 
     public function selectAlliance($allianceId)
     {
-        // Use SmartCache for selected alliance data with automatic optimization
-        $selectedAllianceCacheKey = "alliance_{$allianceId}_detailed";
-        $this->selectedAlliance = SmartCache::remember($selectedAllianceCacheKey, now()->addMinutes(5), function () use ($allianceId) {
-            return Alliance::with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status'])
-                ->select([
-                    'alliances.*',
-                    QE::select(QE::count(c('id')))
-                        ->from('players', 'p')
-                        ->whereColumn('p.alliance_id', c('alliances.id'))
-                        ->as('member_count'),
-                    QE::select(QE::sum(c('points')))
-                        ->from('players', 'p2')
-                        ->whereColumn('p2.alliance_id', c('alliances.id'))
-                        ->as('total_points'),
-                    QE::select(QE::avg(c('points')))
-                        ->from('players', 'p3')
-                        ->whereColumn('p3.alliance_id', c('alliances.id'))
-                        ->as('avg_points'),
-                    QE::select(QE::max(c('points')))
-                        ->from('players', 'p4')
-                        ->whereColumn('p4.alliance_id', c('alliances.id'))
-                        ->as('max_points')
-                ])
-                ->find($allianceId);
-        });
+        $this->selectedAlliance = Alliance::with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status'])
+            ->selectRaw('
+                alliances.*,
+                (SELECT COUNT(*) FROM players p WHERE p.alliance_id = alliances.id) as member_count,
+                (SELECT SUM(points) FROM players p2 WHERE p2.alliance_id = alliances.id) as total_points,
+                (SELECT AVG(points) FROM players p3 WHERE p3.alliance_id = alliances.id) as avg_points,
+                (SELECT MAX(points) FROM players p4 WHERE p4.alliance_id = alliances.id) as max_points
+            ')
+            ->find($allianceId);
         $this->showDetails = true;
         $this->addNotification('Alliance selected', 'info');
     }
@@ -793,10 +665,6 @@ class AllianceManager extends Component
             'members' => $this->myAlliance->members->where('alliance_rank', 'member')->count(),
             'average_population' => $this->myAlliance->members->avg('population'),
             'total_population' => $this->myAlliance->members->sum('population'),
-            'members_with_phone' => $this->myAlliance->members->whereHas('user', function ($query) {
-                $query->whereNotNull('phone');
-            })->count(),
-            'phone_coverage_percentage' => $this->getPhoneCoveragePercentage(),
         ];
     }
 
@@ -1035,111 +903,6 @@ class AllianceManager extends Component
             'memberStats' => $this->memberStats,
             'inviteStats' => $this->inviteStats,
             'applicationStats' => $this->applicationStats,
-            'allianceDiplomacy' => $this->allianceDiplomacy,
-            'allianceWars' => $this->allianceWars,
-            'allianceMessages' => $this->allianceMessages,
-            'allianceLogs' => $this->allianceLogs,
-            'showDiplomacy' => $this->showDiplomacy,
-            'showWars' => $this->showWars,
-            'showMessages' => $this->showMessages,
-            'showLogs' => $this->showLogs,
-            'diplomacyForm' => $this->diplomacyForm,
-            'messageForm' => $this->messageForm,
-            'warForm' => $this->warForm,
         ]);
-    }
-
-    private function getPhoneCoveragePercentage()
-    {
-        if (!$this->myAlliance) {
-            return 0;
-        }
-
-        $totalMembers = $this->myAlliance->members->count();
-        $membersWithPhone = $this->myAlliance->members->whereHas('user', function ($query) {
-            $query->whereNotNull('phone');
-        })->count();
-
-        return $totalMembers > 0 ? round(($membersWithPhone / $totalMembers) * 100, 2) : 0;
-    }
-
-    // Enhanced message posting with new model features
-    public function postMessage()
-    {
-        $player = Player::where('user_id', Auth::id())->first();
-        if (!$player->alliance) {
-            $this->addNotification('You are not in an alliance', 'error');
-            return;
-        }
-
-        if (empty($this->messageForm['subject']) || empty($this->messageForm['body'])) {
-            $this->addNotification('Subject and body are required', 'error');
-            return;
-        }
-
-        // Check permissions for certain message types
-        if (in_array($this->messageForm['message_type'], ['announcement', 'leadership']) && 
-            !in_array($player->alliance_rank, ['leader', 'co_leader'])) {
-            $this->addNotification('You do not have permission to post this type of message', 'error');
-            return;
-        }
-
-        try {
-            $message = AllianceMessage::createMessage(
-                $player->alliance_id,
-                $player->id,
-                $this->messageForm['subject'],
-                $this->messageForm['body'],
-                $this->messageForm['message_type'],
-                $this->messageForm['priority']
-            );
-
-            // Update additional fields
-            $message->update([
-                'is_pinned' => $this->messageForm['is_pinned'],
-                'is_announcement' => $this->messageForm['is_announcement'],
-                'expires_at' => $this->messageForm['expires_at'] ? now()->addDays($this->messageForm['expires_at']) : null,
-            ]);
-
-            // Log the action
-            AllianceLog::logAction(
-                $player->alliance_id,
-                $player->id,
-                AllianceLog::ACTION_MESSAGE_SENT,
-                "Posted message: {$this->messageForm['subject']}",
-                [
-                    'message_id' => $message->id,
-                    'message_type' => $this->messageForm['message_type'],
-                    'priority' => $this->messageForm['priority'],
-                    'is_pinned' => $this->messageForm['is_pinned'],
-                    'is_announcement' => $this->messageForm['is_announcement'],
-                ]
-            );
-
-            $this->loadAllianceMessages();
-            $this->resetMessageForm();
-            $this->addNotification('Message posted successfully', 'success');
-
-            $this->dispatch('messagePosted', [
-                'alliance_id' => $player->alliance_id,
-                'message_id' => $message->id,
-                'type' => $message->message_type,
-            ]);
-        } catch (\Exception $e) {
-            $this->addNotification('Failed to post message: ' . $e->getMessage(), 'error');
-        }
-    }
-
-    public function resetMessageForm()
-    {
-        $this->messageForm = [
-            'message_type' => 'general',
-            'subject' => '',
-            'body' => '',
-            'priority' => 'normal',
-            'is_pinned' => false,
-            'is_announcement' => false,
-            'expires_at' => null,
-        ];
     }
 }
