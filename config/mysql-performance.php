@@ -49,6 +49,13 @@ return [
         'key_buffer_size' => env('MYSQL_KEY_BUFFER_SIZE', '32M'),
     ],
 
+    'middleware' => [
+        'enabled' => env('MYSQL_PERFORMANCE_MIDDLEWARE_ENABLED', true),
+        'log_slow_requests' => env('MYSQL_LOG_SLOW_REQUESTS', true),
+        'slow_request_threshold' => env('MYSQL_SLOW_REQUEST_THRESHOLD', 100), // milliseconds
+        'high_query_threshold' => env('MYSQL_HIGH_QUERY_THRESHOLD', 50), // queries
+    ],
+
     'monitoring' => [
         'enable_processlist_monitoring' => env('MYSQL_PROCESSLIST_MONITORING', false),
         'enable_slow_query_analysis' => env('MYSQL_SLOW_QUERY_ANALYSIS', false),
