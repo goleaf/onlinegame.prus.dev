@@ -2,244 +2,282 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\Game\Player;
+use App\Models\Game\GameNotification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Game Notification Service
+ * Handles game notifications and messaging
+ */
 class GameNotificationService
 {
     /**
-     * Send notification to specific users
+     * Send notification to user
      */
-    public static function sendNotification(array $userIds, string $type, array $data, string $priority = 'normal'): void
-    {
+    public static function sendNotification(
+        int $userId,
+        string $type,
+        array $data = [],
+        string $priority = 'normal'
+    ): bool {
         try {
-            foreach ($userIds as $userId) {
-                $notification = [
-                    'id' => uniqid(),
-                    'type' => $type,
-                    'data' => $data,
-                    'priority' => $priority,
-                    'timestamp' => now()->toISOString(),
-                    'read' => false,
-                ];
+            $notification = GameNotification::create([
+                'user_id' => $userId,
+                'type' => $type,
+                'data' => $data,
+                'priority' => $priority,
+                'is_read' => false,
+                'created_at' => now(),
+            ]);
 
-                // Store notification in cache
-                $key = "user_notifications_{$userId}";
-                $notifications = Cache::get($key, []);
-                $notifications[] = $notification;
-                
-                // Keep only last 50 notifications
-                if (count($notifications) > 50) {
-                    $notifications = array_slice($notifications, -50);
-                }
-                
-                Cache::put($key, $notifications, now()->addDays(7));
+            // Invalidate user notification cache
+            self::invalidateUserNotificationCache($userId);
 
-                Log::info('Game notification sent', [
-                    'user_id' => $userId,
-                    'type' => $type,
-                    'priority' => $priority,
-                ]);
-            }
+            // Log notification
+            Log::info('Game notification sent', [
+                'user_id' => $userId,
+                'type' => $type,
+                'priority' => $priority,
+                'notification_id' => $notification->id,
+            ]);
 
+            return true;
         } catch (\Exception $e) {
             Log::error('Failed to send game notification', [
-                'user_ids' => $userIds,
+                'user_id' => $userId,
                 'type' => $type,
                 'error' => $e->getMessage(),
             ]);
-        }
-    }
 
-    /**
-     * Broadcast notification to multiple users
-     */
-    public static function broadcastNotification(array $userIds, string $type, array $data, string $priority = 'normal'): void
-    {
-        self::sendNotification($userIds, $type, $data, $priority);
-    }
-
-    /**
-     * Send system-wide announcement
-     */
-    public static function sendSystemAnnouncement(string $title, string $message, string $priority = 'normal'): void
-    {
-        try {
-            // Get all active users
-            $activeUsers = User::where('last_activity_at', '>=', now()->subHours(1))
-                ->pluck('id')
-                ->toArray();
-
-            self::sendNotification($activeUsers, 'system_announcement', [
-                'title' => $title,
-                'message' => $message,
-                'system_announcement' => true,
-            ], $priority);
-
-            Log::info('System announcement sent', [
-                'title' => $title,
-                'priority' => $priority,
-                'recipients' => count($activeUsers),
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Failed to send system announcement', [
-                'title' => $title,
-                'error' => $e->getMessage(),
-            ]);
+            return false;
         }
     }
 
     /**
      * Get user notifications
      */
-    public static function getUserNotifications(int $userId): array
+    public static function getUserNotifications(int $userId, int $limit = 50): array
     {
-        try {
-            $key = "user_notifications_{$userId}";
-            return Cache::get($key, []);
+        $cacheKey = "user_notifications:{$userId}:{$limit}";
 
-        } catch (\Exception $e) {
-            Log::error('Failed to get user notifications', [
-                'user_id' => $userId,
-                'error' => $e->getMessage(),
-            ]);
-            
-            return [];
-        }
+        return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($userId, $limit) {
+            return GameNotification::where('user_id', $userId)
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get()
+                ->toArray();
+        });
     }
 
     /**
      * Mark notification as read
      */
-    public static function markNotificationAsRead(int $userId, string $notificationId): void
+    public static function markAsRead(int $notificationId, int $userId): bool
     {
         try {
-            $key = "user_notifications_{$userId}";
-            $notifications = Cache::get($key, []);
+            $notification = GameNotification::where('id', $notificationId)
+                ->where('user_id', $userId)
+                ->first();
 
-            foreach ($notifications as &$notification) {
-                if ($notification['id'] === $notificationId) {
-                    $notification['read'] = true;
-                    break;
-                }
+            if ($notification) {
+                $notification->update(['is_read' => true]);
+                
+                // Invalidate cache
+                self::invalidateUserNotificationCache($userId);
+                
+                return true;
             }
 
-            Cache::put($key, $notifications, now()->addDays(7));
-
+            return false;
         } catch (\Exception $e) {
             Log::error('Failed to mark notification as read', [
-                'user_id' => $userId,
                 'notification_id' => $notificationId,
+                'user_id' => $userId,
                 'error' => $e->getMessage(),
             ]);
+
+            return false;
         }
     }
 
     /**
-     * Cleanup old notifications
+     * Mark all notifications as read for user
      */
-    public static function cleanupOldNotifications(): void
+    public static function markAllAsRead(int $userId): bool
     {
         try {
-            // Get all notification cache keys
-            $keys = Cache::getStore()->getRedis()->keys('*user_notifications_*');
-            
-            foreach ($keys as $key) {
-                $notifications = Cache::get($key, []);
-                $cleanedNotifications = [];
-                
-                foreach ($notifications as $notification) {
-                    // Keep notifications from last 7 days
-                    $notificationTime = \Carbon\Carbon::parse($notification['timestamp']);
-                    if ($notificationTime->isAfter(now()->subDays(7))) {
-                        $cleanedNotifications[] = $notification;
-                    }
-                }
-                
-                if (count($cleanedNotifications) !== count($notifications)) {
-                    Cache::put($key, $cleanedNotifications, now()->addDays(7));
+            GameNotification::where('user_id', $userId)
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+
+            // Invalidate cache
+            self::invalidateUserNotificationCache($userId);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Failed to mark all notifications as read', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Get unread notification count
+     */
+    public static function getUnreadCount(int $userId): int
+    {
+        $cacheKey = "user_unread_count:{$userId}";
+
+        return Cache::remember($cacheKey, now()->addMinutes(2), function () use ($userId) {
+            return GameNotification::where('user_id', $userId)
+                ->where('is_read', false)
+                ->count();
+        });
+    }
+
+    /**
+     * Get notification statistics
+     */
+    public static function getNotificationStats(): array
+    {
+        $cacheKey = 'notification_stats';
+
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () {
+            return [
+                'total_notifications' => GameNotification::count(),
+                'unread_notifications' => GameNotification::where('is_read', false)->count(),
+                'notifications_today' => GameNotification::whereDate('created_at', today())->count(),
+                'notifications_this_week' => GameNotification::where('created_at', '>=', now()->subWeek())->count(),
+                'by_type' => GameNotification::selectRaw('type, COUNT(*) as count')
+                    ->groupBy('type')
+                    ->pluck('count', 'type')
+                    ->toArray(),
+                'by_priority' => GameNotification::selectRaw('priority, COUNT(*) as count')
+                    ->groupBy('priority')
+                    ->pluck('count', 'priority')
+                    ->toArray(),
+            ];
+        });
+    }
+
+    /**
+     * Send system-wide notification
+     */
+    public static function sendSystemNotification(
+        string $type,
+        array $data = [],
+        string $priority = 'normal'
+    ): bool {
+        try {
+            // Get all active users
+            $activeUsers = \App\Models\User::where('last_activity_at', '>=', now()->subDays(7))
+                ->pluck('id');
+
+            $sentCount = 0;
+            foreach ($activeUsers as $userId) {
+                if (self::sendNotification($userId, $type, $data, $priority)) {
+                    $sentCount++;
                 }
             }
 
-            Log::info('Old notifications cleanup completed');
+            Log::info('System notification sent', [
+                'type' => $type,
+                'sent_count' => $sentCount,
+                'total_users' => $activeUsers->count(),
+            ]);
 
+            return $sentCount > 0;
+        } catch (\Exception $e) {
+            Log::error('Failed to send system notification', [
+                'type' => $type,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Clean up old notifications
+     */
+    public static function cleanupOldNotifications(int $daysOld = 30): int
+    {
+        try {
+            $deletedCount = GameNotification::where('created_at', '<', now()->subDays($daysOld))
+                ->delete();
+
+            Log::info('Old notifications cleaned up', [
+                'deleted_count' => $deletedCount,
+                'days_old' => $daysOld,
+            ]);
+
+            return $deletedCount;
         } catch (\Exception $e) {
             Log::error('Failed to cleanup old notifications', [
                 'error' => $e->getMessage(),
             ]);
+
+            return 0;
         }
     }
 
     /**
-     * Send battle notification
+     * Invalidate user notification cache
      */
-    public static function sendBattleNotification(int $attackerId, int $defenderId, array $battleData): void
+    private static function invalidateUserNotificationCache(int $userId): void
     {
-        self::sendNotification([$attackerId, $defenderId], 'battle_report', [
-            'battle_id' => $battleData['id'],
-            'attacker_id' => $attackerId,
-            'defender_id' => $defenderId,
-            'result' => $battleData['result'],
-            'casualties' => $battleData['casualties'] ?? [],
-            'loot' => $battleData['loot'] ?? [],
-        ], 'high');
-    }
+        $patterns = [
+            "user_notifications:{$userId}:*",
+            "user_unread_count:{$userId}",
+        ];
 
-    /**
-     * Send movement notification
-     */
-    public static function sendMovementNotification(int $playerId, array $movementData): void
-    {
-        self::sendNotification([$playerId], 'movement_update', [
-            'movement_id' => $movementData['id'],
-            'type' => $movementData['type'],
-            'status' => $movementData['status'],
-            'arrival_time' => $movementData['arrival_time'] ?? null,
-        ], 'normal');
-    }
-
-    /**
-     * Send alliance notification
-     */
-    public static function sendAllianceNotification(int $allianceId, string $type, array $data): void
-    {
-        try {
-            // Get all alliance members
-            $memberIds = Player::where('alliance_id', $allianceId)
-                ->pluck('user_id')
-                ->toArray();
-
-            if (!empty($memberIds)) {
-                self::sendNotification($memberIds, "alliance_{$type}", $data, 'normal');
+        foreach ($patterns as $pattern) {
+            if (Cache::getStore() instanceof \Illuminate\Cache\RedisStore) {
+                $keys = \Illuminate\Support\Facades\Redis::keys($pattern);
+                if (!empty($keys)) {
+                    \Illuminate\Support\Facades\Redis::del($keys);
+                }
+            } else {
+                // For non-Redis stores, we'll clear specific keys
+                Cache::forget("user_notifications:{$userId}:50");
+                Cache::forget("user_unread_count:{$userId}");
             }
-
-        } catch (\Exception $e) {
-            Log::error('Failed to send alliance notification', [
-                'alliance_id' => $allianceId,
-                'type' => $type,
-                'error' => $e->getMessage(),
-            ]);
         }
     }
 
     /**
-     * Send quest notification
+     * Get notification types
      */
-    public static function sendQuestNotification(int $playerId, string $type, array $data): void
+    public static function getNotificationTypes(): array
     {
-        self::sendNotification([$playerId], "quest_{$type}", $data, 'normal');
+        return [
+            'system_message' => 'System Message',
+            'battle_report' => 'Battle Report',
+            'alliance_invite' => 'Alliance Invite',
+            'village_attack' => 'Village Attack',
+            'resource_production' => 'Resource Production',
+            'building_complete' => 'Building Complete',
+            'troop_training' => 'Troop Training',
+            'quest_complete' => 'Quest Complete',
+            'achievement_unlock' => 'Achievement Unlock',
+            'market_trade' => 'Market Trade',
+        ];
     }
 
     /**
-     * Send resource notification
+     * Get notification priorities
      */
-    public static function sendResourceNotification(int $playerId, int $villageId, string $type, array $data): void
+    public static function getNotificationPriorities(): array
     {
-        self::sendNotification([$playerId], "resource_{$type}", array_merge($data, [
-            'village_id' => $villageId,
-        ]), 'normal');
+        return [
+            'low' => 'Low',
+            'normal' => 'Normal',
+            'high' => 'High',
+            'urgent' => 'Urgent',
+        ];
     }
 }
