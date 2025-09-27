@@ -78,10 +78,23 @@ class BattleManager extends Component
             $cacheKey = "player_{$this->village->player_id}_recent_battles";
 
             $this->recentBattles = SmartCache::remember($cacheKey, now()->addMinutes(2), function () {
-                return Battle::byPlayer($this->village->player_id)
+                // Use the new eloquent filtering system for battle queries
+                $filters = [
+                    [
+                        'target' => 'attacker_id',
+                        'type' => '$eq',
+                        'value' => $this->village->player_id
+                    ],
+                    [
+                        'target' => 'occurred_at',
+                        'type' => '$gte',
+                        'value' => now()->subDays(7)->toISOString()
+                    ]
+                ];
+
+                return Battle::filter($filters)
                     ->withStats()
                     ->withPlayerInfo()
-                    ->recent(7)
                     ->orderBy('occurred_at', 'desc')
                     ->limit(10)
                     ->get();
