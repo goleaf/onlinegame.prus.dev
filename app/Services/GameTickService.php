@@ -691,6 +691,22 @@ class GameTickService
                 'is_important' => false,
             ]);
 
+            // Publish spy caught event to RabbitMQ
+            $this->rabbitMQ->publishPlayerAction(
+                $movement->player_id,
+                'spy_caught',
+                [
+                    'target_village_id' => $targetVillage->id,
+                    'target_village_name' => $targetVillage->name,
+                    'trap_level' => $targetVillage->buildings()
+                        ->whereHas('buildingType', function ($query) {
+                            $query->where('key', 'trap');
+                        })
+                        ->first()?->level ?? 0,
+                    'spy_defense' => $spyDefense,
+                ]
+            );
+
             Log::info("Spy caught at village {$targetVillage->name}");
             return;
         }
