@@ -331,10 +331,11 @@ class GamePerformanceOptimizer
     protected function getResourceProduction(array $params): array
     {
         try {
-            return DB::table('resources')
+            $result = DB::table('resources')
                 ->selectRaw('COUNT(*) as total_resources')
-                ->first()
-                ?->toArray() ?? [];
+                ->first();
+                
+            return $result ? (array) $result : ['total_resources' => 0];
         } catch (\Exception $e) {
             return ['total_resources' => 0];
         }
