@@ -18,6 +18,7 @@ class PlayerNote extends Model
         'category',
         'is_private',
         'tags',
+        'reference_number',
     ];
 
     protected $casts = [
