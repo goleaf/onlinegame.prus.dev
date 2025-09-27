@@ -57,6 +57,9 @@
                     <button wire:click="publishCustomEvent" class="w-full bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
                         Publish Custom Event
                     </button>
+                    <button wire:click="publishSpyEvent" class="w-full bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                        Publish Spy Event
+                    </button>
                 </div>
             </div>
         </div>

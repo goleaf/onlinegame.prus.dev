@@ -62,27 +62,38 @@ class GamePerformanceOptimizer
     }
 
     /**
-     * Warm up cache for frequently accessed game data
+     * Warm up cache for frequently accessed game data using SmartCache
      */
     public function warmUpGameCache(array $userIds): void
     {
-        $warmUpData = [];
-
         foreach ($userIds as $userId) {
-            $warmUpData["user_stats_{$userId}"] = function () use ($userId) {
-                return $this->loadUserStats($userId);
-            };
+            // Warm up user stats
+            SmartCache::remember(
+                "user_stats_{$userId}",
+                now()->addMinutes(30),
+                function () use ($userId) {
+                    return $this->loadUserStats($userId);
+                }
+            );
 
-            $warmUpData["village_data_{$userId}"] = function () use ($userId) {
-                return $this->loadVillageData($userId);
-            };
+            // Warm up village data
+            SmartCache::remember(
+                "village_data_{$userId}",
+                now()->addMinutes(30),
+                function () use ($userId) {
+                    return $this->loadVillageData($userId);
+                }
+            );
 
-            $warmUpData["troop_data_{$userId}"] = function () use ($userId) {
-                return $this->loadTroopData($userId);
-            };
+            // Warm up troop data
+            SmartCache::remember(
+                "troop_data_{$userId}",
+                now()->addMinutes(30),
+                function () use ($userId) {
+                    return $this->loadTroopData($userId);
+                }
+            );
         }
-
-        $this->cacheService->warmUp($warmUpData);
     }
 
     /**

@@ -110,8 +110,8 @@ trait GameValidationTrait
     protected function validateTaskData(array $data)
     {
         $rules = [
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:1000',
+            'title' => ['required', 'string', 'max:255', new Clean],
+            'description' => ['nullable', 'string', 'max:1000', new Clean],
             'type' => 'required|in:building,combat,resource,exploration,alliance',
             'status' => 'required|in:available,active,completed,expired',
             'progress' => 'integer|min:0|max:100',
