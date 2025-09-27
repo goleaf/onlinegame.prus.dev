@@ -288,6 +288,37 @@ class LarautilxIntegrationService
     }
 
     /**
+     * Evict expired cache items from all stores
+     *
+     * @return array
+     */
+    public function evictExpiredCache(): array
+    {
+        return $this->cacheEvictionService->evictAllStores();
+    }
+
+    /**
+     * Evict expired cache items from a specific store
+     *
+     * @param string $storeName
+     * @return array
+     */
+    public function evictExpiredCacheFromStore(string $storeName): array
+    {
+        return $this->cacheEvictionService->evictStore($storeName);
+    }
+
+    /**
+     * Get detailed cache statistics including eviction data
+     *
+     * @return array
+     */
+    public function getDetailedCacheStats(): array
+    {
+        return $this->cacheEvictionService->getCacheStats();
+    }
+
+    /**
      * Get integration status and statistics
      *
      * @return array
@@ -305,8 +336,10 @@ class LarautilxIntegrationService
                 'AccessLogMiddleware' => true,
                 'CrudController' => true,
                 'GameValidationTrait' => true,
+                'CacheEvictionService' => true,
             ],
             'cache_stats' => $this->getCacheStats(),
+            'detailed_cache_stats' => $this->getDetailedCacheStats(),
             'active_middleware' => [
                 'access.log' => class_exists(\LaraUtilX\Http\Middleware\AccessLogMiddleware::class),
             ],
@@ -318,6 +351,7 @@ class LarautilxIntegrationService
             'created_services' => [
                 'LarautilxIntegrationService' => class_exists(self::class),
                 'GeographicService' => class_exists(\App\Services\GeographicService::class),
+                'CacheEvictionService' => class_exists(\App\Services\CacheEvictionService::class),
             ],
         ];
     }
