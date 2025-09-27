@@ -31,7 +31,7 @@ class UserPaymentForm extends Component
         'credit_card_cvv' => 'nullable|string|size:3',
         'bank_account_iban' => 'nullable|string',
         'bank_bic' => 'nullable|string',
-        'bank_name' => ['nullable', 'string', 'max:255', new Clean],
+        'bank_name' => 'nullable|string|max:255',
     ];
 
     public function mount(User $user = null)

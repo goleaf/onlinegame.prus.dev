@@ -14,7 +14,9 @@
                     <div class="p-3 rounded-md {{ $notification['type'] === 'success' ? 'bg-green-100 text-green-700' : ($notification['type'] === 'error' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700') }}">
                         <div class="flex justify-between items-center">
                             <span>{{ $notification['message'] }}</span>
-                            <button wire:click="removeNotification({{ $index }})" class="text-gray-500 hover:text-gray-700">
+                            <button wire:click="removeNotification({{ $index }})" 
+                                    wire:confirm="Are you sure you want to dismiss this notification?"
+                                    class="text-gray-500 hover:text-gray-700">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
