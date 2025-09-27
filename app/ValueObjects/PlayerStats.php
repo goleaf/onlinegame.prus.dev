@@ -22,13 +22,15 @@ class PlayerStats
     {
         return new self(
             points: $data['points'] ?? 0,
-            rank: $data['rank'] ?? 0,
             population: $data['population'] ?? 0,
-            villages: $data['villages'] ?? 0,
+            villagesCount: $data['villagesCount'] ?? $data['villages_count'] ?? 0,
+            totalAttackPoints: $data['totalAttackPoints'] ?? $data['total_attack_points'] ?? 0,
+            totalDefensePoints: $data['totalDefensePoints'] ?? $data['total_defense_points'] ?? 0,
+            isActive: $data['isActive'] ?? $data['is_active'] ?? true,
+            isOnline: $data['isOnline'] ?? $data['is_online'] ?? false,
+            rank: $data['rank'] ?? 0,
             alliance_id: $data['alliance_id'] ?? null,
             tribe: $data['tribe'] ?? '',
-            is_online: $data['is_online'] ?? false,
-            is_active: $data['is_active'] ?? true,
             last_active_at: isset($data['last_active_at']) ? new \DateTime($data['last_active_at']) : null,
         );
     }

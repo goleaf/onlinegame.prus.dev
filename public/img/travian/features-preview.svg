@@ -1,0 +1,30 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8e44ad;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9b59b6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="100" y="100" width="200" height="150" fill="#e67e22" opacity="0.8"/>
+  <rect x="350" y="100" width="200" height="150" fill="#e74c3c" opacity="0.8"/>
+  <rect x="600" y="100" width="200" height="150" fill="#f39c12" opacity="0.8"/>
+  <rect x="850" y="100" width="200" height="150" fill="#27ae60" opacity="0.8"/>
+  <text x="600" y="320" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">
+    Game Features
+  </text>
+  <text x="600" y="380" font-family="Arial, sans-serif" font-size="20" fill="white" text-anchor="middle" dominant-baseline="middle">
+    Village Building • Resource Management • Military Strategy • Epic Battles
+  </text>
+  <circle cx="200" cy="450" r="8" fill="#f1c40f"/>
+  <circle cx="300" cy="450" r="8" fill="#e67e22"/>
+  <circle cx="400" cy="450" r="8" fill="#95a5a6"/>
+  <circle cx="500" cy="450" r="8" fill="#27ae60"/>
+  <circle cx="600" cy="450" r="8" fill="#3498db"/>
+  <circle cx="700" cy="450" r="8" fill="#9b59b6"/>
+  <circle cx="800" cy="450" r="8" fill="#e74c3c"/>
+  <circle cx="900" cy="450" r="8" fill="#1abc9c"/>
+  <text x="600" y="520" font-family="Arial, sans-serif" font-size="16" fill="white" text-anchor="middle" dominant-baseline="middle">
+    Multiple Game Worlds • Alliances • Trading • Research • Conquest
+  </text>
+</svg>

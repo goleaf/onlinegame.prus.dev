@@ -21,6 +21,23 @@ class Battle extends Model implements Auditable, IsFilterable
     use Filterable;
     use Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public int $attacker_id;
+    public int $defender_id;
+    public int $village_id;
+    public ?array $attacker_troops;
+    public ?array $defender_troops;
+    public ?array $attacker_losses;
+    public ?array $defender_losses;
+    public ?array $loot;
+    public ?int $war_id;
+    public string $result;
+    public \Carbon\Carbon $occurred_at;
+    public ?string $reference_number;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $fillable = [
         'attacker_id',
         'defender_id',

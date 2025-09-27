@@ -6,10 +6,12 @@ use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
 use App\Services\PerformanceMonitoringService;
+use App\Traits\PerformanceMonitoringTrait;
 use Livewire\Component;
 
 class Dashboard extends Component
 {
+    use PerformanceMonitoringTrait;
     public $player;
     public $villages;
     public $world;
