@@ -333,19 +333,68 @@ class GameApiController extends Controller
 
         $buildingType = $request->input('building_type');
 
-        // Simple building upgrade logic
-        $resourceType = $buildingType;
-        if (in_array($resourceType, ['wood', 'clay', 'iron', 'crop'])) {
-            $village->increment('population', 1);
+        $startTime = microtime(true);
 
-            // Update player population
-            $player->increment('population', 1);
+        try {
+            DB::beginTransaction();
+
+            // Simple building upgrade logic
+            $resourceType = $buildingType;
+            if (in_array($resourceType, ['wood', 'clay', 'iron', 'crop'])) {
+                $village->increment('population', 1);
+
+                // Update player population
+                $player->increment('population', 1);
+            }
+
+            DB::commit();
+
+            // Send real-time update
+            RealTimeGameService::sendBuildingUpdate(
+                $user->id,
+                $village->id,
+                $buildingType,
+                1, // Assuming level 1 for now
+                [
+                    'village_name' => $village->name,
+                    'building_type' => $buildingType,
+                    'new_population' => $village->fresh()->population,
+                ]
+            );
+
+            // Invalidate cache
+            GameCacheService::invalidateVillageCache($village->id);
+            GameCacheService::invalidatePlayerCache($user->id);
+
+            // Log performance
+            GamePerformanceMonitor::monitorResponseTime('api_upgrade_building', $startTime);
+
+            // Log action
+            GameErrorHandler::logGameAction('api_upgrade_building', [
+                'user_id' => $user->id,
+                'village_id' => $village->id,
+                'building_type' => $buildingType,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'village' => $village->fresh()
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            GameErrorHandler::handleGameError($e, [
+                'action' => 'api_upgrade_building',
+                'user_id' => $user->id,
+                'village_id' => $village->id,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Building upgrade failed'
+            ], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'village' => $village->fresh()
-        ]);
     }
 
     /**

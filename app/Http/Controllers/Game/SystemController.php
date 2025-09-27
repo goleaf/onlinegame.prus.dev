@@ -279,7 +279,7 @@ class SystemController extends Controller
     /**
      * Get system performance metrics
      */
-    public function getSystemMetrics()
+    public function metrics()
     {
         try {
             $metrics = [
