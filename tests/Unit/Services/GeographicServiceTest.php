@@ -84,7 +84,8 @@ class GeographicServiceTest extends TestCase
 
     public function test_calculate_travel_time()
     {
-        $time = $this->geoService->calculateTravelTime(52.520008, 13.404954, 48.8566, 2.3522, 50);
+        $distance = $this->geoService->calculateDistance(52.520008, 13.404954, 48.8566, 2.3522);
+        $time = $this->geoService->calculateTravelTimeFromDistance($distance, 50);
         
         $this->assertIsInt($time);
         $this->assertGreaterThan(0, $time);
