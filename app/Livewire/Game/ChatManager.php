@@ -7,30 +7,25 @@ use App\Models\Game\ChatChannel;
 use App\Services\ChatService;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Title;
-use Livewire\Attributes\Layout;
+use Illuminate\Support\Facades\Auth;
 
-#[Title('Chat Manager')]
-#[Layout('layouts.game')]
 class ChatManager extends Component
 {
     use WithPagination;
 
-    public $activeChannel = 'global';
-    public $activeChannelId = 0;
-    public $activeChannelType = 'global';
+    public $selectedChannel = 'global';
     public $message = '';
-    public $availableChannels = [];
-    public $isTyping = false;
-    public $typingUsers = [];
+    public $messageType = 'text';
+    public $recipientId = null;
+    public $searchQuery = '';
+    public $searchChannelType = '';
     
     protected $chatService;
     
     protected $listeners = [
-        'chatMessageReceived' => 'refreshMessages',
-        'chatMessageDeleted' => 'refreshMessages',
-        'userTyping' => 'handleUserTyping',
-        'userStoppedTyping' => 'handleUserStoppedTyping',
+        'messageSent' => 'refreshMessages',
+        'channelChanged' => 'changeChannel',
+        'messageDeleted' => 'refreshMessages',
     ];
 
     public function boot()
@@ -40,238 +35,187 @@ class ChatManager extends Component
 
     public function mount()
     {
-        $this->loadAvailableChannels();
-        $this->switchToGlobalChannel();
+        $this->selectedChannel = 'global';
     }
 
     public function render()
     {
+        $channels = $this->chatService->getAvailableChannels(Auth::user()->player->id);
         $messages = $this->getMessages();
-        $chatStats = $this->getChatStats();
+        $stats = $this->chatService->getMessageStats();
 
         return view('livewire.game.chat-manager', [
+            'channels' => $channels,
             'messages' => $messages,
-            'chatStats' => $chatStats,
+            'stats' => $stats,
         ]);
-    }
-
-    public function getMessages()
-    {
-        switch ($this->activeChannelType) {
-            case 'global':
-                return $this->chatService->getGlobalMessages(50, 0);
-            case 'alliance':
-                $player = auth()->user()->player;
-                if ($player && $player->alliance_id) {
-                    return $this->chatService->getAllianceMessages($player->alliance_id, 50, 0);
-                }
-                return ['messages' => collect(), 'total' => 0];
-            case 'private':
-                // This would need the other player ID
-                return ['messages' => collect(), 'total' => 0];
-            default:
-                return $this->chatService->getChannelMessages($this->activeChannelId, $this->activeChannelType, 50, 0);
-        }
-    }
-
-    public function getChatStats()
-    {
-        return $this->chatService->getChatStats();
-    }
-
-    public function loadAvailableChannels()
-    {
-        $player = auth()->user()->player;
-        if ($player) {
-            $this->availableChannels = $this->chatService->getAvailableChannels($player->id);
-        }
-    }
-
-    public function switchChannel($channelId, $channelType, $channelName = null)
-    {
-        $this->activeChannel = $channelName ?? $channelType;
-        $this->activeChannelId = $channelId;
-        $this->activeChannelType = $channelType;
-        $this->resetPage();
-        $this->typingUsers = [];
-    }
-
-    public function switchToGlobalChannel()
-    {
-        $this->switchChannel(0, 'global', 'Global Chat');
-    }
-
-    public function switchToAllianceChannel()
-    {
-        $player = auth()->user()->player;
-        if ($player && $player->alliance_id) {
-            $this->switchChannel($player->alliance_id, 'alliance', 'Alliance Chat');
-        }
     }
 
     public function sendMessage()
     {
         $this->validate([
-            'message' => 'required|string|max:500',
+            'message' => 'required|string|max:1000',
+            'messageType' => 'required|in:text,system,announcement,emote,command',
         ]);
 
-        if (empty(trim($this->message))) {
-            return;
-        }
-
         try {
-            $player = auth()->user()->player;
-            if (!$player) {
-                session()->flash('error', 'Player not found!');
-                return;
-            }
-
-            switch ($this->activeChannelType) {
+            switch ($this->selectedChannel) {
                 case 'global':
-                    $this->chatService->sendGlobalMessage($player->id, $this->message);
+                    $this->chatService->sendGlobalMessage(
+                        Auth::user()->player->id,
+                        $this->message,
+                        $this->messageType
+                    );
                     break;
                 case 'alliance':
-                    if ($player->alliance_id) {
-                        $this->chatService->sendAllianceMessage($player->id, $player->alliance_id, $this->message);
-                    }
+                    $this->chatService->sendAllianceMessage(
+                        Auth::user()->player->id,
+                        Auth::user()->player->alliance_id,
+                        $this->message,
+                        $this->messageType
+                    );
                     break;
-                default:
-                    $this->chatService->sendMessage($player->id, $this->activeChannelId, $this->activeChannelType, $this->message);
+                case 'private':
+                    if (!$this->recipientId) {
+                        $this->addError('recipientId', 'Recipient is required for private messages.');
+                        return;
+                    }
+                    $this->chatService->sendPrivateMessage(
+                        Auth::user()->player->id,
+                        $this->recipientId,
+                        $this->message
+                    );
+                    break;
+                case 'trade':
+                    $this->chatService->sendTradeMessage(
+                        Auth::user()->player->id,
+                        $this->message
+                    );
+                    break;
+                case 'diplomacy':
+                    $this->chatService->sendDiplomacyMessage(
+                        Auth::user()->player->id,
+                        $this->message
+                    );
                     break;
             }
 
             $this->message = '';
+            $this->emit('messageSent');
             $this->dispatch('message-sent');
-            
+
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to send message: ' . $e->getMessage());
+            $this->addError('message', 'Failed to send message: ' . $e->getMessage());
         }
     }
 
     public function deleteMessage($messageId)
     {
         try {
-            $player = auth()->user()->player;
-            if (!$player) {
-                session()->flash('error', 'Player not found!');
-                return;
-            }
-
-            $success = $this->chatService->deleteMessage($messageId, $player->id);
+            $success = $this->chatService->deleteMessage($messageId, Auth::user()->player->id);
             
             if ($success) {
+                $this->emit('messageDeleted');
                 $this->dispatch('message-deleted');
-                session()->flash('success', 'Message deleted successfully!');
             } else {
-                session()->flash('error', 'Cannot delete this message!');
+                $this->addError('message', 'Failed to delete message or access denied.');
             }
-
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete message: ' . $e->getMessage());
+            $this->addError('message', 'Failed to delete message: ' . $e->getMessage());
         }
     }
 
-    public function handleUserTyping($userId, $userName)
+    public function changeChannel($channel)
     {
-        if ($userId !== auth()->id()) {
-            $this->typingUsers[$userId] = $userName;
-        }
+        $this->selectedChannel = $channel;
+        $this->resetPage();
+        $this->emit('channelChanged', $channel);
     }
 
-    public function handleUserStoppedTyping($userId)
+    public function searchMessages()
     {
-        unset($this->typingUsers[$userId]);
-    }
-
-    public function startTyping()
-    {
-        if (!$this->isTyping) {
-            $this->isTyping = true;
-            $this->dispatch('user-typing', [
-                'user_id' => auth()->id(),
-                'user_name' => auth()->user()->name,
-                'channel_id' => $this->activeChannelId,
-                'channel_type' => $this->activeChannelType,
-            ]);
-        }
-    }
-
-    public function stopTyping()
-    {
-        if ($this->isTyping) {
-            $this->isTyping = false;
-            $this->dispatch('user-stopped-typing', [
-                'user_id' => auth()->id(),
-                'channel_id' => $this->activeChannelId,
-                'channel_type' => $this->activeChannelType,
-            ]);
-        }
+        $this->resetPage();
     }
 
     public function refreshMessages()
     {
-        // This will trigger a re-render with updated messages
+        $this->resetPage();
     }
 
-    public function updatedMessage()
+    private function getMessages()
     {
-        if (!empty(trim($this->message))) {
-            $this->startTyping();
-        } else {
-            $this->stopTyping();
+        if ($this->searchQuery) {
+            $result = $this->chatService->searchMessages(
+                $this->searchQuery,
+                $this->searchChannelType ?: null,
+                50
+            );
+            return $result['messages'];
         }
+
+        if ($this->selectedChannel === 'global') {
+            $result = $this->chatService->getMessagesByType('global', 50, 0);
+            return $result['messages'];
+        }
+
+        if ($this->selectedChannel === 'alliance') {
+            $result = $this->chatService->getMessagesByType('alliance', 50, 0);
+            return $result['messages'];
+        }
+
+        if ($this->selectedChannel === 'private') {
+            $result = $this->chatService->getMessagesByType('private', 50, 0);
+            return $result['messages'];
+        }
+
+        if ($this->selectedChannel === 'trade') {
+            $result = $this->chatService->getMessagesByType('trade', 50, 0);
+            return $result['messages'];
+        }
+
+        if ($this->selectedChannel === 'diplomacy') {
+            $result = $this->chatService->getMessagesByType('diplomacy', 50, 0);
+            return $result['messages'];
+        }
+
+        return collect();
     }
 
-    public function getChannelIcon($channelType)
+    public function getChannelTypeColor($channelType)
     {
         return match ($channelType) {
-            'global' => 'fas fa-globe',
-            'alliance' => 'fas fa-users',
-            'private' => 'fas fa-user-friends',
-            'trade' => 'fas fa-exchange-alt',
-            'diplomacy' => 'fas fa-handshake',
-            default => 'fas fa-comments',
+            'global' => 'blue',
+            'alliance' => 'green',
+            'private' => 'purple',
+            'trade' => 'yellow',
+            'diplomacy' => 'red',
+            default => 'gray',
         };
     }
 
-    public function getChannelColor($channelType)
+    public function getMessageTypeIcon($messageType)
     {
-        return match ($channelType) {
-            'global' => 'text-blue-600',
-            'alliance' => 'text-green-600',
-            'private' => 'text-purple-600',
-            'trade' => 'text-yellow-600',
-            'diplomacy' => 'text-red-600',
-            default => 'text-gray-600',
+        return match ($messageType) {
+            'text' => 'comment',
+            'system' => 'cog',
+            'announcement' => 'bullhorn',
+            'emote' => 'smile',
+            'command' => 'terminal',
+            default => 'comment',
         };
     }
 
-    public function formatMessage($message, $messageType)
+    public function canDeleteMessage($message)
     {
-        if ($messageType === ChatMessage::TYPE_SYSTEM) {
-            return '<span class="text-gray-500 italic">' . e($message) . '</span>';
-        }
-        
-        if ($messageType === ChatMessage::TYPE_ANNOUNCEMENT) {
-            return '<span class="text-yellow-600 font-semibold">' . e($message) . '</span>';
-        }
-        
-        return e($message);
+        return $message->sender_id === Auth::user()->player->id;
     }
 
-    public function getTypingText()
+    public function getFormattedMessage($message)
     {
-        $count = count($this->typingUsers);
-        
-        if ($count === 0) {
-            return '';
+        if ($message->message_type === 'emote') {
+            return "*{$message->sender->name} {$message->message}*";
         }
-        
-        if ($count === 1) {
-            $name = reset($this->typingUsers);
-            return "{$name} is typing...";
-        }
-        
-        return "{$count} people are typing...";
+
+        return $message->message;
     }
 }

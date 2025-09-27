@@ -37,6 +37,7 @@
         "nunomaduro/essentials": "^1.0",
         "omarchouman/lara-util-x": "^1.1",
         "owen-it/laravel-auditing": "^14.0",
+        "phpoffice/phpspreadsheet": "*",
         "predis/predis": "^3.2",
         "propaganistas/laravel-phone": "*",
         "pusher/pusher-php-server": "^7.2",

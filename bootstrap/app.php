@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'game.rate_limit' => \App\Http\Middleware\GameRateLimitMiddleware::class,
             'access.log' => \LaraUtilX\Http\Middleware\AccessLogMiddleware::class,
             'query.performance' => \App\Http\Middleware\QueryPerformanceMiddleware::class,
+            'enhanced.debug' => \App\Http\Middleware\EnhancedDebugMiddleware::class,
+            'game.security' => \App\Http\Middleware\GameSecurityMiddleware::class,
+            'websocket.auth' => \App\Http\Middleware\WebSocketAuthMiddleware::class,
         ]);
         
         // Add middleware to web middleware group
