@@ -456,7 +456,14 @@ class GameTickService
         // Battle Power Summary
         $content .= "=== BATTLE POWER ===\n";
         $content .= 'Attacker Power: ' . number_format($battle->battle_data['battle_power']['attacker'], 0) . "\n";
-        $content .= 'Defender Power: ' . number_format($battle->battle_data['battle_power']['defender'], 0) . "\n\n";
+        $content .= 'Defender Power: ' . number_format($battle->battle_data['battle_power']['defender'], 0) . "\n";
+        
+        // Add defensive bonus information if available
+        if (isset($battle->battle_data['defensive_bonus'])) {
+            $bonus = $battle->battle_data['defensive_bonus'] * 100;
+            $content .= "Defensive Bonus: +" . number_format($bonus, 1) . "%\n";
+        }
+        $content .= "\n";
 
         // Troop Summary
         $content .= "=== TROOP SUMMARY ===\n";
