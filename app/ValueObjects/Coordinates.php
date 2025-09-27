@@ -2,9 +2,7 @@
 
 namespace App\ValueObjects;
 
-use Bag\Bag;
-
-readonly class Coordinates extends Bag
+readonly class Coordinates
 {
     public function __construct(
         public int $x,
