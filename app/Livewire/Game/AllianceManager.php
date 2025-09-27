@@ -97,7 +97,7 @@ class AllianceManager extends Component
             // Use SmartCache for alliance data with automatic optimization
             $alliancesCacheKey = "world_{$this->world->id}_alliances_data";
             $this->alliances = SmartCache::remember($alliancesCacheKey, now()->addMinutes(5), function () {
-                return Alliance::where('world_id', $this->world->id)
+                $query = Alliance::where('world_id', $this->world->id)
                     ->with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status'])
                     ->selectRaw('
                         alliances.*,
@@ -105,9 +105,49 @@ class AllianceManager extends Component
                         (SELECT SUM(points) FROM players p2 WHERE p2.alliance_id = alliances.id) as total_points,
                         (SELECT AVG(points) FROM players p3 WHERE p3.alliance_id = alliances.id) as avg_points,
                         (SELECT MAX(points) FROM players p4 WHERE p4.alliance_id = alliances.id) as max_points
-                    ')
-                    ->get()
-                    ->toArray();
+                    ');
+
+                // Apply filters using the new eloquent filtering system
+                $filters = [];
+                
+                if ($this->searchQuery) {
+                    $filters[] = [
+                        'target' => 'name',
+                        'type' => '$contains',
+                        'value' => $this->searchQuery
+                    ];
+                }
+                
+                if ($this->showOnlyActive) {
+                    $filters[] = [
+                        'target' => 'is_active',
+                        'type' => '$eq',
+                        'value' => true
+                    ];
+                }
+                
+                if ($this->filterByRank) {
+                    $filters[] = [
+                        'type' => '$has',
+                        'target' => 'members',
+                        'value' => [
+                            [
+                                'target' => 'alliance_rank',
+                                'type' => '$eq',
+                                'value' => $this->filterByRank
+                            ]
+                        ]
+                    ];
+                }
+
+                if (!empty($filters)) {
+                    $query = $query->filter($filters);
+                }
+
+                // Apply sorting
+                $query = $query->orderBy($this->sortBy, $this->sortOrder);
+
+                return $query->get()->toArray();
             });
 
             // Use SmartCache for player alliance data with automatic optimization

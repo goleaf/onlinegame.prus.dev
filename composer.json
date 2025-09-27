@@ -26,7 +26,6 @@
         "laravel/framework": "^12.0",
         "laravel/octane": "^2.12",
         "laravel/sanctum": "^4.2",
-        "laravel/telescope": "^5.12",
         "laravel/tinker": "^2.10.1",
         "league/geotools": "^1.3",
         "livewire/flux": "^2.4",
@@ -44,7 +43,6 @@
         "spatie/laravel-error-solutions": "^1.0",
         "spatie/laravel-livewire-wizard": "^2.4",
         "spatie/laravel-medialibrary": "^11.15",
-        "spatie/laravel-query-builder": "^6.3",
         "spatie/laravel-sluggable": "^3.7",
         "spatie/laravel-tags": "^4.10",
         "usmonaliyev/laravel-simple-rabbitmq": "^1.2",
@@ -53,7 +51,7 @@
         "ziming/laravel-zxcvbn": "^2.3"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.16",
+        "barryvdh/laravel-debugbar": "*",
         "bottelet/translation-checker": "^1.2",
         "fakerphp/faker": "^1.23",
         "jasonmccreary/laravel-test-assertions": "^2.8",
@@ -67,6 +65,7 @@
         "laravel/sail": "^1.41",
         "laravel/scout": "^10.19",
         "laravel/socialite": "^5.23",
+        "laravel/telescope": "*",
         "maatwebsite/excel": "^3.1",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
@@ -74,6 +73,7 @@
         "phpunit/phpunit": "^11.5.3",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-permission": "^6.21",
+        "spatie/laravel-query-builder": "*",
         "tyghaykal/laravel-seed-generator": "*",
         "vcian/laravel-db-auditor": "*"
     },
