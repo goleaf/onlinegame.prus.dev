@@ -28,7 +28,7 @@ class UserTechForm extends Component
     public $timezone = 'UTC';
 
     protected $rules = [
-        'api_token' => ['nullable', 'string', 'max:255', new Clean],
+        'api_token' => 'nullable|string|max:255',
         'webhook_url' => 'nullable|url|max:255',
         'integration_key' => 'nullable|string|max:100',
         'jwt_secret' => 'nullable|string|max:500',

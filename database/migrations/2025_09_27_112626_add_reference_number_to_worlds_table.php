@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('worlds', function (Blueprint $table) {
-            $table->string('reference_number')->nullable()->unique()->after('is_active');
+            $table->string('reference_number')->nullable()->unique()->after('end_date');
         });
     }
 
