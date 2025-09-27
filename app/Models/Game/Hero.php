@@ -23,6 +23,7 @@ class Hero extends Model
         'special_abilities',
         'equipment',
         'is_active',
+        'reference_number',
     ];
 
     protected $casts = [

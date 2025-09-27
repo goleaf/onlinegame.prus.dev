@@ -46,16 +46,32 @@ class Building extends Model implements Auditable
         return $this->belongsTo(BuildingType::class);
     }
 
-    // Optimized query scopes using when() and selectRaw
+    // Enhanced query scopes using Query Enrich
     public function scopeWithStats($query)
     {
-        return $query->selectRaw('
-            buildings.*,
-            (SELECT COUNT(*) FROM buildings b2 WHERE b2.village_id = buildings.village_id AND b2.is_active = 1) as total_buildings,
-            (SELECT AVG(level) FROM buildings b3 WHERE b3.village_id = buildings.village_id AND b3.is_active = 1) as avg_level,
-            (SELECT MAX(level) FROM buildings b4 WHERE b4.village_id = buildings.village_id AND b4.is_active = 1) as max_level,
-            (SELECT COUNT(*) FROM buildings b5 WHERE b5.village_id = buildings.village_id AND b5.building_type_id = buildings.building_type_id) as same_type_count
-        ');
+        return $query->select([
+            'buildings.*',
+            QE::select(QE::count(c('id')))
+                ->from('buildings', 'b2')
+                ->whereColumn('b2.village_id', c('buildings.village_id'))
+                ->where('b2.is_active', '=', 1)
+                ->as('total_buildings'),
+            QE::select(QE::avg(c('level')))
+                ->from('buildings', 'b3')
+                ->whereColumn('b3.village_id', c('buildings.village_id'))
+                ->where('b3.is_active', '=', 1)
+                ->as('avg_level'),
+            QE::select(QE::max(c('level')))
+                ->from('buildings', 'b4')
+                ->whereColumn('b4.village_id', c('buildings.village_id'))
+                ->where('b4.is_active', '=', 1)
+                ->as('max_level'),
+            QE::select(QE::count(c('id')))
+                ->from('buildings', 'b5')
+                ->whereColumn('b5.village_id', c('buildings.village_id'))
+                ->whereColumn('b5.building_type_id', c('buildings.building_type_id'))
+                ->as('same_type_count')
+        ]);
     }
 
     public function scopeByVillage($query, $villageId)
