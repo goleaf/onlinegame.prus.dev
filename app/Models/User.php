@@ -3,20 +3,17 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
-use EloquentFiltering\AllowedFilterList;
-use EloquentFiltering\Filter;
-use EloquentFiltering\FilterType;
+use App\Traits\Commenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Traits\Commenter;
 use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
+use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
+use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
 
 class User extends Authenticatable implements Auditable
 {
@@ -26,6 +23,8 @@ class User extends Authenticatable implements Auditable
     use HasNotables;
     use AuditableTrait;
     use Lift;
+    use HasReference;
+    use Filterable;
 
     // Laravel Lift typed properties
     public int $id;
@@ -58,6 +57,7 @@ class User extends Authenticatable implements Auditable
         'password',
         'phone',
         'phone_country',
+        'reference_number',
     ];
 
     /**
@@ -80,7 +80,8 @@ class User extends Authenticatable implements Auditable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'phone' => \Propaganistas\LaravelPhone\Casts\RawPhoneNumberCast::class.':phone_country',
+            'phone' => \Propaganistas\LaravelPhone\Casts\RawPhoneNumberCast::class . ':phone_country',
+            'reference_number' => 'string',
         ];
     }
 
@@ -99,12 +100,20 @@ class User extends Authenticatable implements Auditable
      */
     public function getGameStats()
     {
+        $startTime = microtime(true);
+
         $player = $this->player;
         if (!$player) {
+            ds('User has no player', [
+                'user_id' => $this->id,
+                'user_name' => $this->name,
+                'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            ])->label('User Game Stats - No Player');
+
             return null;
         }
 
-        return [
+        $stats = [
             'player_id' => $player->id,
             'player_name' => $player->name,
             'world_id' => $player->world_id,
@@ -117,6 +126,18 @@ class User extends Authenticatable implements Auditable
             'is_online' => $player->is_online,
             'last_active_at' => $player->last_active_at,
         ];
+
+        ds('User game statistics retrieved', [
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'player_id' => $player->id,
+            'village_count' => $stats['village_count'],
+            'total_population' => $stats['total_population'],
+            'points' => $stats['points'],
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Game Stats');
+
+        return $stats;
     }
 
     /**
@@ -124,7 +145,20 @@ class User extends Authenticatable implements Auditable
      */
     public function hasActiveGameSession(): bool
     {
-        return $this->player && $this->player->is_active;
+        $startTime = microtime(true);
+
+        $hasActiveSession = $this->player && $this->player->is_active;
+
+        ds('User active game session check', [
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'has_player' => (bool) $this->player,
+            'player_active' => $this->player ? $this->player->is_active : false,
+            'has_active_session' => $hasActiveSession,
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Active Session Check');
+
+        return $hasActiveSession;
     }
 
     /**
@@ -144,13 +178,34 @@ class User extends Authenticatable implements Auditable
      */
     public function isOnline(): bool
     {
+        $startTime = microtime(true);
+
         if (!$this->player) {
+            ds('User is not online - no player', [
+                'user_id' => $this->id,
+                'user_name' => $this->name,
+                'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            ])->label('User Online Check - No Player');
+
             return false;
         }
 
-        return $this->player->is_online &&
+        $isOnline = $this->player->is_online &&
             $this->player->last_active_at &&
             $this->player->last_active_at->diffInMinutes(now()) <= 15;
+
+        ds('User online status check', [
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'player_id' => $this->player->id,
+            'player_online' => $this->player->is_online,
+            'last_active_at' => $this->player->last_active_at,
+            'minutes_since_active' => $this->player->last_active_at ? $this->player->last_active_at->diffInMinutes(now()) : null,
+            'is_online' => $isOnline,
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Online Check');
+
+        return $isOnline;
     }
 
     /**
@@ -158,7 +213,20 @@ class User extends Authenticatable implements Auditable
      */
     public function getVillages()
     {
-        return $this->player ? $this->player->villages : collect();
+        $startTime = microtime(true);
+
+        $villages = $this->player ? $this->player->villages : collect();
+
+        ds('User villages retrieved', [
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'has_player' => (bool) $this->player,
+            'village_count' => $villages->count(),
+            'villages' => $villages->pluck('name')->toArray(),
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Villages');
+
+        return $villages;
     }
 
     /**
@@ -166,7 +234,21 @@ class User extends Authenticatable implements Auditable
      */
     public function getCapitalVillage()
     {
-        return $this->player ? $this->player->villages->where('is_capital', true)->first() : null;
+        $startTime = microtime(true);
+
+        $capitalVillage = $this->player ? $this->player->villages->where('is_capital', true)->first() : null;
+
+        ds('User capital village retrieved', [
+            'user_id' => $this->id,
+            'user_name' => $this->name,
+            'has_player' => (bool) $this->player,
+            'has_capital' => (bool) $capitalVillage,
+            'capital_village_id' => $capitalVillage ? $capitalVillage->id : null,
+            'capital_village_name' => $capitalVillage ? $capitalVillage->name : null,
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+        ])->label('User Capital Village');
+
+        return $capitalVillage;
     }
 
     /**
@@ -235,11 +317,15 @@ class User extends Authenticatable implements Auditable
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
-            Filter::field('name', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::field('email', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::field('email_verified_at', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::relation('players', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('player', [FilterType::HAS])->includeRelationFields()
+            Filter::field('name', ['$eq', '$like']),
+            Filter::field('email', ['$eq', '$like']),
+            Filter::field('phone', ['$eq', '$like']),
+            Filter::field('phone_country', ['$eq']),
+            Filter::field('phone_normalized', ['$eq', '$like']),
+            Filter::field('phone_e164', ['$eq', '$like']),
+            Filter::field('email_verified_at', ['$eq', '$gt', '$lt']),
+            Filter::relation('players', ['$has']),
+            Filter::relation('player', ['$has'])
         );
     }
 }
