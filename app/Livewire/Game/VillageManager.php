@@ -129,10 +129,19 @@ class VillageManager extends Component
             // Use SmartCache for building queues with automatic optimization
             $buildingQueuesCacheKey = "village_{$this->village->id}_building_queues";
             $this->buildingQueues = SmartCache::remember($buildingQueuesCacheKey, now()->addMinutes(1), function () {
+                // Use the new eloquent filtering system for building queues
+                $filters = [
+                    [
+                        'target' => 'is_completed',
+                        'type' => '$eq',
+                        'value' => false
+                    ]
+                ];
+
                 return $this
                     ->village
                     ->buildingQueues()
-                    ->where('is_completed', false)
+                    ->filter($filters)
                     ->with('buildingType:id,name,description')
                     ->selectRaw('
                         building_queues.*,

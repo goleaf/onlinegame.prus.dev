@@ -90,4 +90,167 @@ class Hero extends Model
     {
         return ($this->health / $this->max_health) * 100;
     }
+
+    /**
+     * Get total power (attack + defense)
+     */
+    public function getTotalPowerAttribute(): int
+    {
+        return $this->attack_power + $this->defense_power;
+    }
+
+    /**
+     * Check if hero can use special ability
+     */
+    public function canUseAbility(string $ability): bool
+    {
+        return in_array($ability, $this->special_abilities ?? []);
+    }
+
+    /**
+     * Add special ability
+     */
+    public function addAbility(string $ability): void
+    {
+        $abilities = $this->special_abilities ?? [];
+        if (!in_array($ability, $abilities)) {
+            $abilities[] = $ability;
+            $this->special_abilities = $abilities;
+            $this->save();
+        }
+    }
+
+    /**
+     * Remove special ability
+     */
+    public function removeAbility(string $ability): void
+    {
+        $abilities = $this->special_abilities ?? [];
+        $this->special_abilities = array_values(array_filter($abilities, fn($a) => $a !== $ability));
+        $this->save();
+    }
+
+    /**
+     * Equip item
+     */
+    public function equipItem(string $item, array $stats = []): void
+    {
+        $equipment = $this->equipment ?? [];
+        $equipment[$item] = $stats;
+        $this->equipment = $equipment;
+        $this->save();
+    }
+
+    /**
+     * Unequip item
+     */
+    public function unequipItem(string $item): void
+    {
+        $equipment = $this->equipment ?? [];
+        unset($equipment[$item]);
+        $this->equipment = $equipment;
+        $this->save();
+    }
+
+    /**
+     * Get equipment bonus for stat
+     */
+    public function getEquipmentBonus(string $stat): int
+    {
+        $equipment = $this->equipment ?? [];
+        $bonus = 0;
+        
+        foreach ($equipment as $item => $stats) {
+            $bonus += $stats[$stat] ?? 0;
+        }
+        
+        return $bonus;
+    }
+
+    /**
+     * Get effective attack power (base + equipment)
+     */
+    public function getEffectiveAttackPowerAttribute(): int
+    {
+        return $this->attack_power + $this->getEquipmentBonus('attack');
+    }
+
+    /**
+     * Get effective defense power (base + equipment)
+     */
+    public function getEffectiveDefensePowerAttribute(): int
+    {
+        return $this->defense_power + $this->getEquipmentBonus('defense');
+    }
+
+    /**
+     * Get effective health (base + equipment)
+     */
+    public function getEffectiveMaxHealthAttribute(): int
+    {
+        return $this->max_health + $this->getEquipmentBonus('health');
+    }
+
+    /**
+     * Check if hero is ready for battle
+     */
+    public function isReadyForBattle(): bool
+    {
+        return $this->is_active && $this->isAlive() && $this->getHealthPercentage() > 50;
+    }
+
+    /**
+     * Get hero status
+     */
+    public function getStatusAttribute(): string
+    {
+        if (!$this->is_active) {
+            return 'inactive';
+        }
+        
+        if (!$this->isAlive()) {
+            return 'dead';
+        }
+        
+        if ($this->getHealthPercentage() < 25) {
+            return 'critical';
+        }
+        
+        if ($this->getHealthPercentage() < 50) {
+            return 'wounded';
+        }
+        
+        return 'healthy';
+    }
+
+    /**
+     * Scope for heroes ready for battle
+     */
+    public function scopeReadyForBattle($query)
+    {
+        return $query->where('is_active', true)
+                    ->where('health', '>', 0)
+                    ->whereRaw('(health / max_health) > 0.5');
+    }
+
+    /**
+     * Scope for heroes by status
+     */
+    public function scopeByStatus($query, string $status)
+    {
+        return match($status) {
+            'healthy' => $query->where('is_active', true)
+                              ->where('health', '>', 0)
+                              ->whereRaw('(health / max_health) >= 0.5'),
+            'wounded' => $query->where('is_active', true)
+                              ->where('health', '>', 0)
+                              ->whereRaw('(health / max_health) BETWEEN 0.25 AND 0.5'),
+            'critical' => $query->where('is_active', true)
+                               ->where('health', '>', 0)
+                               ->whereRaw('(health / max_health) < 0.25'),
+            'dead' => $query->where('health', '<=', 0),
+            'inactive' => $query->where('is_active', false),
+            default => $query
+        };
+    }
 }

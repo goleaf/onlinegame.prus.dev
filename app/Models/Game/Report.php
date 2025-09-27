@@ -17,7 +17,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 
 class Report extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait, Filterable;
+    use HasFactory, HasReference, AuditableTrait, Filterable, Commentable;
 
     protected $fillable = [
         'world_id',

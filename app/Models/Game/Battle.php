@@ -28,6 +28,7 @@ class Battle extends Model implements Auditable, IsFilterable
         'attacker_losses',
         'defender_losses',
         'loot',
+        'war_id',
         'result',
         'occurred_at',
         'reference_number',
