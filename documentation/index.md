@@ -99,3 +99,12 @@ This index is automatically generated and lists all documentation files:
     * [Documentation: HorizonServiceProvider.php](app/Providers/HorizonServiceProvider.md)
     * [Documentation: LaraUtilXServiceProvider.php](app/Providers/LaraUtilXServiceProvider.md)
     * [Documentation: TelescopeServiceProvider.php](app/Providers/TelescopeServiceProvider.md)
+  * **Services/**
+    * [Documentation: BuildingService.php](app/Services/BuildingService.md)
+    * [Documentation: FathomAnalytics.php](app/Services/FathomAnalytics.md)
+    * [Documentation: GameMechanicsService.php](app/Services/GameMechanicsService.md)
+    * [Documentation: GameSecurityService.php](app/Services/GameSecurityService.md)
+    * [Documentation: GeographicService.php](app/Services/GeographicService.md)
+    * [Documentation: QueryOptimizationService.php](app/Services/QueryOptimizationService.md)
+    * [Documentation: ResourceProductionService.php](app/Services/ResourceProductionService.md)
+    * [Documentation: TroopService.php](app/Services/TroopService.md)
