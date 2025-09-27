@@ -349,4 +349,126 @@ class MessageService
             'reference_number' => $this->generateReferenceNumber(),
         ]);
     }
+
+    /**
+     * Send geographic alert message to nearby players
+     */
+    public function sendGeographicAlert(int $villageId, string $alertType, array $alertData = []): array
+    {
+        $geoService = app(GeographicService::class);
+        $sentMessages = [];
+
+        // Get the source village
+        $sourceVillage = \App\Models\Game\Village::with('player')
+            ->where('id', $villageId)
+            ->first();
+
+        if (!$sourceVillage || !$sourceVillage->latitude || !$sourceVillage->longitude) {
+            return $sentMessages;
+        }
+
+        // Find nearby villages within alert radius
+        $alertRadius = $alertData['radius'] ?? 25; // Default 25km
+        $nearbyVillages = \App\Models\Game\Village::with('player')
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->where('id', '!=', $villageId)
+            ->get()
+            ->filter(function ($village) use ($sourceVillage, $geoService, $alertRadius) {
+                $distance = $geoService->calculateDistance(
+                    $sourceVillage->latitude,
+                    $sourceVillage->longitude,
+                    $village->latitude,
+                    $village->longitude
+                );
+                return $distance <= $alertRadius;
+            });
+
+        // Send alert messages to nearby players
+        foreach ($nearbyVillages as $village) {
+            if ($village->player && $village->player->id !== $sourceVillage->player_id) {
+                $distance = $geoService->calculateDistance(
+                    $sourceVillage->latitude,
+                    $sourceVillage->longitude,
+                    $village->latitude,
+                    $village->longitude
+                );
+
+                $bearing = $geoService->calculateBearing(
+                    $village->latitude,
+                    $village->longitude,
+                    $sourceVillage->latitude,
+                    $sourceVillage->longitude
+                );
+
+                $subject = $this->getGeographicAlertSubject($alertType, $sourceVillage->name);
+                $body = $this->getGeographicAlertBody($alertType, $sourceVillage, $distance, $bearing, $alertData);
+
+                $message = Message::create([
+                    'sender_id' => $sourceVillage->player_id,
+                    'recipient_id' => $village->player->id,
+                    'subject' => $subject,
+                    'body' => $body,
+                    'message_type' => 'geographic_alert',
+                    'priority' => 'high',
+                    'reference_number' => $this->generateReferenceNumber(),
+                ]);
+
+                $sentMessages[] = $message;
+            }
+        }
+
+        return $sentMessages;
+    }
+
+    /**
+     * Get geographic alert subject
+     */
+    private function getGeographicAlertSubject(string $alertType, string $villageName): string
+    {
+        return match ($alertType) {
+            'attack' => "🚨 Attack Alert from {$villageName}",
+            'raid' => "⚔️ Raid Alert from {$villageName}",
+            'support' => "🛡️ Support Request from {$villageName}",
+            'alliance_war' => "🏰 Alliance War Alert from {$villageName}",
+            default => "📍 Geographic Alert from {$villageName}",
+        };
+    }
+
+    /**
+     * Get geographic alert body
+     */
+    private function getGeographicAlertBody(\App\Models\Game\Village $sourceVillage, float $distance, float $bearing, array $alertData): string
+    {
+        $direction = $this->getDirectionFromBearing($bearing);
+        
+        $body = "Geographic Alert from {$sourceVillage->name}\n\n";
+        $body .= "📍 Distance: " . number_format($distance, 2) . " km\n";
+        $body .= "🧭 Direction: {$direction} ({$bearing}°)\n";
+        $body .= "🏘️ Village: {$sourceVillage->name}\n";
+        $body .= "👤 Player: {$sourceVillage->player->name}\n";
+        
+        if (!empty($alertData['details'])) {
+            $body .= "\n📋 Details: {$alertData['details']}\n";
+        }
+        
+        $body .= "\n⏰ Time: " . now()->format('Y-m-d H:i:s') . "\n";
+        $body .= "\nStay alert and prepare your defenses!";
+
+        return $body;
+    }
+
+    /**
+     * Convert bearing to direction
+     */
+    private function getDirectionFromBearing(float $bearing): string
+    {
+        $directions = [
+            'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+            'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'
+        ];
+        
+        $index = round($bearing / 22.5) % 16;
+        return $directions[$index];
+    }
 }

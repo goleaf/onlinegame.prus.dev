@@ -7,13 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
 
-class World extends Model
+class World extends Model implements Auditable
 {
     use HasFactory, HasTaxonomy;
     use HasNotables;
     use Lift;
+    use AuditableTrait;
 
     // Laravel Lift typed properties
     public int $id;
