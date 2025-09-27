@@ -13,7 +13,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Artifact extends Model
 {
-    use HasFactory;
+    use HasFactory, HasReference;
 
     protected $fillable = [
         'name',
@@ -292,49 +292,30 @@ class Artifact extends Model
 
     public function applyEffect(array $effect): void
     {
-        // Create ArtifactEffect record for detailed tracking
-        $this->artifactEffects()->create([
-            'effect_type' => $effect['type'],
-            'target_type' => $effect['target_type'] ?? 'village',
-            'target_id' => $effect['target_id'] ?? $this->village_id,
-            'effect_data' => $effect['data'] ?? [],
-            'magnitude' => $effect['value'] ?? 0,
-            'duration_type' => $effect['duration_type'] ?? 'permanent',
-            'duration_hours' => $effect['duration_hours'] ?? null,
-            'is_active' => true,
-        ]);
-
-        // Apply the actual effect based on type
         switch ($effect['type']) {
-            case 'resource_bonus':
-                $this->applyResourceBonusEffect($effect);
+            case 'resource_production':
+                $this->applyResourceProductionEffect($effect);
+                break;
+            case 'building_speed':
+                $this->applyBuildingSpeedEffect($effect);
+                break;
+            case 'unit_training':
+                $this->applyUnitTrainingEffect($effect);
                 break;
             case 'combat_bonus':
                 $this->applyCombatBonusEffect($effect);
                 break;
-            case 'building_bonus':
-                $this->applyBuildingBonusEffect($effect);
-                break;
-            case 'troop_bonus':
-                $this->applyTroopBonusEffect($effect);
-                break;
             case 'defense_bonus':
                 $this->applyDefenseBonusEffect($effect);
                 break;
-            case 'attack_bonus':
-                $this->applyAttackBonusEffect($effect);
+            case 'movement_speed':
+                $this->applyMovementSpeedEffect($effect);
                 break;
-            case 'speed_bonus':
-                $this->applySpeedBonusEffect($effect);
+            case 'storage_capacity':
+                $this->applyStorageCapacityEffect($effect);
                 break;
-            case 'production_bonus':
-                $this->applyProductionBonusEffect($effect);
-                break;
-            case 'trade_bonus':
-                $this->applyTradeBonusEffect($effect);
-                break;
-            case 'diplomacy_bonus':
-                $this->applyDiplomacyBonusEffect($effect);
+            case 'research_speed':
+                $this->applyResearchSpeedEffect($effect);
                 break;
         }
     }

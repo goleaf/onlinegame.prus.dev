@@ -38,6 +38,7 @@ return [
 - **AI Integration**: AI-powered content generation for names, descriptions, and strategies
 - **System Management**: Health monitoring, configuration, and cache management
 - **Larautilx Integration**: Advanced utilities for caching, filtering, and pagination
+- **Artifact System**: Powerful items with server-wide effects and bonuses
 - **Authentication**: Secure API access with Laravel Sanctum tokens
 
 ## API Endpoints
