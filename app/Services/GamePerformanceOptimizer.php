@@ -248,11 +248,12 @@ class GamePerformanceOptimizer
     protected function loadResourceData(string $userId): array
     {
         try {
-            return DB::table('resources')
+            $resources = DB::table('resources')
                 ->select(['id', 'created_at'])
                 ->where('user_id', $userId)
-                ->get()
-                ->toArray();
+                ->get();
+                
+            return $resources ? $resources->toArray() : [];
         } catch (\Exception $e) {
             return [];
         }
