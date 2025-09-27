@@ -91,6 +91,44 @@ class UserProfileManager extends Component
         session()->flash('message', 'Profile updated successfully!');
     }
 
+    public function updatePassword()
+    {
+        $this->validate([
+            'currentPassword' => 'required',
+            'newPassword' => [
+                'required',
+                'confirmed',
+                'min:8',
+                new ZxcvbnRule([
+                    $this->email,
+                    $this->name,
+                ]),
+            ],
+            'newPasswordConfirmation' => 'required',
+        ]);
+
+        // Verify current password
+        if (!\Hash::check($this->currentPassword, $this->user->password)) {
+            $this->addError('currentPassword', 'Current password is incorrect.');
+            return;
+        }
+
+        $this->user->update([
+            'password' => bcrypt($this->newPassword),
+        ]);
+
+        $this->reset(['currentPassword', 'newPassword', 'newPasswordConfirmation', 'showPasswordForm']);
+        session()->flash('message', 'Password updated successfully!');
+    }
+
+    public function togglePasswordForm()
+    {
+        $this->showPasswordForm = !$this->showPasswordForm;
+        if (!$this->showPasswordForm) {
+            $this->reset(['currentPassword', 'newPassword', 'newPasswordConfirmation']);
+        }
+    }
+
     public function updatePhone()
     {
         $rules = [
