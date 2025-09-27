@@ -20,7 +20,7 @@ use function sbamtr\LaravelQueryEnrich\c;
 
 class Quest extends Model implements Auditable
 {
-    use HasFactory, HasTaxonomy, HasNotables, HasReference, Commentable, Lift, AuditableTrait;
+    use HasFactory, HasTaxonomy, HasNotables, HasReference, Commentable, Lift, AuditableTrait, GameValidationTrait;
 
     // Laravel Lift typed properties
     public int $id;

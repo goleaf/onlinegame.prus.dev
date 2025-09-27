@@ -63,7 +63,7 @@ class EloquentFilteringUnitTest extends TestCase
         $player = new Player();
         $allowedFilters = $player->allowedFilters();
         
-        $this->assertInstanceOf('EloquentFiltering\AllowedFilterList', $allowedFilters);
+        $this->assertInstanceOf('IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList', $allowedFilters);
     }
 
     public function test_village_allowed_filters_returns_correct_structure()
@@ -71,7 +71,7 @@ class EloquentFilteringUnitTest extends TestCase
         $village = new Village();
         $allowedFilters = $village->allowedFilters();
         
-        $this->assertInstanceOf('EloquentFiltering\AllowedFilterList', $allowedFilters);
+        $this->assertInstanceOf('IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList', $allowedFilters);
     }
 
     public function test_alliance_allowed_filters_returns_correct_structure()
@@ -79,7 +79,7 @@ class EloquentFilteringUnitTest extends TestCase
         $alliance = new Alliance();
         $allowedFilters = $alliance->allowedFilters();
         
-        $this->assertInstanceOf('EloquentFiltering\AllowedFilterList', $allowedFilters);
+        $this->assertInstanceOf('IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList', $allowedFilters);
     }
 
     public function test_user_allowed_filters_returns_correct_structure()
@@ -87,7 +87,7 @@ class EloquentFilteringUnitTest extends TestCase
         $user = new User();
         $allowedFilters = $user->allowedFilters();
         
-        $this->assertInstanceOf('EloquentFiltering\AllowedFilterList', $allowedFilters);
+        $this->assertInstanceOf('IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList', $allowedFilters);
     }
 
     public function test_eloquent_filtering_package_is_installed()
