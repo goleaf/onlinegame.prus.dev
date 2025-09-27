@@ -169,6 +169,7 @@ $playerStats = Player::where('id', $this->player->id)
 - **AllianceManager**: Reduced from 8+ queries to 3-4 queries
 - **TechnologyManager**: Reduced from 7+ queries to 3-4 queries
 - **ResourceManager**: Reduced from 5+ queries to 2-3 queries
+- **FileUploadManager**: Reduced from 3+ queries to 1-2 queries
 
 ### Memory Usage
 - Reduced memory footprint by eliminating redundant data loading
@@ -201,22 +202,23 @@ $playerStats = Player::where('id', $this->player->id)
 16. `app/Livewire/Game/AllianceManager.php`
 17. `app/Livewire/Game/TechnologyManager.php`
 18. `app/Livewire/Game/ResourceManager.php`
-19. `app/Models/Game/Player.php`
-20. `app/Models/Game/Quest.php`
-21. `app/Models/Game/Movement.php`
-22. `app/Models/Game/GameEvent.php`
-23. `app/Models/Game/Task.php`
-24. `app/Models/Game/AchievementTemplate.php`
-25. `app/Models/Game/PlayerAchievement.php`
-26. `app/Models/Game/Battle.php`
-27. `app/Models/Game/Village.php`
-28. `app/Models/Game/Building.php`
-29. `app/Models/Game/Troop.php`
-30. `app/Models/Game/UnitType.php`
-31. `app/Models/Game/Alliance.php`
-32. `app/Models/Game/AllianceMember.php`
-33. `app/Models/Game/Technology.php`
-34. `app/Models/Game/Resource.php`
+19. `app/Livewire/Game/FileUploadManager.php`
+20. `app/Models/Game/Player.php`
+21. `app/Models/Game/Quest.php`
+22. `app/Models/Game/Movement.php`
+23. `app/Models/Game/GameEvent.php`
+24. `app/Models/Game/Task.php`
+25. `app/Models/Game/AchievementTemplate.php`
+26. `app/Models/Game/PlayerAchievement.php`
+27. `app/Models/Game/Battle.php`
+28. `app/Models/Game/Village.php`
+29. `app/Models/Game/Building.php`
+30. `app/Models/Game/Troop.php`
+31. `app/Models/Game/UnitType.php`
+32. `app/Models/Game/Alliance.php`
+33. `app/Models/Game/AllianceMember.php`
+34. `app/Models/Game/Technology.php`
+35. `app/Models/Game/Resource.php`
 
 ### New Files
 1. `app/Services/QueryOptimizationService.php`

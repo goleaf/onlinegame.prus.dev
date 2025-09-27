@@ -16,6 +16,7 @@ class BuildingQueue extends Model
         'completed_at',
         'status',
         'costs',
+        'reference_number',
     ];
 
     protected $casts = [

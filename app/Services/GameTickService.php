@@ -313,34 +313,58 @@ class GameTickService
 
     private function createBattleReports(Battle $battle)
     {
-        // Create report for attacker
+        // Create detailed report for attacker
         Report::create([
-            'player_id' => $battle->attacker_id,
+            'world_id' => $battle->village->world_id,
+            'attacker_id' => $battle->attacker_id,
+            'defender_id' => $battle->defender_id,
+            'from_village_id' => $battle->battle_data['attacking_troops'][0]['from_village_id'] ?? null,
+            'to_village_id' => $battle->village_id,
             'type' => 'attack',
-            'title' => 'Battle Report - Attack',
-            'content' => $this->generateBattleReportContent($battle, 'attacker'),
-            'data' => [
+            'status' => $battle->result === 'attacker_wins' ? 'victory' : ($battle->result === 'defender_wins' ? 'defeat' : 'draw'),
+            'title' => $this->generateBattleReportTitle($battle, 'attacker'),
+            'content' => $this->generateDetailedBattleReportContent($battle, 'attacker'),
+            'battle_data' => [
                 'battle_id' => $battle->id,
                 'result' => $battle->result,
-                'losses' => $battle->attacker_losses,
-                'loot' => $battle->resources_looted,
+                'attacker_losses' => $battle->attacker_losses,
+                'defender_losses' => $battle->defender_losses,
+                'resources_looted' => $battle->resources_looted,
+                'battle_power' => $battle->battle_data['battle_power'],
+                'attacking_troops' => $battle->battle_data['attacking_troops'],
+                'defending_troops' => $battle->battle_data['defending_troops'],
+                'casualties_summary' => $this->generateCasualtiesSummary($battle->attacker_losses),
+                'loot_summary' => $this->generateLootSummary($battle->resources_looted),
             ],
             'is_read' => false,
+            'is_important' => $battle->result === 'attacker_wins',
         ]);
 
-        // Create report for defender
+        // Create detailed report for defender
         Report::create([
-            'player_id' => $battle->defender_id,
+            'world_id' => $battle->village->world_id,
+            'attacker_id' => $battle->attacker_id,
+            'defender_id' => $battle->defender_id,
+            'from_village_id' => $battle->battle_data['attacking_troops'][0]['from_village_id'] ?? null,
+            'to_village_id' => $battle->village_id,
             'type' => 'defense',
-            'title' => 'Battle Report - Defense',
-            'content' => $this->generateBattleReportContent($battle, 'defender'),
-            'data' => [
+            'status' => $battle->result === 'attacker_wins' ? 'defeat' : ($battle->result === 'defender_wins' ? 'victory' : 'draw'),
+            'title' => $this->generateBattleReportTitle($battle, 'defender'),
+            'content' => $this->generateDetailedBattleReportContent($battle, 'defender'),
+            'battle_data' => [
                 'battle_id' => $battle->id,
-                'result' => $battle->result === 'attacker_wins' ? 'defeat' : 'victory',
-                'losses' => $battle->defender_losses,
-                'loot' => $battle->resources_looted,
+                'result' => $battle->result,
+                'attacker_losses' => $battle->attacker_losses,
+                'defender_losses' => $battle->defender_losses,
+                'resources_looted' => $battle->resources_looted,
+                'battle_power' => $battle->battle_data['battle_power'],
+                'attacking_troops' => $battle->battle_data['attacking_troops'],
+                'defending_troops' => $battle->battle_data['defending_troops'],
+                'casualties_summary' => $this->generateCasualtiesSummary($battle->defender_losses),
+                'loot_summary' => $this->generateLootSummary($battle->resources_looted),
             ],
             'is_read' => false,
+            'is_important' => $battle->result === 'defender_wins',
         ]);
     }
 

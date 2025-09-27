@@ -31,13 +31,12 @@ class IntrospectService
 
         foreach ($models as $name => $class) {
             $modelDetail = Introspect::model($class);
-
+            
             $analysis[$name] = [
                 'class' => $class,
-                'properties' => $modelDetail->properties(),
                 'schema' => $modelDetail->schema(),
-                'fillable' => $modelDetail->fillable ?? [],
-                'casts' => $modelDetail->casts ?? [],
+                'fillable' => $this->getModelFillable($class),
+                'casts' => $this->getModelCasts($class),
                 'relationships' => $this->getModelRelationships($class),
             ];
         }
@@ -46,24 +45,84 @@ class IntrospectService
     }
 
     /**
+     * Get model fillable attributes
+     */
+    public function getModelFillable(string $modelClass): array
+    {
+        try {
+            $model = new $modelClass;
+            return $model->getFillable();
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get model casts
+     */
+    public function getModelCasts(string $modelClass): array
+    {
+        try {
+            $model = new $modelClass;
+            return $model->getCasts();
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    /**
      * Get model relationships using Introspect
      */
     public function getModelRelationships(string $modelClass): array
     {
         $relationships = [];
+        
+        try {
+            // Get models that have relationships with the target model
+            $relatedModels = Introspect::models()
+                ->whereHasRelationship(class_basename($modelClass))
+                ->get();
 
-        // Get models that have relationships with the target model
-        $relatedModels = Introspect::models()
-            ->whereHasRelationship(class_basename($modelClass))
-            ->get();
-
-        foreach ($relatedModels as $relatedModel) {
-            $relationships[] = [
-                'model' => $relatedModel,
-                'type' => 'related',
-            ];
+            foreach ($relatedModels as $relatedModel) {
+                $relationships[] = [
+                    'model' => $relatedModel,
+                    'type' => 'related',
+                ];
+            }
+        } catch (\Exception $e) {
+            // Fallback to manual relationship detection
+            $relationships = $this->getManualRelationships($modelClass);
         }
 
+        return $relationships;
+    }
+
+    /**
+     * Get manual relationships for models
+     */
+    private function getManualRelationships(string $modelClass): array
+    {
+        $relationships = [];
+        
+        try {
+            $reflection = new \ReflectionClass($modelClass);
+            $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+            
+            foreach ($methods as $method) {
+                if (str_contains($method->getName(), 'belongsTo') || 
+                    str_contains($method->getName(), 'hasMany') ||
+                    str_contains($method->getName(), 'hasOne') ||
+                    str_contains($method->getName(), 'belongsToMany')) {
+                    $relationships[] = [
+                        'method' => $method->getName(),
+                        'type' => 'relationship',
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            // Ignore reflection errors
+        }
+        
         return $relationships;
     }
 
@@ -213,8 +272,16 @@ class IntrospectService
         $schemas = [];
 
         foreach ($models as $name => $class) {
-            $modelDetail = Introspect::model($class);
-            $schemas[$name] = $modelDetail->schema();
+            try {
+                $modelDetail = Introspect::model($class);
+                $schemas[$name] = $modelDetail->schema();
+            } catch (\Exception $e) {
+                $schemas[$name] = [
+                    'type' => 'object',
+                    'properties' => [],
+                    'error' => 'Could not generate schema: ' . $e->getMessage()
+                ];
+            }
         }
 
         return $schemas;
@@ -237,15 +304,25 @@ class IntrospectService
         $dependencies = [];
 
         foreach ($models as $name => $class) {
-            $modelDetail = Introspect::model($class);
-
-            $dependencies[$name] = [
-                'class' => $class,
-                'properties' => $modelDetail->properties(),
-                'fillable' => $modelDetail->fillable ?? [],
-                'casts' => $modelDetail->casts ?? [],
-                'relationships' => $this->getModelRelationships($class),
-            ];
+            try {
+                $modelDetail = Introspect::model($class);
+                
+                $dependencies[$name] = [
+                    'class' => $class,
+                    'schema' => $modelDetail->schema(),
+                    'fillable' => $this->getModelFillable($class),
+                    'casts' => $this->getModelCasts($class),
+                    'relationships' => $this->getModelRelationships($class),
+                ];
+            } catch (\Exception $e) {
+                $dependencies[$name] = [
+                    'class' => $class,
+                    'error' => 'Could not analyze: ' . $e->getMessage(),
+                    'fillable' => $this->getModelFillable($class),
+                    'casts' => $this->getModelCasts($class),
+                    'relationships' => $this->getModelRelationships($class),
+                ];
+            }
         }
 
         return $dependencies;
@@ -268,14 +345,15 @@ class IntrospectService
         $metrics = [];
 
         foreach ($models as $name => $class) {
-            $modelDetail = Introspect::model($class);
-
+            $fillable = $this->getModelFillable($class);
+            $casts = $this->getModelCasts($class);
+            $relationships = $this->getModelRelationships($class);
+            
             $metrics[$name] = [
-                'property_count' => count($modelDetail->properties()),
-                'fillable_count' => count($modelDetail->fillable ?? []),
-                'cast_count' => count($modelDetail->casts ?? []),
-                'relationship_count' => count($this->getModelRelationships($class)),
-                'complexity_score' => $this->calculateModelComplexity($modelDetail),
+                'fillable_count' => count($fillable),
+                'cast_count' => count($casts),
+                'relationship_count' => count($relationships),
+                'complexity_score' => $this->calculateModelComplexity($fillable, $casts, $relationships),
             ];
         }
 

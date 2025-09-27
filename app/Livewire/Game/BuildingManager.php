@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Game;
 
+use Aliziodev\LaravelTaxonomy\Facades\Taxonomy;
 use App\Models\Game\Building;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
@@ -55,6 +56,7 @@ class BuildingManager extends Component
             $this->village = $player?->villages->first();
         }
 
+        $this->loadTaxonomies();
         $this->loadBuildings();
         $this->loadAvailableBuildings();
         $this->initializeBuildingFeatures();

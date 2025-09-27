@@ -467,6 +467,9 @@ class EnhancedGameDashboard extends Component
             $this->loadBuildingQueues();
             $this->loadTrainingQueues();
             $this->addNotification('Village selected: ' . $this->currentVillage->name, 'info');
+            
+            // Track village selection
+            $this->dispatch('fathom-track', name: 'village selected', value: $villageId);
 
             ds('Village data loaded', [
                 'village_id' => $villageId,
