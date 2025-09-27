@@ -7,7 +7,9 @@ use Tests\TestCase;
 
 class UserSimpleTest extends TestCase
 {
-    /** @test */
+    /**
+     * @test
+     */
     public function it_has_auditing_disabled_method()
     {
         $user = new User();
@@ -18,56 +20,73 @@ class UserSimpleTest extends TestCase
         $this->assertIsBool($user->auditingDisabled);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_disables_auditing_for_admin_users()
     {
         $adminUser = new User();
         $adminUser->setAttribute('email', 'admin@example.com');
-        
+
         $regularUser = new User();
         $regularUser->setAttribute('email', 'user@example.com');
 
-        $this->assertTrue($adminUser->auditingDisabled());
-        $this->assertFalse($regularUser->auditingDisabled());
+        $this->assertTrue($adminUser->isAuditingDisabled());
+        $this->assertTrue($adminUser->auditingDisabled);
+        $this->assertFalse($regularUser->isAuditingDisabled());
+        $this->assertFalse($regularUser->auditingDisabled);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_disables_auditing_for_system_users()
     {
         $systemUser = new User();
         $systemUser->setAttribute('email', 'system@example.com');
-        
+
         $regularUser = new User();
         $regularUser->setAttribute('email', 'user@example.com');
 
-        $this->assertTrue($systemUser->auditingDisabled());
-        $this->assertFalse($regularUser->auditingDisabled());
+        $this->assertTrue($systemUser->isAuditingDisabled());
+        $this->assertTrue($systemUser->auditingDisabled);
+        $this->assertFalse($regularUser->isAuditingDisabled());
+        $this->assertFalse($regularUser->auditingDisabled);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_disables_auditing_for_old_users()
     {
         $oldUser = new User();
         $oldUser->setAttribute('created_at', now()->subYears(2));
-        
+
         $newUser = new User();
         $newUser->setAttribute('created_at', now()->subMonths(6));
 
-        $this->assertTrue($oldUser->auditingDisabled());
-        $this->assertFalse($newUser->auditingDisabled());
+        $this->assertTrue($oldUser->isAuditingDisabled());
+        $this->assertTrue($oldUser->auditingDisabled);
+        $this->assertFalse($newUser->isAuditingDisabled());
+        $this->assertFalse($newUser->auditingDisabled);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_enables_auditing_by_default()
     {
         $regularUser = new User();
         $regularUser->setAttribute('email', 'regular@example.com');
         $regularUser->setAttribute('created_at', now()->subMonths(6));
 
-        $this->assertFalse($regularUser->auditingDisabled());
+        $this->assertFalse($regularUser->isAuditingDisabled());
+        $this->assertFalse($regularUser->auditingDisabled);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_excludes_sensitive_attributes_from_audit()
     {
         $user = new User();
@@ -76,7 +95,9 @@ class UserSimpleTest extends TestCase
         $this->assertContains('remember_token', $user->getAuditExclude());
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_implements_auditable_contract()
     {
         $user = new User();
@@ -84,7 +105,9 @@ class UserSimpleTest extends TestCase
         $this->assertInstanceOf(\OwenIt\Auditing\Contracts\Auditable::class, $user);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_has_fillable_attributes()
     {
         $user = new User();
@@ -99,7 +122,9 @@ class UserSimpleTest extends TestCase
         $this->assertContains('reference_number', $fillable);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_hides_sensitive_attributes_in_serialization()
     {
         $user = new User();
@@ -110,7 +135,9 @@ class UserSimpleTest extends TestCase
         $this->assertContains('remember_token', $hidden);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_has_correct_casts()
     {
         $user = new User();
@@ -123,7 +150,9 @@ class UserSimpleTest extends TestCase
         $this->assertArrayHasKey('reference_number', $casts);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_use_allowed_filters()
     {
         $user = new User();

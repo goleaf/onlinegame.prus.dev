@@ -212,10 +212,7 @@ class BuildingController extends CrudController
 
             // Check if building is already upgrading
             if ($building->is_upgrading) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Building is already upgrading'
-                ], 400);
+                return $this->errorResponse('Building is already upgrading', 400);
             }
 
             // Check if there's already a queue for this building
@@ -224,10 +221,7 @@ class BuildingController extends CrudController
                 ->first();
 
             if ($existingQueue) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Building upgrade already queued'
-                ], 400);
+                return $this->errorResponse('Building upgrade already queued', 400);
             }
 
             // Calculate upgrade cost and time
@@ -246,10 +240,7 @@ class BuildingController extends CrudController
                 $village->clay < $upgradeCost['clay'] ||
                 $village->iron < $upgradeCost['iron'] ||
                 $village->crop < $upgradeCost['crop']) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Insufficient resources'
-                ], 400);
+                return $this->errorResponse('Insufficient resources', 400);
             }
 
             DB::beginTransaction();
@@ -322,10 +313,7 @@ class BuildingController extends CrudController
                 ->first();
 
             if (!$buildingQueue) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No active upgrade found for this building'
-                ], 400);
+                return $this->errorResponse('No active upgrade found for this building', 400);
             }
 
             DB::beginTransaction();
@@ -364,18 +352,13 @@ class BuildingController extends CrudController
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Building upgrade cancelled and resources refunded',
+            return $this->successResponse([
                 'refunded_resources' => $refundAmount
-            ]);
+            ], 'Building upgrade cancelled and resources refunded successfully.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to cancel building upgrade: ' . $e->getMessage()
-            ], 500);
+            return $this->errorResponse('Failed to cancel building upgrade: ' . $e->getMessage(), 500);
         }
     }
 
@@ -423,13 +406,10 @@ class BuildingController extends CrudController
                 ->orderBy('completion_time', 'asc')
                 ->get();
 
-            return response()->json(['data' => $buildingQueue]);
+            return $this->successResponse($buildingQueue, 'Building queue retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Village not found'
-            ], 404);
+            return $this->errorResponse('Village not found', 404);
         }
     }
 
@@ -466,13 +446,10 @@ class BuildingController extends CrudController
         try {
             $buildingTypes = BuildingType::all();
 
-            return response()->json(['data' => $buildingTypes]);
+            return $this->successResponse($buildingTypes, 'Building types retrieved successfully.');
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve building types: ' . $e->getMessage()
-            ], 500);
+            return $this->errorResponse('Failed to retrieve building types: ' . $e->getMessage(), 500);
         }
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Game\Player;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use OwenIt\Auditing\Events\Audited;
@@ -17,15 +17,17 @@ class UserAuditingTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Ensure we have a clean database state
         $this->refreshDatabase();
-        
+
         // Enable auditing for tests
         config(['auditing.enabled' => true]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_creates_audit_record_when_user_is_created()
     {
         Event::fake([Audited::class]);
@@ -49,7 +51,9 @@ class UserAuditingTest extends TestCase
         $this->assertEquals('created', $audit->event);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_creates_audit_record_when_user_is_updated()
     {
         $user = User::factory()->create([
@@ -75,16 +79,18 @@ class UserAuditingTest extends TestCase
         $audit = Audit::where('auditable_id', $user->id)->where('event', 'updated')->first();
         $this->assertNotNull($audit);
         $this->assertEquals('updated', $audit->event);
-        
+
         // Check that old values are stored
         $oldValues = json_decode($audit->old_values, true);
         $newValues = json_decode($audit->new_values, true);
-        
+
         $this->assertEquals('Original Name', $oldValues['name']);
         $this->assertEquals('Updated Name', $newValues['name']);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_creates_audit_record_when_user_is_deleted()
     {
         $user = User::factory()->create();
@@ -106,7 +112,9 @@ class UserAuditingTest extends TestCase
         $this->assertEquals('deleted', $audit->event);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_excludes_password_from_audit_records()
     {
         $user = User::factory()->create([
@@ -116,14 +124,16 @@ class UserAuditingTest extends TestCase
         ]);
 
         $audit = Audit::where('auditable_id', $user->id)->where('event', 'created')->first();
-        
+
         $this->assertNotNull($audit);
-        
+
         $newValues = json_decode($audit->new_values, true);
         $this->assertArrayNotHasKey('password', $newValues);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_excludes_remember_token_from_audit_records()
     {
         $user = User::factory()->create([
@@ -133,14 +143,16 @@ class UserAuditingTest extends TestCase
         ]);
 
         $audit = Audit::where('auditable_id', $user->id)->where('event', 'created')->first();
-        
+
         $this->assertNotNull($audit);
-        
+
         $newValues = json_decode($audit->new_values, true);
         $this->assertArrayNotHasKey('remember_token', $newValues);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_skips_auditing_when_auditing_disabled_returns_true()
     {
         // Create an admin user (should have auditing disabled)
@@ -156,7 +168,7 @@ class UserAuditingTest extends TestCase
 
         // Should not create audit record for admin users
         Event::assertNotDispatched(Audited::class);
-        
+
         $this->assertDatabaseMissing('audits', [
             'auditable_type' => User::class,
             'auditable_id' => $adminUser->id,
@@ -164,7 +176,9 @@ class UserAuditingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_skips_auditing_for_system_users()
     {
         // Create a system user (should have auditing disabled)
@@ -180,7 +194,7 @@ class UserAuditingTest extends TestCase
 
         // Should not create audit record for system users
         Event::assertNotDispatched(Audited::class);
-        
+
         $this->assertDatabaseMissing('audits', [
             'auditable_type' => User::class,
             'auditable_id' => $systemUser->id,
@@ -188,7 +202,9 @@ class UserAuditingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_skips_auditing_for_old_users()
     {
         // Create an old user (should have auditing disabled)
@@ -207,7 +223,7 @@ class UserAuditingTest extends TestCase
 
         // Should not create audit record for old users
         Event::assertNotDispatched(Audited::class);
-        
+
         $this->assertDatabaseMissing('audits', [
             'auditable_type' => User::class,
             'auditable_id' => $oldUser->id,
@@ -215,7 +231,9 @@ class UserAuditingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_audits_regular_users_by_default()
     {
         // Create a regular user (should have auditing enabled)
@@ -234,7 +252,7 @@ class UserAuditingTest extends TestCase
 
         // Should create audit record for regular users
         Event::assertDispatched(Audited::class);
-        
+
         $this->assertDatabaseHas('audits', [
             'auditable_type' => User::class,
             'auditable_id' => $regularUser->id,
@@ -242,7 +260,9 @@ class UserAuditingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_stores_audit_metadata_correctly()
     {
         $user = User::factory()->create([
@@ -251,7 +271,7 @@ class UserAuditingTest extends TestCase
         ]);
 
         $audit = Audit::where('auditable_id', $user->id)->where('event', 'created')->first();
-        
+
         $this->assertNotNull($audit);
         $this->assertEquals(User::class, $audit->auditable_type);
         $this->assertEquals($user->id, $audit->auditable_id);
@@ -260,7 +280,9 @@ class UserAuditingTest extends TestCase
         $this->assertNotNull($audit->updated_at);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_tracks_phone_number_changes_in_audit()
     {
         $user = User::factory()->create([
@@ -276,26 +298,28 @@ class UserAuditingTest extends TestCase
         ]);
 
         $audit = Audit::where('auditable_id', $user->id)->where('event', 'updated')->first();
-        
+
         $this->assertNotNull($audit);
-        
+
         $oldValues = json_decode($audit->old_values, true);
         $newValues = json_decode($audit->new_values, true);
-        
+
         $this->assertEquals('+1234567890', $oldValues['phone']);
         $this->assertEquals('+0987654321', $newValues['phone']);
         $this->assertEquals('US', $oldValues['phone_country']);
         $this->assertEquals('CA', $newValues['phone_country']);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_handles_multiple_audit_events_correctly()
     {
         $user = User::factory()->create(['name' => 'Original Name']);
 
         // Update 1
         $user->update(['name' => 'First Update']);
-        
+
         // Update 2
         $user->update(['name' => 'Second Update']);
 
@@ -303,40 +327,44 @@ class UserAuditingTest extends TestCase
         $user->delete();
 
         $audits = Audit::where('auditable_id', $user->id)->orderBy('created_at')->get();
-        
+
         $this->assertCount(3, $audits);
         $this->assertEquals('created', $audits[0]->event);
         $this->assertEquals('updated', $audits[1]->event);
         $this->assertEquals('updated', $audits[2]->event);
-        
+
         // Check that we have the correct number of audit records
         $this->assertEquals(1, Audit::where('auditable_id', $user->id)->where('event', 'created')->count());
         $this->assertEquals(2, Audit::where('auditable_id', $user->id)->where('event', 'updated')->count());
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_preserves_audit_records_after_user_deletion()
     {
         $user = User::factory()->create(['name' => 'Test User']);
-        
+
         $user->update(['name' => 'Updated User']);
-        
+
         $auditCountBefore = Audit::where('auditable_id', $user->id)->count();
-        
+
         $user->delete();
-        
+
         // Audit records should still exist after user deletion
         $auditCountAfter = Audit::where('auditable_id', $user->id)->count();
-        $this->assertEquals($auditCountBefore + 1, $auditCountAfter); // +1 for the delete event
-        
+        $this->assertEquals($auditCountBefore + 1, $auditCountAfter);  // +1 for the delete event
+
         // The user should be soft deleted (if using soft deletes) or hard deleted
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
-        
+
         // But audit records should remain
         $this->assertGreaterThan(0, Audit::where('auditable_id', $user->id)->count());
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_handles_auditing_disabled_during_creation()
     {
         Event::fake([Audited::class]);
@@ -346,7 +374,7 @@ class UserAuditingTest extends TestCase
 
         // Should not create audit record for admin users during creation
         Event::assertNotDispatched(Audited::class);
-        
+
         $this->assertDatabaseMissing('audits', [
             'auditable_type' => User::class,
             'auditable_id' => $adminUser->id,
@@ -354,18 +382,20 @@ class UserAuditingTest extends TestCase
         ]);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function it_can_retrieve_audit_history_for_user()
     {
         $user = User::factory()->create(['name' => 'Test User']);
-        
+
         $user->update(['name' => 'Updated User']);
         $user->update(['email' => 'updated@example.com']);
-        
+
         // Get audit history
         $audits = $user->audits;
-        
-        $this->assertCount(3, $audits); // created + 2 updates
+
+        $this->assertCount(3, $audits);  // created + 2 updates
         $this->assertEquals('created', $audits[0]->event);
         $this->assertEquals('updated', $audits[1]->event);
         $this->assertEquals('updated', $audits[2]->event);

@@ -49,26 +49,26 @@ class User extends Authenticatable implements Auditable
     /**
      * Determine if auditing is disabled for this model instance.
      * This method is used by the Laravel Auditing package to conditionally disable auditing.
-     * 
+     *
      * @return bool
      */
     public function isAuditingDisabled(): bool
     {
         // You can customize this logic based on your business requirements
         // For example, disable auditing for certain user types or conditions
-        
+
         // Disable auditing for system users or admin users
         $email = $this->getAttribute('email');
         if ($email && (str_contains($email, 'admin@') || str_contains($email, 'system@'))) {
             return true;
         }
-        
+
         // Disable auditing for users created before a certain date
         $createdAt = $this->getAttribute('created_at');
         if ($createdAt && $createdAt->isBefore(now()->subYear())) {
             return true;
         }
-        
+
         // By default, enable auditing
         return false;
     }
@@ -76,7 +76,7 @@ class User extends Authenticatable implements Auditable
     /**
      * Get the auditingDisabled attribute.
      * This is used by the Laravel Auditing package.
-     * 
+     *
      * @return bool
      */
     public function getAuditingDisabledAttribute(): bool
