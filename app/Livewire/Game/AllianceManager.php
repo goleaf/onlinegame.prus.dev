@@ -16,6 +16,8 @@ use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use Livewire\WithPagination;
 use SmartCache\Facades\SmartCache;
+use sbamtr\LaravelQueryEnrich\QE;
+use function sbamtr\LaravelQueryEnrich\c;
 
 class AllianceManager extends Component
 {
