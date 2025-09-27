@@ -2,125 +2,59 @@
 
 namespace App\Livewire;
 
-use App\Models\User;
 use Livewire\Component;
-use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Layout;
 
+#[Title('Phone Statistics Dashboard')]
+#[Layout('layouts.app')]
 class PhoneStatsDashboard extends Component
 {
-    public $stats = [];
-    public $loading = true;
-    public $refreshInterval = 300; // 5 minutes
+    public $phoneStats = [];
+    public $isLoading = false;
 
     public function mount()
     {
-        $this->loadStatistics();
+        $this->loadPhoneStats();
     }
 
-    public function loadStatistics()
+    public function loadPhoneStats()
     {
-        $this->loading = true;
+        $this->isLoading = true;
         
         try {
-            $this->stats = [
-                'total_users' => User::count(),
-                'users_with_phone' => User::whereNotNull('phone')->count(),
-                'phone_coverage_percentage' => $this->getPhoneCoveragePercentage(),
-                'countries_with_phones' => $this->getCountriesWithPhones(),
-                'phone_formats' => $this->getPhoneFormatStatistics(),
-                'recent_phone_registrations' => $this->getRecentPhoneRegistrations(),
-                'top_countries' => $this->getTopCountries(),
-                'phone_validation_errors' => $this->getPhoneValidationErrors(),
+            $this->phoneStats = [
+                'total_phones' => \App\Models\User::whereNotNull('phone')->count(),
+                'verified_phones' => \App\Models\User::whereNotNull('phone_verified_at')->count(),
+                'unverified_phones' => \App\Models\User::whereNotNull('phone')->whereNull('phone_verified_at')->count(),
+                'phone_countries' => \App\Models\User::whereNotNull('phone_country')->distinct('phone_country')->count(),
+                'recent_verifications' => \App\Models\User::whereNotNull('phone_verified_at')
+                    ->where('phone_verified_at', '>', now()->subDays(7))->count(),
+                'verification_rate' => $this->getVerificationRate(),
             ];
         } catch (\Exception $e) {
-            $this->stats = [
-                'error' => 'Failed to load phone statistics: ' . $e->getMessage()
-            ];
+            session()->flash('error', 'Failed to load phone statistics: ' . $e->getMessage());
+        } finally {
+            $this->isLoading = false;
+        }
+    }
+
+    private function getVerificationRate()
+    {
+        $total = \App\Models\User::whereNotNull('phone')->count();
+        $verified = \App\Models\User::whereNotNull('phone_verified_at')->count();
+        
+        if ($total === 0) {
+            return 0;
         }
         
-        $this->loading = false;
+        return round(($verified / $total) * 100, 1);
     }
 
-    private function getPhoneCoveragePercentage()
+    public function refreshStats()
     {
-        $total = User::count();
-        $withPhone = User::whereNotNull('phone')->count();
-        
-        return $total > 0 ? round(($withPhone / $total) * 100, 2) : 0;
-    }
-
-    private function getCountriesWithPhones()
-    {
-        return User::whereNotNull('phone_country')
-                   ->distinct('phone_country')
-                   ->count();
-    }
-
-    private function getPhoneFormatStatistics()
-    {
-        return [
-            'with_e164' => User::whereNotNull('phone_e164')->count(),
-            'with_normalized' => User::whereNotNull('phone_normalized')->count(),
-            'with_national' => User::whereNotNull('phone_national')->count(),
-        ];
-    }
-
-    private function getRecentPhoneRegistrations()
-    {
-        return User::whereNotNull('phone')
-                   ->where('created_at', '>=', now()->subDays(30))
-                   ->count();
-    }
-
-    private function getTopCountries()
-    {
-        return User::whereNotNull('phone_country')
-                   ->select('phone_country', DB::raw('count(*) as count'))
-                   ->groupBy('phone_country')
-                   ->orderBy('count', 'desc')
-                   ->limit(10)
-                   ->get()
-                   ->map(function ($item) {
-                       return [
-                           'country' => $item->phone_country,
-                           'count' => $item->count,
-                           'country_name' => $this->getCountryName($item->phone_country)
-                       ];
-                   });
-    }
-
-    private function getPhoneValidationErrors()
-    {
-        // This would typically come from a logs table or validation tracking
-        // For now, we'll return a placeholder
-        return [
-            'total_errors' => 0,
-            'recent_errors' => 0,
-            'error_types' => []
-        ];
-    }
-
-    private function getCountryName($countryCode)
-    {
-        $countries = [
-            'US' => 'United States',
-            'CA' => 'Canada',
-            'GB' => 'United Kingdom',
-            'DE' => 'Germany',
-            'FR' => 'France',
-            'IT' => 'Italy',
-            'ES' => 'Spain',
-            'AU' => 'Australia',
-            'BE' => 'Belgium',
-            'NL' => 'Netherlands',
-        ];
-
-        return $countries[$countryCode] ?? $countryCode;
-    }
-
-    public function refreshStatistics()
-    {
-        $this->loadStatistics();
+        $this->loadPhoneStats();
+        session()->flash('message', 'Phone statistics refreshed successfully!');
     }
 
     public function render()
