@@ -3,6 +3,7 @@
 namespace App\Models\Game;
 
 use App\Models\User;
+use App\Traits\Commentable;
 use App\ValueObjects\PlayerStats;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

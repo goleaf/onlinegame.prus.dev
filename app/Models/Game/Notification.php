@@ -2,14 +2,18 @@
 
 namespace App\Models\Game;
 
+use App\Services\GameIntegrationService;
+use App\Services\GameNotificationService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Notification extends Model
+class Notification extends Model implements Auditable
 {
-    use HasFactory, HasReference;
+    use HasFactory, AuditableTrait;
 
     protected $fillable = [
         'player_id',
@@ -26,7 +30,6 @@ class Notification extends Model
         'is_persistent',
         'is_auto_dismiss',
         'auto_dismiss_seconds',
-        'reference_number',
     ];
 
     protected $casts = [
@@ -228,5 +231,54 @@ class Notification extends Model
         $remainingHours = $hours % 24;
 
         return $remainingHours > 0 ? "{$days}d {$remainingHours}h" : "{$days} days";
+    }
+
+    /**
+     * Create notification with integration
+     */
+    public static function createWithIntegration(array $data): self
+    {
+        $notification = self::create($data);
+        
+        // Send real-time notification
+        GameNotificationService::sendNotification(
+            [$notification->player_id],
+            $notification->type,
+            [
+                'notification_id' => $notification->id,
+                'title' => $notification->title,
+                'message' => $notification->message,
+                'priority' => $notification->priority,
+                'data' => $notification->data,
+            ],
+            $notification->priority
+        );
+
+        return $notification;
+    }
+
+    /**
+     * Mark as read with integration
+     */
+    public function markAsReadWithIntegration(): void
+    {
+        $this->update([
+            'status' => 'read',
+            'read_at' => now(),
+        ]);
+
+        // Send read confirmation notification
+        GameNotificationService::markNotificationAsRead(
+            $this->player_id,
+            $this->id
+        );
+    }
+
+    /**
+     * Send system-wide notification with integration
+     */
+    public static function sendSystemNotificationWithIntegration(string $title, string $message, string $priority = 'normal'): void
+    {
+        GameIntegrationService::sendSystemAnnouncement($title, $message, $priority);
     }
 }
