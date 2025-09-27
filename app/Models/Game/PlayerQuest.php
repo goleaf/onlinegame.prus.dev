@@ -32,6 +32,15 @@ class PlayerQuest extends Model
         'expires_at' => 'datetime',
     ];
 
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+    protected $referenceTemplate = [
+        'format' => 'PQ-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+    protected $referencePrefix = 'PQ';
+
     public function player(): BelongsTo
     {
         return $this->belongsTo(Player::class);
