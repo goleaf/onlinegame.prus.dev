@@ -100,6 +100,40 @@ class QueryOptimizationService
     }
 
     /**
+     * Optimize N+1 queries with eager loading and selectRaw.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $relations
+     * @param  array  $selectRaw
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function optimizeNPlusOne(Builder $query, array $relations = [], array $selectRaw = []): Builder
+    {
+        if (!empty($relations)) {
+            $query->with($relations);
+        }
+
+        if (!empty($selectRaw)) {
+            $query->selectRaw(implode(', ', $selectRaw));
+        }
+
+        return $query;
+    }
+
+    /**
+     * Apply conditional ordering to a query builder.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $sortBy
+     * @param  string  $sortOrder
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function applyConditionalOrdering(Builder $query, string $sortBy, string $sortOrder): Builder
+    {
+        return $query->orderBy($sortBy, $sortOrder);
+    }
+
+    /**
      * Optimize N+1 queries with selectRaw subqueries
      */
     public static function optimizeNPlusOne(Builder $query, array $subqueries): Builder
