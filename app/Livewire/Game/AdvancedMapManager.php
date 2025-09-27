@@ -452,6 +452,45 @@ class AdvancedMapManager extends Component
         ]);
     }
 
+    public function getVillageData()
+    {
+        return $this->villages->map(function($village) {
+            $geoService = app(GeographicService::class);
+            
+            return [
+                'id' => $village->id,
+                'name' => $village->name,
+                'x' => $village->x_coordinate,
+                'y' => $village->y_coordinate,
+                'population' => $village->population,
+                'player_name' => $village->player->name ?? 'Abandoned',
+                'alliance_name' => $village->player->alliance->name ?? null,
+                'is_my_village' => $village->player->user_id === Auth::id(),
+                'is_alliance_village' => $village->player->alliance_id === (Auth::user()->player->alliance_id ?? 0),
+                'latitude' => $village->latitude,
+                'longitude' => $village->longitude,
+                'geohash' => $village->geohash,
+                'elevation' => $village->elevation,
+                'distance_from_center' => $this->calculateDistance($village->x_coordinate, $village->y_coordinate),
+                'bearing_from_center' => $this->calculateBearing($village->x_coordinate, $village->y_coordinate)
+            ];
+        })->toArray();
+    }
+
+    public function calculateDistance($x, $y)
+    {
+        return sqrt(pow($x - $this->centerX, 2) + pow($y - $this->centerY, 2));
+    }
+
+    public function calculateBearing($x, $y)
+    {
+        $deltaX = $x - $this->centerX;
+        $deltaY = $y - $this->centerY;
+        
+        $bearing = atan2($deltaY, $deltaX) * 180 / pi();
+        return ($bearing + 360) % 360;
+    }
+
     public function render()
     {
         return view('livewire.game.advanced-map-manager');

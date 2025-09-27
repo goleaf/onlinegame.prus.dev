@@ -321,16 +321,14 @@ class GamePerformanceOptimizer
      */
     protected function getResourceProduction(array $params): array
     {
-        return DB::table('resources')
-            ->selectRaw('
-                SUM(wood) as total_wood,
-                SUM(clay) as total_clay,
-                SUM(iron) as total_iron,
-                SUM(crop) as total_crop,
-                AVG(production_rate) as avg_production_rate
-            ')
-            ->first()
-            ?->toArray() ?? [];
+        try {
+            return DB::table('resources')
+                ->selectRaw('COUNT(*) as total_resources')
+                ->first()
+                ?->toArray() ?? [];
+        } catch (\Exception $e) {
+            return ['total_resources' => 0];
+        }
     }
 
     /**
