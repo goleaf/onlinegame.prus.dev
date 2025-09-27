@@ -45,7 +45,9 @@
             @foreach ($notifications as $notification)
                 <div class="alert alert-{{ $notification['type'] }} mb-2 p-3 rounded flex justify-between items-center">
                     <span>{{ $notification['message'] }}</span>
-                    <button wire:click="removeNotification('{{ $notification['id'] }}')" class="text-sm">×</button>
+                    <button wire:click="removeNotification('{{ $notification['id'] }}')" 
+                            wire:confirm="Are you sure you want to dismiss this notification?"
+                            class="text-sm">×</button>
                 </div>
             @endforeach
         </div>
