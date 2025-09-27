@@ -126,12 +126,7 @@ class VillageController extends CrudController
         ])->findOrFail($villageId);
 
         $villageCoordinates = $village->coordinates;
-        $villageResources = $village->resources ? new VillageResources(
-            wood: $village->resources->wood ?? 0,
-            clay: $village->resources->clay ?? 0,
-            iron: $village->resources->iron ?? 0,
-            crop: $village->resources->crop ?? 0
-        ) : null;
+        $villageResources = $village->villageResources;
 
         $details = [
             'village' => $village,

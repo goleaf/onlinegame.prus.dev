@@ -3,6 +3,8 @@
 namespace App\Models\Game;
 
 use App\Models\User;
+use App\Services\GameIntegrationService;
+use App\Services\GameNotificationService;
 use App\Traits\Commentable;
 use App\ValueObjects\PlayerStats;
 use Illuminate\Database\Eloquent\Casts\Attribute;

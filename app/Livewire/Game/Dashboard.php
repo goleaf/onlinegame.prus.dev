@@ -42,6 +42,9 @@ class Dashboard extends Component
 
         // Load player resources with optimization
         $this->loadResources();
+
+        // Initialize real-time features for the player
+        $this->initializePlayerRealTime();
     }
 
     public function createVillage()

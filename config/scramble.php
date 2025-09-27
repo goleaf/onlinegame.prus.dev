@@ -41,6 +41,8 @@ return [
 - **Artifact System**: Powerful items with server-wide effects and bonuses
 - **Message System**: Private and alliance messaging with bulk operations
 - **Alliance System**: Guild management, diplomacy, and war coordination
+- **Battle System**: Combat reports, statistics, and war battles
+- **Quest & Achievement System**: Player progression and milestone tracking
 - **Authentication**: Secure API access with Laravel Sanctum tokens
 
 ## API Endpoints
