@@ -53,9 +53,20 @@ class WorldMap extends Component
     public function mount($worldId = null)
     {
         if ($worldId) {
-            $this->world = World::findOrFail($worldId);
+            $this->world = World::selectRaw('
+                worlds.*,
+                (SELECT COUNT(*) FROM players p WHERE p.world_id = worlds.id) as total_players,
+                (SELECT COUNT(*) FROM villages v WHERE v.world_id = worlds.id) as total_villages,
+                (SELECT COUNT(*) FROM alliances a WHERE a.world_id = worlds.id) as total_alliances
+            ')->findOrFail($worldId);
         } else {
-            $player = Player::where('user_id', Auth::id())->first();
+            $player = Player::where('user_id', Auth::id())
+                ->with(['world:id,name'])
+                ->selectRaw('
+                    players.*,
+                    (SELECT COUNT(*) FROM villages WHERE player_id = players.id) as village_count
+                ')
+                ->first();
             $this->world = $player?->world;
         }
 
@@ -171,6 +182,11 @@ class WorldMap extends Component
 
 
 
+    public function resetZoom()
+    {
+        $this->zoomLevel = 1;
+        $this->addNotification('Zoom reset to 1x', 'info');
+    }
 
     public function toggleCoordinates()
     {
