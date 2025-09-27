@@ -54,6 +54,7 @@ class Laravel129FeaturesCommand extends Command
         $tests = [
             'Enhanced Cache Service' => fn() => $this->testEnhancedCache(),
             'Enhanced Session Service' => fn() => $this->testEnhancedSession(),
+            'SmartCache Integration' => fn() => $this->testSmartCache(),
             'Redis Connection' => fn() => $this->testRedisConnection(),
             'Compression Support' => fn() => $this->testCompressionSupport(),
         ];
