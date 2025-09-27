@@ -2,15 +2,13 @@
 
 namespace App\ValueObjects;
 
-use Bag\Bag;
-
-readonly class BattleResult extends Bag
+readonly class BattleResult
 {
     public function __construct(
         public string $status, // victory, defeat, draw
         public int $attackerLosses = 0,
         public int $defenderLosses = 0,
-        public ResourceAmounts $loot = null,
+        public ?ResourceAmounts $loot = null,
         public int $attackerPoints = 0,
         public int $defenderPoints = 0,
         public ?string $battleType = null, // attack, raid, scout

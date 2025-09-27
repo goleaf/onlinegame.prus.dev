@@ -96,6 +96,22 @@ class TestRabbitMQ extends Command
         ]);
         $this->line('✓ Published spy success event');
 
+        // Test battle simulation event
+        $this->rabbitMQ->publishGameEvent('battle_simulation', [
+            'simulation_type' => 'troop_optimization',
+            'attacker_village_id' => 1,
+            'defender_village_id' => 2,
+            'total_troops' => 100,
+            'best_win_rate' => 75.5,
+            'optimal_composition' => [
+                'warrior' => 60,
+                'archer' => 30,
+                'cavalry' => 10
+            ],
+            'timestamp' => now()->toISOString()
+        ]);
+        $this->line('✓ Published battle simulation event');
+
         // Test building completion
         $this->rabbitMQ->publishBuildingCompleted(1, 1, 'barracks');
         $this->line('✓ Published building completion event');

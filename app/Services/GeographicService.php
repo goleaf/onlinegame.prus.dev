@@ -249,6 +249,22 @@ class GeographicService
     }
 
     /**
+     * Calculate travel time between two coordinates based on distance and speed
+     *
+     * @param float $lat1
+     * @param float $lon1
+     * @param float $lat2
+     * @param float $lon2
+     * @param float $speedKmh
+     * @return int Travel time in seconds
+     */
+    public function calculateTravelTime(float $lat1, float $lon1, float $lat2, float $lon2, float $speedKmh): int
+    {
+        $distance = $this->calculateDistance($lat1, $lon1, $lat2, $lon2);
+        return $this->calculateTravelTimeFromDistance($distance, $speedKmh);
+    }
+
+    /**
      * Get bearing (direction) from one point to another
      *
      * @param float $lat1
