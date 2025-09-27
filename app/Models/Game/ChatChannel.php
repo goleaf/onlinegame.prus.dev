@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasReference;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class ChatChannel extends Model
+class ChatChannel extends Model implements Auditable
 {
-    use HasFactory, HasReference;
+    use HasFactory, HasReference, AuditableTrait;
 
     protected $fillable = [
         'name',

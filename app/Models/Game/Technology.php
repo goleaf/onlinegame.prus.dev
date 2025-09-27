@@ -46,16 +46,31 @@ class Technology extends Model implements Auditable
             ->withTimestamps();
     }
 
-    // Optimized query scopes using when() and selectRaw
+    // Enhanced query scopes using Query Enrich
     public function scopeWithStats($query)
     {
-        return $query->selectRaw('
-            technologies.*,
-            (SELECT COUNT(*) FROM player_technologies pt WHERE pt.technology_id = technologies.id) as total_researchers,
-            (SELECT COUNT(*) FROM player_technologies pt2 WHERE pt2.technology_id = technologies.id AND pt2.status = "completed") as completed_count,
-            (SELECT AVG(level) FROM player_technologies pt3 WHERE pt3.technology_id = technologies.id AND pt3.status = "completed") as avg_level,
-            (SELECT COUNT(*) FROM player_technologies pt4 WHERE pt4.technology_id = technologies.id AND pt4.status = "researching") as researching_count
-        ');
+        return $query->select([
+            'technologies.*',
+            QE::select(QE::count(c('id')))
+                ->from('player_technologies', 'pt')
+                ->whereColumn('pt.technology_id', c('technologies.id'))
+                ->as('total_researchers'),
+            QE::select(QE::count(c('id')))
+                ->from('player_technologies', 'pt2')
+                ->whereColumn('pt2.technology_id', c('technologies.id'))
+                ->where('pt2.status', '=', 'completed')
+                ->as('completed_count'),
+            QE::select(QE::avg(c('level')))
+                ->from('player_technologies', 'pt3')
+                ->whereColumn('pt3.technology_id', c('technologies.id'))
+                ->where('pt3.status', '=', 'completed')
+                ->as('avg_level'),
+            QE::select(QE::count(c('id')))
+                ->from('player_technologies', 'pt4')
+                ->whereColumn('pt4.technology_id', c('technologies.id'))
+                ->where('pt4.status', '=', 'researching')
+                ->as('researching_count')
+        ]);
     }
 
     public function scopeByCategory($query, $category = null)
