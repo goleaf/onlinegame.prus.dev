@@ -33,5 +33,6 @@ class DatabaseSeeder extends Seeder
         $this->call(\Database\Seeders\Tables\database\seeders\Tables\ActivePlayersSeeder.php\PlayersSeeder::class);
         $this->call(\Database\Seeders\Tables\GameConfigsSeeder::class);
         $this->call(\GameEvents::class);
+        $this->call(\Database\Seeders\Tables\GameNotificationsSeeder::class);
     }
 }

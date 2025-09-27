@@ -138,18 +138,43 @@ class Player extends Model implements Auditable
             ->withTimestamps();
     }
 
-    // Optimized query scopes using when() and selectRaw
+    // Enhanced query scopes using Query Enrich
     public function scopeWithStats($query)
     {
-        return $query->selectRaw('
-            players.*,
-            (SELECT COUNT(*) FROM villages WHERE player_id = players.id) as village_count,
-            (SELECT SUM(population) FROM villages WHERE player_id = players.id) as total_population,
-            (SELECT COUNT(*) FROM reports WHERE attacker_id = players.id OR defender_id = players.id) as total_battles,
-            (SELECT SUM(CASE WHEN attacker_id = players.id AND status = "victory" THEN 1 ELSE 0 END) + 
-                    SUM(CASE WHEN defender_id = players.id AND status = "victory" THEN 1 ELSE 0 END) 
-             FROM reports) as total_victories
-        ');
+        return $query->select([
+            'players.*',
+            QE::select(QE::count(c('id')))
+                ->from('villages')
+                ->whereColumn('player_id', c('players.id'))
+                ->as('village_count'),
+            QE::select(QE::sum(c('population')))
+                ->from('villages')
+                ->whereColumn('player_id', c('players.id'))
+                ->as('total_population'),
+            QE::select(QE::count(c('id')))
+                ->from('reports')
+                ->where(function($q) {
+                    $q->whereColumn('attacker_id', c('players.id'))
+                      ->orWhereColumn('defender_id', c('players.id'));
+                })
+                ->as('total_battles'),
+            QE::select(
+                QE::sum(QE::case()
+                    ->when(QE::and(
+                        QE::eq(c('attacker_id'), c('players.id')),
+                        QE::eq(c('status'), 'victory')
+                    ), 1)
+                    ->else(0))
+                )->add(
+                    QE::sum(QE::case()
+                        ->when(QE::and(
+                            QE::eq(c('defender_id'), c('players.id')),
+                            QE::eq(c('status'), 'victory')
+                        ), 1)
+                        ->else(0))
+                )
+            )->from('reports')->as('total_victories')
+        ]);
     }
 
     public function scopeByWorld($query, $worldId)
