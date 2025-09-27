@@ -10,7 +10,7 @@ use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-// use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
 use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
@@ -314,13 +314,76 @@ class User extends Authenticatable implements Auditable, IsFilterable
             $q->where('alliance_id', $allianceId);
         });
     }
+
+    // Optimized query scopes using when() and selectRaw
+    public function scopeWithStats($query)
+    {
+        return $query->selectRaw('
+            users.*,
+            (SELECT COUNT(*) FROM players WHERE user_id = users.id) as player_count,
+            (SELECT COUNT(*) FROM villages v JOIN players p ON v.player_id = p.id WHERE p.user_id = users.id) as village_count,
+            (SELECT SUM(population) FROM villages v JOIN players p ON v.player_id = p.id WHERE p.user_id = users.id) as total_population,
+            (SELECT COUNT(*) FROM battles b JOIN players p ON (b.attacker_id = p.id OR b.defender_id = p.id) WHERE p.user_id = users.id) as total_battles
+        ');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->whereNotNull('email_verified_at');
+    }
+
+    public function scopeVerified($query)
+    {
+        return $query->whereNotNull('email_verified_at');
+    }
+
+    public function scopeUnverified($query)
+    {
+        return $query->whereNull('email_verified_at');
+    }
+
+    public function scopeRecent($query, $days = 7)
+    {
+        return $query->where('created_at', '>=', now()->subDays($days));
+    }
+
+    public function scopeToday($query)
+    {
+        return $query->whereDate('created_at', today());
+    }
+
+    public function scopeThisWeek($query)
+    {
+        return $query->where('created_at', '>=', now()->startOfWeek());
+    }
+
+    public function scopeThisMonth($query)
+    {
+        return $query->where('created_at', '>=', now()->startOfMonth());
+    }
+
+    public function scopeSearch($query, $searchTerm)
+    {
+        return $query->when($searchTerm, function ($q) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm) {
+                $subQ->where('name', 'like', '%' . $searchTerm . '%')
+                     ->orWhere('email', 'like', '%' . $searchTerm . '%')
+                     ->orWhere('phone', 'like', '%' . $searchTerm . '%');
+            });
+        });
+    }
+
+    public function scopeWithPlayerInfo($query)
+    {
+        return $query->with([
+            'player:id,user_id,name,alliance_id,points'
+        ]);
+    }
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
             Filter::field('name', ['$eq', '$like']),
-            Filter::field('email', ['$eq', '$like'])
-        );
-    }
+            Filter::field('email', ['$eq', '$like']),
             Filter::field('phone', ['$eq', '$like']),
             Filter::field('phone_country', ['$eq']),
             Filter::field('phone_normalized', ['$eq', '$like']),
