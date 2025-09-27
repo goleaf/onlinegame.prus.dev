@@ -17,7 +17,6 @@ class User extends Authenticatable implements Auditable
     use Notifiable;
     use HasNotables;
     use AuditableTrait;
-    use LarautilxAuditable;
 
     /**
      * Attributes to exclude from the Audit.
