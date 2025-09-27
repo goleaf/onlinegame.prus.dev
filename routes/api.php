@@ -7,6 +7,7 @@ use App\Http\Controllers\Game\APIDocumentationController;
 use App\Http\Controllers\Game\ArtifactController;
 use App\Http\Controllers\Game\LarautilxController;
 use App\Http\Controllers\Game\LarautilxDashboardController;
+use App\Http\Controllers\Game\MessageController;
 use App\Http\Controllers\Game\PlayerController;
 use App\Http\Controllers\Game\SystemController;
 use App\Http\Controllers\Game\TaskController;
