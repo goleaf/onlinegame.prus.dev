@@ -17,7 +17,8 @@
                         </div>
 
                         <div class="text-center">
-                            <a href="{{ route('game.dashboard') }}" class="btn btn-primary">Try Again</a>
+                            <a href="{{ route('game.dashboard') }}" class="btn btn-primary me-2">Try Again</a>
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-info me-2">Admin Panel</a>
                             <a href="{{ route('logout') }}" class="btn btn-secondary">Logout</a>
                         </div>
                     </div>

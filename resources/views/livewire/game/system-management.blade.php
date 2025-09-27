@@ -429,7 +429,9 @@
             @endforeach
         </div>
 
-        <button wire:click="clearSystemCaches" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+        <button wire:click="clearSystemCaches" 
+                wire:confirm="Are you sure you want to clear the selected caches? This action cannot be undone."
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
             Clear Selected Caches
         </button>
     </div>
