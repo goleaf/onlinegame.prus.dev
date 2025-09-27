@@ -74,9 +74,15 @@ class AdvancedMapManager extends Component
                 $this->selectedWorld,
                 'villages_map_data',
                 function() {
-                    return Village::with(['player', 'world'])
+                    return Village::with(['player:id,name,alliance_id', 'world:id,name'])
                         ->byWorld($this->selectedWorld)
                         ->withStats()
+                        ->selectRaw('
+                            villages.*,
+                            (SELECT COUNT(*) FROM buildings WHERE village_id = villages.id) as building_count,
+                            (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as troop_count,
+                            (SELECT SUM(wood + clay + iron + crop) FROM resources WHERE village_id = villages.id) as total_resources
+                        ')
                         ->get()
                         ->map(function ($village) {
                             return [

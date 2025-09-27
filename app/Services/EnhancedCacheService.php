@@ -126,11 +126,20 @@ class EnhancedCacheService
      */
     protected function decompressData(mixed $data): mixed
     {
-        if (function_exists('lzf_decompress') && function_exists('igbinary_unserialize')) {
-            $decompressed = lzf_decompress($data);
-            return igbinary_unserialize($decompressed);
+        if (function_exists('igbinary_unserialize')) {
+            if (function_exists('lzf_decompress')) {
+                try {
+                    $decompressed = lzf_decompress($data);
+                    return igbinary_unserialize($decompressed);
+                } catch (\Exception $e) {
+                    // Fallback to direct unserialize
+                    return igbinary_unserialize($data);
+                }
+            }
+            
+            return igbinary_unserialize($data);
         }
-
+        
         return $data;
     }
 

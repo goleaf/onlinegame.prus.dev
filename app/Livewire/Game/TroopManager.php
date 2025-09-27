@@ -249,7 +249,7 @@ class TroopManager extends Component
 
             $this->loadTroopData();
             $this->addNotification(
-                "Started training {$this->trainingQuantity} {$this->selectedUnitType->name}",
+                "Started training {$this->trainingQuantity} {$this->selectedUnitType->name} (Ref: {$trainingQueue->reference_number})",
                 'success'
             );
 
