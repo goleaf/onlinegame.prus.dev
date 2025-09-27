@@ -17,6 +17,7 @@ class AllianceMember extends Model
         'joined_at',
         'left_at',
         'is_active',
+        'reference_number',
     ];
 
     protected $casts = [
@@ -24,6 +25,15 @@ class AllianceMember extends Model
         'left_at' => 'datetime',
         'is_active' => 'boolean',
     ];
+
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+    protected $referenceTemplate = [
+        'format' => 'AM-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+    protected $referencePrefix = 'AM';
 
     public function alliance(): BelongsTo
     {

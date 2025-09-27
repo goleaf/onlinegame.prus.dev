@@ -344,9 +344,58 @@
                 <button wire:click="centerOnVillage({{ $selectedVillage['id'] }})" class="btn btn-sm btn-primary">
                     <i class="fas fa-crosshairs"></i> Center on Village
                 </button>
+                <button wire:click="selectCoordinates({{ $selectedVillage['x'] }}, {{ $selectedVillage['y'] }})" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-map-marker-alt"></i> Select Coordinates
+                </button>
+            </div>
+                </div>
             </div>
         </div>
     @endif
+
+    <!-- Map Theme Styles -->
+    <style>
+        .map-theme-classic {
+            background: linear-gradient(45deg, #8B4513, #A0522D);
+        }
+        
+        .map-theme-modern {
+            background: linear-gradient(45deg, #2C3E50, #34495E);
+        }
+        
+        .map-theme-dark {
+            background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+        }
+        
+        .village-marker.highlight {
+            filter: drop-shadow(0 0 10px #ffd700);
+        }
+        
+        .village-marker.capital {
+            filter: drop-shadow(0 0 8px #ff6b6b);
+        }
+        
+        .village-marker.alliance {
+            filter: drop-shadow(0 0 6px #4ecdc4);
+        }
+        
+        .coordinate-marker {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .map-grid {
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
 
     @if (count($notifications) > 0)
         <div class="map-notifications">

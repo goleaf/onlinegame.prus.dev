@@ -49,6 +49,34 @@ trait GameValidationTrait
     }
 
     /**
+     * Validate geographic coordinates (latitude/longitude)
+     */
+    protected function validateGeographicCoordinates($latitude, $longitude)
+    {
+        $rules = [
+            'latitude' => ['required', new Latitude()],
+            'longitude' => ['required', new Longitude()],
+        ];
+
+        return $this->validateGameData([
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+        ], $rules);
+    }
+
+    /**
+     * Validate color values (hexadecimal)
+     */
+    protected function validateColorValue($color)
+    {
+        $rules = [
+            'color' => ['required', new Hexadecimalcolor()],
+        ];
+
+        return $this->validateGameData(['color' => $color], $rules);
+    }
+
+    /**
      * Validate troop quantities
      */
     protected function validateTroopQuantities(array $troops)

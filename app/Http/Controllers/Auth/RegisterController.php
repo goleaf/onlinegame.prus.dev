@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use JonPurvis\Squeaky\Rules\Clean;
 use Ziming\LaravelZxcvbn\Rules\ZxcvbnRule;
+use Intervention\Validation\Rules\Username;
 
 class RegisterController extends Controller
 {
@@ -27,7 +28,7 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255', new Clean],
+            'name' => ['required', 'string', 'max:255', new Username(), new Clean],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => [
                 'required',

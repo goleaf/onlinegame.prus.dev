@@ -5,10 +5,11 @@ namespace App\Models\Game;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 class PlayerQuest extends Model
 {
-    use HasFactory;
+    use HasFactory, HasReference;
 
     protected $table = 'player_quests';
 

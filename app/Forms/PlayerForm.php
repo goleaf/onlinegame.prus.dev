@@ -6,6 +6,7 @@ use App\Models\Game\Alliance;
 use App\Models\Game\World;
 use App\Models\User;
 use Metalogico\Formello\Formello;
+use Intervention\Validation\Rules\Username;
 
 class PlayerForm extends Formello
 {
@@ -32,6 +33,7 @@ class PlayerForm extends Formello
                 'label' => __('Player Name'),
                 'required' => true,
                 'maxlength' => 50,
+                'rules' => [new Username()],
             ],
             'tribe' => [
                 'label' => __('Tribe'),
