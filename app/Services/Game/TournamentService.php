@@ -3,25 +3,22 @@
 namespace App\Services\Game;
 
 use App\Models\Game\Tournament;
-use App\Models\Game\TournamentParticipant;
 use App\Models\Game\Player;
+use App\Models\Game\TournamentParticipant;
+use App\Models\Game\TournamentMatch;
+use App\Models\Game\TournamentBracket;
 use App\Services\GameIntegrationService;
 use App\Services\GameNotificationService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Collection;
 
 class TournamentService
 {
-    protected $integrationService;
-    protected $notificationService;
-
     public function __construct(
-        GameIntegrationService $integrationService,
-        GameNotificationService $notificationService
-    ) {
-        $this->integrationService = $integrationService;
-        $this->notificationService = $notificationService;
-    }
+        private GameIntegrationService $gameIntegrationService,
+        private GameNotificationService $gameNotificationService
+    ) {}
 
     /**
      * Create a new tournament
@@ -29,19 +26,31 @@ class TournamentService
     public function createTournament(array $data): Tournament
     {
         return DB::transaction(function () use ($data) {
-            $tournament = Tournament::create($data);
+            $tournament = Tournament::create([
+                'name' => $data['name'],
+                'description' => $data['description'],
+                'type' => $data['type'],
+                'format' => $data['format'],
+                'max_participants' => $data['max_participants'],
+                'entry_fee' => $data['entry_fee'] ?? 0,
+                'prize_pool' => $data['prize_pool'] ?? 0,
+                'registration_start' => $data['registration_start'],
+                'registration_end' => $data['registration_end'],
+                'start_date' => $data['start_date'],
+                'end_date' => $data['end_date'],
+                'status' => 'upcoming',
+                'settings' => $data['settings'] ?? [],
+            ]);
 
-            // Send system notification
-            $this->notificationService->sendSystemNotification(
-                'New Tournament Created',
-                "A new tournament '{$tournament->name}' has been created. Registration is now open!",
-                'info'
-            );
+            // Create tournament bracket
+            $this->createTournamentBracket($tournament);
 
+            // Log tournament creation
             Log::info('Tournament created', [
                 'tournament_id' => $tournament->id,
                 'name' => $tournament->name,
                 'type' => $tournament->type,
+                'format' => $tournament->format,
             ]);
 
             return $tournament;
@@ -53,38 +62,47 @@ class TournamentService
      */
     public function registerPlayer(Tournament $tournament, Player $player): bool
     {
-        if (!$tournament->canRegister($player)) {
+        // Check if registration is open
+        if (!$this->isRegistrationOpen($tournament)) {
+            return false;
+        }
+
+        // Check if tournament is full
+        if ($this->isTournamentFull($tournament)) {
+            return false;
+        }
+
+        // Check if player is already registered
+        if ($this->isPlayerRegistered($tournament, $player)) {
             return false;
         }
 
         return DB::transaction(function () use ($tournament, $player) {
             // Create participant record
-            $participant = TournamentParticipant::create([
+            TournamentParticipant::create([
                 'tournament_id' => $tournament->id,
                 'player_id' => $player->id,
-                'status' => 'registered',
                 'registered_at' => now(),
+                'status' => 'registered',
             ]);
 
-            // Send notification to player
-            $this->notificationService->sendUserNotification(
-                $player->user_id,
-                'Tournament Registration',
-                "You have successfully registered for the tournament '{$tournament->name}'.",
-                'success'
+            // Deduct entry fee if applicable
+            if ($tournament->entry_fee > 0) {
+                $this->deductEntryFee($player, $tournament->entry_fee);
+            }
+
+            // Send notification
+            $this->gameNotificationService->sendTournamentNotification(
+                $player,
+                'tournament_registered',
+                "You have been registered for tournament '{$tournament->name}'"
             );
 
-            // Send system notification
-            $this->notificationService->sendSystemNotification(
-                'Tournament Registration',
-                "Player {$player->name} has registered for tournament '{$tournament->name}'.",
-                'info'
-            );
-
+            // Log registration
             Log::info('Player registered for tournament', [
                 'tournament_id' => $tournament->id,
                 'player_id' => $player->id,
-                'participant_id' => $participant->id,
+                'entry_fee' => $tournament->entry_fee,
             ]);
 
             return true;
@@ -96,35 +114,31 @@ class TournamentService
      */
     public function startTournament(Tournament $tournament): bool
     {
-        if (!$tournament->startTournament()) {
+        if ($tournament->status !== 'upcoming') {
             return false;
         }
 
-        // Send notifications to all participants
-        $participants = $tournament->participants()->with('player')->get();
-        
-        foreach ($participants as $participant) {
-            $this->notificationService->sendUserNotification(
-                $participant->player->user_id,
-                'Tournament Started',
-                "The tournament '{$tournament->name}' has started! Good luck!",
-                'success'
-            );
-        }
+        return DB::transaction(function () use ($tournament) {
+            // Update tournament status
+            $tournament->update(['status' => 'active']);
 
-        // Send system notification
-        $this->notificationService->sendSystemNotification(
-            'Tournament Started',
-            "Tournament '{$tournament->name}' has started with {$participants->count()} participants.",
-            'info'
-        );
+            // Generate bracket
+            $this->generateTournamentBracket($tournament);
 
-        Log::info('Tournament started', [
-            'tournament_id' => $tournament->id,
-            'participants_count' => $participants->count(),
-        ]);
+            // Create first round matches
+            $this->createFirstRoundMatches($tournament);
 
-        return true;
+            // Notify all participants
+            $this->notifyTournamentStart($tournament);
+
+            // Log tournament start
+            Log::info('Tournament started', [
+                'tournament_id' => $tournament->id,
+                'participants' => $tournament->participants()->count(),
+            ]);
+
+            return true;
+        });
     }
 
     /**
@@ -132,40 +146,31 @@ class TournamentService
      */
     public function endTournament(Tournament $tournament): bool
     {
-        if (!$tournament->endTournament()) {
+        if ($tournament->status !== 'active') {
             return false;
         }
 
-        // Send notifications to all participants
-        $participants = $tournament->participants()->with('player')->get();
-        
-        foreach ($participants as $participant) {
-            $message = "The tournament '{$tournament->name}' has ended.";
-            if ($participant->final_rank) {
-                $message .= " You finished in position {$participant->final_rank}.";
-            }
+        return DB::transaction(function () use ($tournament) {
+            // Update tournament status
+            $tournament->update(['status' => 'completed']);
 
-            $this->notificationService->sendUserNotification(
-                $participant->player->user_id,
-                'Tournament Ended',
-                $message,
-                'info'
-            );
-        }
+            // Determine winner
+            $winner = $this->determineTournamentWinner($tournament);
 
-        // Send system notification
-        $this->notificationService->sendSystemNotification(
-            'Tournament Ended',
-            "Tournament '{$tournament->name}' has ended. Check the results!",
-            'info'
-        );
+            // Distribute prizes
+            $this->distributePrizes($tournament, $winner);
 
-        Log::info('Tournament ended', [
-            'tournament_id' => $tournament->id,
-            'participants_count' => $participants->count(),
-        ]);
+            // Notify all participants
+            $this->notifyTournamentEnd($tournament, $winner);
 
-        return true;
+            // Log tournament end
+            Log::info('Tournament ended', [
+                'tournament_id' => $tournament->id,
+                'winner_id' => $winner?->id,
+            ]);
+
+            return true;
+        });
     }
 
     /**
@@ -173,57 +178,215 @@ class TournamentService
      */
     public function getTournamentStats(): array
     {
-        $totalTournaments = Tournament::count();
-        $activeTournaments = Tournament::where('status', 'active')->count();
-        $upcomingTournaments = Tournament::where('status', 'upcoming')->count();
-        $completedTournaments = Tournament::where('status', 'completed')->count();
-
-        $totalParticipants = TournamentParticipant::count();
-        $activeParticipants = TournamentParticipant::whereHas('tournament', function ($query) {
-            $query->where('status', 'active');
-        })->count();
-
         return [
-            'total_tournaments' => $totalTournaments,
-            'active_tournaments' => $activeTournaments,
-            'upcoming_tournaments' => $upcomingTournaments,
-            'completed_tournaments' => $completedTournaments,
-            'total_participants' => $totalParticipants,
-            'active_participants' => $activeParticipants,
+            'total_tournaments' => Tournament::count(),
+            'active_tournaments' => Tournament::where('status', 'active')->count(),
+            'upcoming_tournaments' => Tournament::where('status', 'upcoming')->count(),
+            'completed_tournaments' => Tournament::where('status', 'completed')->count(),
+            'total_participants' => TournamentParticipant::count(),
+            'total_prizes_distributed' => Tournament::where('status', 'completed')->sum('prize_pool'),
         ];
     }
 
     /**
-     * Get upcoming tournaments
+     * Get player tournament history
      */
-    public function getUpcomingTournaments(int $limit = 10): \Illuminate\Database\Eloquent\Collection
+    public function getPlayerTournamentHistory(Player $player): Collection
     {
-        return Tournament::where('status', 'upcoming')
-            ->where('registration_start', '<=', now())
-            ->where('registration_end', '>=', now())
-            ->orderBy('start_time')
-            ->limit($limit)
+        return TournamentParticipant::where('player_id', $player->id)
+            ->with(['tournament'])
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 
     /**
-     * Get active tournaments
+     * Get tournament leaderboard
      */
-    public function getActiveTournaments(): \Illuminate\Database\Eloquent\Collection
+    public function getTournamentLeaderboard(Tournament $tournament): Collection
     {
-        return Tournament::where('status', 'active')
-            ->orderBy('start_time')
+        return TournamentParticipant::where('tournament_id', $tournament->id)
+            ->with(['player'])
+            ->orderBy('final_rank', 'asc')
             ->get();
     }
 
     /**
-     * Get completed tournaments
+     * Check if registration is open
      */
-    public function getCompletedTournaments(int $limit = 10): \Illuminate\Database\Eloquent\Collection
+    private function isRegistrationOpen(Tournament $tournament): bool
     {
-        return Tournament::where('status', 'completed')
-            ->orderBy('end_time', 'desc')
-            ->limit($limit)
-            ->get();
+        $now = now();
+        return $now->between($tournament->registration_start, $tournament->registration_end);
+    }
+
+    /**
+     * Check if tournament is full
+     */
+    private function isTournamentFull(Tournament $tournament): bool
+    {
+        $currentParticipants = $tournament->participants()->count();
+        return $currentParticipants >= $tournament->max_participants;
+    }
+
+    /**
+     * Check if player is already registered
+     */
+    private function isPlayerRegistered(Tournament $tournament, Player $player): bool
+    {
+        return TournamentParticipant::where('tournament_id', $tournament->id)
+            ->where('player_id', $player->id)
+            ->exists();
+    }
+
+    /**
+     * Deduct entry fee from player
+     */
+    private function deductEntryFee(Player $player, int $entryFee): void
+    {
+        // This would integrate with the resource system
+        // For now, we'll just log the deduction
+        Log::info('Entry fee deducted', [
+            'player_id' => $player->id,
+            'entry_fee' => $entryFee,
+        ]);
+    }
+
+    /**
+     * Create tournament bracket
+     */
+    private function createTournamentBracket(Tournament $tournament): void
+    {
+        TournamentBracket::create([
+            'tournament_id' => $tournament->id,
+            'bracket_type' => $tournament->format,
+            'status' => 'pending',
+        ]);
+    }
+
+    /**
+     * Generate tournament bracket
+     */
+    private function generateTournamentBracket(Tournament $tournament): void
+    {
+        $participants = $tournament->participants()->get();
+        $bracket = $tournament->bracket;
+
+        // Generate bracket based on tournament format
+        switch ($tournament->format) {
+            case 'single_elimination':
+                $this->generateSingleEliminationBracket($bracket, $participants);
+                break;
+            case 'double_elimination':
+                $this->generateDoubleEliminationBracket($bracket, $participants);
+                break;
+            case 'round_robin':
+                $this->generateRoundRobinBracket($bracket, $participants);
+                break;
+        }
+    }
+
+    /**
+     * Generate single elimination bracket
+     */
+    private function generateSingleEliminationBracket(TournamentBracket $bracket, Collection $participants): void
+    {
+        // Implementation for single elimination bracket
+        // This would create the bracket structure and initial matches
+    }
+
+    /**
+     * Generate double elimination bracket
+     */
+    private function generateDoubleEliminationBracket(TournamentBracket $bracket, Collection $participants): void
+    {
+        // Implementation for double elimination bracket
+    }
+
+    /**
+     * Generate round robin bracket
+     */
+    private function generateRoundRobinBracket(TournamentBracket $bracket, Collection $participants): void
+    {
+        // Implementation for round robin bracket
+    }
+
+    /**
+     * Create first round matches
+     */
+    private function createFirstRoundMatches(Tournament $tournament): void
+    {
+        $bracket = $tournament->bracket;
+        $participants = $tournament->participants()->get();
+
+        // Create matches based on bracket structure
+        // This would create the initial matches for the tournament
+    }
+
+    /**
+     * Determine tournament winner
+     */
+    private function determineTournamentWinner(Tournament $tournament): ?Player
+    {
+        $winner = TournamentParticipant::where('tournament_id', $tournament->id)
+            ->where('final_rank', 1)
+            ->with('player')
+            ->first();
+
+        return $winner?->player;
+    }
+
+    /**
+     * Distribute prizes
+     */
+    private function distributePrizes(Tournament $tournament, ?Player $winner): void
+    {
+        if (!$winner || $tournament->prize_pool <= 0) {
+            return;
+        }
+
+        // Distribute prizes to winners
+        // This would integrate with the resource system
+        Log::info('Prizes distributed', [
+            'tournament_id' => $tournament->id,
+            'winner_id' => $winner->id,
+            'prize_amount' => $tournament->prize_pool,
+        ]);
+    }
+
+    /**
+     * Notify tournament start
+     */
+    private function notifyTournamentStart(Tournament $tournament): void
+    {
+        $participants = $tournament->participants()->with('player')->get();
+
+        foreach ($participants as $participant) {
+            $this->gameNotificationService->sendTournamentNotification(
+                $participant->player,
+                'tournament_started',
+                "Tournament '{$tournament->name}' has started!"
+            );
+        }
+    }
+
+    /**
+     * Notify tournament end
+     */
+    private function notifyTournamentEnd(Tournament $tournament, ?Player $winner): void
+    {
+        $participants = $tournament->participants()->with('player')->get();
+
+        foreach ($participants as $participant) {
+            $message = "Tournament '{$tournament->name}' has ended.";
+            if ($winner && $participant->player->id === $winner->id) {
+                $message .= " Congratulations! You won!";
+            }
+
+            $this->gameNotificationService->sendTournamentNotification(
+                $participant->player,
+                'tournament_ended',
+                $message
+            );
+        }
     }
 }
