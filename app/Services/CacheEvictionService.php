@@ -125,13 +125,19 @@ class CacheEvictionService
         foreach ($iterator as $file) {
             if ($file->isFile()) {
                 $content = file_get_contents($file->getPathname());
-                $data = unserialize($content);
                 
-                // Check if the cache item is expired
-                if (isset($data['expires']) && $data['expires'] < time()) {
-                    $sizeFreed += $file->getSize();
-                    unlink($file->getPathname());
-                    $itemsRemoved++;
+                try {
+                    $data = unserialize($content);
+                    
+                    // Check if the cache item is expired
+                    if (isset($data['expires']) && $data['expires'] < time()) {
+                        $sizeFreed += $file->getSize();
+                        unlink($file->getPathname());
+                        $itemsRemoved++;
+                    }
+                } catch (\Exception $e) {
+                    // Skip files that can't be unserialized (corrupted or invalid format)
+                    continue;
                 }
             }
         }

@@ -55,11 +55,11 @@ class GeographicAnalysisService
 
     /**
      * Calculate geographic bounds of villages
-     *
+     * 
      * @param Collection $villages
-     * @return array
+     * @return array|null
      */
-    protected function calculateGeographicBounds(Collection $villages): array
+    protected function calculateGeographicBounds(Collection $villages): ?array
     {
         $lats = $villages->pluck('latitude')->filter();
         $lons = $villages->pluck('longitude')->filter();
