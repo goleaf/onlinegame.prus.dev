@@ -87,6 +87,11 @@ class Player extends Model implements Auditable
         return $this->hasMany(Village::class);
     }
 
+    public function hero(): HasOne
+    {
+        return $this->hasOne(Hero::class);
+    }
+
     public function world()
     {
         return $this->belongsTo(World::class);

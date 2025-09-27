@@ -47,7 +47,13 @@ return [
     'webhook' => [
         'secret' => env('STRIPE_WEBHOOK_SECRET'),
         'tolerance' => env('STRIPE_WEBHOOK_TOLERANCE', 300),
-        'events' => WebhookCommand::DEFAULT_EVENTS,
+        'events' => [
+            'customer.subscription.created',
+            'customer.subscription.updated',
+            'customer.subscription.deleted',
+            'invoice.payment_succeeded',
+            'invoice.payment_failed',
+        ],
     ],
 
     /*
