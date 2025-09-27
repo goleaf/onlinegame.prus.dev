@@ -220,3 +220,101 @@
         </div>
     @endif
 </div>
+
+<style>
+.password-strength {
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    text-align: center;
+}
+
+.password-strength.weak {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.password-strength.fair {
+    background-color: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fed7aa;
+}
+
+.password-strength.good {
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+
+.password-strength.strong {
+    background-color: #f0f9ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('newPassword');
+    const strengthDiv = document.getElementById('password-strength');
+    
+    if (passwordInput && strengthDiv) {
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            
+            if (password.length === 0) {
+                strengthDiv.textContent = '';
+                strengthDiv.className = 'password-strength mt-2';
+                return;
+            }
+
+            let strength = 0;
+            let feedback = '';
+
+            // Length check
+            if (password.length >= 8) strength++;
+            else feedback += 'At least 8 characters. ';
+
+            // Uppercase check
+            if (/[A-Z]/.test(password)) strength++;
+            else feedback += 'Include uppercase letters. ';
+
+            // Lowercase check
+            if (/[a-z]/.test(password)) strength++;
+            else feedback += 'Include lowercase letters. ';
+
+            // Number check
+            if (/\d/.test(password)) strength++;
+            else feedback += 'Include numbers. ';
+
+            // Special character check
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            else feedback += 'Include special characters. ';
+
+            // Display strength
+            switch (strength) {
+                case 0:
+                case 1:
+                    strengthDiv.textContent = 'Weak: ' + feedback;
+                    strengthDiv.className = 'password-strength mt-2 weak';
+                    break;
+                case 2:
+                    strengthDiv.textContent = 'Fair: ' + feedback;
+                    strengthDiv.className = 'password-strength mt-2 fair';
+                    break;
+                case 3:
+                    strengthDiv.textContent = 'Good: ' + feedback;
+                    strengthDiv.className = 'password-strength mt-2 good';
+                    break;
+                case 4:
+                case 5:
+                    strengthDiv.textContent = 'Strong password!';
+                    strengthDiv.className = 'password-strength mt-2 strong';
+                    break;
+            }
+        });
+    }
+});
+</script>

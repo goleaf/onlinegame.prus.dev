@@ -175,4 +175,86 @@ class UserProfileManager extends Component
     {
         return view('livewire.user-profile-manager');
     }
+
+    /**
+     * Initialize user profile with real-time integration
+     */
+    public function mount()
+    {
+        try {
+            // Initialize real-time features for the user
+            GameIntegrationService::initializeUserRealTime($this->user->id);
+            
+            $this->dispatch('profile-initialized', [
+                'message' => 'User profile real-time features activated',
+                'user_id' => $this->user->id,
+            ]);
+
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to initialize profile real-time features: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Update profile with integration notifications
+     */
+    public function updateProfileWithIntegration()
+    {
+        try {
+            $this->updateProfile();
+
+            // Send notification about profile update
+            GameNotificationService::sendNotification(
+                [$this->user->id],
+                'profile_updated',
+                [
+                    'user_id' => $this->user->id,
+                    'updated_fields' => ['name', 'email'],
+                    'timestamp' => now()->toISOString(),
+                ]
+            );
+
+            $this->dispatch('profile-updated', [
+                'message' => 'Profile updated successfully with notifications',
+            ]);
+
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to update profile: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Update phone with integration notifications
+     */
+    public function updatePhoneWithIntegration()
+    {
+        try {
+            $this->updatePhone();
+
+            // Send notification about phone update
+            GameNotificationService::sendNotification(
+                [$this->user->id],
+                'phone_updated',
+                [
+                    'user_id' => $this->user->id,
+                    'phone' => $this->phone,
+                    'country' => $this->phone_country,
+                    'timestamp' => now()->toISOString(),
+                ]
+            );
+
+            $this->dispatch('phone-updated', [
+                'message' => 'Phone number updated successfully with notifications',
+            ]);
+
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to update phone: ' . $e->getMessage(),
+            ]);
+        }
+    }
 }
