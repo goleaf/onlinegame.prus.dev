@@ -255,6 +255,181 @@ class GameTaxonomySeeder extends Seeder
             ]);
         }
 
+        // Task Types
+        $taskTypes = [
+            'daily' => [
+                'name' => 'Daily Tasks',
+                'description' => 'Tasks that reset daily',
+                'meta' => ['icon' => 'calendar', 'color' => '#3b82f6', 'order' => 1]
+            ],
+            'weekly' => [
+                'name' => 'Weekly Tasks',
+                'description' => 'Tasks that reset weekly',
+                'meta' => ['icon' => 'calendar-days', 'color' => '#10b981', 'order' => 2]
+            ],
+            'monthly' => [
+                'name' => 'Monthly Tasks',
+                'description' => 'Tasks that reset monthly',
+                'meta' => ['icon' => 'calendar-month', 'color' => '#f59e0b', 'order' => 3]
+            ],
+            'achievement' => [
+                'name' => 'Achievement Tasks',
+                'description' => 'One-time achievement tasks',
+                'meta' => ['icon' => 'trophy', 'color' => '#8b5cf6', 'order' => 4]
+            ],
+            'special' => [
+                'name' => 'Special Tasks',
+                'description' => 'Event and special occasion tasks',
+                'meta' => ['icon' => 'star', 'color' => '#ef4444', 'order' => 5]
+            ]
+        ];
+
+        foreach ($taskTypes as $key => $type) {
+            Taxonomy::create([
+                'name' => $type['name'],
+                'slug' => $key,
+                'type' => 'task_type',
+                'description' => $type['description'],
+                'meta' => $type['meta'],
+                'sort_order' => $type['meta']['order']
+            ]);
+        }
+
+        // Artifact Types
+        $artifactTypes = [
+            'weapon' => [
+                'name' => 'Weapons',
+                'description' => 'Combat weapons and tools',
+                'meta' => ['icon' => 'sword', 'color' => '#ef4444', 'order' => 1]
+            ],
+            'armor' => [
+                'name' => 'Armor',
+                'description' => 'Protective gear and shields',
+                'meta' => ['icon' => 'shield', 'color' => '#6b7280', 'order' => 2]
+            ],
+            'tool' => [
+                'name' => 'Tools',
+                'description' => 'Construction and crafting tools',
+                'meta' => ['icon' => 'wrench', 'color' => '#f59e0b', 'order' => 3]
+            ],
+            'mystical' => [
+                'name' => 'Mystical Items',
+                'description' => 'Magical and mystical artifacts',
+                'meta' => ['icon' => 'sparkles', 'color' => '#8b5cf6', 'order' => 4]
+            ],
+            'relic' => [
+                'name' => 'Relics',
+                'description' => 'Ancient and historical relics',
+                'meta' => ['icon' => 'gem', 'color' => '#d97706', 'order' => 5]
+            ],
+            'crystal' => [
+                'name' => 'Crystals',
+                'description' => 'Energy crystals and gems',
+                'meta' => ['icon' => 'diamond', 'color' => '#06b6d4', 'order' => 6]
+            ]
+        ];
+
+        foreach ($artifactTypes as $key => $type) {
+            Taxonomy::create([
+                'name' => $type['name'],
+                'slug' => $key,
+                'type' => 'artifact_type',
+                'description' => $type['description'],
+                'meta' => $type['meta'],
+                'sort_order' => $type['meta']['order']
+            ]);
+        }
+
+        // Artifact Rarities
+        $artifactRarities = [
+            'common' => [
+                'name' => 'Common',
+                'description' => 'Common artifacts with basic effects',
+                'meta' => ['icon' => 'circle', 'color' => '#6b7280', 'order' => 1, 'power_multiplier' => 1.0]
+            ],
+            'uncommon' => [
+                'name' => 'Uncommon',
+                'description' => 'Uncommon artifacts with improved effects',
+                'meta' => ['icon' => 'circle', 'color' => '#22c55e', 'order' => 2, 'power_multiplier' => 1.5]
+            ],
+            'rare' => [
+                'name' => 'Rare',
+                'description' => 'Rare artifacts with significant effects',
+                'meta' => ['icon' => 'circle', 'color' => '#3b82f6', 'order' => 3, 'power_multiplier' => 2.0]
+            ],
+            'epic' => [
+                'name' => 'Epic',
+                'description' => 'Epic artifacts with powerful effects',
+                'meta' => ['icon' => 'circle', 'color' => '#8b5cf6', 'order' => 4, 'power_multiplier' => 3.0]
+            ],
+            'legendary' => [
+                'name' => 'Legendary',
+                'description' => 'Legendary artifacts with extraordinary effects',
+                'meta' => ['icon' => 'circle', 'color' => '#f59e0b', 'order' => 5, 'power_multiplier' => 4.0]
+            ],
+            'mythic' => [
+                'name' => 'Mythic',
+                'description' => 'Mythic artifacts with godlike effects',
+                'meta' => ['icon' => 'circle', 'color' => '#ef4444', 'order' => 6, 'power_multiplier' => 5.0]
+            ]
+        ];
+
+        foreach ($artifactRarities as $key => $rarity) {
+            Taxonomy::create([
+                'name' => $rarity['name'],
+                'slug' => $key,
+                'type' => 'artifact_rarity',
+                'description' => $rarity['description'],
+                'meta' => $rarity['meta'],
+                'sort_order' => $rarity['meta']['order']
+            ]);
+        }
+
+        // World Types
+        $worldTypes = [
+            'normal' => [
+                'name' => 'Normal World',
+                'description' => 'Standard game world',
+                'meta' => ['icon' => 'globe', 'color' => '#3b82f6', 'order' => 1]
+            ],
+            'speed' => [
+                'name' => 'Speed World',
+                'description' => 'Faster-paced game world',
+                'meta' => ['icon' => 'bolt', 'color' => '#f59e0b', 'order' => 2]
+            ],
+            'classic' => [
+                'name' => 'Classic World',
+                'description' => 'Traditional gameplay world',
+                'meta' => ['icon' => 'clock', 'color' => '#6b7280', 'order' => 3]
+            ],
+            'tribe_wars' => [
+                'name' => 'Tribe Wars',
+                'description' => 'Alliance-focused world',
+                'meta' => ['icon' => 'users', 'color' => '#ef4444', 'order' => 4]
+            ],
+            'no_hero' => [
+                'name' => 'No Hero World',
+                'description' => 'World without hero mechanics',
+                'meta' => ['icon' => 'user-x', 'color' => '#374151', 'order' => 5]
+            ],
+            'hero_world' => [
+                'name' => 'Hero World',
+                'description' => 'World with hero mechanics',
+                'meta' => ['icon' => 'user-check', 'color' => '#8b5cf6', 'order' => 6]
+            ]
+        ];
+
+        foreach ($worldTypes as $key => $type) {
+            Taxonomy::create([
+                'name' => $type['name'],
+                'slug' => $key,
+                'type' => 'world_type',
+                'description' => $type['description'],
+                'meta' => $type['meta'],
+                'sort_order' => $type['meta']['order']
+            ]);
+        }
+
         $this->command->info('Game taxonomies seeded successfully!');
     }
 }

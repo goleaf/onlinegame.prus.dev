@@ -235,3 +235,11 @@ Route::prefix('public')->group(function () {
         ]);
     });
 });
+
+
+// Game Integration Services
+Route::middleware('auth:sanctum')->prefix('game/integration')->group(function () {
+    Route::post('/initialize-realtime', [GameApiController::class, 'initializeRealTime']);
+    Route::get('/game-statistics', [GameApiController::class, 'getGameStatisticsWithRealTime']);
+    Route::post('/system-announcement', [GameApiController::class, 'sendSystemAnnouncement'])->middleware('admin');
+});

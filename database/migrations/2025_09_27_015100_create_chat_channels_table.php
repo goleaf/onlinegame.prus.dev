@@ -14,22 +14,21 @@ return new class extends Migration
         Schema::create('chat_channels', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug')->unique();
-            $table->enum('type', ['global', 'alliance', 'private', 'trade', 'diplomacy'])->default('global');
             $table->text('description')->nullable();
+            $table->enum('channel_type', ['global', 'alliance', 'private', 'trade', 'diplomacy', 'custom'])->default('custom');
             $table->foreignId('alliance_id')->nullable()->constrained('alliances')->onDelete('cascade');
-            $table->foreignId('created_by')->nullable()->constrained('players')->onDelete('set null');
-            $table->boolean('is_active')->default(true);
             $table->boolean('is_public')->default(true);
+            $table->boolean('is_active')->default(true);
+            $table->integer('max_members')->nullable();
+            $table->foreignId('created_by')->constrained('players')->onDelete('cascade');
             $table->json('settings')->nullable();
-            $table->string('reference_number')->unique()->nullable();
             $table->timestamps();
 
             // Indexes for performance
-            $table->index(['type', 'is_active']);
-            $table->index(['alliance_id', 'is_active']);
+            $table->index(['channel_type', 'is_active']);
+            $table->index(['alliance_id', 'channel_type']);
             $table->index(['is_public', 'is_active']);
-            $table->index('reference_number');
+            $table->index('created_by');
         });
     }
 

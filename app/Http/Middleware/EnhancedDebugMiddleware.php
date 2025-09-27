@@ -17,12 +17,34 @@ class EnhancedDebugMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $startTime = microtime(true);
+        
+        ds('EnhancedDebugMiddleware: Request processing started', [
+            'middleware' => 'EnhancedDebugMiddleware',
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+            'user_id' => auth()->id(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'request_time' => now()
+        ]);
+        
         $response = $next($request);
 
         // Only apply enhanced debug features in development
         if (app()->environment('local', 'development') && config('app.debug')) {
             $this->addDebugHeaders($request, $response);
         }
+
+        $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ds('EnhancedDebugMiddleware: Request processing completed', [
+            'total_time_ms' => $totalTime,
+            'status_code' => $response->getStatusCode(),
+            'response_size' => strlen($response->getContent()),
+            'memory_usage' => memory_get_usage(true),
+            'debug_enabled' => app()->environment('local', 'development') && config('app.debug')
+        ]);
 
         return $response;
     }

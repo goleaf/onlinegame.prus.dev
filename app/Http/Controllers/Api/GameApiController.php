@@ -41,6 +41,7 @@ use JonPurvis\Squeaky\Rules\Clean;
  */
 class GameApiController extends Controller
 {
+    use GameValidationTrait;
     /**
      * Get authenticated user
      *
@@ -224,7 +225,7 @@ class GameApiController extends Controller
     public function createVillage(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => ['required', 'string', 'max:255', new Username(), new Clean],
             'x' => 'required|integer|min:0|max:999',
             'y' => 'required|integer|min:0|max:999',
         ]);
