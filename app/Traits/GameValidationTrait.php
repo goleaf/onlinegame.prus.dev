@@ -5,6 +5,11 @@ namespace App\Traits;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use JonPurvis\Squeaky\Rules\Clean;
+use Intervention\Validation\Rules\Username;
+use Intervention\Validation\Rules\Hexadecimalcolor;
+use Intervention\Validation\Rules\Latitude;
+use Intervention\Validation\Rules\Longitude;
+use Intervention\Validation\Rules\Postalcode;
 
 trait GameValidationTrait
 {
