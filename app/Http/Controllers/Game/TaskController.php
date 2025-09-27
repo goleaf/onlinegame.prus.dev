@@ -117,7 +117,7 @@ class TaskController extends CrudController
     /**
      * Complete a task
      */
-    public function completeTask(Request $request, $taskId)
+    public function complete(Request $request, $taskId)
     {
         $task = Task::findOrFail($taskId);
 

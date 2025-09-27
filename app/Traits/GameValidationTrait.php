@@ -345,4 +345,136 @@ trait GameValidationTrait
 
         return $this->validateGameData($data, $rules);
     }
+
+    /**
+     * Validate postal code
+     */
+    protected function validatePostalCode($postalCode, $country = null)
+    {
+        $rules = [
+            'postal_code' => ['required', new Postalcode($country)],
+        ];
+
+        return $this->validateGameData(['postal_code' => $postalCode], $rules);
+    }
+
+    /**
+     * Validate IBAN number
+     */
+    protected function validateIbanNumber($iban)
+    {
+        $rules = [
+            'iban' => ['required', new Iban()],
+        ];
+
+        return $this->validateGameData(['iban' => $iban], $rules);
+    }
+
+    /**
+     * Validate BIC code
+     */
+    protected function validateBicCode($bic)
+    {
+        $rules = [
+            'bic' => ['required', new Bic()],
+        ];
+
+        return $this->validateGameData(['bic' => $bic], $rules);
+    }
+
+    /**
+     * Validate credit card number
+     */
+    protected function validateCreditCard($creditCard)
+    {
+        $rules = [
+            'credit_card' => ['required', new CreditCard()],
+        ];
+
+        return $this->validateGameData(['credit_card' => $creditCard], $rules);
+    }
+
+    /**
+     * Validate ISBN
+     */
+    protected function validateIsbn($isbn)
+    {
+        $rules = [
+            'isbn' => ['required', new Isbn()],
+        ];
+
+        return $this->validateGameData(['isbn' => $isbn], $rules);
+    }
+
+    /**
+     * Validate EAN
+     */
+    protected function validateEan($ean)
+    {
+        $rules = [
+            'ean' => ['required', new Ean()],
+        ];
+
+        return $this->validateGameData(['ean' => $ean], $rules);
+    }
+
+    /**
+     * Validate ULID
+     */
+    protected function validateUlid($ulid)
+    {
+        $rules = [
+            'ulid' => ['required', new Ulid()],
+        ];
+
+        return $this->validateGameData(['ulid' => $ulid], $rules);
+    }
+
+    /**
+     * Validate JWT token
+     */
+    protected function validateJwtToken($jwt)
+    {
+        $rules = [
+            'jwt' => ['required', new Jwt()],
+        ];
+
+        return $this->validateGameData(['jwt' => $jwt], $rules);
+    }
+
+    /**
+     * Validate Base64 data
+     */
+    protected function validateBase64Data($base64)
+    {
+        $rules = [
+            'base64' => ['required', new Base64()],
+        ];
+
+        return $this->validateGameData(['base64' => $base64], $rules);
+    }
+
+    /**
+     * Validate Data URI
+     */
+    protected function validateDataUri($dataUri)
+    {
+        $rules = [
+            'data_uri' => ['required', new DataUri()],
+        ];
+
+        return $this->validateGameData(['data_uri' => $dataUri], $rules);
+    }
+
+    /**
+     * Validate HSV color value
+     */
+    protected function validateHsvColor($hsv)
+    {
+        $rules = [
+            'hsv' => ['required', new Hsv()],
+        ];
+
+        return $this->validateGameData(['hsv' => $hsv], $rules);
+    }
 }
