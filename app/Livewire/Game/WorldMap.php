@@ -169,11 +169,6 @@ class WorldMap extends Component
     }
 
 
-    public function zoomOut()
-    {
-        $this->zoomLevel = max(0.5, $this->zoomLevel - 1);
-        $this->addNotification("Zoom level: {$this->zoomLevel}", 'info');
-    }
 
     public function resetZoom()
     {

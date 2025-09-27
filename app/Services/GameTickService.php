@@ -733,24 +733,8 @@ class GameTickService
 
     private function processSpy(Movement $movement)
     {
-        // Create spy report
-        $targetVillage = $movement->toVillage;
-
-        Report::create([
-            'player_id' => $movement->player_id,
-            'type' => 'spy',
-            'title' => 'Spy Report',
-            'content' => "Spy report from {$targetVillage->name}: "
-                . "Population: {$targetVillage->population}, "
-                . 'Resources: ' . $this->getVillageResourceSummary($targetVillage),
-            'data' => [
-                'village_id' => $targetVillage->id,
-                'spy_data' => $this->getSpyData($targetVillage),
-            ],
-            'is_read' => false,
-        ]);
-
-        Log::info("Spy mission completed at village {$targetVillage->name}");
+        // Use enhanced spy defense system
+        $this->processSpyDefense($movement);
     }
 
     private function processTrade(Movement $movement)
