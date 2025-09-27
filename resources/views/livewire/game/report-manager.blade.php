@@ -268,9 +268,13 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center space-x-2">
+                                        <a href="{{ route('game.reports.detail', $report['id']) }}"
+                                           class="text-blue-500 hover:text-blue-700 text-sm">
+                                            View Details
+                                        </a>
                                         <button wire:click="selectReport({{ $report['id'] }})"
-                                                class="text-blue-500 hover:text-blue-700 text-sm">
-                                            View
+                                                class="text-gray-500 hover:text-gray-700 text-sm">
+                                            Quick View
                                         </button>
                                         @if ($report['is_read'])
                                             <button wire:click="markAsUnread({{ $report['id'] }})"

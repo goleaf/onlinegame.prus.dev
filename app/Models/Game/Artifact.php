@@ -626,7 +626,7 @@ class Artifact extends Model
     /**
      * Get artifacts with SmartCache optimization
      */
-    public static function getCachedArtifacts($playerId = null, $filters = [])
+    public static function getCachedArtifactsByFilters($playerId = null, $filters = [])
     {
         $cacheKey = "artifacts_{$playerId}_" . md5(serialize($filters));
         
