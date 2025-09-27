@@ -2,6 +2,8 @@
 
 namespace App\Models\Game;
 
+use App\ValueObjects\ResourceAmounts;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;

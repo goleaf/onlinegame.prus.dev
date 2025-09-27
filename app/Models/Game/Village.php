@@ -3,6 +3,8 @@
 namespace App\Models\Game;
 
 use App\Services\GeographicService;
+use App\ValueObjects\Coordinates;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -43,6 +45,31 @@ class Village extends Model implements Auditable
         'elevation' => 'decimal:2',
         'geographic_metadata' => 'array',
     ];
+
+    /**
+     * Get the coordinates as a value object
+     */
+    protected function coordinates(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => new Coordinates(
+                x: $this->x_coordinate,
+                y: $this->y_coordinate,
+                latitude: $this->latitude,
+                longitude: $this->longitude,
+                elevation: $this->elevation,
+                geohash: $this->geohash
+            ),
+            set: fn (Coordinates $coordinates) => [
+                'x_coordinate' => $coordinates->x,
+                'y_coordinate' => $coordinates->y,
+                'latitude' => $coordinates->latitude,
+                'longitude' => $coordinates->longitude,
+                'elevation' => $coordinates->elevation,
+                'geohash' => $coordinates->geohash,
+            ]
+        );
+    }
 
     public function player(): BelongsTo
     {

@@ -191,4 +191,31 @@ class Laravel129FeaturesCommand extends Command
             $this->error('  Unable to retrieve performance metrics: ' . $e->getMessage());
         }
     }
+
+    protected function testSmartCache(): bool
+    {
+        try {
+            $testKey = 'smartcache_test_' . time();
+            $testData = ['test' => 'data', 'timestamp' => now()];
+            
+            // Test SmartCache remember functionality
+            $cached = SmartCache::remember($testKey, now()->addMinutes(1), function () use ($testData) {
+                return $testData;
+            });
+            
+            // Verify data was cached correctly
+            if ($cached['test'] === 'data') {
+                $this->line('    ✅ SmartCache remember functionality working');
+                
+                // Clean up test cache
+                SmartCache::forget($testKey);
+                return true;
+            }
+            
+            return false;
+        } catch (\Exception $e) {
+            $this->line('    ❌ SmartCache test failed: ' . $e->getMessage());
+            return false;
+        }
+    }
 }

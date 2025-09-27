@@ -3,6 +3,8 @@
 namespace App\Models\Game;
 
 use App\Models\User;
+use App\ValueObjects\PlayerStats;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
@@ -41,6 +43,33 @@ class Player extends Model implements Auditable
         'is_active' => 'boolean',
         'is_online' => 'boolean',
     ];
+
+    /**
+     * Get the player stats as a value object
+     */
+    protected function stats(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => new PlayerStats(
+                points: $this->points,
+                population: $this->population,
+                villagesCount: $this->villages_count,
+                totalAttackPoints: $this->total_attack_points,
+                totalDefensePoints: $this->total_defense_points,
+                isActive: $this->is_active,
+                isOnline: $this->is_online
+            ),
+            set: fn (PlayerStats $stats) => [
+                'points' => $stats->points,
+                'population' => $stats->population,
+                'villages_count' => $stats->villagesCount,
+                'total_attack_points' => $stats->totalAttackPoints,
+                'total_defense_points' => $stats->totalDefensePoints,
+                'is_active' => $stats->isActive,
+                'is_online' => $stats->isOnline,
+            ]
+        );
+    }
 
     public function user()
     {
