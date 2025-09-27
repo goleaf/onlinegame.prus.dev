@@ -23,7 +23,6 @@ class User extends Authenticatable implements Auditable
     use AuditableTrait;
     use Lift;
     use HasReference;
-    use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
 
     // Laravel Lift typed properties
     public int $id;
