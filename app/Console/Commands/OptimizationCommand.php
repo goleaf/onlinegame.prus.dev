@@ -137,6 +137,12 @@ class OptimizationCommand extends Command
             Cache::flush();
             $this->info("  ✓ Application cache cleared.");
 
+            // Clear game-specific caches
+            if (class_exists(\App\Services\GameCacheService::class)) {
+                \App\Services\GameCacheService::clearAllGameCache();
+                $this->info("  ✓ Game cache cleared.");
+            }
+
             // Optimize OPcache if available
             if (function_exists('opcache_reset')) {
                 opcache_reset();
@@ -146,6 +152,22 @@ class OptimizationCommand extends Command
             // Run garbage collection
             gc_collect_cycles();
             $this->info("  ✓ Garbage collection completed.");
+
+            // Process completed trainings
+            if (class_exists(\App\Services\Game\UnitTrainingService::class)) {
+                $trainingService = app(\App\Services\Game\UnitTrainingService::class);
+                $result = $trainingService->processCompletedTrainings();
+                if ($result['success']) {
+                    $this->info("  ✓ Processed {$result['processed']} completed trainings.");
+                }
+            }
+
+            // Generate performance report
+            if (class_exists(\App\Services\GamePerformanceMonitor::class)) {
+                $monitor = new \App\Services\GamePerformanceMonitor();
+                $report = $monitor->generatePerformanceReport();
+                $this->info("  ✓ Performance report generated.");
+            }
 
         } catch (\Exception $e) {
             $this->warn("  ✗ Performance optimization failed: " . $e->getMessage());

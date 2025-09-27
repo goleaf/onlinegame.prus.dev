@@ -51,6 +51,19 @@ class MarketTradingService
             // Add market fee to village resources
             $this->addResources($village, ['crop' => $fee]);
 
+            // Send notification about new market offer
+            GameNotificationService::sendNotification(
+                [$village->player->user_id],
+                'market_offer_created',
+                [
+                    'offer_id' => $offer->id,
+                    'reference' => $offer->reference_number,
+                    'offering' => $offerData['offering'],
+                    'requesting' => $offerData['requesting'],
+                    'village_name' => $village->name,
+                ]
+            );
+
             Log::info('Market offer created', [
                 'village_id' => $village->id,
                 'offer_id' => $offer->id,
