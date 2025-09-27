@@ -255,7 +255,7 @@ class GameTickService
         }
 
         // Apply defensive bonuses from buildings
-        $defensiveBonus = $this->calculateDefensiveBonus($defenderVillage);
+        $defensiveBonus = $this->defenseService->calculateDefensiveBonus($defenderVillage);
         $defenderPower *= (1 + $defensiveBonus);
 
         // Add randomness (80-120% of calculated power)
