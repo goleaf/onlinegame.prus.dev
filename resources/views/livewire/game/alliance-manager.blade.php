@@ -309,19 +309,25 @@
                                     <div class="flex justify-between items-start">
                                         <div class="flex-1">
                                             <div class="flex items-center space-x-2 mb-2">
-                                                <h5 class="font-medium">{{ $message['title'] }}</h5>
+                                                <h5 class="font-medium">{{ $message['subject'] ?? $message['title'] ?? 'No Subject' }}</h5>
                                                 @if ($message['is_pinned'])
                                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">Pinned</span>
                                                 @endif
-                                                @if ($message['is_important'])
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Important</span>
+                                                @if ($message['is_announcement'] ?? $message['is_important'] ?? false)
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">Announcement</span>
                                                 @endif
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">{{ ucfirst($message['type']) }}</span>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">{{ ucfirst($message['message_type'] ?? $message['type'] ?? 'general') }}</span>
+                                                @if (isset($message['priority']) && $message['priority'] !== 'normal')
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $message['priority'] === 'urgent' ? 'bg-red-100 text-red-800' : ($message['priority'] === 'high' ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-800') }}">{{ ucfirst($message['priority']) }}</span>
+                                                @endif
                                             </div>
-                                            <p class="text-sm text-gray-700 mb-2">{{ $message['content'] }}</p>
+                                            <p class="text-sm text-gray-700 mb-2">{{ $message['body'] ?? $message['content'] ?? 'No content' }}</p>
                                             <p class="text-xs text-gray-500">
                                                 By {{ $message['sender']['name'] ?? 'Unknown' }} • 
                                                 {{ \Carbon\Carbon::parse($message['created_at'])->diffForHumans() }}
+                                                @if (isset($message['expires_at']) && $message['expires_at'])
+                                                    • Expires: {{ \Carbon\Carbon::parse($message['expires_at'])->diffForHumans() }}
+                                                @endif
                                             </p>
                                         </div>
                                         <button wire:click="markMessageAsRead({{ $message['id'] }})" class="text-blue-600 hover:text-blue-800 text-xs">

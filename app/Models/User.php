@@ -13,9 +13,8 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
 
-class User extends Authenticatable implements Auditable, IsFilterable
+class User extends Authenticatable implements Auditable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -23,8 +22,6 @@ class User extends Authenticatable implements Auditable, IsFilterable
     use HasNotables;
     use AuditableTrait;
     use Lift;
-    use HasReference;
-    use Filterable;
 
     // Laravel Lift typed properties
     public int $id;
