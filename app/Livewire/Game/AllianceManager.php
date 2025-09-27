@@ -1018,4 +1018,18 @@ class AllianceManager extends Component
             'warForm' => $this->warForm,
         ]);
     }
+
+    private function getPhoneCoveragePercentage()
+    {
+        if (!$this->myAlliance) {
+            return 0;
+        }
+
+        $totalMembers = $this->myAlliance->members->count();
+        $membersWithPhone = $this->myAlliance->members->whereHas('user', function ($query) {
+            $query->whereNotNull('phone');
+        })->count();
+
+        return $totalMembers > 0 ? round(($membersWithPhone / $totalMembers) * 100, 2) : 0;
+    }
 }

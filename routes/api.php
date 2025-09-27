@@ -37,6 +37,10 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
     Route::post('/village/{id}/upgrade-building', [GameApiController::class, 'upgradeBuilding']);
     Route::get('/player/stats', [GameApiController::class, 'getPlayerStats']);
     
+    // Geographic Data
+    Route::get('/geographic-data', [GameApiController::class, 'getGeographicData']);
+    Route::get('/calculate-distance', [GameApiController::class, 'calculateDistance']);
+    
     // Player Management
     Route::prefix('players')->group(function () {
         Route::get('/', [PlayerController::class, 'index']);
