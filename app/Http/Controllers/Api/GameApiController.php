@@ -35,6 +35,8 @@ class GameApiController extends Controller
      * 
      * @authenticated
      * 
+     * @description Retrieve the currently authenticated user's information.
+     * 
      * @response 200 {
      *   "id": 1,
      *   "name": "John Doe",
@@ -43,6 +45,12 @@ class GameApiController extends Controller
      *   "created_at": "2023-01-01T00:00:00.000000Z",
      *   "updated_at": "2023-01-01T00:00:00.000000Z"
      * }
+     * 
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
+     * 
+     * @tag Authentication
      */
     public function getUser(Request $request): JsonResponse
     {

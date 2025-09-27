@@ -148,7 +148,9 @@
             "configs",
             "durations",
             "cdn",
-            "preconnect"
+            "preconnect",
+            "taggables",
+            "taxonomables"
         ],
         "paths": [
             "vendor/",
