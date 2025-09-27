@@ -8,6 +8,9 @@
 
     <title>@yield('title', 'Travian Game')</title>
 
+    <!-- SEO Metadata -->
+    @metadata
+
     <!-- Travian CSS -->
     <link href="{{ asset('css/travian_basics.css') }}" rel="stylesheet">
 
