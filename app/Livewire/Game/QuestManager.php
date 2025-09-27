@@ -53,7 +53,8 @@ class QuestManager extends Component
     public $questHistory = [];
     public $achievementHistory = [];
     public $rewards = [];
-    public $questCategories = ['tutorial', 'building', 'resource', 'combat', 'alliance', 'special'];
+    public $questCategories = [];
+    public $questDifficulties = [];
     public $achievementCategories = ['building', 'combat', 'alliance', 'resource', 'special', 'milestone'];
 
     protected $listeners = [
@@ -76,6 +77,7 @@ class QuestManager extends Component
         }
 
         if ($this->world) {
+            $this->loadTaxonomies();
             $this->loadQuestData();
             $this->initializeQuestFeatures();
         }
