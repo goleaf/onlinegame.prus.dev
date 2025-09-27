@@ -3,6 +3,7 @@
 namespace LaraUtilX\Utilities;
 
 use Illuminate\Support\Facades\Cache;
+use SmartCache\Facades\SmartCache;
 
 class CachingUtil
 {

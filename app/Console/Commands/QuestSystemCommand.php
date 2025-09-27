@@ -144,6 +144,11 @@ class QuestSystemCommand extends Command
     protected function playerMeetsQuestRequirements(Player $player, Quest $quest): bool
     {
         $requirements = $quest->requirements ?? [];
+        
+        // Handle JSON string requirements
+        if (is_string($requirements)) {
+            $requirements = json_decode($requirements, true) ?? [];
+        }
 
         foreach ($requirements as $requirement => $value) {
             switch ($requirement) {
