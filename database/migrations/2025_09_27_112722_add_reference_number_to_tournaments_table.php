@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('tournaments', function (Blueprint $table) {
-            $table->string('reference_number')->nullable()->unique()->after('allow_spectators');
-        });
+        // Reference number column already exists in tournaments table
+        // No action needed
     }
 
     /**
