@@ -6,6 +6,7 @@ use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use SmartCache\Facades\SmartCache;
 
 class UnitType extends Model
 {

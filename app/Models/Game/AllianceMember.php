@@ -8,6 +8,8 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class AllianceMember extends Model
 {
+    use HasReference;
+
     protected $fillable = [
         'alliance_id',
         'player_id',
