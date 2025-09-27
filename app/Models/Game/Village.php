@@ -436,6 +436,7 @@ class Village extends Model implements Auditable
             Filter::field('player_id', ['$eq']),
             Filter::field('world_id', ['$eq']),
             Filter::field('geohash', ['$eq', '$like']),
+            Filter::field('reference_number', ['$eq', '$like']),
             Filter::relation('player', ['$has']),
             Filter::relation('world', ['$has']),
             Filter::relation('buildings', ['$has']),

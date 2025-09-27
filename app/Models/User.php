@@ -5,7 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\Commenter;
 use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
-// use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
+use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
 use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -313,5 +313,23 @@ class User extends Authenticatable implements Auditable, IsFilterable
         return $query->whereHas('player', function ($q) use ($allianceId) {
             $q->where('alliance_id', $allianceId);
         });
+    }
+
+    /**
+     * Define allowed filters for the User model
+     */
+    public function allowedFilters(): AllowedFilterList
+    {
+        return Filter::only(
+            Filter::field('name', ['$eq', '$like']),
+            Filter::field('email', ['$eq', '$like']),
+            Filter::field('phone', ['$eq', '$like']),
+            Filter::field('phone_country', ['$eq']),
+            Filter::field('phone_normalized', ['$eq', '$like']),
+            Filter::field('phone_e164', ['$eq', '$like']),
+            Filter::field('email_verified_at', ['$eq', '$gt', '$lt']),
+            Filter::relation('players', ['$has']),
+            Filter::relation('player', ['$has'])
+        );
     }
 }

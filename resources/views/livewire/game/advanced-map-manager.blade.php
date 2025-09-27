@@ -1,15 +1,45 @@
-<div>
-    <!-- This component provides data to the JavaScript map manager -->
-    <div id="map-data" 
-         data-villages="{{ json_encode($this->getVillageData()) }}"
-         data-center-x="{{ $centerX }}"
-         data-center-y="{{ $centerY }}"
-         data-radius="{{ $radius }}"
-         data-map-mode="{{ $mapMode }}"
-         data-total-villages="{{ $statistics['total_villages'] ?? 0 }}"
-         data-my-villages="{{ $statistics['my_villages'] ?? 0 }}"
-         data-alliance-villages="{{ $statistics['alliance_villages'] ?? 0 }}"
-         data-enemy-villages="{{ $statistics['enemy_villages'] ?? 0 }}"
-         style="display: none;">
+<div class="advanced-map-manager">
+    <div class="map-container">
+        <h2>Advanced Map Manager</h2>
+        
+        <div class="map-controls">
+            <button wire:click="loadMapData" class="btn btn-primary">
+                Load Map Data
+            </button>
+            
+            <button wire:click="refreshGeographicData" class="btn btn-secondary">
+                Refresh Geographic Data
+            </button>
+        </div>
+        
+        <div class="map-stats">
+            <div class="stat-item">
+                <span>World Size:</span>
+                <span>{{ $worldSize ?? 'Loading...' }}</span>
+            </div>
+            
+            <div class="stat-item">
+                <span>Villages:</span>
+                <span>{{ $villageCount ?? 'Loading...' }}</span>
+            </div>
+            
+            <div class="stat-item">
+                <span>Players:</span>
+                <span>{{ $playerCount ?? 'Loading...' }}</span>
+            </div>
+        </div>
+        
+        @if($isLoading)
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading map data...</p>
+            </div>
+        @endif
+        
+        @if($error)
+            <div class="error">
+                <p>{{ $error }}</p>
+            </div>
+        @endif
     </div>
 </div>
