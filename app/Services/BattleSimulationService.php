@@ -21,6 +21,17 @@ class BattleSimulationService
      */
     public function simulateBattle(array $attackingTroops, array $defendingTroops, Village $defenderVillage, int $iterations = 1000): array
     {
+        $startTime = microtime(true);
+        
+        ds('BattleSimulationService: Starting battle simulation', [
+            'service' => 'BattleSimulationService',
+            'attacker_troops' => $attackingTroops,
+            'defender_troops' => $defendingTroops,
+            'defender_village_id' => $defenderVillage->id,
+            'iterations' => $iterations,
+            'simulation_time' => now()
+        ]);
+        
         $results = [
             'attacker_wins' => 0,
             'defender_wins' => 0,

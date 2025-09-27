@@ -9,7 +9,16 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class ArtifactEffect extends Model
 {
-    use HasFactory;
+    use HasFactory, HasReference;
+
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+    protected $referenceTemplate = [
+        'format' => 'AE-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+    protected $referencePrefix = 'AE';
 
     protected $fillable = [
         'artifact_id',

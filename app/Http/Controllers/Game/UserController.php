@@ -302,7 +302,7 @@ class UserController extends CrudController
     /**
      * Search users with advanced filtering
      */
-    public function searchUsers(Request $request)
+    public function search(Request $request)
     {
         $query = User::query();
 

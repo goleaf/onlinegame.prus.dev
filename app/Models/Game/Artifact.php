@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use SmartCache\Facades\SmartCache;
 use sbamtr\LaravelQueryEnrich\QE;
 use function sbamtr\LaravelQueryEnrich\c;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Artifact extends Model
 {
