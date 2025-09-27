@@ -117,11 +117,19 @@ class GameSeoService
      */
     public function setGameStructuredData(): void
     {
-        $structuredData = [
+        $config = config('seo');
+        $jsonLdConfig = $config['json_ld'];
+        
+        if (!$jsonLdConfig['enabled']) {
+            return;
+        }
+
+        // Game structured data
+        $gameData = [
             '@context' => 'https://schema.org',
             '@type' => 'VideoGame',
-            'name' => 'Travian Online Game',
-            'description' => 'A browser-based strategy MMO set in ancient times where players build villages, manage resources, and engage in epic battles.',
+            'name' => $config['default_title'],
+            'description' => $config['default_description'],
             'genre' => ['Strategy', 'MMO', 'Browser Game'],
             'gamePlatform' => 'Web Browser',
             'operatingSystem' => ['Windows', 'macOS', 'Linux'],
@@ -132,15 +140,16 @@ class GameSeoService
                 'priceCurrency' => 'USD',
                 'availability' => 'https://schema.org/InStock'
             ],
-            'publisher' => [
-                '@type' => 'Organization',
-                'name' => 'Travian Game'
-            ],
+            'publisher' => $jsonLdConfig['organization'],
             'datePublished' => '2024-01-01',
-            'image' => asset('img/travian/game-logo.png')
+            'image' => asset($config['default_image'])
         ];
 
+        // Website structured data
+        $websiteData = $jsonLdConfig['website'];
+
         // Add the structured data to the page
-        seo()->addMeta('application/ld+json', json_encode($structuredData), 'script');
+        seo()->addMeta('application/ld+json', json_encode($gameData), 'script');
+        seo()->addMeta('application/ld+json', json_encode($websiteData), 'script');
     }
 }

@@ -24,6 +24,15 @@ class ResourceProductionLog extends Model
         'produced_at' => 'datetime',
     ];
 
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+    protected $referenceTemplate = [
+        'format' => 'RPL-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+    protected $referencePrefix = 'RPL';
+
     public function village(): BelongsTo
     {
         return $this->belongsTo(Village::class);

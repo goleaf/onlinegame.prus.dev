@@ -211,4 +211,18 @@ class User extends Authenticatable implements Auditable, IsFilterable
             $q->where('alliance_id', $allianceId);
         });
     }
+
+    /**
+     * Define allowed filters for the User model
+     */
+    public function allowedFilters(): AllowedFilterList
+    {
+        return Filter::only(
+            Filter::field('name', [FilterType::EQUAL, FilterType::CONTAINS]),
+            Filter::field('email', [FilterType::EQUAL, FilterType::CONTAINS]),
+            Filter::field('email_verified_at', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::relation('players', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('player', [FilterType::HAS])->includeRelationFields()
+        );
+    }
 }
