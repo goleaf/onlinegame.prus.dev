@@ -25,6 +25,7 @@ class User extends Authenticatable implements Auditable
     use Notifiable;
     use HasNotables;
     use AuditableTrait;
+    use Lift;
 
     /**
      * Attributes to exclude from the Audit.

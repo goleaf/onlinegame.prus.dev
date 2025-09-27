@@ -19,6 +19,17 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// Phone form test route
+Route::get('/phone-test', function () {
+    $user = User::first() ?? User::create([
+        'name' => 'Test User',
+        'email' => 'test@example.com',
+        'password' => bcrypt('password'),
+    ]);
+    
+    return view('livewire.user-phone-form', ['user' => $user]);
+});
+
 // Include auth routes
 require __DIR__ . '/auth.php';
 

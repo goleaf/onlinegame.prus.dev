@@ -155,7 +155,11 @@
             "public/",
             "tests/",
             "app/ValueObjects/",
-            "app/Models/"
+            "app/Models/",
+            "documentation/",
+            "docker/",
+            "config/",
+            "none/"
         ]
     }
 }

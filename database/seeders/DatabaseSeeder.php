@@ -31,5 +31,6 @@ class DatabaseSeeder extends Seeder
         $this->call(\Database\Seeders\Tables\UnitTypesSeeder::class);
         $this->call(\Database\Seeders\Tables\database\seeders\Tables\UsersTestSeeder.php\UsersSeeder::class);
         $this->call(\Database\Seeders\Tables\database\seeders\Tables\ActivePlayersSeeder.php\PlayersSeeder::class);
+        $this->call(\Database\Seeders\Tables\GameConfigsSeeder::class);
     }
 }

@@ -190,15 +190,15 @@ class Battle extends Model implements Auditable, IsFilterable
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
-            Filter::field('result', [FilterType::EQUAL]),
-            Filter::field('attacker_id', [FilterType::EQUAL]),
-            Filter::field('defender_id', [FilterType::EQUAL]),
-            Filter::field('village_id', [FilterType::EQUAL]),
-            Filter::field('occurred_at', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
-            Filter::field('reference_number', [FilterType::EQUAL, FilterType::CONTAINS]),
-            Filter::relation('attacker', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('defender', [FilterType::HAS])->includeRelationFields(),
-            Filter::relation('village', [FilterType::HAS])->includeRelationFields()
+            Filter::field('result', ['$eq']),
+            Filter::field('attacker_id', ['$eq']),
+            Filter::field('defender_id', ['$eq']),
+            Filter::field('village_id', ['$eq']),
+            Filter::field('occurred_at', ['$eq', '$gt', '$lt']),
+            Filter::field('reference_number', ['$eq', '$contains']),
+            Filter::relation('attacker', ['$has']),
+            Filter::relation('defender', ['$has']),
+            Filter::relation('village', ['$has'])
         );
     }
 }
