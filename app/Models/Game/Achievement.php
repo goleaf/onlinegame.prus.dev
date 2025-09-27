@@ -26,8 +26,10 @@ class Achievement extends Model
     ];
 
     protected $casts = [
-        'progress_data' => 'array',
-        'unlocked_at' => 'datetime',
+        'requirements' => 'array',
+        'rewards' => 'array',
+        'is_hidden' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function player(): BelongsTo
