@@ -27,6 +27,18 @@ class User extends Authenticatable implements Auditable
     use AuditableTrait;
     use Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public string $name;
+    public string $email;
+    public ?string $phone;
+    public ?string $phone_country;
+    public ?\Carbon\Carbon $email_verified_at;
+    public string $password;
+    public ?string $remember_token;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     /**
      * Attributes to exclude from the Audit.
      */
