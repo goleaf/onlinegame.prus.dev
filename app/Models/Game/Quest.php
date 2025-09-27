@@ -290,11 +290,6 @@ class Quest extends Model implements Auditable
         ]);
     }
 }
-                ->limit(1)
-                ->as('player_progress');
-        }
-
-        return $query->select($selectColumns);
     }
 
     public function scopeByDifficultyFilter($query, $difficulty = null)
