@@ -173,6 +173,10 @@
                         @endif
 
                         <div class="flex space-x-2">
+                            <a href="{{ route('game.tasks.detail', $task->id) }}" 
+                               class="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm transition-colors">
+                                <i class="fas fa-eye mr-1"></i>View Details
+                            </a>
                             @if($task->status === 'available')
                                 <button wire:click="startTask({{ $task->id }})" 
                                         class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm transition-colors">

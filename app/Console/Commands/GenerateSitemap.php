@@ -51,14 +51,19 @@ class GenerateSitemap extends Command
         }
 
         // World pages (if any)
-        $worlds = World::all();
-        foreach ($worlds as $world) {
-            $xml .= $this->generateUrlEntry(
-                $baseUrl . '/game/world/' . $world->id,
-                '0.7',
-                'weekly',
-                $world->updated_at
-            );
+        try {
+            $worlds = World::all();
+            foreach ($worlds as $world) {
+                $xml .= $this->generateUrlEntry(
+                    $baseUrl . '/game/world/' . $world->id,
+                    '0.7',
+                    'weekly',
+                    $world->updated_at ?? now()
+                );
+            }
+        } catch (\Exception $e) {
+            $this->warn('Could not fetch worlds for sitemap: ' . $e->getMessage());
+            $worlds = collect(); // Empty collection for count
         }
 
         // Public player profiles (if any exist and are public)

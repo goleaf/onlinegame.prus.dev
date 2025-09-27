@@ -15,22 +15,55 @@ class GameController extends Controller
 
     public function dashboard()
     {
+        $startTime = microtime(true);
+        
+        ds('GameController: Dashboard request started', [
+            'controller' => 'GameController',
+            'method' => 'dashboard',
+            'request_time' => now(),
+            'user_id' => Auth::id()
+        ]);
+        
         try {
             $user = Auth::user();
             if (!$user) {
+                ds('GameController: User not authenticated', [
+                    'redirect_to' => 'login'
+                ]);
                 return redirect()->route('login');
             }
 
             $player = \App\Models\Game\Player::where('user_id', $user->id)->first();
             if (!$player) {
+                ds('GameController: No player found for user', [
+                    'user_id' => $user->id
+                ]);
                 return view('game.no-player', compact('user'));
             }
 
             // Use Query Enrich service for enhanced dashboard data
+            $queryStart = microtime(true);
             $dashboardData = GameQueryEnrichService::getPlayerDashboardData($player->id, $player->world_id);
+            $queryTime = round((microtime(true) - $queryStart) * 1000, 2);
+            
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            ds('GameController: Dashboard data loaded successfully', [
+                'player_id' => $player->id,
+                'world_id' => $player->world_id,
+                'query_time_ms' => $queryTime,
+                'total_time_ms' => $totalTime,
+                'dashboard_data_keys' => array_keys($dashboardData ?? [])
+            ]);
             
             return view('game.dashboard', compact('dashboardData'));
         } catch (\Exception $e) {
+            ds('GameController: Dashboard error occurred', [
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+                'trace' => $e->getTraceAsString(),
+                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            ]);
             return view('game.error', ['error' => $e->getMessage()]);
         }
     }

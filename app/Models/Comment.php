@@ -13,7 +13,7 @@ use WendellAdriel\Lift\Lift;
 
 class Comment extends Model implements Auditable
 {
-    use HasFactory, AuditableTrait;
+    use HasFactory, AuditableTrait, Lift;
 
     protected $fillable = [
         'commentable_id',
