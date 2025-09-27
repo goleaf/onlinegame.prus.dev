@@ -151,7 +151,8 @@
             "preconnect",
             "taggables",
             "taxonomables",
-            "uptime"
+            "uptime",
+            "prefetch"
         ],
         "paths": [
             "vendor/",
