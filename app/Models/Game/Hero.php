@@ -10,7 +10,7 @@ use WendellAdriel\Lift\Lift;
 
 class Hero extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory, HasReference, Lift;
 
     protected $fillable = [
         'player_id',

@@ -92,11 +92,11 @@ class EloquentFilteringUnitTest extends TestCase
 
     public function test_eloquent_filtering_package_is_installed()
     {
-        $this->assertTrue(class_exists('EloquentFiltering\Filterable'));
-        $this->assertTrue(interface_exists('EloquentFiltering\Contracts\IsFilterable'));
-        $this->assertTrue(class_exists('EloquentFiltering\AllowedFilterList'));
-        $this->assertTrue(class_exists('EloquentFiltering\Filter'));
-        $this->assertTrue(class_exists('EloquentFiltering\FilterType'));
+        $this->assertTrue(class_exists('IndexZer0\EloquentFiltering\Filter\Traits\Filterable'));
+        $this->assertTrue(interface_exists('IndexZer0\EloquentFiltering\Contracts\IsFilterable'));
+        $this->assertTrue(interface_exists('IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList'));
+        $this->assertTrue(class_exists('IndexZer0\EloquentFiltering\Filter\Filterable\Filter'));
+        $this->assertTrue(enum_exists('IndexZer0\EloquentFiltering\Filter\FilterType'));
     }
 }
 
