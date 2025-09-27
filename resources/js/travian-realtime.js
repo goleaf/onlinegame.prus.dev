@@ -511,3 +511,4 @@ window.TravianRealtime = {
     hideTooltip
 };
 
+

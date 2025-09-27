@@ -8,11 +8,15 @@ use App\Models\Game\AllianceMember;
 use App\Models\Game\AllianceWar;
 use App\Models\Game\AllianceDiplomacy;
 use App\Models\Game\Player;
+use App\Traits\GameValidationTrait;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
 
 /**
  * @group Alliance Management
@@ -26,8 +30,30 @@ use Illuminate\Support\Facades\DB;
  * @tag Diplomacy
  * @tag War System
  */
-class AllianceController extends Controller
+class AllianceController extends CrudController
 {
+    use ApiResponseTrait, GameValidationTrait;
+
+    protected Model $model;
+
+    protected array $validationRules = [
+        'name' => 'required|string|max:255|unique:alliances,name',
+        'tag' => 'required|string|max:10|unique:alliances,tag',
+        'description' => 'nullable|string|max:1000',
+        'world_id' => 'required|exists:worlds,id',
+        'leader_id' => 'required|exists:players,id',
+        'max_members' => 'integer|min:1|max:100',
+    ];
+
+    protected array $searchableFields = ['name', 'tag', 'description'];
+    protected array $relationships = ['leader', 'world', 'members', 'wars', 'diplomacy'];
+    protected int $perPage = 15;
+
+    public function __construct()
+    {
+        $this->model = new Alliance();
+        parent::__construct($this->model);
+    }
     /**
      * Get all alliances
      *

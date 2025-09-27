@@ -401,3 +401,4 @@ class UserAuditingTest extends TestCase
         $this->assertEquals('updated', $audits[2]->event);
     }
 }
+

@@ -33,7 +33,7 @@ class GameIntegrationTestCommand extends Command
     public function handle()
     {
         $userId = $this->option('user-id');
-        $verbose = $this->option('verbose');
+        $verbose = $this->option('detailed');
 
         $this->info('🎮 Starting Game Integration Test...');
         $this->newLine();
