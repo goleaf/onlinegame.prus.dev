@@ -5,6 +5,7 @@ namespace App\Livewire\Game;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
@@ -168,6 +169,8 @@ class WorldMap extends Component
         }
     }
 
+
+
     public function resetZoom()
     {
         $this->zoomLevel = 1;
@@ -200,6 +203,7 @@ class WorldMap extends Component
         $this->filterTribe = $tribe;
         $this->addNotification("Filtered by tribe: {$tribe}", 'info');
     }
+
 
     public function getFilteredMapData()
     {
