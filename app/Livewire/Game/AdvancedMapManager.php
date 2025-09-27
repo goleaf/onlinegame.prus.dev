@@ -225,24 +225,49 @@ class AdvancedMapManager extends Component
     {
         $currentPlayer = Auth::user()?->player;
         
-        $this->statistics = [
-            'total_villages' => count($this->mapData),
-            'my_villages' => 0,
-            'alliance_villages' => 0,
-            'enemy_villages' => 0,
-            'abandoned_villages' => 0,
-        ];
-
-        foreach ($this->mapData as $village) {
-            if ($village['population'] == 0) {
-                $this->statistics['abandoned_villages']++;
-            } elseif ($currentPlayer && $village['player_id'] == $currentPlayer->id) {
-                $this->statistics['my_villages']++;
-            } elseif ($currentPlayer && $village['alliance_id'] == $currentPlayer->alliance_id) {
-                $this->statistics['alliance_villages']++;
-            } else {
-                $this->statistics['enemy_villages']++;
-            }
+        // Use optimized query to calculate statistics in one go
+        if (!empty($this->mapData)) {
+            $villageIds = collect($this->mapData)->pluck('id')->toArray();
+            
+            $stats = Village::whereIn('id', $villageIds)
+                ->selectRaw('
+                    COUNT(*) as total_villages,
+                    SUM(CASE WHEN population = 0 THEN 1 ELSE 0 END) as abandoned_villages,
+                    SUM(CASE WHEN player_id = ? THEN 1 ELSE 0 END) as my_villages,
+                    SUM(CASE WHEN player_id IN (SELECT id FROM players WHERE alliance_id = ?) THEN 1 ELSE 0 END) as alliance_villages,
+                    SUM(CASE WHEN player_id != ? AND player_id NOT IN (SELECT id FROM players WHERE alliance_id = ?) THEN 1 ELSE 0 END) as enemy_villages,
+                    AVG(population) as avg_population,
+                    MAX(population) as max_population,
+                    SUM(population) as total_population
+                ', [
+                    $currentPlayer?->id ?? 0,
+                    $currentPlayer?->alliance_id ?? 0,
+                    $currentPlayer?->id ?? 0,
+                    $currentPlayer?->alliance_id ?? 0
+                ])
+                ->first();
+                
+            $this->statistics = [
+                'total_villages' => $stats->total_villages ?? count($this->mapData),
+                'my_villages' => $stats->my_villages ?? 0,
+                'alliance_villages' => $stats->alliance_villages ?? 0,
+                'enemy_villages' => $stats->enemy_villages ?? 0,
+                'abandoned_villages' => $stats->abandoned_villages ?? 0,
+                'avg_population' => round($stats->avg_population ?? 0, 2),
+                'max_population' => $stats->max_population ?? 0,
+                'total_population' => $stats->total_population ?? 0,
+            ];
+        } else {
+            $this->statistics = [
+                'total_villages' => 0,
+                'my_villages' => 0,
+                'alliance_villages' => 0,
+                'enemy_villages' => 0,
+                'abandoned_villages' => 0,
+                'avg_population' => 0,
+                'max_population' => 0,
+                'total_population' => 0,
+            ];
         }
     }
 

@@ -213,12 +213,6 @@ class WorldMap extends Component
         $this->addNotification("Filtered by tribe: {$tribe}", 'info');
     }
 
-    public function clearFilters()
-    {
-        $this->filterAlliance = null;
-        $this->filterTribe = null;
-        $this->addNotification('Filters cleared', 'info');
-    }
 
     public function getFilteredMapData()
     {
