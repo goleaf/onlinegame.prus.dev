@@ -90,6 +90,10 @@ class AppServiceProvider extends ServiceProvider
                 config('lara-util-x.cache.default_tags', ['game'])
             );
         });
+        
+        $this->app->bind(\LaraUtilX\Utilities\LoggingUtil::class, function ($app) {
+            return new \LaraUtilX\Utilities\LoggingUtil();
+        });
 
         // Register Basset helper
         $this->app->singleton(\App\Helpers\BassetHelper::class);
