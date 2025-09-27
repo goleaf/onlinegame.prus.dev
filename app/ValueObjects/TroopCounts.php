@@ -2,9 +2,7 @@
 
 namespace App\ValueObjects;
 
-use Bag\Bag;
-
-readonly class TroopCounts extends Bag
+readonly class TroopCounts
 {
     public function __construct(
         public int $spearmen = 0,

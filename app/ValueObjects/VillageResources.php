@@ -2,9 +2,7 @@
 
 namespace App\ValueObjects;
 
-use Bag\Bag;
-
-readonly class VillageResources extends Bag
+readonly class VillageResources
 {
     public function __construct(
         public ResourceAmounts $amounts,

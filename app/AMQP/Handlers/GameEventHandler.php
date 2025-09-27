@@ -34,6 +34,15 @@ class GameEventHandler
                 case 'resource_update':
                     $this->handleResourceUpdate($data);
                     break;
+                case 'spy_caught':
+                    $this->handleSpyCaught($data);
+                    break;
+                case 'spy_success':
+                    $this->handleSpySuccess($data);
+                    break;
+                case 'battle_simulation':
+                    $this->handleBattleSimulation($data);
+                    break;
                 default:
                     Log::warning('Unknown game event type', ['event_type' => $data['event_type'] ?? 'unknown']);
             }
