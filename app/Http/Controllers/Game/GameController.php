@@ -26,9 +26,92 @@ class GameController extends Controller
                 return view('game.no-player', compact('user'));
             }
 
-            return view('game.dashboard');
+            // Use Query Enrich service for enhanced dashboard data
+            $dashboardData = GameQueryEnrichService::getPlayerDashboardData($player->id, $player->world_id);
+            
+            return view('game.dashboard', compact('dashboardData'));
         } catch (\Exception $e) {
             return view('game.error', ['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Get enhanced player statistics using Query Enrich
+     */
+    public function getPlayerStats($playerId)
+    {
+        try {
+            $dashboardData = GameQueryEnrichService::getPlayerDashboardData($playerId);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $dashboardData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get world leaderboard using Query Enrich
+     */
+    public function getWorldLeaderboard($worldId)
+    {
+        try {
+            $leaderboard = GameQueryEnrichService::getWorldLeaderboard($worldId, 100)->get();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $leaderboard
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get building statistics using Query Enrich
+     */
+    public function getBuildingStats($playerId)
+    {
+        try {
+            $buildingStats = GameQueryEnrichService::getBuildingStatistics($playerId)->get();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $buildingStats
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get resource capacity warnings using Query Enrich
+     */
+    public function getResourceWarnings($playerId)
+    {
+        try {
+            $warnings = GameQueryEnrichService::getResourceCapacityWarnings($playerId, 24)->get();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $warnings
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
