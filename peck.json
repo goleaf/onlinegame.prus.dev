@@ -55,7 +55,11 @@
             "forge",
             "herd",
             "valet",
-            "homestead"
+            "homestead",
+            "larautilx",
+            "util",
+            "utils",
+            "utilx"
         ],
         "paths": [
             "vendor/",

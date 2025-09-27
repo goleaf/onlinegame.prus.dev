@@ -131,24 +131,44 @@ class IntrospectService
      */
     public function getRouteAnalysis(): array
     {
-        $gameRoutes = Introspect::routes()
-            ->wherePathStartsWith('game')
-            ->get();
+        try {
+            $gameRoutes = Introspect::routes()
+                ->wherePathStartsWith('game')
+                ->get();
 
-        $apiRoutes = Introspect::routes()
-            ->wherePathStartsWith('game/api')
-            ->get();
+            $apiRoutes = Introspect::routes()
+                ->wherePathStartsWith('game/api')
+                ->get();
 
-        $authRoutes = Introspect::routes()
-            ->whereUsesMiddleware('auth')
-            ->get();
+            // Get auth routes manually to avoid middleware issues
+            $authRoutes = [];
+            try {
+                $authRoutes = Introspect::routes()
+                    ->whereUsesMiddleware('auth')
+                    ->get();
+            } catch (\Exception $e) {
+                // Fallback: get all routes and filter manually
+                $allRoutes = Introspect::routes()->get();
+                $authRoutes = array_filter($allRoutes, function($route) {
+                    return str_contains($route, 'auth') || str_contains($route, 'login');
+                });
+            }
 
-        return [
-            'game_routes' => $gameRoutes,
-            'api_routes' => $apiRoutes,
-            'auth_routes' => $authRoutes,
-            'total_routes' => count($gameRoutes) + count($apiRoutes),
-        ];
+            return [
+                'game_routes' => $gameRoutes,
+                'api_routes' => $apiRoutes,
+                'auth_routes' => $authRoutes,
+                'total_routes' => count($gameRoutes) + count($apiRoutes),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'game_routes' => [],
+                'api_routes' => [],
+                'auth_routes' => [],
+                'total_routes' => 0,
+                'error' => 'Route analysis failed: ' . $e->getMessage(),
+            ];
+        }
     }
 
     /**
