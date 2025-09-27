@@ -28,10 +28,20 @@ This index is automatically generated and lists all documentation files:
       * [Documentation: QueryPerformanceMiddleware.php](app/Http/Middleware/QueryPerformanceMiddleware.md)
   * **Livewire/**
     * **Game/**
+      * [Documentation: AllianceManager.php](app/Livewire/Game/AllianceManager.md)
       * [Documentation: Dashboard.php](app/Livewire/Game/Dashboard.md)
+      * [Documentation: GameDashboard.php](app/Livewire/Game/GameDashboard.md)
       * [Documentation: Map.php](app/Livewire/Game/Map.md)
+      * [Documentation: MapViewer.php](app/Livewire/Game/MapViewer.md)
+      * [Documentation: MovementManager.php](app/Livewire/Game/MovementManager.md)
+      * [Documentation: QuestManager.php](app/Livewire/Game/QuestManager.md)
       * [Documentation: RealTimeUpdater.php](app/Livewire/Game/RealTimeUpdater.md)
+      * [Documentation: ReportManager.php](app/Livewire/Game/ReportManager.md)
       * [Documentation: ResourceManager.php](app/Livewire/Game/ResourceManager.md)
+      * [Documentation: StatisticsViewer.php](app/Livewire/Game/StatisticsViewer.md)
+      * [Documentation: TaskManager.php](app/Livewire/Game/TaskManager.md)
+      * [Documentation: TravianDashboard.php](app/Livewire/Game/TravianDashboard.md)
+      * [Documentation: TroopManager.php](app/Livewire/Game/TroopManager.md)
       * [Documentation: Village.php](app/Livewire/Game/Village.md)
   * **Models/**
     * **Game/**
