@@ -36,22 +36,26 @@ class LarautilxDashboardController extends Controller
     }
 
     /**
-     * Get comprehensive Larautilx integration dashboard data
+     * Get comprehensive Larautilx integration dashboard data with SmartCache optimization
      */
     public function getDashboardData()
     {
         try {
-            $data = [
-                'integration_status' => $this->integrationService->getIntegrationStatus(),
-                'ai_service_status' => $this->aiService->getStatus(),
-                'feature_toggles' => $this->getFeatureTogglesStatus(),
-                'system_health' => $this->getSystemHealthStatus(),
-                'performance_metrics' => $this->getPerformanceMetrics(),
-                'scheduled_tasks' => $this->getScheduledTasksSummary(),
-                'configuration_status' => $this->getConfigurationStatus(),
-                'usage_statistics' => $this->getUsageStatistics(),
-                'recent_activity' => $this->getRecentActivity(),
-            ];
+            $cacheKey = "larautilx_dashboard_data_" . auth()->id();
+            
+            $data = SmartCache::remember($cacheKey, now()->addMinutes(15), function () {
+                return [
+                    'integration_status' => $this->integrationService->getIntegrationStatus(),
+                    'ai_service_status' => $this->aiService->getStatus(),
+                    'feature_toggles' => $this->getFeatureTogglesStatus(),
+                    'system_health' => $this->getSystemHealthStatus(),
+                    'performance_metrics' => $this->getPerformanceMetrics(),
+                    'scheduled_tasks' => $this->getScheduledTasksSummary(),
+                    'configuration_status' => $this->getConfigurationStatus(),
+                    'usage_statistics' => $this->getUsageStatistics(),
+                    'recent_activity' => $this->getRecentActivity(),
+                ];
+            });
 
             LoggingUtil::info('Larautilx dashboard data retrieved', [
                 'user_id' => auth()->id(),
