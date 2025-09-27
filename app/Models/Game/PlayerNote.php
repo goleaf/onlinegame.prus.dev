@@ -2,6 +2,7 @@
 
 namespace App\Models\Game;
 
+use App\Traits\Commentable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
