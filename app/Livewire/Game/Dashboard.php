@@ -24,7 +24,7 @@ class Dashboard extends Component
     public function mount()
     {
         // Optimized query loading with performance monitoring
-        $this->player = PerformanceMonitoringService::monitorQueries(function () {
+        $data = PerformanceMonitoringService::monitorQueries(function () {
             $player = auth()->user();
             $villages = $player->villages()->with(['buildings'])->get() ?? collect();
             $world = World::select(['id', 'name', 'speed', 'start_date'])->first();
@@ -32,9 +32,9 @@ class Dashboard extends Component
             return compact('player', 'villages', 'world');
         }, 'GameDashboard::mount');
         
-        $this->player = $this->player['player'];
-        $this->villages = $this->player['villages'];
-        $this->world = $this->player['world'];
+        $this->player = $data['player'];
+        $this->villages = $data['villages'];
+        $this->world = $data['world'];
 
         // Load player resources with optimization
         $this->loadResources();
