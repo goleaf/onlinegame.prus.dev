@@ -12,6 +12,17 @@ class RabbitMQService
      */
     public function publishGameEvent(string $eventType, array $data, string $handler = 'game_event'): void
     {
+        $startTime = microtime(true);
+        
+        ds('RabbitMQService: Publishing game event', [
+            'service' => 'RabbitMQService',
+            'method' => 'publishGameEvent',
+            'event_type' => $eventType,
+            'handler' => $handler,
+            'data_size' => count($data),
+            'publish_time' => now()
+        ]);
+        
         try {
             $message = [
                 'event_type' => $eventType,
@@ -19,16 +30,37 @@ class RabbitMQService
                 'data' => $data
             ];
 
+            $publishStart = microtime(true);
             SimpleMQ::queue('game_events')
                 ->setBody($message)
                 ->handler($handler)
                 ->publish();
+            $publishTime = round((microtime(true) - $publishStart) * 1000, 2);
+
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            ds('RabbitMQService: Game event published successfully', [
+                'event_type' => $eventType,
+                'handler' => $handler,
+                'publish_time_ms' => $publishTime,
+                'total_time_ms' => $totalTime
+            ]);
 
             Log::info('Game event published', [
                 'event_type' => $eventType,
                 'handler' => $handler
             ]);
         } catch (\Exception $e) {
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+            
+            ds('RabbitMQService: Game event publishing failed', [
+                'event_type' => $eventType,
+                'handler' => $handler,
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+                'total_time_ms' => $totalTime
+            ]);
+            
             Log::error('Failed to publish game event', [
                 'event_type' => $eventType,
                 'error' => $e->getMessage()

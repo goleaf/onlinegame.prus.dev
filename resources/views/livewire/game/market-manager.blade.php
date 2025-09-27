@@ -153,7 +153,8 @@
                                         <div class="trade-actions">
                                             @if ($trade->status === 'active')
                                                 <button class="btn btn-sm btn-danger"
-                                                        wire:click="cancelTrade({{ $trade->id }})">
+                                                        wire:click="cancelTrade({{ $trade->id }})"
+                                                        wire:confirm="Are you sure you want to cancel this trade? This action cannot be undone.">
                                                     Cancel Trade
                                                 </button>
                                             @endif
