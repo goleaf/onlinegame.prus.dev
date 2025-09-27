@@ -27,6 +27,8 @@ This index is automatically generated and lists all documentation files:
       * [Documentation: GameRateLimitMiddleware.php](app/Http/Middleware/GameRateLimitMiddleware.md)
       * [Documentation: QueryPerformanceMiddleware.php](app/Http/Middleware/QueryPerformanceMiddleware.md)
   * **Livewire/**
+    * **Admin/**
+      * [Documentation: IntrospectAnalyzer.php](app/Livewire/Admin/IntrospectAnalyzer.md)
     * **Game/**
       * [Documentation: AdvancedMapManager.php](app/Livewire/Game/AdvancedMapManager.md)
       * [Documentation: AdvancedMapViewer.php](app/Livewire/Game/AdvancedMapViewer.md)
@@ -50,6 +52,7 @@ This index is automatically generated and lists all documentation files:
       * [Documentation: ReportManager.php](app/Livewire/Game/ReportManager.md)
       * [Documentation: ResourceManager.php](app/Livewire/Game/ResourceManager.md)
       * [Documentation: StatisticsViewer.php](app/Livewire/Game/StatisticsViewer.md)
+      * [Documentation: SystemManagement.php](app/Livewire/Game/SystemManagement.md)
       * [Documentation: TaskManager.php](app/Livewire/Game/TaskManager.md)
       * [Documentation: TechnologyManager.php](app/Livewire/Game/TechnologyManager.md)
       * [Documentation: TravianDashboard.php](app/Livewire/Game/TravianDashboard.md)
