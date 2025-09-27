@@ -60,6 +60,7 @@ class BattleManager extends Component
             ])->label('BattleManager Mount');
 
             $this->loadBattleData();
+            $this->initializeBattleRealTime();
 
             // Track component load time
             $this->dispatch('fathom-track', name: 'component_load_time', value: round((microtime(true) - $startTime) * 1000));
