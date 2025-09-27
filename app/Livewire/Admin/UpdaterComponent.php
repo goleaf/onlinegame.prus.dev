@@ -6,6 +6,8 @@ use App\Services\UpdaterService;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
+use Jantinnerezo\LivewireAlert\Concerns\SweetAlert2;
+
 #[Title('Application Updater')]
 #[Layout('layouts.app')]
 class UpdaterComponent extends Component
