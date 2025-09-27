@@ -277,7 +277,7 @@ class Player extends Model implements Auditable
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
-            Filter::field('name', ['$eq', '$contains']),
+            Filter::field('name', ['$eq', '$like']),
             Filter::field('tribe', ['$eq']),
             Filter::field('points', ['$eq', '$gt', '$lt']),
             Filter::field('population', ['$eq', '$gt', '$lt']),

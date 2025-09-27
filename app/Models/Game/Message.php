@@ -2,10 +2,11 @@
 
 namespace App\Models\Game;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Traits\HasReference;
+use SmartCache\Facades\SmartCache;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Message extends Model
 {
@@ -33,6 +34,15 @@ class Message extends Model
         'is_deleted_by_recipient' => 'boolean',
         'expires_at' => 'datetime',
     ];
+
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+    protected $referenceTemplate = [
+        'format' => 'MSG-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+    protected $referencePrefix = 'MSG';
 
     // Message types
     const TYPE_PRIVATE = 'private';
@@ -68,15 +78,23 @@ class Message extends Model
         return $this->belongsTo(Message::class, 'parent_message_id');
     }
 
+    public function replies()
+    {
+        return $this->hasMany(Message::class, 'parent_message_id');
+    }
+
     // Scopes
     public function scopeUnread($query)
     {
         return $query->where('is_read', false);
     }
 
-    public function scopeRead($query)
+    public function scopeForPlayer($query, $playerId)
     {
-        return $query->where('is_read', true);
+        return $query->where(function ($q) use ($playerId) {
+            $q->where('recipient_id', $playerId)
+              ->orWhere('sender_id', $playerId);
+        });
     }
 
     public function scopeByType($query, $type)
@@ -89,24 +107,17 @@ class Message extends Model
         return $query->where('priority', $priority);
     }
 
-    public function scopeForPlayer($query, $playerId)
+    public function scopeNotDeleted($query, $playerId)
     {
         return $query->where(function ($q) use ($playerId) {
-            $q->where('sender_id', $playerId)
-              ->orWhere('recipient_id', $playerId);
+            $q->where(function ($subQ) use ($playerId) {
+                $subQ->where('sender_id', $playerId)
+                     ->where('is_deleted_by_sender', false);
+            })->orWhere(function ($subQ) use ($playerId) {
+                $subQ->where('recipient_id', $playerId)
+                     ->where('is_deleted_by_recipient', false);
+            });
         });
-    }
-
-    public function scopeInbox($query, $playerId)
-    {
-        return $query->where('recipient_id', $playerId)
-                    ->where('is_deleted_by_recipient', false);
-    }
-
-    public function scopeSent($query, $playerId)
-    {
-        return $query->where('sender_id', $playerId)
-                    ->where('is_deleted_by_sender', false);
     }
 
     public function scopeAllianceMessages($query, $allianceId)
@@ -115,145 +126,160 @@ class Message extends Model
                     ->where('message_type', self::TYPE_ALLIANCE);
     }
 
-    public function scopeSystemMessages($query)
+    // Methods
+    public function markAsRead(): void
     {
-        return $query->where('message_type', self::TYPE_SYSTEM);
+        $this->update(['is_read' => true]);
+        
+        // Clear cache for this player's unread count
+        SmartCache::forget("unread_messages_count:{$this->recipient_id}");
     }
 
-    public function scopeBattleReports($query)
+    public function markAsDeleted($playerId): void
     {
-        return $query->where('message_type', self::TYPE_BATTLE_REPORT);
+        if ($this->sender_id === $playerId) {
+            $this->update(['is_deleted_by_sender' => true]);
+        } elseif ($this->recipient_id === $playerId) {
+            $this->update(['is_deleted_by_recipient' => true]);
+        }
     }
 
-    public function scopeTradeOffers($query)
+    public function isDeleted($playerId): bool
     {
-        return $query->where('message_type', self::TYPE_TRADE_OFFER);
+        if ($this->sender_id === $playerId) {
+            return $this->is_deleted_by_sender;
+        } elseif ($this->recipient_id === $playerId) {
+            return $this->is_deleted_by_recipient;
+        }
+        
+        return false;
     }
 
-    public function scopeDiplomacyMessages($query)
+    public function canBeDeleted($playerId): bool
     {
-        return $query->where('message_type', self::TYPE_DIPLOMACY);
+        return $this->sender_id === $playerId || $this->recipient_id === $playerId;
     }
 
-    public function scopeExpired($query)
-    {
-        return $query->where('expires_at', '<', now());
-    }
-
-    public function scopeNotExpired($query)
-    {
-        return $query->where(function ($q) {
-            $q->whereNull('expires_at')
-              ->orWhere('expires_at', '>', now());
-        });
-    }
-
-    // Helper methods
     public function isExpired(): bool
     {
         return $this->expires_at && $this->expires_at->isPast();
     }
 
-    public function isUnread(): bool
+    public function getUnreadCountForPlayer($playerId): int
     {
-        return !$this->is_read;
+        return SmartCache::remember("unread_messages_count:{$playerId}", 300, function () use ($playerId) {
+            return self::where('recipient_id', $playerId)
+                      ->where('is_read', false)
+                      ->where('is_deleted_by_recipient', false)
+                      ->count();
+        });
     }
 
-    public function isPrivate(): bool
+    public function getInboxForPlayer($playerId, $limit = 50)
     {
-        return $this->message_type === self::TYPE_PRIVATE;
+        return self::with(['sender', 'recipient'])
+                  ->where('recipient_id', $playerId)
+                  ->where('is_deleted_by_recipient', false)
+                  ->orderBy('created_at', 'desc')
+                  ->limit($limit)
+                  ->get();
     }
 
-    public function isAlliance(): bool
+    public function getSentForPlayer($playerId, $limit = 50)
     {
-        return $this->message_type === self::TYPE_ALLIANCE;
+        return self::with(['sender', 'recipient'])
+                  ->where('sender_id', $playerId)
+                  ->where('is_deleted_by_sender', false)
+                  ->orderBy('created_at', 'desc')
+                  ->limit($limit)
+                  ->get();
     }
 
-    public function isSystem(): bool
+    public function getConversation($playerId, $otherPlayerId)
     {
-        return $this->message_type === self::TYPE_SYSTEM;
+        return self::with(['sender', 'recipient'])
+                  ->where(function ($q) use ($playerId, $otherPlayerId) {
+                      $q->where('sender_id', $playerId)
+                        ->where('recipient_id', $otherPlayerId);
+                  })
+                  ->orWhere(function ($q) use ($playerId, $otherPlayerId) {
+                      $q->where('sender_id', $otherPlayerId)
+                        ->where('recipient_id', $playerId);
+                  })
+                  ->where('message_type', self::TYPE_PRIVATE)
+                  ->orderBy('created_at', 'asc')
+                  ->get();
     }
 
-    public function isBattleReport(): bool
+    public static function createSystemMessage($recipientId, $subject, $body, $priority = self::PRIORITY_NORMAL)
     {
-        return $this->message_type === self::TYPE_BATTLE_REPORT;
+        return self::create([
+            'sender_id' => null, // System message
+            'recipient_id' => $recipientId,
+            'subject' => $subject,
+            'body' => $body,
+            'message_type' => self::TYPE_SYSTEM,
+            'priority' => $priority,
+            'is_read' => false,
+        ]);
     }
 
-    public function isTradeOffer(): bool
+    public static function createAllianceMessage($allianceId, $senderId, $subject, $body, $priority = self::PRIORITY_NORMAL)
     {
-        return $this->message_type === self::TYPE_TRADE_OFFER;
+        return self::create([
+            'sender_id' => $senderId,
+            'alliance_id' => $allianceId,
+            'subject' => $subject,
+            'body' => $body,
+            'message_type' => self::TYPE_ALLIANCE,
+            'priority' => $priority,
+            'is_read' => false,
+        ]);
     }
 
-    public function isDiplomacy(): bool
+    public static function createBattleReportMessage($recipientId, $battleId, $subject, $body)
     {
-        return $this->message_type === self::TYPE_DIPLOMACY;
+        return self::create([
+            'sender_id' => null, // System generated
+            'recipient_id' => $recipientId,
+            'subject' => $subject,
+            'body' => $body,
+            'message_type' => self::TYPE_BATTLE_REPORT,
+            'priority' => self::PRIORITY_HIGH,
+            'is_read' => false,
+        ]);
     }
 
-    public function isHighPriority(): bool
+    public static function cleanupExpiredMessages(): int
     {
-        return in_array($this->priority, [self::PRIORITY_HIGH, self::PRIORITY_URGENT]);
+        return self::where('expires_at', '<', now())
+                  ->delete();
     }
 
-    public function isUrgent(): bool
+    public static function getMessageStatsForPlayer($playerId): array
     {
-        return $this->priority === self::PRIORITY_URGENT;
-    }
-
-    public function canBeReadBy(int $playerId): bool
-    {
-        return $this->recipient_id === $playerId && !$this->is_deleted_by_recipient;
-    }
-
-    public function canBeDeletedBy(int $playerId): bool
-    {
-        return ($this->sender_id === $playerId && !$this->is_deleted_by_sender) ||
-               ($this->recipient_id === $playerId && !$this->is_deleted_by_recipient);
-    }
-
-    public function getOtherPlayer(int $currentPlayerId): ?Player
-    {
-        if ($this->sender_id === $currentPlayerId) {
-            return $this->recipient;
-        }
-
-        if ($this->recipient_id === $currentPlayerId) {
-            return $this->sender;
-        }
-
-        return null;
-    }
-
-    public function getPriorityColor(): string
-    {
-        return match ($this->priority) {
-            self::PRIORITY_URGENT => 'red',
-            self::PRIORITY_HIGH => 'orange',
-            self::PRIORITY_NORMAL => 'blue',
-            self::PRIORITY_LOW => 'gray',
-            default => 'gray',
-        };
-    }
-
-    public function getTypeIcon(): string
-    {
-        return match ($this->message_type) {
-            self::TYPE_PRIVATE => 'envelope',
-            self::TYPE_ALLIANCE => 'users',
-            self::TYPE_SYSTEM => 'cog',
-            self::TYPE_BATTLE_REPORT => 'sword',
-            self::TYPE_TRADE_OFFER => 'exchange-alt',
-            self::TYPE_DIPLOMACY => 'handshake',
-            default => 'envelope',
-        };
-    }
-
-    public function getFormattedCreatedAt(): string
-    {
-        return $this->created_at->diffForHumans();
-    }
-
-    public function getExcerpt(int $length = 100): string
-    {
-        return \Str::limit(strip_tags($this->body), $length);
+        return SmartCache::remember("message_stats:{$playerId}", 600, function () use ($playerId) {
+            return [
+                'total_messages' => self::forPlayer($playerId)->count(),
+                'unread_messages' => self::where('recipient_id', $playerId)
+                                        ->where('is_read', false)
+                                        ->where('is_deleted_by_recipient', false)
+                                        ->count(),
+                'sent_messages' => self::where('sender_id', $playerId)
+                                      ->where('is_deleted_by_sender', false)
+                                      ->count(),
+                'received_messages' => self::where('recipient_id', $playerId)
+                                          ->where('is_deleted_by_recipient', false)
+                                          ->count(),
+                'alliance_messages' => self::where('recipient_id', $playerId)
+                                          ->where('message_type', self::TYPE_ALLIANCE)
+                                          ->where('is_deleted_by_recipient', false)
+                                          ->count(),
+                'system_messages' => self::where('recipient_id', $playerId)
+                                        ->where('message_type', self::TYPE_SYSTEM)
+                                        ->where('is_deleted_by_recipient', false)
+                                        ->count(),
+            ];
+        });
     }
 }

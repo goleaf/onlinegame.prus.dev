@@ -49,6 +49,36 @@ class AllianceManager extends Component
     public $memberStats = [];
     public $inviteStats = [];
     public $applicationStats = [];
+    
+    // Diplomacy and communication features
+    public $allianceDiplomacy = [];
+    public $allianceWars = [];
+    public $allianceMessages = [];
+    public $allianceLogs = [];
+    public $selectedDiplomacy = null;
+    public $selectedWar = null;
+    public $selectedMessage = null;
+    public $showDiplomacy = false;
+    public $showWars = false;
+    public $showMessages = false;
+    public $showLogs = false;
+    public $diplomacyForm = [
+        'target_alliance_id' => null,
+        'status' => 'ally',
+        'message' => '',
+        'expires_at' => null,
+    ];
+    public $messageForm = [
+        'type' => 'general',
+        'title' => '',
+        'content' => '',
+        'is_pinned' => false,
+        'is_important' => false,
+    ];
+    public $warForm = [
+        'target_alliance_id' => null,
+        'declaration_message' => '',
+    ];
 
     protected $listeners = [
         'allianceUpdated',

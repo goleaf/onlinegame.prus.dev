@@ -22,6 +22,7 @@ class ArtifactEffect extends Model
         'starts_at',
         'expires_at',
         'is_active',
+        'reference_number',
     ];
 
     protected $casts = [

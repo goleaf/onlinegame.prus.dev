@@ -81,14 +81,33 @@ class GameTickService
             ]);
 
             // Update player statistics
+            $statsStart = microtime(true);
             $this->updatePlayerStatistics();
+            $statsTime = round((microtime(true) - $statsStart) * 1000, 2);
+            ds('GameTickService: Player statistics updated', [
+                'processing_time_ms' => $statsTime
+            ]);
 
             DB::commit();
+
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+            ds('GameTickService: Game tick completed successfully', [
+                'total_processing_time_ms' => $totalTime,
+                'memory_usage_peak' => memory_get_peak_usage(true),
+                'memory_usage_current' => memory_get_usage(true)
+            ]);
 
             Log::info('Game tick processed successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Game tick failed: ' . $e->getMessage());
+
+            ds('GameTickService: Game tick failed', [
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+                'trace' => $e->getTraceAsString(),
+                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            ]);
 
             throw $e;
         }
