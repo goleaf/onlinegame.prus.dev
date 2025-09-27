@@ -167,16 +167,6 @@ class Player extends Model implements Auditable
                         QE::eq(c('status'), 'victory')
                     ), 1)
                     ->else(0))
-                )->add(
-                    QE::sum(QE::case()
-                        ->when(QE::and(
-                            QE::eq(c('defender_id'), c('players.id')),
-                            QE::eq(c('status'), 'victory')
-                        ), 1)
-                        ->else(0))
-                )
-            )->from('reports')->as('total_victories')
-        ]);
     }
 
     public function scopeByWorld($query, $worldId)

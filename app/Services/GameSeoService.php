@@ -19,11 +19,11 @@ class GameSeoService
             ->title($config['default_title'], $config['site_name'])
             ->description($config['default_description'])
             ->keywords($config['default_keywords'])
-            ->images([
-                asset($config['default_image']),
-                asset('img/travian/village-preview.jpg'),
-                asset('img/travian/world-map.jpg')
-            ])
+            ->images($this->getOptimizedImages([
+                $config['default_image'],
+                'img/travian/village-preview.jpg',
+                'img/travian/world-map.jpg'
+            ]))
             ->twitterEnabled($config['twitter']['enabled'])
             ->twitterSite($config['twitter']['site'])
             ->twitterCreator($config['twitter']['creator'])
@@ -151,5 +151,57 @@ class GameSeoService
         // Add the structured data to the page
         seo()->addMeta('application/ld+json', json_encode($gameData), 'script');
         seo()->addMeta('application/ld+json', json_encode($websiteData), 'script');
+    }
+
+    /**
+     * Get optimized images array, filtering out non-existent files
+     */
+    protected function getOptimizedImages(array $imagePaths): array
+    {
+        $images = [];
+        foreach ($imagePaths as $path) {
+            if (file_exists(public_path($path))) {
+                $images[] = asset($path);
+            }
+        }
+        
+        // Fallback to placeholder if no images exist
+        if (empty($images)) {
+            $images[] = asset('img/travian/placeholder.svg');
+        }
+        
+        return $images;
+    }
+
+    /**
+     * Set canonical URL for the current page
+     */
+    public function setCanonicalUrl(string $url = null): void
+    {
+        if (!$url) {
+            $url = request()->url();
+        }
+        
+        seo()->canonical($url);
+    }
+
+    /**
+     * Set robots meta tag
+     */
+    public function setRobotsMeta(array $robots = []): void
+    {
+        $defaultRobots = config('seo.robots', []);
+        $robots = array_merge($defaultRobots, $robots);
+        
+        $robotsString = implode(', ', array_filter([
+            $robots['index'] ? 'index' : 'noindex',
+            $robots['follow'] ? 'follow' : 'nofollow',
+            $robots['archive'] ? 'archive' : 'noarchive',
+            $robots['snippet'] ? 'snippet' : 'nosnippet',
+            $robots['imageindex'] ? 'imageindex' : 'noimageindex',
+            $robots['nocache'] ? 'nocache' : null,
+        ]));
+        
+        seo()->addMeta('robots', $robotsString);
     }
 }
