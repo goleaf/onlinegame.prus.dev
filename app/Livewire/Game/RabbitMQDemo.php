@@ -124,6 +124,23 @@ class RabbitMQDemo extends Component
         $this->addMessage('Custom game event published successfully!');
     }
 
+    public function publishSpyEvent()
+    {
+        $this->rabbitMQ->publishPlayerAction(
+            $this->playerId,
+            'spy_caught',
+            [
+                'target_village_id' => 2,
+                'target_village_name' => 'Demo Target Village',
+                'trap_level' => 3,
+                'spy_defense' => 15,
+                'demo' => true
+            ]
+        );
+
+        $this->addMessage('Spy caught event published successfully!');
+    }
+
     public function clearMessages()
     {
         $this->messages = [];

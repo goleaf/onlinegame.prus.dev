@@ -35,6 +35,15 @@ class Alliance extends Model implements Auditable
         'is_active' => 'boolean',
     ];
 
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+    protected $referenceTemplate = [
+        'format' => 'ALL-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+    protected $referencePrefix = 'ALL';
+
     public function world(): BelongsTo
     {
         return $this->belongsTo(World::class);
