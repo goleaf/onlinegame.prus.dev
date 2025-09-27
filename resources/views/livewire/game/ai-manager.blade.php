@@ -7,7 +7,9 @@
                 <button wire:click="loadAIStatus" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
                     Refresh Status
                 </button>
-                <button wire:click="clearGeneratedContent" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                <button wire:click="clearGeneratedContent" 
+                        wire:confirm="Are you sure you want to clear all generated content? This action cannot be undone."
+                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
                     Clear Content
                 </button>
             </div>
