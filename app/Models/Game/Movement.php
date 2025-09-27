@@ -2,6 +2,11 @@
 
 namespace App\Models\Game;
 
+use EloquentFiltering\Filterable;
+use EloquentFiltering\Contracts\IsFilterable;
+use EloquentFiltering\AllowedFilterList;
+use EloquentFiltering\Filter;
+use EloquentFiltering\FilterType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
@@ -9,9 +14,9 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Movement extends Model implements Auditable
+class Movement extends Model implements Auditable, IsFilterable
 {
-    use HasFactory, HasReference, AuditableTrait;
+    use HasFactory, HasReference, AuditableTrait, Filterable;
 
     protected $fillable = [
         'player_id',

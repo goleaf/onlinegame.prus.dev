@@ -2,6 +2,11 @@
 
 namespace App\Models\Game;
 
+use EloquentFiltering\Filterable;
+use EloquentFiltering\Contracts\IsFilterable;
+use EloquentFiltering\AllowedFilterList;
+use EloquentFiltering\Filter;
+use EloquentFiltering\FilterType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
@@ -9,9 +14,9 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Report extends Model implements Auditable
+class Report extends Model implements Auditable, IsFilterable
 {
-    use HasFactory, HasReference, AuditableTrait;
+    use HasFactory, HasReference, AuditableTrait, Filterable;
 
     protected $fillable = [
         'world_id',
@@ -128,5 +133,32 @@ class Report extends Model implements Auditable
                 ->where('attacker_id', $playerId)
                 ->orWhere('defender_id', $playerId);
         });
+    }
+
+    /**
+     * Define allowed filters for the Report model
+     */
+    public function allowedFilters(): AllowedFilterList
+    {
+        return Filter::only(
+            Filter::field('title', [FilterType::EQUAL, FilterType::CONTAINS]),
+            Filter::field('content', [FilterType::EQUAL, FilterType::CONTAINS]),
+            Filter::field('type', [FilterType::EQUAL]),
+            Filter::field('status', [FilterType::EQUAL]),
+            Filter::field('is_read', [FilterType::EQUAL]),
+            Filter::field('is_important', [FilterType::EQUAL]),
+            Filter::field('world_id', [FilterType::EQUAL]),
+            Filter::field('attacker_id', [FilterType::EQUAL]),
+            Filter::field('defender_id', [FilterType::EQUAL]),
+            Filter::field('from_village_id', [FilterType::EQUAL]),
+            Filter::field('to_village_id', [FilterType::EQUAL]),
+            Filter::field('read_at', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('reference_number', [FilterType::EQUAL, FilterType::CONTAINS]),
+            Filter::relation('world', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('attacker', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('defender', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('fromVillage', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('toVillage', [FilterType::HAS])->includeRelationFields()
+        );
     }
 }
