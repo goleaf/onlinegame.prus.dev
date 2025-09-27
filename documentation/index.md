@@ -210,12 +210,21 @@ This index is automatically generated and lists all documentation files:
   * [Documentation: zxcvbn.php](config/zxcvbn.md)
 * **database/**
   * **factories/**
+    * **Game/**
+      * [Documentation: AllianceFactory.php](database/factories/Game/AllianceFactory.md)
+      * [Documentation: BuildingFactory.php](database/factories/Game/BuildingFactory.md)
+      * [Documentation: BuildingTypeFactory.php](database/factories/Game/BuildingTypeFactory.md)
+      * [Documentation: PlayerFactory.php](database/factories/Game/PlayerFactory.md)
+      * [Documentation: ResourceFactory.php](database/factories/Game/ResourceFactory.md)
+      * [Documentation: UnitTypeFactory.php](database/factories/Game/UnitTypeFactory.md)
+      * [Documentation: VillageFactory.php](database/factories/Game/VillageFactory.md)
     * [Documentation: BattleFactory.php](database/factories/BattleFactory.md)
     * [Documentation: BuildingQueueFactory.php](database/factories/BuildingQueueFactory.md)
     * [Documentation: GameConfigFactory.php](database/factories/GameConfigFactory.md)
     * [Documentation: MovementFactory.php](database/factories/MovementFactory.md)
     * [Documentation: PlayerNoteFactory.php](database/factories/PlayerNoteFactory.md)
     * [Documentation: PlayerStatisticFactory.php](database/factories/PlayerStatisticFactory.md)
+    * [Documentation: ReportFactory.php](database/factories/ReportFactory.md)
     * [Documentation: ResourceProductionLogFactory.php](database/factories/ResourceProductionLogFactory.md)
     * [Documentation: TrainingQueueFactory.php](database/factories/TrainingQueueFactory.md)
     * [Documentation: UserFactory.php](database/factories/UserFactory.md)
