@@ -11,10 +11,8 @@
     <!-- SEO Metadata -->
     @metadata
 
-    <!-- Performance Optimization -->
-    <x-performance-optimizer :enable-preconnect="true" :enable-dns-prefetch="true" :enable-performance-monitoring="true" />
-
     <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="{{ basset('https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap') }}" rel="stylesheet" />
 
     <!-- Scripts -->
@@ -53,13 +51,17 @@
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <a href="{{ route('admin.updater') }}" class="text-xl font-bold text-gray-900 dark:text-white">
+                            <a href="{{ route('admin.dashboard') }}" class="text-xl font-bold text-gray-900 dark:text-white">
                                 {{ config('app.name', 'Laravel') }} Admin
                             </a>
                         </div>
                         <div class="hidden md:ml-6 md:flex md:space-x-8">
+                            <a href="{{ route('admin.dashboard') }}" 
+                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.dashboard') ? 'border-indigo-400' : 'border-transparent' }} text-sm font-medium leading-5 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out">
+                                Dashboard
+                            </a>
                             <a href="{{ route('admin.updater') }}" 
-                               class="inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 text-sm font-medium leading-5 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out">
+                               class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.updater') ? 'border-indigo-400' : 'border-transparent' }} text-sm font-medium leading-5 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out">
                                 Updater
                             </a>
                         </div>

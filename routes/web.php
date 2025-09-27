@@ -94,7 +94,7 @@ Route::get('/game-simple', function () {
 // Auth::routes();
 
 // Laravel Decomposer route
-Route::get('decompose', '\Lubusin\Decomposer\Controllers\DecomposerController@index');
+Route::get('decompose', 'Lubusin\Decomposer\Controllers\DecomposerController@index');
 
 // Admin routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
