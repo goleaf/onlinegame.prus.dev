@@ -69,10 +69,10 @@ class AllianceMember extends Model
         return $query->where('is_active', true);
     }
 
-    public function scopeByRole($query, $role = null)
+    public function scopeByRank($query, $rank = null)
     {
-        return $query->when($role, function ($q) use ($role) {
-            return $q->where('role', $role);
+        return $query->when($rank, function ($q) use ($rank) {
+            return $q->where('rank', $rank);
         });
     }
 
