@@ -53,6 +53,12 @@ class GameTestCommand extends Command
             case 'integration':
                 $this->testIntegration($verbose);
                 break;
+            case 'error-handling':
+                $this->testErrorHandling($verbose);
+                break;
+            case 'optimization':
+                $this->testOptimization($verbose);
+                break;
             default:
                 $this->error('Unknown test: ' . $test);
                 $this->showHelp();

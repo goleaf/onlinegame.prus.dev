@@ -760,4 +760,102 @@ class ReportManager extends Component
             'dateRanges' => $this->dateRanges,
         ]);
     }
+
+    /**
+     * Initialize real-time features for the component
+     */
+    public function initializeRealTimeFeatures(): void
+    {
+        try {
+            GameIntegrationService::initializeUserRealTime(Auth::id());
+            
+            $this->dispatch('realtime-initialized', [
+                'message' => 'Real-time features activated for Report Manager',
+                'refreshInterval' => $this->refreshInterval,
+            ]);
+
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to initialize real-time features: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Handle real-time report updates
+     */
+    #[On('report-updated')]
+    public function handleReportUpdate($reportData): void
+    {
+        try {
+            // Update local reports array
+            $this->reports = $this->getReports();
+            
+            // Send notification if it's a new report
+            if (isset($reportData['is_new']) && $reportData['is_new']) {
+                GameNotificationService::sendNotification(
+                    [Auth::id()],
+                    'new_report',
+                    [
+                        'report_id' => $reportData['id'],
+                        'type' => $reportData['type'],
+                        'title' => $reportData['title'] ?? 'New Report',
+                    ]
+                );
+            }
+
+            $this->dispatch('reports-updated');
+
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to handle report update: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Get comprehensive report statistics with real-time data
+     */
+    public function getReportStatisticsWithRealTime(): array
+    {
+        try {
+            $stats = GameIntegrationService::getGameStatisticsWithRealTime();
+            
+            return [
+                'total_reports' => $this->reports->count(),
+                'recent_reports' => $this->reports->where('created_at', '>=', now()->subHours(24))->count(),
+                'battle_reports' => $this->reports->where('type', 'battle')->count(),
+                'spy_reports' => $this->reports->where('type', 'spy')->count(),
+                'trade_reports' => $this->reports->where('type', 'trade')->count(),
+                'game_stats' => $stats,
+                'timestamp' => now()->toISOString(),
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'error' => 'Failed to retrieve report statistics',
+                'timestamp' => now()->toISOString(),
+            ];
+        }
+    }
+
+    /**
+     * Send report notification to relevant players
+     */
+    public function sendReportNotification(array $playerIds, string $type, array $data): void
+    {
+        try {
+            GameNotificationService::sendNotification(
+                $playerIds,
+                "report_{$type}",
+                $data,
+                'normal'
+            );
+
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to send report notification: ' . $e->getMessage(),
+            ]);
+        }
+    }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $notification['title'] }}</title>
+    <title>{{ $title }} - Game Notification</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,179 +22,120 @@
         }
         .header {
             text-align: center;
-            border-bottom: 2px solid #007bff;
+            border-bottom: 2px solid #4a90e2;
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
-        .game-title {
-            color: #007bff;
+        .game-logo {
             font-size: 24px;
-            margin: 0;
+            font-weight: bold;
+            color: #4a90e2;
+            margin-bottom: 10px;
         }
         .notification-title {
-            color: #333;
             font-size: 20px;
-            margin: 10px 0;
+            color: #2c3e50;
+            margin-bottom: 20px;
         }
         .notification-content {
             background-color: #f8f9fa;
             padding: 20px;
             border-radius: 5px;
-            border-left: 4px solid #007bff;
-            margin: 20px 0;
+            border-left: 4px solid #4a90e2;
+            margin-bottom: 20px;
         }
-        .notification-data {
-            background-color: #e9ecef;
+        .player-info {
+            background-color: #e8f4fd;
             padding: 15px;
             border-radius: 5px;
-            margin: 15px 0;
-            font-family: monospace;
-            font-size: 14px;
+            margin-bottom: 20px;
         }
         .footer {
             text-align: center;
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 1px solid #dee2e6;
-            color: #6c757d;
+            border-top: 1px solid #ddd;
+            color: #666;
             font-size: 12px;
-        }
-        .priority-high {
-            border-left-color: #dc3545;
-            background-color: #f8d7da;
-        }
-        .priority-urgent {
-            border-left-color: #dc3545;
-            background-color: #f5c6cb;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
         }
         .button {
             display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
+            background-color: #4a90e2;
             color: white;
+            padding: 12px 24px;
             text-decoration: none;
             border-radius: 5px;
             margin: 10px 0;
         }
         .button:hover {
-            background-color: #0056b3;
+            background-color: #357abd;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .data-table th,
+        .data-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .data-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1 class="game-title">{{ config('game.name', 'Online Strategy Game') }}</h1>
-            <h2 class="notification-title">{{ $notification['title'] }}</h2>
+            <div class="game-logo">🎮 Online Game</div>
+            <h1 class="notification-title">{{ $title }}</h1>
         </div>
 
-        <div class="notification-content {{ $notification['priority'] === 'high' ? 'priority-high' : '' }} {{ $notification['priority'] === 'urgent' ? 'priority-urgent' : '' }}">
-            @if(isset($notification['data']['message']))
-                <p>{{ $notification['data']['message'] }}</p>
-            @endif
+        <div class="player-info">
+            <strong>Player:</strong> {{ $player->name }}<br>
+            <strong>Email:</strong> {{ $player->user->email ?? 'N/A' }}<br>
+            <strong>Date:</strong> {{ now()->format('Y-m-d H:i:s') }}
+        </div>
 
-            @if(isset($notification['data']['title']))
-                <h3>{{ $notification['data']['title'] }}</h3>
-            @endif
+        <div class="notification-content">
+            <h3>Notification Details:</h3>
+            <p>{{ $message }}</p>
 
-            @if(isset($notification['data']['system_announcement']) && $notification['data']['system_announcement'])
-                <div style="background-color: #d1ecf1; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                    <strong>📢 System Announcement</strong>
-                </div>
-            @endif
-
-            @if(isset($notification['data']['battle_id']))
-                <p><strong>Battle ID:</strong> {{ $notification['data']['battle_id'] }}</p>
-            @endif
-
-            @if(isset($notification['data']['village_id']))
-                <p><strong>Village ID:</strong> {{ $notification['data']['village_id'] }}</p>
-            @endif
-
-            @if(isset($notification['data']['alliance_id']))
-                <p><strong>Alliance ID:</strong> {{ $notification['data']['alliance_id'] }}</p>
-            @endif
-
-            @if(isset($notification['data']['building_id']))
-                <p><strong>Building ID:</strong> {{ $notification['data']['building_id'] }}</p>
-            @endif
-
-            @if(isset($notification['data']['movement_id']))
-                <p><strong>Movement ID:</strong> {{ $notification['data']['movement_id'] }}</p>
-            @endif
-
-            @if(isset($notification['data']['achievement_id']))
-                <p><strong>Achievement ID:</strong> {{ $notification['data']['achievement_id'] }}</p>
-            @endif
-
-            @if(isset($notification['data']['quest_id']))
-                <p><strong>Quest ID:</strong> {{ $notification['data']['quest_id'] }}</p>
-            @endif
-
-            @if(isset($notification['data']['resources']))
-                <div style="background-color: #d4edda; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                    <strong>Resources:</strong>
-                    <ul>
-                        @foreach($notification['data']['resources'] as $resource => $amount)
-                            <li>{{ ucfirst($resource) }}: {{ number_format($amount) }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            @if(isset($notification['data']['units']))
-                <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                    <strong>Units:</strong>
-                    <ul>
-                        @foreach($notification['data']['units'] as $unit => $count)
-                            <li>{{ ucfirst($unit) }}: {{ number_format($count) }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            @if(isset($notification['data']['effect']))
-                <div style="background-color: #e2e3e5; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                    <strong>Effect:</strong>
-                    <ul>
-                        @foreach($notification['data']['effect'] as $key => $value)
-                            <li>{{ ucfirst(str_replace('_', ' ', $key)) }}: {{ is_numeric($value) ? number_format($value) : $value }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+            @if(!empty($data) && is_array($data))
+                <h4>Additional Information:</h4>
+                <table class="data-table">
+                    @foreach($data as $key => $value)
+                        @if(!is_null($value) && $value !== '')
+                            <tr>
+                                <th>{{ ucfirst(str_replace('_', ' ', $key)) }}:</th>
+                                <td>
+                                    @if(is_array($value))
+                                        {{ json_encode($value) }}
+                                    @else
+                                        {{ $value }}
+                                    @endif
+                                </td>
+                            </tr>
+                        @endif
+                    @endforeach
+                </table>
             @endif
         </div>
 
-        @if($notification['priority'] === 'urgent')
-            <div style="text-align: center; margin: 20px 0;">
-                <a href="{{ url('/game') }}" class="button">🚨 Go to Game Now</a>
-            </div>
-        @else
-            <div style="text-align: center; margin: 20px 0;">
-                <a href="{{ url('/game') }}" class="button">Go to Game</a>
-            </div>
-        @endif
-
-        <div class="notification-data">
-            <strong>Notification Details:</strong><br>
-            ID: {{ $notification['id'] }}<br>
-            Type: {{ $notification['type'] }}<br>
-            Priority: {{ ucfirst($notification['priority']) }}<br>
-            Timestamp: {{ \Carbon\Carbon::parse($notification['timestamp'])->format('Y-m-d H:i:s T') }}
+        <div style="text-align: center;">
+            <a href="{{ config('app.url') }}/game" class="button">
+                Play Game
+            </a>
         </div>
 
         <div class="footer">
-            <p>This is an automated notification from {{ config('game.name', 'Online Strategy Game') }}.</p>
-            <p>If you no longer wish to receive email notifications, you can disable them in your game settings.</p>
-            <p>© {{ date('Y') }} {{ config('game.name', 'Online Strategy Game') }}. All rights reserved.</p>
+            <p>This is an automated notification from the Online Game system.</p>
+            <p>If you no longer wish to receive these notifications, you can disable them in your game settings.</p>
+            <p>&copy; {{ date('Y') }} Online Game. All rights reserved.</p>
         </div>
     </div>
 </body>
 </html>
-

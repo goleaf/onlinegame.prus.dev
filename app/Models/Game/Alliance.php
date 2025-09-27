@@ -27,6 +27,7 @@ class Alliance extends Model implements Auditable, IsFilterable
     use AuditableTrait;
     use Lift;
     use Filterable;
+    use GameValidationTrait;
 
     // Laravel Lift typed properties
     public int $id;
