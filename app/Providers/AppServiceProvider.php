@@ -32,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
         // Register enhanced services for Laravel 12.29.0+ features
         $this->app->singleton(\App\Services\EnhancedCacheService::class);
         $this->app->singleton(\App\Services\EnhancedSessionService::class);
+        $this->app->singleton(\App\Services\GamePerformanceOptimizer::class);
     }
 
     /**
