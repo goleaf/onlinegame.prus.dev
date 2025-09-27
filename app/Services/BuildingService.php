@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Game\Building;
 use App\Models\Game\BuildingQueue;
+use App\Services\RabbitMQService;
 use Illuminate\Support\Facades\Log;
 
 class BuildingService
