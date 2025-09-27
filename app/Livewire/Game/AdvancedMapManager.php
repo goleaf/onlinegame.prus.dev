@@ -51,14 +51,18 @@ class AdvancedMapManager extends Component
 
     public function loadWorlds()
     {
-        $this->worlds = World::active()
-            ->selectRaw('
-                worlds.*,
-                (SELECT COUNT(*) FROM players p WHERE p.world_id = worlds.id) as total_players,
-                (SELECT COUNT(*) FROM villages v WHERE v.world_id = worlds.id) as total_villages,
-                (SELECT COUNT(*) FROM alliances a WHERE a.world_id = worlds.id) as total_alliances
-            ')
-            ->get();
+        // Use SmartCache for worlds data with automatic optimization
+        $this->worlds = SmartCache::remember('active_worlds_data', now()->addMinutes(15), function () {
+            return World::active()
+                ->selectRaw('
+                    worlds.*,
+                    (SELECT COUNT(*) FROM players p WHERE p.world_id = worlds.id) as total_players,
+                    (SELECT COUNT(*) FROM villages v WHERE v.world_id = worlds.id) as total_villages,
+                    (SELECT COUNT(*) FROM alliances a WHERE a.world_id = worlds.id) as total_alliances
+                ')
+                ->get();
+        });
+        
         if ($this->worlds->isNotEmpty()) {
             $this->selectedWorld = $this->worlds->first()->id;
         }

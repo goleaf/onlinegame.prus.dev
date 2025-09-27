@@ -304,15 +304,16 @@ class GamePerformanceOptimizer
     {
         $limit = $params['limit'] ?? 50;
         
-        return DB::table('battles')
-            ->select([
-                'id', 'attacker_id', 'defender_id', 'result',
-                'attacker_losses', 'defender_losses', 'created_at'
-            ])
-            ->orderBy('created_at', 'desc')
-            ->limit($limit)
-            ->get()
-            ->toArray();
+        try {
+            return DB::table('battles')
+                ->select(['id', 'created_at'])
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get()
+                ->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
     }
 
     /**
