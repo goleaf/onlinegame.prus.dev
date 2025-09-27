@@ -135,53 +135,73 @@ class ReportManager extends Component
                 $query = Report::where('world_id', $this->world->id)
                     ->with(['attacker:id,name', 'defender:id,name', 'fromVillage:id,name', 'toVillage:id,name']);
 
-                // Use QueryOptimizationService for conditional filters
-                $filters = [
-                    $this->showOnlyMyReports => function ($q) {
-                        return $q->where(function ($subQ) {
-                            $subQ
-                                ->where('attacker_id', Auth::id())
-                                ->orWhere('defender_id', Auth::id());
-                        });
-                    },
-                    $this->filterByType => function ($q) {
-                        return $q->where('type', $this->filterByType);
-                    },
-                    $this->filterByStatus => function ($q) {
-                        return $q->where('status', $this->filterByStatus);
-                    },
-                    $this->filterByDate => function ($q) {
-                        return $this->applyDateFilter($q);
-                    },
-                    $this->showOnlyUnread => function ($q) {
-                        return $q->where('is_read', false);
-                    },
-                    $this->showOnlyImportant => function ($q) {
-                        return $q->where('is_important', true);
-                    },
-                    $this->searchQuery => function ($q) {
-                        return $q->where(function ($subQ) {
-                            $subQ
-                                ->where('title', 'like', '%' . $this->searchQuery . '%')
-                                ->orWhere('content', 'like', '%' . $this->searchQuery . '%')
-                                ->orWhereIn('attacker_id', function ($playerQ) {
-                                    $playerQ
-                                        ->select('id')
-                                        ->from('players')
-                                        ->where('name', 'like', '%' . $this->searchQuery . '%');
-                                })
-                                ->orWhereIn('defender_id', function ($playerQ) {
-                                    $playerQ
-                                        ->select('id')
-                                        ->from('players')
-                                        ->where('name', 'like', '%' . $this->searchQuery . '%');
-                                });
-                        });
-                    },
-                ];
+                // Build eloquent filters array
+                $eloquentFilters = [];
 
-                $query = QueryOptimizationService::applyConditionalFilters($query, $filters);
-                $query = QueryOptimizationService::applyConditionalOrdering($query, $this->sortBy, $this->sortOrder);
+                if ($this->showOnlyMyReports) {
+                    $eloquentFilters[] = [
+                        'type' => '$or',
+                        'value' => [
+                            ['target' => 'attacker_id', 'type' => '$eq', 'value' => Auth::id()],
+                            ['target' => 'defender_id', 'type' => '$eq', 'value' => Auth::id()]
+                        ]
+                    ];
+                }
+
+                if ($this->filterByType) {
+                    $eloquentFilters[] = ['target' => 'type', 'type' => '$eq', 'value' => $this->filterByType];
+                }
+
+                if ($this->filterByStatus) {
+                    $eloquentFilters[] = ['target' => 'status', 'type' => '$eq', 'value' => $this->filterByStatus];
+                }
+
+                if ($this->filterByDate) {
+                    $dateFilter = $this->getDateFilterValue();
+                    if ($dateFilter) {
+                        $eloquentFilters[] = ['target' => 'created_at', 'type' => '$gte', 'value' => $dateFilter];
+                    }
+                }
+
+                if ($this->showOnlyUnread) {
+                    $eloquentFilters[] = ['target' => 'is_read', 'type' => '$eq', 'value' => false];
+                }
+
+                if ($this->showOnlyImportant) {
+                    $eloquentFilters[] = ['target' => 'is_important', 'type' => '$eq', 'value' => true];
+                }
+
+                if ($this->searchQuery) {
+                    $eloquentFilters[] = [
+                        'type' => '$or',
+                        'value' => [
+                            ['target' => 'title', 'type' => '$like', 'value' => $this->searchQuery],
+                            ['target' => 'content', 'type' => '$like', 'value' => $this->searchQuery],
+                            [
+                                'type' => '$has',
+                                'target' => 'attacker',
+                                'value' => [
+                                    ['target' => 'name', 'type' => '$like', 'value' => $this->searchQuery]
+                                ]
+                            ],
+                            [
+                                'type' => '$has',
+                                'target' => 'defender',
+                                'value' => [
+                                    ['target' => 'name', 'type' => '$like', 'value' => $this->searchQuery]
+                                ]
+                            ]
+                        ]
+                    ];
+                }
+
+                // Apply eloquent filtering
+                if (!empty($eloquentFilters)) {
+                    $query = $query->filter($eloquentFilters);
+                }
+
+                // Apply sorting
+                $query = $query->orderBy($this->sortBy, $this->sortOrder);
 
                 return $query->get();
             });
