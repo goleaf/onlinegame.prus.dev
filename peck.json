@@ -152,7 +152,10 @@
             "taggables",
             "taxonomables",
             "uptime",
-            "prefetch"
+            "prefetch",
+            "iban",
+            "ean",
+            "hsv"
         ],
         "paths": [
             "vendor/",

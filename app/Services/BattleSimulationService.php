@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Models\Game\UnitType;
 use App\Models\Game\Village;
 use App\Services\DefenseCalculationService;
+use App\ValueObjects\BattleResult;
+use App\ValueObjects\TroopCounts;
+use App\ValueObjects\ResourceAmounts;
 use Illuminate\Support\Facades\Log;
 
 class BattleSimulationService

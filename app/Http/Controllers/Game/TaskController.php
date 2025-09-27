@@ -170,7 +170,7 @@ class TaskController extends CrudController
     /**
      * Get player task statistics
      */
-    public function getPlayerTaskStats($playerId)
+    public function playerStats($playerId)
     {
         $stats = Task::where('player_id', $playerId)
             ->selectRaw('
@@ -190,7 +190,7 @@ class TaskController extends CrudController
     /**
      * Get overdue tasks
      */
-    public function getOverdueTasks(Request $request)
+    public function overdue(Request $request)
     {
         $query = Task::with($this->relationships)
             ->overdue();

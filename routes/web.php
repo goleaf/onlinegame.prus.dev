@@ -98,5 +98,6 @@ Route::get('decompose', '\Lubusin\Decomposer\Controllers\DecomposerController@in
 
 // Admin routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', App\Livewire\Admin\AdminDashboard::class)->name('dashboard');
     Route::get('/updater', App\Livewire\Admin\UpdaterComponent::class)->name('updater');
 });
