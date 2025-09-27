@@ -24,20 +24,24 @@ class GamePerformanceMonitor
             ]);
         }
 
-        // Store query statistics
-        $stats = Cache::get('query_stats', []);
-        $stats[] = [
-            'query' => substr($query, 0, 100), // Truncate for storage
-            'execution_time' => $executionTime,
-            'timestamp' => now()->timestamp,
-        ];
-
-        // Keep only last 100 queries
-        if (count($stats) > 100) {
-            $stats = array_slice($stats, -100);
-        }
-
-        Cache::put('query_stats', $stats, 3600); // Cache for 1 hour
+        // Store query statistics with SmartCache optimization
+        $stats = SmartCache::remember('query_stats', now()->addHour(), function () use ($query, $executionTime) {
+            $existingStats = Cache::get('query_stats', []);
+            $newStats = [
+                'query' => substr($query, 0, 100), // Truncate for storage
+                'execution_time' => $executionTime,
+                'timestamp' => now()->timestamp,
+            ];
+            
+            $allStats = array_merge($existingStats, [$newStats]);
+            
+            // Keep only last 100 queries
+            if (count($allStats) > 100) {
+                $allStats = array_slice($allStats, -100);
+            }
+            
+            return $allStats;
+        });
     }
 
     /**
@@ -77,20 +81,24 @@ class GamePerformanceMonitor
             ]);
         }
 
-        // Store response time statistics
-        $stats = Cache::get('response_stats', []);
-        $stats[] = [
-            'action' => $action,
-            'response_time' => $responseTime,
-            'timestamp' => now()->timestamp,
-        ];
-
-        // Keep only last 100 responses
-        if (count($stats) > 100) {
-            $stats = array_slice($stats, -100);
-        }
-
-        Cache::put('response_stats', $stats, 3600);
+        // Store response time statistics with SmartCache optimization
+        $stats = SmartCache::remember('response_stats', now()->addHour(), function () use ($action, $responseTime) {
+            $existingStats = Cache::get('response_stats', []);
+            $newStats = [
+                'action' => $action,
+                'response_time' => $responseTime,
+                'timestamp' => now()->timestamp,
+            ];
+            
+            $allStats = array_merge($existingStats, [$newStats]);
+            
+            // Keep only last 100 responses
+            if (count($allStats) > 100) {
+                $allStats = array_slice($allStats, -100);
+            }
+            
+            return $allStats;
+        });
     }
 
     /**
