@@ -64,11 +64,11 @@ class PlayerStats
 
     public function getActivityStatus(): string
     {
-        if (!$this->is_active) {
+        if (!$this->isActive) {
             return 'inactive';
         }
 
-        if ($this->is_online) {
+        if ($this->isOnline) {
             return 'online';
         }
 

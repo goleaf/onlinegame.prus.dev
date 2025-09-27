@@ -300,6 +300,7 @@
                                             </button>
                                         @endif
                                         <button wire:click="deleteReport({{ $report['id'] }})"
+                                                wire:confirm="Are you sure you want to delete this report? This action cannot be undone."
                                                 class="text-red-500 hover:text-red-700 text-sm">
                                             Delete
                                         </button>

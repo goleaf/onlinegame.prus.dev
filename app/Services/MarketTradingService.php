@@ -6,8 +6,8 @@ use App\Models\Game\MarketOffer;
 use App\Models\Game\Village;
 use App\Models\Game\Player;
 use App\Models\Game\Resource;
-use App\Services\GameIntegrationService;
-use App\Services\GameNotificationService;
+use App\ValueObjects\ResourceAmounts;
+use App\ValueObjects\VillageResources;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -50,19 +50,6 @@ class MarketTradingService
 
             // Add market fee to village resources
             $this->addResources($village, ['crop' => $fee]);
-
-            // Send notification about new market offer
-            GameNotificationService::sendNotification(
-                [$village->player->user_id],
-                'market_offer_created',
-                [
-                    'offer_id' => $offer->id,
-                    'reference' => $offer->reference_number,
-                    'offering' => $offerData['offering'],
-                    'requesting' => $offerData['requesting'],
-                    'village_name' => $village->name,
-                ]
-            );
 
             Log::info('Market offer created', [
                 'village_id' => $village->id,
