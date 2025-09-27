@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('players', function (Blueprint $table) {
-            //
+            $table->string('reference_number')->nullable()->unique()->after('total_defense_points');
         });
     }
 

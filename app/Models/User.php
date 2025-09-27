@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
-// use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
+use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
 use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
@@ -19,7 +19,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
 
-class User extends Authenticatable implements Auditable, IsFilterable
+class User extends Authenticatable implements Auditable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -97,21 +97,24 @@ class User extends Authenticatable implements Auditable, IsFilterable
     public function player()
     {
         return $this->hasOne(\App\Models\Game\Player::class);
+    }
+    }
+
+    /**
+     * Get user's game statistics
+     */
     public function getGameStats()
     {
+        $startTime = microtime(true);
+
         $player = $this->player;
         if (!$player) {
-            return null;
-        }
-        return [
-            'is_active' => $player->is_active,
-            'is_online' => $player->is_online,
-            'last_active_at' => $player->last_active_at,
-            'points' => $player->points,
-            'village_count' => $player->villages->count(),
-            'total_population' => $player->villages->sum('population'),
-        ];
-    }
+            ds('User has no player', [
+                'user_id' => $this->id,
+                'user_name' => $this->name,
+                'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            ])->label('User Game Stats - No Player');
+
             return null;
         }
 
