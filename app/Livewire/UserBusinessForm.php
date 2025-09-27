@@ -34,7 +34,7 @@ class UserBusinessForm extends Component
     public $product_ean = '';
 
     protected $rules = [
-        'business_name' => ['required', 'string', 'max:255', new Clean],
+        'business_name' => 'required|string|max:255',
         'business_type' => 'required|in:sole_proprietorship,partnership,corporation,llc',
         'tax_number' => ['nullable', 'string', 'max:50', new Clean],
         'registration_number' => ['nullable', 'string', 'max:50', new Clean],
