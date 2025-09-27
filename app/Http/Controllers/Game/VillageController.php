@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use App\Models\Game\Village;
 use App\Traits\GameValidationTrait;
+use App\ValueObjects\Coordinates;
+use App\ValueObjects\VillageResources;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
@@ -123,14 +125,22 @@ class VillageController extends CrudController
             'trainingQueues.unitType',
         ])->findOrFail($villageId);
 
+        $villageCoordinates = $village->coordinates;
+        $villageResources = $village->resources ? new VillageResources(
+            wood: $village->resources->wood ?? 0,
+            clay: $village->resources->clay ?? 0,
+            iron: $village->resources->iron ?? 0,
+            crop: $village->resources->crop ?? 0
+        ) : null;
+
         $details = [
             'village' => $village,
+            'coordinates' => $villageCoordinates,
+            'village_resources' => $villageResources,
             'statistics' => [
                 'total_buildings' => $village->buildings->count(),
                 'total_troops' => $village->troops->sum('quantity'),
-                'total_resources' => $village->resources->sum(function ($resource) {
-                    return $resource->wood + $resource->clay + $resource->iron + $resource->crop;
-                }),
+                'total_resources' => $villageResources ? $villageResources->getTotalResources() : 0,
                 'active_queues' => $village->buildingQueues->where('is_active', true)->count()
                     + $village->trainingQueues->where('is_active', true)->count(),
             ],

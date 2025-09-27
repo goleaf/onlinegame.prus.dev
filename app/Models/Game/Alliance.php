@@ -89,6 +89,48 @@ class Alliance extends Model implements Auditable
         return $this->hasMany(Player::class);
     }
 
+    public function diplomacy(): HasMany
+    {
+        return $this->hasMany(AllianceDiplomacy::class);
+    }
+
+    public function targetDiplomacy(): HasMany
+    {
+        return $this->hasMany(AllianceDiplomacy::class, 'target_alliance_id');
+    }
+
+    public function allDiplomacy()
+    {
+        return AllianceDiplomacy::where('alliance_id', $this->id)
+            ->orWhere('target_alliance_id', $this->id);
+    }
+
+    public function wars(): HasMany
+    {
+        return $this->hasMany(AllianceWar::class, 'attacker_alliance_id');
+    }
+
+    public function defendingWars(): HasMany
+    {
+        return $this->hasMany(AllianceWar::class, 'defender_alliance_id');
+    }
+
+    public function allWars()
+    {
+        return AllianceWar::where('attacker_alliance_id', $this->id)
+            ->orWhere('defender_alliance_id', $this->id);
+    }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(AllianceMessage::class);
+    }
+
+    public function logs(): HasMany
+    {
+        return $this->hasMany(AllianceLog::class);
+    }
+
     // Optimized query scopes using when() and selectRaw
     public function scopeWithStats($query)
     {

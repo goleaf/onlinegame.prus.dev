@@ -5,9 +5,17 @@ namespace App\Services;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
+use App\Services\SeoCacheService;
 
 class GameSeoService
 {
+    protected SeoCacheService $cacheService;
+
+    public function __construct(SeoCacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
+
     /**
      * Set SEO metadata for the main game index page
      */

@@ -29,23 +29,56 @@ class GameTickService
 
     public function processGameTick()
     {
+        $startTime = microtime(true);
+        
+        ds('GameTickService: Starting game tick', [
+            'service' => 'GameTickService',
+            'tick_time' => now(),
+            'memory_usage' => memory_get_usage(true)
+        ]);
+        
         DB::beginTransaction();
 
         try {
             // Process resource production
+            $resourceStart = microtime(true);
             $this->processResourceProduction();
+            $resourceTime = round((microtime(true) - $resourceStart) * 1000, 2);
+            ds('GameTickService: Resource production completed', [
+                'processing_time_ms' => $resourceTime
+            ]);
 
             // Process building queues
+            $buildingStart = microtime(true);
             $this->processBuildingQueues();
+            $buildingTime = round((microtime(true) - $buildingStart) * 1000, 2);
+            ds('GameTickService: Building queues completed', [
+                'processing_time_ms' => $buildingTime
+            ]);
 
             // Process training queues
+            $trainingStart = microtime(true);
             $this->processTrainingQueues();
+            $trainingTime = round((microtime(true) - $trainingStart) * 1000, 2);
+            ds('GameTickService: Training queues completed', [
+                'processing_time_ms' => $trainingTime
+            ]);
 
             // Process movements (attacks, support, etc.)
+            $movementStart = microtime(true);
             $this->processMovements();
+            $movementTime = round((microtime(true) - $movementStart) * 1000, 2);
+            ds('GameTickService: Movements completed', [
+                'processing_time_ms' => $movementTime
+            ]);
 
             // Process game events
+            $eventStart = microtime(true);
             $this->processGameEvents();
+            $eventTime = round((microtime(true) - $eventStart) * 1000, 2);
+            ds('GameTickService: Game events completed', [
+                'processing_time_ms' => $eventTime
+            ]);
 
             // Update player statistics
             $this->updatePlayerStatistics();

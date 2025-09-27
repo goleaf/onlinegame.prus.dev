@@ -110,6 +110,42 @@ class Technology extends Model
     public function scopeWithPlayerInfo($query)
     {
         return $query->with([
+            'players:id,name,points'
+        ]);
+    }
+
+    public function scopeWithResearchStats($query)
+    {
+        return $query->selectRaw('
+            technologies.*,
+            (SELECT COUNT(*) FROM player_technologies pt WHERE pt.technology_id = technologies.id AND pt.status = "researching") as currently_researching,
+            (SELECT COUNT(*) FROM player_technologies pt2 WHERE pt2.technology_id = technologies.id AND pt2.status = "completed") as completed_researches,
+            (SELECT AVG(EXTRACT(EPOCH FROM (pt3.researched_at - pt3.created_at))/3600) FROM player_technologies pt3 WHERE pt3.technology_id = technologies.id AND pt3.researched_at IS NOT NULL) as avg_research_time_hours,
+            (SELECT MAX(level) FROM player_technologies pt4 WHERE pt4.technology_id = technologies.id) as max_researched_level
+        ');
+    }
+
+    public function scopeByDifficulty($query, $difficulty = null)
+    {
+        return $query->when($difficulty, function ($q) use ($difficulty) {
+            return $q->where('research_time_base', '>=', $difficulty * 3600); // Convert hours to seconds
+        });
+    }
+
+    public function scopeWithCostAnalysis($query)
+    {
+        return $query->selectRaw('
+            technologies.*,
+            (SELECT AVG(JSON_EXTRACT(base_costs, "$.wood")) FROM technologies t2 WHERE t2.category = technologies.category) as avg_wood_cost,
+            (SELECT AVG(JSON_EXTRACT(base_costs, "$.clay")) FROM technologies t3 WHERE t3.category = technologies.category) as avg_clay_cost,
+            (SELECT AVG(JSON_EXTRACT(base_costs, "$.iron")) FROM technologies t4 WHERE t4.category = technologies.category) as avg_iron_cost,
+            (SELECT AVG(JSON_EXTRACT(base_costs, "$.crop")) FROM technologies t5 WHERE t5.category = technologies.category) as avg_crop_cost
+        ');
+    }
+
+    public function scopeWithPlayerInfo($query)
+    {
+        return $query->with([
             'players:id,name,level,points'
         ]);
     }

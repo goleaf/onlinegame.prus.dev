@@ -54,7 +54,23 @@ class GameApiController extends Controller
      */
     public function getUser(Request $request): JsonResponse
     {
-        return response()->json($request->user());
+        $startTime = microtime(true);
+        
+        ds('API: Get user request', [
+            'endpoint' => 'getUser',
+            'user_id' => $request->user()->id ?? null,
+            'request_time' => now()
+        ]);
+        
+        $user = $request->user();
+        $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ds('API: Get user response', [
+            'user_id' => $user->id,
+            'response_time_ms' => $responseTime
+        ]);
+        
+        return response()->json($user);
     }
 
     /**
@@ -88,16 +104,35 @@ class GameApiController extends Controller
      */
     public function getVillages(Request $request): JsonResponse
     {
+        $startTime = microtime(true);
+        
+        ds('API: Get villages request', [
+            'endpoint' => 'getVillages',
+            'user_id' => $request->user()->id ?? null,
+            'request_time' => now()
+        ]);
+        
         $user = $request->user();
         $player = Player::where('user_id', $user->id)->first();
 
         if (!$player) {
+            ds('API: No player found for user', [
+                'user_id' => $user->id
+            ]);
             return response()->json(['villages' => []]);
         }
 
         $villages = Village::where('player_id', $player->id)
             ->with(['buildings', 'resources'])
             ->get();
+
+        $responseTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ds('API: Get villages response', [
+            'player_id' => $player->id,
+            'villages_count' => $villages->count(),
+            'response_time_ms' => $responseTime
+        ]);
 
         return response()->json(['villages' => $villages]);
     }

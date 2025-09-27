@@ -170,7 +170,7 @@ class UserController extends CrudController
     /**
      * Get user activity statistics
      */
-    public function getUserActivityStats(Request $request)
+    public function activityStats(Request $request)
     {
         $integrationService = app(LarautilxIntegrationService::class);
 
@@ -207,7 +207,7 @@ class UserController extends CrudController
     /**
      * Get user details with comprehensive information
      */
-    public function getUserDetails($userId)
+    public function details($userId)
     {
         $user = User::with([
             'player.world',
@@ -244,7 +244,7 @@ class UserController extends CrudController
     /**
      * Update user status
      */
-    public function updateUserStatus(Request $request, $userId)
+    public function updateStatus(Request $request, $userId)
     {
         $user = User::findOrFail($userId);
 

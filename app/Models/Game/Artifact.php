@@ -611,4 +611,38 @@ class Artifact extends Model
 
         return $requirements;
     }
+
+    /**
+     * Get artifacts with SmartCache optimization
+     */
+    public static function getCachedArtifacts($playerId = null, $filters = [])
+    {
+        $cacheKey = "artifacts_{$playerId}_" . md5(serialize($filters));
+        
+        return SmartCache::remember($cacheKey, now()->addMinutes(12), function () use ($playerId, $filters) {
+            $query = static::with(['owner', 'village']);
+            
+            if ($playerId) {
+                $query->where('owner_id', $playerId);
+            }
+            
+            if (isset($filters['type'])) {
+                $query->where('type', $filters['type']);
+            }
+            
+            if (isset($filters['rarity'])) {
+                $query->where('rarity', $filters['rarity']);
+            }
+            
+            if (isset($filters['status'])) {
+                $query->where('status', $filters['status']);
+            }
+            
+            if (isset($filters['active'])) {
+                $query->where('status', 'active');
+            }
+            
+            return $query->get();
+        });
+    }
 }

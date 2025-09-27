@@ -99,6 +99,34 @@ class AllianceMember extends Model
         ]);
     }
 
+    public function scopeWithAllianceStats($query)
+    {
+        return $query->selectRaw('
+            alliance_members.*,
+            (SELECT COUNT(*) FROM players p WHERE p.alliance_id = alliance_members.alliance_id) as alliance_member_count,
+            (SELECT SUM(points) FROM players p2 WHERE p2.alliance_id = alliance_members.alliance_id) as alliance_total_points,
+            (SELECT AVG(points) FROM players p3 WHERE p3.alliance_id = alliance_members.alliance_id) as alliance_avg_points,
+            (SELECT COUNT(*) FROM villages v WHERE v.player_id IN (SELECT id FROM players p4 WHERE p4.alliance_id = alliance_members.alliance_id)) as alliance_village_count
+        ');
+    }
+
+    public function scopeByRole($query, $role = null)
+    {
+        return $query->when($role, function ($q) use ($role) {
+            return $q->where('rank', $role);
+        });
+    }
+
+    public function scopeWithPlayerStats($query)
+    {
+        return $query->selectRaw('
+            alliance_members.*,
+            (SELECT COUNT(*) FROM villages WHERE player_id = alliance_members.player_id) as player_village_count,
+            (SELECT SUM(population) FROM villages WHERE player_id = alliance_members.player_id) as player_total_population,
+            (SELECT COUNT(*) FROM battles WHERE attacker_id = alliance_members.player_id OR defender_id = alliance_members.player_id) as player_total_battles
+        ');
+    }
+
     /**
      * Get alliance members with SmartCache optimization
      */

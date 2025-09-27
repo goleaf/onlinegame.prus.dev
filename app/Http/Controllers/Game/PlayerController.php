@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use App\Models\Game\Player;
 use App\Traits\GameValidationTrait;
+use App\ValueObjects\PlayerStats;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
@@ -110,11 +111,14 @@ class PlayerController extends CrudController
             ->with($this->relationships)
             ->findOrFail($playerId);
 
+        $playerStats = $player->stats;
+        
         $stats = [
             'player' => $player,
+            'player_stats' => $playerStats,
             'village_count' => $player->villages->count(),
             'total_population' => $player->villages->sum('population'),
-            'total_points' => $player->points,
+            'total_points' => $playerStats->points,
             'world_rank' => $this->getWorldRank($player),
             'alliance_rank' => $this->getAllianceRank($player),
         ];

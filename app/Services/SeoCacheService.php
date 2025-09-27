@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use SmartCache\Facades\SmartCache;
 
 class SeoCacheService
 {

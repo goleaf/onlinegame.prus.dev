@@ -3,6 +3,10 @@
 namespace App\Livewire\Game;
 
 use App\Models\Game\Alliance;
+use App\Models\Game\AllianceDiplomacy;
+use App\Models\Game\AllianceLog;
+use App\Models\Game\AllianceMessage;
+use App\Models\Game\AllianceWar;
 use App\Models\Game\Player;
 use App\Models\Game\World;
 use App\Services\QueryOptimizationService;

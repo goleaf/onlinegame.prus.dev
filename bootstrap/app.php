@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \LaraUtilX\Http\Middleware\AccessLogMiddleware::class,
             \App\Http\Middleware\QueryPerformanceMiddleware::class,
+            \App\Http\Middleware\SeoMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

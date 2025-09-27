@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\GameApiController;
 use App\Http\Controllers\Game\AIController;
 use App\Http\Controllers\Game\APIDocumentationController;
+use App\Http\Controllers\Game\ArtifactController;
 use App\Http\Controllers\Game\LarautilxController;
 use App\Http\Controllers\Game\LarautilxDashboardController;
 use App\Http\Controllers\Game\PlayerController;
@@ -135,5 +136,19 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::get('/dashboard', [LarautilxDashboardController::class, 'getDashboardData']);
         Route::get('/integration-summary', [LarautilxDashboardController::class, 'getIntegrationSummary']);
         Route::post('/test-components', [LarautilxDashboardController::class, 'testComponents']);
+    });
+    
+    // Artifact System
+    Route::prefix('artifacts')->group(function () {
+        Route::get('/', [ArtifactController::class, 'index']);
+        Route::post('/', [ArtifactController::class, 'store']);
+        Route::get('/server-wide', [ArtifactController::class, 'serverWide']);
+        Route::post('/generate-random', [ArtifactController::class, 'generateRandom']);
+        Route::get('/{id}', [ArtifactController::class, 'show']);
+        Route::put('/{id}', [ArtifactController::class, 'update']);
+        Route::delete('/{id}', [ArtifactController::class, 'destroy']);
+        Route::post('/{id}/activate', [ArtifactController::class, 'activate']);
+        Route::post('/{id}/deactivate', [ArtifactController::class, 'deactivate']);
+        Route::get('/{id}/effects', [ArtifactController::class, 'effects']);
     });
 });
