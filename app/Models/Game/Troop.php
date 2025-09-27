@@ -12,7 +12,7 @@ use function sbamtr\LaravelQueryEnrich\c;
 
 class Troop extends Model
 {
-    use HasFactory;
+    use HasFactory, Lift;
 
     protected $fillable = [
         'village_id',
