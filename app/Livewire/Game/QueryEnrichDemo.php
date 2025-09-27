@@ -9,6 +9,7 @@ use App\Services\QueryOptimizationService;
 use Livewire\Component;
 use Livewire\WithPagination;
 use sbamtr\LaravelQueryEnrich\QE;
+
 use function sbamtr\LaravelQueryEnrich\c;
 
 class QueryEnrichDemo extends Component
@@ -20,7 +21,6 @@ class QueryEnrichDemo extends Component
     public $days = 7;
     public $hours = 24;
     public $limit = 20;
-    
     // Results
     public $activePlayers = [];
     public $playerStats = [];
@@ -48,7 +48,7 @@ class QueryEnrichDemo extends Component
     {
         // Using Query Enrich with when() for conditional filtering and selectRaw for optimization
         $baseQuery = Player::query();
-        
+
         $filters = [
             $this->worldId => function ($q) {
                 return $q->where('world_id', $this->worldId);
@@ -57,7 +57,7 @@ class QueryEnrichDemo extends Component
                 return $q->where('last_activity', '>=', now()->subDays($this->days));
             }
         ];
-        
+
         $this->activePlayers = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
             ->selectRaw('
                 players.*,
@@ -75,13 +75,13 @@ class QueryEnrichDemo extends Component
     {
         // Using Query Enrich with when() for conditional filtering and selectRaw for optimization
         $baseQuery = Player::query();
-        
+
         $filters = [
             $this->worldId => function ($q) {
                 return $q->where('world_id', $this->worldId);
             }
         ];
-        
+
         $this->playerStats = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
             ->selectRaw('
                 players.*,
@@ -104,13 +104,13 @@ class QueryEnrichDemo extends Component
     {
         // Using Query Enrich with when() for conditional filtering and selectRaw for optimization
         $baseQuery = Village::query();
-        
+
         $filters = [
             $this->playerId => function ($q) {
                 return $q->where('player_id', $this->playerId);
             }
         ];
-        
+
         $this->villageStats = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
             ->selectRaw('
                 villages.*,
@@ -131,16 +131,17 @@ class QueryEnrichDemo extends Component
     {
         // Using Query Enrich with when() for conditional filtering and selectRaw for optimization
         $baseQuery = \App\Models\Game\Battle::query();
-        
+
         $filters = [
             $this->playerId => function ($q) {
                 return $q->where(function ($subQ) {
-                    $subQ->where('attacker_id', $this->playerId)
-                         ->orWhere('defender_id', $this->playerId);
+                    $subQ
+                        ->where('attacker_id', $this->playerId)
+                        ->orWhere('defender_id', $this->playerId);
                 });
             }
         ];
-        
+
         $this->battleStats = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
             ->selectRaw('
                 COUNT(*) as total_battles,
@@ -159,7 +160,7 @@ class QueryEnrichDemo extends Component
     {
         // Using Query Enrich with when() for conditional filtering and selectRaw for optimization
         $baseQuery = \App\Models\Game\BuildingQueue::query();
-        
+
         $filters = [
             $this->playerId => function ($q) {
                 return $q->whereHas('village', function ($villageQ) {
@@ -167,11 +168,12 @@ class QueryEnrichDemo extends Component
                 });
             },
             $this->hours > 0 => function ($q) {
-                return $q->where('construction_completed_at', '<=', now()->addHours($this->hours))
-                        ->where('construction_completed_at', '>', now());
+                return $q
+                    ->where('construction_completed_at', '<=', now()->addHours($this->hours))
+                    ->where('construction_completed_at', '>', now());
             }
         ];
-        
+
         $this->upcomingCompletions = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
             ->selectRaw('
                 building_queues.*,
@@ -190,7 +192,7 @@ class QueryEnrichDemo extends Component
     {
         // Using Query Enrich with when() for conditional filtering and selectRaw for optimization
         $baseQuery = \App\Models\Game\Resource::query();
-        
+
         $filters = [
             $this->playerId => function ($q) {
                 return $q->whereHas('village', function ($villageQ) {
@@ -201,7 +203,7 @@ class QueryEnrichDemo extends Component
                 return $q->whereRaw('(storage_capacity - amount) / GREATEST(production_rate, 1) <= ?', [$this->hours]);
             }
         ];
-        
+
         $this->resourcesReachingCapacity = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
             ->selectRaw('
                 resources.*,
@@ -254,19 +256,19 @@ class QueryEnrichDemo extends Component
         // Use QueryOptimizationService for optimized pagination with when() and selectRaw
         $playersQuery = Player::query();
         $villagesQuery = Village::query();
-        
+
         $playerFilters = [
             $this->worldId => function ($q) {
                 return $q->where('world_id', $this->worldId);
             }
         ];
-        
+
         $villageFilters = [
             $this->playerId => function ($q) {
                 return $q->where('player_id', $this->playerId);
             }
         ];
-        
+
         return view('livewire.game.query-enrich-demo', [
             'players' => QueryOptimizationService::applyConditionalFilters($playersQuery, $playerFilters)
                 ->selectRaw('
@@ -286,4 +288,3 @@ class QueryEnrichDemo extends Component
         ]);
     }
 }
-

@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Game\Village;
 use App\Models\Game\UnitType;
+use App\Models\Game\Village;
 use App\Services\DefenseCalculationService;
 use Illuminate\Support\Facades\Log;
 
@@ -22,7 +22,7 @@ class BattleSimulationService
     public function simulateBattle(array $attackingTroops, array $defendingTroops, Village $defenderVillage, int $iterations = 1000): array
     {
         $startTime = microtime(true);
-        
+
         ds('BattleSimulationService: Starting battle simulation', [
             'service' => 'BattleSimulationService',
             'attacker_troops' => $attackingTroops,
@@ -31,7 +31,7 @@ class BattleSimulationService
             'iterations' => $iterations,
             'simulation_time' => now()
         ]);
-        
+
         $results = [
             'attacker_wins' => 0,
             'defender_wins' => 0,
@@ -55,7 +55,7 @@ class BattleSimulationService
 
         for ($i = 0; $i < $iterations; $i++) {
             $battleResult = $this->calculateSingleBattle($attackingTroops, $defendingTroops, $defenderVillage);
-            
+
             // Count results
             switch ($battleResult['result']) {
                 case 'attacker_wins':
@@ -72,10 +72,10 @@ class BattleSimulationService
             // Track battle power statistics
             $attackerPower = $battleResult['battle_power']['attacker'];
             $defenderPower = $battleResult['battle_power']['defender'];
-            
+
             $totalAttackerPower += $attackerPower;
             $totalDefenderPower += $defenderPower;
-            
+
             $results['battle_power_stats']['attacker_min'] = min($results['battle_power_stats']['attacker_min'], $attackerPower);
             $results['battle_power_stats']['attacker_max'] = max($results['battle_power_stats']['attacker_max'], $attackerPower);
             $results['battle_power_stats']['defender_min'] = min($results['battle_power_stats']['defender_min'], $defenderPower);
@@ -129,7 +129,7 @@ class BattleSimulationService
         $results['draw_rate'] = ($results['draws'] / $iterations) * 100;
 
         $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-        
+
         ds('BattleSimulationService: Battle simulation completed', [
             'total_simulation_time_ms' => $totalTime,
             'iterations_completed' => $iterations,
@@ -260,7 +260,7 @@ class BattleSimulationService
 
         foreach ($combinations as $combination) {
             $simulation = $this->simulateBattle($combination, $defenderTroops, $targetVillage, 100);
-            
+
             if ($simulation['attacker_win_rate'] > $bestWinRate) {
                 $bestWinRate = $simulation['attacker_win_rate'];
                 $bestComposition = $combination;
@@ -306,26 +306,26 @@ class BattleSimulationService
     {
         $combinations = [];
         $troopTypes = array_keys($availableTroops);
-        
+
         // Simple optimization: try different ratios
         $ratios = [
-            [1, 0, 0, 0], // All first type
-            [0.8, 0.2, 0, 0], // 80% first, 20% second
-            [0.6, 0.4, 0, 0], // 60% first, 40% second
-            [0.5, 0.5, 0, 0], // 50/50
-            [0.4, 0.3, 0.3, 0], // Mixed
-            [0.3, 0.3, 0.2, 0.2], // All types
+            [1, 0, 0, 0],  // All first type
+            [0.8, 0.2, 0, 0],  // 80% first, 20% second
+            [0.6, 0.4, 0, 0],  // 60% first, 40% second
+            [0.5, 0.5, 0, 0],  // 50/50
+            [0.4, 0.3, 0.3, 0],  // Mixed
+            [0.3, 0.3, 0.2, 0.2],  // All types
         ];
 
         foreach ($ratios as $ratio) {
             $combination = [];
             $remaining = $totalTroops;
-            
+
             for ($i = 0; $i < count($troopTypes) && $remaining > 0; $i++) {
                 if (isset($availableTroops[$troopTypes[$i]])) {
                     $troopType = $availableTroops[$troopTypes[$i]];
                     $count = min(floor($totalTroops * $ratio[$i]), $remaining);
-                    
+
                     if ($count > 0) {
                         $combination[] = [
                             'troop_id' => $troopType['id'],
@@ -340,7 +340,7 @@ class BattleSimulationService
                     }
                 }
             }
-            
+
             if (!empty($combination)) {
                 $combinations[] = $combination;
             }
@@ -361,7 +361,7 @@ class BattleSimulationService
         $analysis = [
             'total_battles' => $battles->count(),
             'attacks_received' => $battles->where('battle_type', 'attack')->count(),
-            'attacks_launched' => 0, // Would need to query from attacker perspective
+            'attacks_launched' => 0,  // Would need to query from attacker perspective
             'defense_success_rate' => 0,
             'average_defensive_bonus' => 0,
             'most_common_attacker_troops' => [],
@@ -445,4 +445,3 @@ class BattleSimulationService
         return $recommendations;
     }
 }
-

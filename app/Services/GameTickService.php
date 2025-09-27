@@ -30,13 +30,13 @@ class GameTickService
     public function processGameTick()
     {
         $startTime = microtime(true);
-        
+
         ds('GameTickService: Starting game tick', [
             'service' => 'GameTickService',
             'tick_time' => now(),
             'memory_usage' => memory_get_usage(true)
         ]);
-        
+
         DB::beginTransaction();
 
         try {

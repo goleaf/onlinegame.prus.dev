@@ -5,14 +5,14 @@ namespace App\ValueObjects;
 readonly class BattleResult
 {
     public function __construct(
-        public string $status, // victory, defeat, draw
+        public string $status,  // victory, defeat, draw
         public int $attackerLosses = 0,
         public int $defenderLosses = 0,
         public ?ResourceAmounts $loot = null,
         public int $attackerPoints = 0,
         public int $defenderPoints = 0,
-        public ?string $battleType = null, // attack, raid, scout
-        public ?int $duration = null, // in seconds
+        public ?string $battleType = null,  // attack, raid, scout
+        public ?int $duration = null,  // in seconds
         public array $attackerTroops = [],
         public array $defenderTroops = []
     ) {
@@ -77,12 +77,17 @@ readonly class BattleResult
     public function getSeverity(): string
     {
         $totalLosses = $this->getTotalLosses();
-        
-        if ($totalLosses >= 10000) return 'devastating';
-        if ($totalLosses >= 5000) return 'major';
-        if ($totalLosses >= 1000) return 'significant';
-        if ($totalLosses >= 100) return 'moderate';
-        if ($totalLosses >= 10) return 'minor';
+
+        if ($totalLosses >= 10000)
+            return 'devastating';
+        if ($totalLosses >= 5000)
+            return 'major';
+        if ($totalLosses >= 1000)
+            return 'significant';
+        if ($totalLosses >= 100)
+            return 'moderate';
+        if ($totalLosses >= 10)
+            return 'minor';
         return 'minimal';
     }
 
@@ -111,7 +116,7 @@ readonly class BattleResult
      */
     public function isIntense(): bool
     {
-        return $this->getIntensity() > 100; // More than 100 losses per minute
+        return $this->getIntensity() > 100;  // More than 100 losses per minute
     }
 
     /**

@@ -13,6 +13,7 @@ use SmartCache\Facades\SmartCache;
 class SmartCacheGameOptimizer
 {
     protected array $performanceMetrics = [];
+
     protected array $cacheStrategies = [
         'user_data' => ['ttl' => 30, 'compression' => true],
         'village_data' => ['ttl' => 15, 'compression' => true],
@@ -170,7 +171,7 @@ class SmartCacheGameOptimizer
     {
         foreach ($this->cacheStrategies as $type => $strategy) {
             $cacheKey = "smart_game_data_{$userId}_{$type}";
-            
+
             SmartCache::remember(
                 $cacheKey,
                 now()->addMinutes($strategy['ttl']),
@@ -207,7 +208,7 @@ class SmartCacheGameOptimizer
             ->select(['id', 'name', 'email', 'created_at', 'updated_at'])
             ->where('id', $userId)
             ->first();
-            
+
         return $user ? (array) $user : [];
     }
 
@@ -221,7 +222,7 @@ class SmartCacheGameOptimizer
                 ->select(['id', 'name', 'created_at'])
                 ->where('user_id', $userId)
                 ->get();
-                
+
             return $villages ? $villages->toArray() : [];
         } catch (\Exception $e) {
             return [];
@@ -238,7 +239,7 @@ class SmartCacheGameOptimizer
                 ->select(['id', 'created_at'])
                 ->where('user_id', $userId)
                 ->get();
-                
+
             return $troops ? $troops->toArray() : [];
         } catch (\Exception $e) {
             return [];
@@ -255,7 +256,7 @@ class SmartCacheGameOptimizer
                 ->select(['id', 'created_at'])
                 ->where('user_id', $userId)
                 ->get();
-                
+
             return $buildings ? $buildings->toArray() : [];
         } catch (\Exception $e) {
             return [];
@@ -272,7 +273,7 @@ class SmartCacheGameOptimizer
                 ->select(['id', 'created_at'])
                 ->where('user_id', $userId)
                 ->get();
-                
+
             return $resources ? $resources->toArray() : [];
         } catch (\Exception $e) {
             return [];
@@ -290,7 +291,7 @@ class SmartCacheGameOptimizer
                 ->where('attacker_id', $userId)
                 ->orWhere('defender_id', $userId)
                 ->get();
-                
+
             return $battles ? $battles->toArray() : [];
         } catch (\Exception $e) {
             return [];
@@ -306,7 +307,7 @@ class SmartCacheGameOptimizer
             $stats = DB::table('users')
                 ->selectRaw('COUNT(*) as total_users')
                 ->first();
-                
+
             return $stats ? (array) $stats : ['total_users' => 0];
         } catch (\Exception $e) {
             return ['total_users' => 0];
@@ -333,13 +334,13 @@ class SmartCacheGameOptimizer
     protected function getUserRankings(array $params): array
     {
         $limit = $params['limit'] ?? 100;
-        
+
         $users = DB::table('users')
             ->select(['id', 'name', 'created_at'])
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
-            
+
         return $users ? $users->toArray() : [];
     }
 
@@ -352,7 +353,7 @@ class SmartCacheGameOptimizer
             $result = DB::table('villages')
                 ->selectRaw('COUNT(*) as total_villages')
                 ->first();
-                
+
             return $result ? (array) $result : ['total_villages' => 0];
         } catch (\Exception $e) {
             return ['total_villages' => 0];
@@ -365,14 +366,14 @@ class SmartCacheGameOptimizer
     protected function getBattleHistory(array $params): array
     {
         $limit = $params['limit'] ?? 50;
-        
+
         try {
             $battles = DB::table('battles')
                 ->select(['id', 'created_at'])
                 ->orderBy('created_at', 'desc')
                 ->limit($limit)
                 ->get();
-                
+
             return $battles ? $battles->toArray() : [];
         } catch (\Exception $e) {
             return [];
@@ -422,10 +423,9 @@ class SmartCacheGameOptimizer
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
-        
+
         $bytes /= pow(1024, $pow);
-        
+
         return round($bytes, 2) . ' ' . $units[$pow];
     }
 }
-

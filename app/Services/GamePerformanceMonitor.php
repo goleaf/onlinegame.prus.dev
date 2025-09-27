@@ -13,8 +13,8 @@ class GamePerformanceMonitor
      */
     public static function monitorQuery(string $query, float $executionTime): void
     {
-        $threshold = config('game.performance.query_threshold', 1.0); // 1 second threshold
-        
+        $threshold = config('game.performance.query_threshold', 1.0);  // 1 second threshold
+
         if ($executionTime > $threshold) {
             Log::channel('performance')->warning('Slow Query Detected', [
                 'query' => $query,
@@ -28,18 +28,18 @@ class GamePerformanceMonitor
         $stats = SmartCache::remember('query_stats', now()->addHour(), function () use ($query, $executionTime) {
             $existingStats = Cache::get('query_stats', []);
             $newStats = [
-                'query' => substr($query, 0, 100), // Truncate for storage
+                'query' => substr($query, 0, 100),  // Truncate for storage
                 'execution_time' => $executionTime,
                 'timestamp' => now()->timestamp,
             ];
-            
+
             $allStats = array_merge($existingStats, [$newStats]);
-            
+
             // Keep only last 100 queries
             if (count($allStats) > 100) {
                 $allStats = array_slice($allStats, -100);
             }
-            
+
             return $allStats;
         });
     }
@@ -51,7 +51,7 @@ class GamePerformanceMonitor
     {
         $memoryUsage = memory_get_usage(true);
         $memoryPeak = memory_get_peak_usage(true);
-        
+
         $metrics = [
             'operation' => $operation,
             'memory_usage_mb' => round($memoryUsage / 1024 / 1024, 2),
@@ -70,7 +70,7 @@ class GamePerformanceMonitor
     public static function monitorResponseTime(string $action, float $startTime): void
     {
         $responseTime = microtime(true) - $startTime;
-        $threshold = config('game.performance.response_threshold', 2.0); // 2 seconds threshold
+        $threshold = config('game.performance.response_threshold', 2.0);  // 2 seconds threshold
 
         if ($responseTime > $threshold) {
             Log::channel('performance')->warning('Slow Response Time', [
@@ -89,14 +89,14 @@ class GamePerformanceMonitor
                 'response_time' => $responseTime,
                 'timestamp' => now()->timestamp,
             ];
-            
+
             $allStats = array_merge($existingStats, [$newStats]);
-            
+
             // Keep only last 100 responses
             if (count($allStats) > 100) {
                 $allStats = array_slice($allStats, -100);
             }
-            
+
             return $allStats;
         });
     }
@@ -106,8 +106,8 @@ class GamePerformanceMonitor
      */
     public static function getPerformanceStats(): array
     {
-        $cacheKey = "performance_stats_" . now()->format('Y-m-d-H');
-        
+        $cacheKey = 'performance_stats_' . now()->format('Y-m-d-H');
+
         return SmartCache::remember($cacheKey, now()->addMinutes(30), function () {
             $queryStats = Cache::get('query_stats', []);
             $responseStats = Cache::get('response_stats', []);
@@ -116,17 +116,19 @@ class GamePerformanceMonitor
             return [
                 'queries' => [
                     'total' => count($queryStats),
-                    'average_time' => count($queryStats) > 0 ? 
-                        round(array_sum(array_column($queryStats, 'execution_time')) / count($queryStats), 4) : 0,
-                    'slow_queries' => count(array_filter($queryStats, function($q) {
+                    'average_time' => count($queryStats) > 0
+                        ? round(array_sum(array_column($queryStats, 'execution_time')) / count($queryStats), 4)
+                        : 0,
+                    'slow_queries' => count(array_filter($queryStats, function ($q) {
                         return $q['execution_time'] > 1.0;
                     })),
                 ],
                 'responses' => [
                     'total' => count($responseStats),
-                    'average_time' => count($responseStats) > 0 ? 
-                        round(array_sum(array_column($responseStats, 'response_time')) / count($responseStats), 4) : 0,
-                    'slow_responses' => count(array_filter($responseStats, function($r) {
+                    'average_time' => count($responseStats) > 0
+                        ? round(array_sum(array_column($responseStats, 'response_time')) / count($responseStats), 4)
+                        : 0,
+                    'slow_responses' => count(array_filter($responseStats, function ($r) {
                         return $r['response_time'] > 2.0;
                     })),
                 ],
@@ -150,14 +152,14 @@ class GamePerformanceMonitor
     {
         $activeUsers = Cache::get('active_users', []);
         $currentTime = now()->timestamp;
-        
+
         // Remove users inactive for more than 5 minutes
-        $activeUsers = array_filter($activeUsers, function($lastActivity) use ($currentTime) {
-            return ($currentTime - $lastActivity) < 300; // 5 minutes
+        $activeUsers = array_filter($activeUsers, function ($lastActivity) use ($currentTime) {
+            return ($currentTime - $lastActivity) < 300;  // 5 minutes
         });
 
-        Cache::put('active_users', $activeUsers, 600); // Cache for 10 minutes
-        
+        Cache::put('active_users', $activeUsers, 600);  // Cache for 10 minutes
+
         return count($activeUsers);
     }
 
@@ -168,11 +170,11 @@ class GamePerformanceMonitor
     {
         $activeUsers = Cache::get('active_users', []);
         $activeUsers[$userId] = now()->timestamp;
-        
+
         // Clean up old entries
         $currentTime = now()->timestamp;
-        $activeUsers = array_filter($activeUsers, function($lastActivity) use ($currentTime) {
-            return ($currentTime - $lastActivity) < 300; // 5 minutes
+        $activeUsers = array_filter($activeUsers, function ($lastActivity) use ($currentTime) {
+            return ($currentTime - $lastActivity) < 300;  // 5 minutes
         });
 
         Cache::put('active_users', $activeUsers, 600);
@@ -194,9 +196,9 @@ class GamePerformanceMonitor
             $meminfo = file_get_contents('/proc/meminfo');
             preg_match('/MemTotal:\s+(\d+)/', $meminfo, $total);
             preg_match('/MemAvailable:\s+(\d+)/', $meminfo, $available);
-            
+
             if (isset($total[1]) && isset($available[1])) {
-                $memoryInfo['total'] = $total[1] * 1024; // Convert from KB to bytes
+                $memoryInfo['total'] = $total[1] * 1024;  // Convert from KB to bytes
                 $memoryInfo['free'] = $available[1] * 1024;
                 $memoryInfo['used'] = $memoryInfo['total'] - $memoryInfo['free'];
             }
@@ -205,10 +207,12 @@ class GamePerformanceMonitor
         return [
             'load_average' => $loadAvg,
             'memory' => $memoryInfo,
-            'cpu_count' => PHP_OS_FAMILY === 'Linux' ? 
-                (int) shell_exec('nproc') : 1,
-            'uptime' => PHP_OS_FAMILY === 'Linux' ? 
-                trim(shell_exec('uptime')) : 'Unknown',
+            'cpu_count' => PHP_OS_FAMILY === 'Linux'
+                ? (int) shell_exec('nproc')
+                : 1,
+            'uptime' => PHP_OS_FAMILY === 'Linux'
+                ? trim(shell_exec('uptime'))
+                : 'Unknown',
         ];
     }
 
@@ -262,7 +266,7 @@ class GamePerformanceMonitor
         Cache::forget('response_stats');
         Cache::forget('memory_stats');
         Cache::forget('active_users');
-        
+
         Log::info('Performance statistics cleared');
     }
 }

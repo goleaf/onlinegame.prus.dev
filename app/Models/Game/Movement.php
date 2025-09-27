@@ -3,22 +3,23 @@
 namespace App\Models\Game;
 
 // use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+use App\Services\GeographicService;
+use App\ValueObjects\ResourceAmounts;
+use App\ValueObjects\TroopCounts;
 use EloquentFiltering\AllowedFilterList;
 use EloquentFiltering\Filter;
 use EloquentFiltering\FilterType;
-use App\Services\GeographicService;
-use App\ValueObjects\TroopCounts;
-use App\ValueObjects\ResourceAmounts;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use WendellAdriel\Lift\Lift;
 use sbamtr\LaravelQueryEnrich\QE;
+use WendellAdriel\Lift\Lift;
+
 use function sbamtr\LaravelQueryEnrich\c;
 
 class Movement extends Model implements Auditable
@@ -72,7 +73,7 @@ class Movement extends Model implements Auditable
     protected function troops(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? new TroopCounts(
+            get: fn($value) => $value ? new TroopCounts(
                 legionnaires: $value['legionnaires'] ?? 0,
                 praetorians: $value['praetorians'] ?? 0,
                 imperians: $value['imperians'] ?? 0,
@@ -84,7 +85,7 @@ class Movement extends Model implements Auditable
                 senators: $value['senators'] ?? 0,
                 settlers: $value['settlers'] ?? 0
             ) : null,
-            set: fn (TroopCounts $troops = null) => $troops ? [
+            set: fn(TroopCounts $troops = null) => $troops ? [
                 'legionnaires' => $troops->legionnaires,
                 'praetorians' => $troops->praetorians,
                 'imperians' => $troops->imperians,
@@ -105,13 +106,13 @@ class Movement extends Model implements Auditable
     protected function resources(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? new ResourceAmounts(
+            get: fn($value) => $value ? new ResourceAmounts(
                 wood: $value['wood'] ?? 0,
                 clay: $value['clay'] ?? 0,
                 iron: $value['iron'] ?? 0,
                 crop: $value['crop'] ?? 0
             ) : null,
-            set: fn (ResourceAmounts $resources = null) => $resources ? [
+            set: fn(ResourceAmounts $resources = null) => $resources ? [
                 'wood' => $resources->wood,
                 'clay' => $resources->clay,
                 'iron' => $resources->iron,
@@ -306,10 +307,10 @@ class Movement extends Model implements Auditable
     public function scopeWithinDistance($query, $latitude, $longitude, $maxDistance)
     {
         return $query->whereHas('fromVillage', function ($q) use ($latitude, $longitude, $maxDistance) {
-            $q->whereRaw("ST_Distance_Sphere(
+            $q->whereRaw('ST_Distance_Sphere(
                 POINT(longitude, latitude), 
                 POINT(?, ?)
-            ) <= ?", [$longitude, $latitude, $maxDistance * 1000]);
+            ) <= ?', [$longitude, $latitude, $maxDistance * 1000]);
         });
     }
 }

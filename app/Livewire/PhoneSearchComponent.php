@@ -11,7 +11,7 @@ class PhoneSearchComponent extends Component
     use WithPagination;
 
     public $searchTerm = '';
-    public $searchType = 'all'; // all, phone, normalized, e164
+    public $searchType = 'all';  // all, phone, normalized, e164
     public $countryFilter = '';
     public $perPage = 20;
 
@@ -50,7 +50,7 @@ class PhoneSearchComponent extends Component
 
         if ($this->searchTerm) {
             $cleanSearchTerm = preg_replace('/[^0-9+]/', '', $this->searchTerm);
-            
+
             $query->where(function ($q) use ($cleanSearchTerm) {
                 switch ($this->searchType) {
                     case 'phone':
@@ -62,10 +62,11 @@ class PhoneSearchComponent extends Component
                     case 'e164':
                         $q->where('phone_e164', 'like', "%{$cleanSearchTerm}%");
                         break;
-                    default: // all
-                        $q->where('phone', 'like', "%{$this->searchTerm}%")
-                          ->orWhere('phone_normalized', 'like', "%{$cleanSearchTerm}%")
-                          ->orWhere('phone_e164', 'like', "%{$cleanSearchTerm}%");
+                    default:  // all
+                        $q
+                            ->where('phone', 'like', "%{$this->searchTerm}%")
+                            ->orWhere('phone_normalized', 'like', "%{$cleanSearchTerm}%")
+                            ->orWhere('phone_e164', 'like', "%{$cleanSearchTerm}%");
                         break;
                 }
             });
@@ -75,17 +76,18 @@ class PhoneSearchComponent extends Component
             $query->where('phone_country', $this->countryFilter);
         }
 
-        $users = $query->whereNotNull('phone')
-                      ->with(['player'])
-                      ->orderBy('created_at', 'desc')
-                      ->paginate($this->perPage);
+        $users = $query
+            ->whereNotNull('phone')
+            ->with(['player'])
+            ->orderBy('created_at', 'desc')
+            ->paginate($this->perPage);
 
         $countries = User::whereNotNull('phone_country')
-                         ->distinct()
-                         ->pluck('phone_country')
-                         ->filter()
-                         ->sort()
-                         ->values();
+            ->distinct()
+            ->pluck('phone_country')
+            ->filter()
+            ->sort()
+            ->values();
 
         return view('livewire.phone-search-component', [
             'users' => $users,

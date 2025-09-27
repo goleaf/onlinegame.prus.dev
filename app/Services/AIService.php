@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use LaraUtilX\LLMProviders\Contracts\LLMProviderInterface;
-use LaraUtilX\LLMProviders\OpenAI\OpenAIProvider;
-use LaraUtilX\LLMProviders\Gemini\GeminiProvider;
-use LaraUtilX\Utilities\LoggingUtil;
-use LaraUtilX\Utilities\CachingUtil;
 use Illuminate\Support\Facades\Config;
+use LaraUtilX\LLMProviders\Contracts\LLMProviderInterface;
+use LaraUtilX\LLMProviders\Gemini\GeminiProvider;
+use LaraUtilX\LLMProviders\OpenAI\OpenAIProvider;
+use LaraUtilX\Utilities\CachingUtil;
+use LaraUtilX\Utilities\LoggingUtil;
 
 class AIService
 {
@@ -56,8 +56,8 @@ class AIService
     public function generateGameContent(string $prompt, array $options = [])
     {
         $cacheKey = 'ai_game_content_' . md5($prompt . serialize($options));
-        
-        return CachingUtil::get($cacheKey, function() use ($prompt, $options) {
+
+        return CachingUtil::get($cacheKey, function () use ($prompt, $options) {
             $messages = [
                 [
                     'role' => 'system',
@@ -85,7 +85,7 @@ class AIService
             ], 'ai_service');
 
             return $response->content;
-        }, config('ai.cache_duration', 3600)); // Cache for 1 hour
+        }, config('ai.cache_duration', 3600));  // Cache for 1 hour
     }
 
     /**
@@ -94,7 +94,7 @@ class AIService
     public function generateVillageNames(int $count = 5, string $tribe = 'roman')
     {
         $prompt = "Generate {$count} creative village names for a {$tribe} tribe in a medieval strategy game. Return only the names, one per line.";
-        
+
         $response = $this->generateGameContent($prompt, [
             'temperature' => 0.8,
             'max_tokens' => 200
@@ -109,7 +109,7 @@ class AIService
     public function generateAllianceNames(int $count = 5)
     {
         $prompt = "Generate {$count} creative alliance names for a medieval strategy game. Names should sound powerful and medieval. Return only the names, one per line.";
-        
+
         $response = $this->generateGameContent($prompt, [
             'temperature' => 0.8,
             'max_tokens' => 200
@@ -125,7 +125,7 @@ class AIService
     {
         $contextStr = !empty($context) ? 'Context: ' . implode(', ', $context) : '';
         $prompt = "Generate a detailed quest description for a '{$questType}' quest in a medieval strategy game. {$contextStr} Make it engaging and immersive.";
-        
+
         return $this->generateGameContent($prompt, [
             'temperature' => 0.7,
             'max_tokens' => 300
@@ -142,7 +142,7 @@ class AIService
         Defender: {$battleData['defender']} with {$battleData['defender_troops']} troops
         Result: {$battleData['result']}
         Make it epic and engaging.";
-        
+
         return $this->generateGameContent($prompt, [
             'temperature' => 0.8,
             'max_tokens' => 400
@@ -156,7 +156,7 @@ class AIService
     {
         $contextStr = !empty($context) ? 'Context: ' . implode(', ', $context) : '';
         $prompt = "Generate a {$messageType} message for a medieval strategy game player. {$contextStr} Make it appropriate for the game world.";
-        
+
         return $this->generateGameContent($prompt, [
             'temperature' => 0.6,
             'max_tokens' => 200
@@ -170,7 +170,7 @@ class AIService
     {
         $worldStr = !empty($worldData) ? 'World info: ' . implode(', ', $worldData) : '';
         $prompt = "Generate a world event description for a '{$eventType}' event in a medieval strategy game. {$worldStr} Make it interesting and impactful.";
-        
+
         return $this->generateGameContent($prompt, [
             'temperature' => 0.7,
             'max_tokens' => 350
@@ -182,12 +182,12 @@ class AIService
      */
     public function generateStrategySuggestion(array $gameState)
     {
-        $stateStr = 'Current game state: ' . implode(', ', array_map(function($key, $value) {
+        $stateStr = 'Current game state: ' . implode(', ', array_map(function ($key, $value) {
             return "{$key}: {$value}";
         }, array_keys($gameState), $gameState));
-        
+
         $prompt = "As an AI strategist for a medieval strategy game, provide strategic advice based on the current game state. {$stateStr} Give practical, actionable suggestions.";
-        
+
         return $this->generateGameContent($prompt, [
             'temperature' => 0.5,
             'max_tokens' => 400
@@ -278,4 +278,3 @@ class AIService
         ];
     }
 }
-

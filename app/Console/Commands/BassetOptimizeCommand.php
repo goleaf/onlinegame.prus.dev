@@ -76,11 +76,11 @@ class BassetOptimizeCommand extends Command
     {
         $disk = Storage::disk(config('backpack.basset.disk', 'public'));
         $path = config('backpack.basset.path', 'basset');
-        
+
         // Remove existing file if it exists
         $filename = $this->getAssetFilename($url);
         $filePath = "{$path}/{$filename}";
-        
+
         if ($disk->exists($filePath)) {
             $disk->delete($filePath);
         }
@@ -97,13 +97,13 @@ class BassetOptimizeCommand extends Command
         $parsedUrl = parse_url($url);
         $path = $parsedUrl['path'] ?? '';
         $query = $parsedUrl['query'] ?? '';
-        
+
         $filename = str_replace('/', '_', trim($path, '/'));
-        
+
         if ($query) {
             $filename .= '_' . md5($query);
         }
-        
+
         return $filename;
     }
 
@@ -113,7 +113,7 @@ class BassetOptimizeCommand extends Command
     private function runInternalization(): void
     {
         $this->info('🔄 Running Basset internalization...');
-        
+
         $this->call('basset:internalize');
     }
 
@@ -172,7 +172,7 @@ class BassetOptimizeCommand extends Command
         $this->table(
             ['Metric', 'Value'],
             [
-                ['Cached Assets', count($files) - 1], // Exclude .basset file
+                ['Cached Assets', count($files) - 1],  // Exclude .basset file
                 ['Total Size', $this->formatBytes($totalSize)],
                 ['Storage Path', $path],
                 ['Storage Disk', config('backpack.basset.disk', 'public')],

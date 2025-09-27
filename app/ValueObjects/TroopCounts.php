@@ -21,9 +21,9 @@ readonly class TroopCounts
      */
     public function getTotal(): int
     {
-        return $this->spearmen + $this->swordsmen + $this->archers + 
-               $this->cavalry + $this->mountedArchers + $this->catapults + 
-               $this->rams + $this->spies + $this->settlers;
+        return $this->spearmen + $this->swordsmen + $this->archers
+            + $this->cavalry + $this->mountedArchers + $this->catapults
+            + $this->rams + $this->spies + $this->settlers;
     }
 
     /**
@@ -131,12 +131,16 @@ readonly class TroopCounts
     public function getArmyType(): string
     {
         $composition = $this->getComposition();
-        
-        if ($composition['infantry'] >= 60) return 'infantry-heavy';
-        if ($composition['cavalry'] >= 60) return 'cavalry-heavy';
-        if ($composition['siege'] >= 30) return 'siege-focused';
-        if ($composition['support'] >= 20) return 'support-heavy';
-        
+
+        if ($composition['infantry'] >= 60)
+            return 'infantry-heavy';
+        if ($composition['cavalry'] >= 60)
+            return 'cavalry-heavy';
+        if ($composition['siege'] >= 30)
+            return 'siege-focused';
+        if ($composition['support'] >= 20)
+            return 'support-heavy';
+
         return 'balanced';
     }
 

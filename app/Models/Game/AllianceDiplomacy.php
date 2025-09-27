@@ -2,8 +2,8 @@
 
 namespace App\Models\Game;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 
 class AllianceDiplomacy extends Model
 {
@@ -58,8 +58,9 @@ class AllianceDiplomacy extends Model
     public function scopeByAlliance($query, $allianceId)
     {
         return $query->where(function ($q) use ($allianceId) {
-            $q->where('alliance_id', $allianceId)
-              ->orWhere('target_alliance_id', $allianceId);
+            $q
+                ->where('alliance_id', $allianceId)
+                ->orWhere('target_alliance_id', $allianceId);
         });
     }
 
@@ -86,21 +87,21 @@ class AllianceDiplomacy extends Model
 
     public function getOtherAlliance($currentAllianceId): Alliance
     {
-        return $this->alliance_id === $currentAllianceId 
-            ? $this->targetAlliance 
+        return $this->alliance_id === $currentAllianceId
+            ? $this->targetAlliance
             : $this->alliance;
     }
 
     public function canRespond($allianceId): bool
     {
-        return $this->isPending() && 
-               !$this->isExpired() && 
-               $this->target_alliance_id === $allianceId;
+        return $this->isPending() &&
+            !$this->isExpired() &&
+            $this->target_alliance_id === $allianceId;
     }
 
     public function canCancel($allianceId): bool
     {
-        return $this->isPending() && 
-               $this->alliance_id === $allianceId;
+        return $this->isPending() &&
+            $this->alliance_id === $allianceId;
     }
 }

@@ -4,23 +4,24 @@ namespace App\Models\Game;
 
 use App\Models\User;
 use App\ValueObjects\PlayerStats;
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
-use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
-use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
-use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Model;
+use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
+use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
+use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
+use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use SmartCache\Facades\SmartCache;
 use sbamtr\LaravelQueryEnrich\QE;
-use function sbamtr\LaravelQueryEnrich\c;
+use SmartCache\Facades\SmartCache;
 use WendellAdriel\Lift\Lift;
+
+use function sbamtr\LaravelQueryEnrich\c;
 
 class Player extends Model implements Auditable
 {
@@ -60,7 +61,7 @@ class Player extends Model implements Auditable
     protected function stats(): Attribute
     {
         return Attribute::make(
-            get: fn () => new PlayerStats(
+            get: fn() => new PlayerStats(
                 points: $this->points,
                 population: $this->population,
                 villagesCount: $this->villages_count,
@@ -69,7 +70,7 @@ class Player extends Model implements Auditable
                 isActive: $this->is_active,
                 isOnline: $this->is_online
             ),
-            set: fn (PlayerStats $stats) => [
+            set: fn(PlayerStats $stats) => [
                 'points' => $stats->points,
                 'population' => $stats->population,
                 'villages_count' => $stats->villagesCount,
@@ -218,30 +219,30 @@ class Player extends Model implements Auditable
     public static function getCachedPlayers($worldId = null, $filters = [])
     {
         $cacheKey = "players_{$worldId}_" . md5(serialize($filters));
-        
+
         return SmartCache::remember($cacheKey, now()->addMinutes(10), function () use ($worldId, $filters) {
             $query = static::active()->withStats();
-            
+
             if ($worldId) {
                 $query->byWorld($worldId);
             }
-            
+
             if (isset($filters['tribe'])) {
                 $query->byTribe($filters['tribe']);
             }
-            
+
             if (isset($filters['alliance'])) {
                 $query->byAlliance($filters['alliance']);
             }
-            
+
             if (isset($filters['online'])) {
                 $query->online();
             }
-            
+
             if (isset($filters['search'])) {
                 $query->search($filters['search']);
             }
-            
+
             return $query->get();
         });
     }

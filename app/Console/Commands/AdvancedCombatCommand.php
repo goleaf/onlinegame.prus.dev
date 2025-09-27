@@ -36,7 +36,7 @@ class AdvancedCombatCommand extends Command
     public function handle()
     {
         $action = $this->argument('action');
-        
+
         $this->info('⚔️ Advanced Combat System');
         $this->info('========================');
 
@@ -69,9 +69,9 @@ class AdvancedCombatCommand extends Command
         $this->info('🦸 Managing hero system...');
 
         $playerId = $this->option('player-id');
-        
+
         $query = Player::with(['villages', 'hero']);
-        
+
         if ($playerId) {
             $query->where('id', $playerId);
         }
@@ -159,9 +159,9 @@ class AdvancedCombatCommand extends Command
         $this->info('🏰 Managing siege weapons...');
 
         $villageId = $this->option('village-id');
-        
+
         $query = Village::with(['player', 'siegeWeapons']);
-        
+
         if ($villageId) {
             $query->where('id', $villageId);
         }
@@ -260,27 +260,27 @@ class AdvancedCombatCommand extends Command
     protected function generateDetailedReport(Battle $battle): void
     {
         $battleData = $battle->battle_data ?? [];
-        
+
         $this->line("  → Battle #{$battle->id}:");
         $this->line("    Attacker: {$battle->attacker->name}");
         $this->line("    Defender: {$battle->defender->name}");
         $this->line("    Result: {$battle->result}");
         $this->line("    Village: {$battle->village->name}");
-        
+
         if (isset($battleData['attacking_troops'])) {
-            $this->line("    Attacking Troops: " . count($battleData['attacking_troops']));
+            $this->line('    Attacking Troops: ' . count($battleData['attacking_troops']));
         }
-        
+
         if (isset($battleData['defending_troops'])) {
-            $this->line("    Defending Troops: " . count($battleData['defending_troops']));
+            $this->line('    Defending Troops: ' . count($battleData['defending_troops']));
         }
-        
+
         if (isset($battleData['battle_power'])) {
             $this->line("    Battle Power: {$battleData['battle_power']}");
         }
-        
+
         if (isset($battleData['defensive_bonus'])) {
-            $this->line("    Defensive Bonus: " . ($battleData['defensive_bonus'] * 100) . "%");
+            $this->line('    Defensive Bonus: ' . ($battleData['defensive_bonus'] * 100) . '%');
         }
     }
 
@@ -322,7 +322,8 @@ class AdvancedCombatCommand extends Command
      */
     protected function simulateBattle(Village $attacker, Village $defender): array
     {
-        $attackingTroops = $attacker->troops()
+        $attackingTroops = $attacker
+            ->troops()
             ->with('unitType')
             ->where('count', '>', 0)
             ->get()
@@ -336,7 +337,8 @@ class AdvancedCombatCommand extends Command
             })
             ->toArray();
 
-        $defendingTroops = $defender->troops()
+        $defendingTroops = $defender
+            ->troops()
             ->with('unitType')
             ->where('count', '>', 0)
             ->get()

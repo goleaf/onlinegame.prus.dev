@@ -2,14 +2,14 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Services\GameCacheService;
 use App\Services\GameErrorHandler;
-use App\Services\GamePerformanceMonitor;
 use App\Services\GameNotificationService;
+use App\Services\GamePerformanceMonitor;
 use App\Utilities\GameUtility;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use SmartCache\Facades\SmartCache;
 
 class GameTestCommand extends Command
@@ -62,7 +62,7 @@ class GameTestCommand extends Command
     private function runAllTests(bool $verbose = false)
     {
         $this->info('Running all tests...');
-        
+
         $tests = [
             'cache' => 'Cache System',
             'performance' => 'Performance Monitoring',
@@ -75,11 +75,11 @@ class GameTestCommand extends Command
         ];
 
         $results = [];
-        
+
         foreach ($tests as $test => $name) {
             $this->line("Testing {$name}...");
             try {
-                $this->{"test" . ucfirst($test)}($verbose);
+                $this->{'test' . ucfirst($test)}($verbose);
                 $results[$test] = 'PASS';
                 $this->info("✓ {$name} - PASSED");
             } catch (\Exception $e) {
@@ -97,10 +97,10 @@ class GameTestCommand extends Command
 
         $passed = count(array_filter($results, fn($r) => str_starts_with($r, 'PASS')));
         $total = count($results);
-        
+
         $this->newLine();
         $this->info("Tests passed: {$passed}/{$total}");
-        
+
         if ($passed === $total) {
             $this->info('All tests passed! 🎉');
         } else {
@@ -110,12 +110,13 @@ class GameTestCommand extends Command
 
     private function testCacheSystem(bool $verbose = false)
     {
-        if ($verbose) $this->line('Testing cache system...');
+        if ($verbose)
+            $this->line('Testing cache system...');
 
         // Test SmartCache storage
         $testData = ['test' => 'data', 'timestamp' => now()->toISOString()];
         $cacheKey = 'game_test_smartcache';
-        
+
         $retrieved = SmartCache::remember($cacheKey, now()->addMinutes(1), function () use ($testData) {
             return $testData;
         });
@@ -126,7 +127,7 @@ class GameTestCommand extends Command
         // Test cache service
         $playerId = $this->option('player') ?: 1;
         $playerData = GameCacheService::getPlayerData($playerId);
-        
+
         if ($verbose) {
             $this->line('Player data cached: ' . ($playerData ? 'Yes' : 'No'));
         }
@@ -147,15 +148,16 @@ class GameTestCommand extends Command
 
     private function testPerformanceMonitoring(bool $verbose = false)
     {
-        if ($verbose) $this->line('Testing performance monitoring...');
+        if ($verbose)
+            $this->line('Testing performance monitoring...');
 
         $startTime = microtime(true);
-        
+
         // Simulate some work
-        usleep(100000); // 100ms
-        
+        usleep(100000);  // 100ms
+
         GamePerformanceMonitor::monitorResponseTime('test_operation', $startTime);
-        
+
         // Test memory monitoring
         $memoryStats = GamePerformanceMonitor::monitorMemory('test_memory_check');
         if (empty($memoryStats)) {
@@ -181,10 +183,11 @@ class GameTestCommand extends Command
 
     private function testNotificationSystem(bool $verbose = false)
     {
-        if ($verbose) $this->line('Testing notification system...');
+        if ($verbose)
+            $this->line('Testing notification system...');
 
         $testUserId = $this->option('player') ?: 1;
-        
+
         // Test sending notification
         GameNotificationService::sendNotification(
             $testUserId,
@@ -218,7 +221,8 @@ class GameTestCommand extends Command
 
     private function testGameUtilities(bool $verbose = false)
     {
-        if ($verbose) $this->line('Testing game utilities...');
+        if ($verbose)
+            $this->line('Testing game utilities...');
 
         // Test number formatting
         $formatted = GameUtility::formatNumber(1500000);
@@ -234,19 +238,19 @@ class GameTestCommand extends Command
         }
 
         // Test distance calculation
-        $distance = GameUtility::calculateDistance(40.7128, -74.0060, 34.0522, -118.2437);
+        $distance = GameUtility::calculateDistance(40.7128, -74.006, 34.0522, -118.2437);
         if ($distance <= 0) {
             throw new \Exception('Distance calculation failed');
         }
 
         // Test travel time calculation
-        $travelTime = GameUtility::calculateTravelTime(40.7128, -74.0060, 34.0522, -118.2437, 15.0);
+        $travelTime = GameUtility::calculateTravelTime(40.7128, -74.006, 34.0522, -118.2437, 15.0);
         if ($travelTime <= 0) {
             throw new \Exception('Travel time calculation failed');
         }
 
         // Test duration formatting
-        $formattedDuration = GameUtility::formatDuration(3661); // 1h 1m 1s
+        $formattedDuration = GameUtility::formatDuration(3661);  // 1h 1m 1s
         if (empty($formattedDuration)) {
             throw new \Exception('Duration formatting failed');
         }
@@ -263,7 +267,7 @@ class GameTestCommand extends Command
             $this->line("Distance: {$distance} km");
             $this->line("Travel time: {$travelTime} seconds");
             $this->line("Formatted duration: {$formattedDuration}");
-            $this->line("Random event: " . json_encode($event));
+            $this->line('Random event: ' . json_encode($event));
         }
 
         $this->info('Game utilities test completed successfully');
@@ -271,7 +275,8 @@ class GameTestCommand extends Command
 
     private function testApiEndpoints(bool $verbose = false)
     {
-        if ($verbose) $this->line('Testing API endpoints...');
+        if ($verbose)
+            $this->line('Testing API endpoints...');
 
         // Test API route registration
         $routes = app('router')->getRoutes();
@@ -295,7 +300,8 @@ class GameTestCommand extends Command
 
     private function testSecurityFeatures(bool $verbose = false)
     {
-        if ($verbose) $this->line('Testing security features...');
+        if ($verbose)
+            $this->line('Testing security features...');
 
         // Test security middleware exists
         $middleware = app('router')->getMiddleware();
@@ -326,7 +332,8 @@ class GameTestCommand extends Command
 
     private function testDatabaseOperations(bool $verbose = false)
     {
-        if ($verbose) $this->line('Testing database operations...');
+        if ($verbose)
+            $this->line('Testing database operations...');
 
         // Test database connection
         try {
@@ -355,7 +362,7 @@ class GameTestCommand extends Command
         }
 
         if ($verbose) {
-            $this->line("Database connection: OK");
+            $this->line('Database connection: OK');
             $this->line("Users in database: {$playerCount}");
         }
 
@@ -364,19 +371,20 @@ class GameTestCommand extends Command
 
     private function testIntegration(bool $verbose = false)
     {
-        if ($verbose) $this->line('Testing system integration...');
+        if ($verbose)
+            $this->line('Testing system integration...');
 
         $testUserId = $this->option('player') ?: 1;
 
         // Test full workflow: cache -> performance -> notification
         $startTime = microtime(true);
-        
+
         // 1. Get player data (cache)
         $playerData = GameCacheService::getPlayerData($testUserId);
-        
+
         // 2. Monitor performance
         GamePerformanceMonitor::monitorResponseTime('integration_test', $startTime);
-        
+
         // 3. Send notification
         GameNotificationService::sendNotification(
             $testUserId,
@@ -384,7 +392,7 @@ class GameTestCommand extends Command
             ['message' => 'Integration test notification'],
             'normal'
         );
-        
+
         // 4. Log action
         GameErrorHandler::logGameAction('integration_test', [
             'player_id' => $testUserId,

@@ -2,11 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Log;
 use App\Services\GameErrorHandler;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
+use Closure;
 
 class GameSecurityMiddleware
 {
@@ -16,26 +16,26 @@ class GameSecurityMiddleware
     public function handle(Request $request, Closure $next, string $action = null)
     {
         $startTime = microtime(true);
-        
+
         try {
             // Rate limiting based on action
             if ($action) {
                 $this->applyRateLimit($request, $action);
             }
-            
+
             // Validate request integrity
             $this->validateRequestIntegrity($request);
-            
+
             // Check for suspicious patterns
             $this->checkSuspiciousActivity($request);
-            
+
             // Log security event
             $this->logSecurityEvent($request, $action);
-            
+
             // Apply additional security headers
             $response = $next($request);
             $this->addSecurityHeaders($response);
-            
+
             // Log performance
             $duration = microtime(true) - $startTime;
             if ($duration > 1.0) {
@@ -46,9 +46,8 @@ class GameSecurityMiddleware
                     'user_id' => auth()->id(),
                 ]);
             }
-            
+
             return $response;
-            
         } catch (\Exception $e) {
             GameErrorHandler::handleGameError($e, [
                 'action' => 'security_middleware',
@@ -56,7 +55,7 @@ class GameSecurityMiddleware
                 'url' => $request->fullUrl(),
                 'user_id' => auth()->id(),
             ]);
-            
+
             throw $e;
         }
     }
@@ -67,24 +66,24 @@ class GameSecurityMiddleware
     private function applyRateLimit(Request $request, string $action): void
     {
         $rateLimits = config('game.security.rate_limiting', []);
-        $limit = $rateLimits[$action] ?? 60; // Default: 60 requests per minute
-        
+        $limit = $rateLimits[$action] ?? 60;  // Default: 60 requests per minute
+
         $key = 'game_action:' . $action . ':' . $request->ip();
-        
+
         if (RateLimiter::tooManyAttempts($key, $limit)) {
             $seconds = RateLimiter::availableIn($key);
-            
+
             Log::channel('security')->warning('Rate limit exceeded', [
                 'action' => $action,
                 'ip' => $request->ip(),
                 'user_id' => auth()->id(),
                 'retry_after' => $seconds,
             ]);
-            
+
             abort(429, "Too many requests. Try again in {$seconds} seconds.");
         }
-        
-        RateLimiter::hit($key, 60); // 1 minute decay
+
+        RateLimiter::hit($key, 60);  // 1 minute decay
     }
 
     /**
@@ -105,9 +104,9 @@ class GameSecurityMiddleware
             '/(\bscript\b.*\b>/i',
             '/(<.*\bscript\b)/i',
         ];
-        
+
         $requestData = json_encode($request->all());
-        
+
         foreach ($suspiciousPatterns as $pattern) {
             if (preg_match($pattern, $requestData)) {
                 Log::channel('security')->critical('SQL injection attempt detected', [
@@ -117,7 +116,7 @@ class GameSecurityMiddleware
                     'data' => $requestData,
                     'pattern' => $pattern,
                 ]);
-                
+
                 abort(403, 'Suspicious request detected.');
             }
         }
@@ -130,11 +129,11 @@ class GameSecurityMiddleware
     {
         $userId = auth()->id();
         $ip = $request->ip();
-        
+
         // Check for rapid successive requests
         $key = 'rapid_requests:' . $ip . ':' . $userId;
         $recentRequests = RateLimiter::attempts($key);
-        
+
         if ($recentRequests > 10) {
             Log::channel('security')->warning('Rapid requests detected', [
                 'ip' => $ip,
@@ -143,9 +142,9 @@ class GameSecurityMiddleware
                 'url' => $request->fullUrl(),
             ]);
         }
-        
+
         RateLimiter::hit($key, 60);
-        
+
         // Check for unusual user agent
         $userAgent = $request->userAgent();
         if (empty($userAgent) || strlen($userAgent) < 10) {
@@ -155,7 +154,7 @@ class GameSecurityMiddleware
                 'user_agent' => $userAgent,
             ]);
         }
-        
+
         // Check for requests from suspicious IPs (basic check)
         if ($this->isSuspiciousIP($ip)) {
             Log::channel('security')->critical('Request from suspicious IP', [
@@ -163,7 +162,7 @@ class GameSecurityMiddleware
                 'user_id' => $userId,
                 'url' => $request->fullUrl(),
             ]);
-            
+
             abort(403, 'Access denied.');
         }
     }
@@ -175,24 +174,24 @@ class GameSecurityMiddleware
     {
         // Basic checks for suspicious IPs
         $suspiciousPatterns = [
-            '/^10\./',      // Private networks (in production, this might be legitimate)
-            '/^192\.168\./', // Private networks
-            '/^172\.(1[6-9]|2[0-9]|3[01])\./', // Private networks
+            '/^10\./',  // Private networks (in production, this might be legitimate)
+            '/^192\.168\./',  // Private networks
+            '/^172\.(1[6-9]|2[0-9]|3[01])\./',  // Private networks
         ];
-        
+
         foreach ($suspiciousPatterns as $pattern) {
             if (preg_match($pattern, $ip)) {
                 // In a real application, you might want to allow these in development
                 // but block them in production, or maintain a whitelist
-                return false; // For now, we'll allow private IPs
+                return false;  // For now, we'll allow private IPs
             }
         }
-        
+
         // You could add more sophisticated checks here:
         // - Check against known malicious IP databases
         // - Check for VPN/Proxy usage
         // - Geographic location checks
-        
+
         return false;
     }
 
@@ -252,13 +251,13 @@ class GameSecurityMiddleware
                 'suspicious_activity' => [],
                 'security_events' => [],
             ];
-            
+
             // Get rate limit statistics
             $rateLimitKeys = \Illuminate\Support\Facades\Cache::get('rate_limit_keys', []);
             foreach ($rateLimitKeys as $key => $attempts) {
                 $report['rate_limits'][$key] = $attempts;
             }
-            
+
             // Get recent security events from logs
             // This would typically query your log storage
             $report['security_events'] = [
@@ -266,16 +265,14 @@ class GameSecurityMiddleware
                 'critical_events' => 'Query from log storage',
                 'blocked_requests' => 'Query from log storage',
             ];
-            
+
             return $report;
-            
         } catch (\Exception $e) {
             Log::error('Failed to generate security report', [
                 'error' => $e->getMessage(),
             ]);
-            
+
             return [];
         }
     }
 }
-

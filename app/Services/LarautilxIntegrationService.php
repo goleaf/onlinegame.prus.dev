@@ -353,7 +353,6 @@ class LarautilxIntegrationService
         ];
     }
 
-
     /**
      * Clear all Larautilx caches
      */

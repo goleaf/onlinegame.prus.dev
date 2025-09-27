@@ -92,7 +92,7 @@ class UserController extends CrudController
         if ($request->has('search')) {
             $searchTerm = $request->get('search');
             $cleanSearchTerm = preg_replace('/[^0-9+]/', '', $searchTerm);
-            
+
             $query->where(function ($q) use ($searchTerm, $cleanSearchTerm) {
                 $q
                     ->where('name', 'like', "%{$searchTerm}%")
@@ -318,11 +318,12 @@ class UserController extends CrudController
         if ($request->has('phone')) {
             $phoneTerm = $request->get('phone');
             $cleanPhoneTerm = preg_replace('/[^0-9+]/', '', $phoneTerm);
-            
+
             $query->where(function ($q) use ($phoneTerm, $cleanPhoneTerm) {
-                $q->where('phone', 'like', '%' . $phoneTerm . '%')
-                  ->orWhere('phone_normalized', 'like', '%' . $cleanPhoneTerm . '%')
-                  ->orWhere('phone_e164', 'like', '%' . $cleanPhoneTerm . '%');
+                $q
+                    ->where('phone', 'like', '%' . $phoneTerm . '%')
+                    ->orWhere('phone_normalized', 'like', '%' . $cleanPhoneTerm . '%')
+                    ->orWhere('phone_e164', 'like', '%' . $cleanPhoneTerm . '%');
             });
         }
 

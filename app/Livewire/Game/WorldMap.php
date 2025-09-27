@@ -365,7 +365,6 @@ class WorldMap extends Component
         ];
     }
 
-
     public function filterByAlliance($allianceId)
     {
         $this->filterAlliance = $allianceId;

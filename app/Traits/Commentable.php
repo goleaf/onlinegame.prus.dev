@@ -34,7 +34,8 @@ trait Commentable
 
     public function getRepliesCount(): int
     {
-        return $this->approvedComments()
+        return $this
+            ->approvedComments()
             ->whereNotNull('parent_id')
             ->count();
     }
@@ -56,6 +57,6 @@ trait Commentable
 
     public function canBeCommentedOn(): bool
     {
-        return true; // Override in specific models if needed
+        return true;  // Override in specific models if needed
     }
 }

@@ -49,7 +49,6 @@ class AllianceManager extends Component
     public $memberStats = [];
     public $inviteStats = [];
     public $applicationStats = [];
-    
     // Diplomacy and communication features
     public $allianceDiplomacy = [];
     public $allianceWars = [];
@@ -62,12 +61,14 @@ class AllianceManager extends Component
     public $showWars = false;
     public $showMessages = false;
     public $showLogs = false;
+
     public $diplomacyForm = [
         'target_alliance_id' => null,
         'status' => 'ally',
         'message' => '',
         'expires_at' => null,
     ];
+
     public $messageForm = [
         'type' => 'general',
         'title' => '',
@@ -75,6 +76,7 @@ class AllianceManager extends Component
         'is_pinned' => false,
         'is_important' => false,
     ];
+
     public $warForm = [
         'target_alliance_id' => null,
         'declaration_message' => '',
@@ -149,7 +151,7 @@ class AllianceManager extends Component
 
                 // Apply filters using the new eloquent filtering system
                 $filters = [];
-                
+
                 if ($this->searchQuery) {
                     $filters[] = [
                         'target' => 'name',
@@ -157,7 +159,7 @@ class AllianceManager extends Component
                         'value' => $this->searchQuery
                     ];
                 }
-                
+
                 if ($this->showOnlyActive) {
                     $filters[] = [
                         'target' => 'is_active',
@@ -165,7 +167,7 @@ class AllianceManager extends Component
                         'value' => true
                     ];
                 }
-                
+
                 if ($this->filterByRank) {
                     $filters[] = [
                         'type' => '$has',

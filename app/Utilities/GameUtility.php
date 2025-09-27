@@ -16,7 +16,7 @@ class GameUtility
         } elseif ($number >= 1000) {
             return round($number / 1000, 1) . 'K';
         }
-        
+
         return (string) $number;
     }
 
@@ -74,14 +74,14 @@ class GameUtility
      * Calculate travel time between coordinates
      */
     public static function calculateTravelTime(
-        float $lat1, 
-        float $lon1, 
-        float $lat2, 
-        float $lon2, 
+        float $lat1,
+        float $lon1,
+        float $lat2,
+        float $lon2,
         float $speed = 10.0
     ): int {
         $distance = self::calculateDistance($lat1, $lon1, $lat2, $lon2);
-        return (int) ($distance / $speed * 3600); // Convert to seconds
+        return (int) ($distance / $speed * 3600);  // Convert to seconds
     }
 
     /**
@@ -89,14 +89,14 @@ class GameUtility
      */
     public static function calculateDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
     {
-        $earthRadius = 6371; // Earth's radius in kilometers
+        $earthRadius = 6371;  // Earth's radius in kilometers
 
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);
 
-        $a = sin($dLat / 2) * sin($dLat / 2) +
-             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-             sin($dLon / 2) * sin($dLon / 2);
+        $a = sin($dLat / 2) * sin($dLat / 2)
+            + cos(deg2rad($lat1)) * cos(deg2rad($lat2))
+                * sin($dLon / 2) * sin($dLon / 2);
 
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
@@ -107,12 +107,12 @@ class GameUtility
      * Generate random coordinates within a given area
      */
     public static function generateRandomCoordinates(
-        float $centerLat, 
-        float $centerLon, 
+        float $centerLat,
+        float $centerLon,
         float $radiusKm = 10.0
     ): array {
         $angle = deg2rad(rand(0, 360));
-        $distance = rand(0, $radiusKm * 1000) / 1000; // Convert to km
+        $distance = rand(0, $radiusKm * 1000) / 1000;  // Convert to km
 
         $lat = $centerLat + ($distance / 111.32) * cos($angle);
         $lon = $centerLon + ($distance / (111.32 * cos(deg2rad($centerLat)))) * sin($angle);
@@ -206,4 +206,3 @@ class GameUtility
         return $totalScore;
     }
 }
-

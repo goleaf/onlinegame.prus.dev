@@ -133,26 +133,26 @@ class AllianceMember extends Model
     public static function getCachedAllianceMembers($allianceId = null, $filters = [])
     {
         $cacheKey = "alliance_members_{$allianceId}_" . md5(serialize($filters));
-        
+
         return SmartCache::remember($cacheKey, now()->addMinutes(8), function () use ($allianceId, $filters) {
             $query = static::withStats()->withPlayerInfo();
-            
+
             if ($allianceId) {
                 $query->byAlliance($allianceId);
             }
-            
+
             if (isset($filters['rank'])) {
                 $query->byRank($filters['rank']);
             }
-            
+
             if (isset($filters['recent'])) {
                 $query->recent($filters['recent']);
             }
-            
+
             if (isset($filters['search'])) {
                 $query->search($filters['search']);
             }
-            
+
             return $query->get();
         });
     }

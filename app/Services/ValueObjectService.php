@@ -19,7 +19,7 @@ class ValueObjectService
     public function createVillageResources(Village $village): VillageResources
     {
         $resources = $village->resources;
-        
+
         $amounts = new ResourceAmounts();
         $production = new ResourceAmounts();
         $capacity = new ResourceAmounts();
@@ -28,7 +28,7 @@ class ValueObjectService
         foreach ($resources as $resource) {
             $type = $resource->type;
             $levels[$type] = $resource->level;
-            
+
             switch ($type) {
                 case 'wood':
                     $amounts = new ResourceAmounts(wood: $resource->amount, clay: $amounts->clay, iron: $amounts->iron, crop: $amounts->crop);
@@ -165,10 +165,10 @@ class ValueObjectService
     public function updateVillageResourcesInDatabase(Village $village, VillageResources $resources): void
     {
         $resourceTypes = ['wood', 'clay', 'iron', 'crop'];
-        
+
         foreach ($resourceTypes as $type) {
             $resource = $village->resources()->where('type', $type)->first();
-            
+
             if ($resource) {
                 $resource->update([
                     'amount' => $resources->amounts->{$type},
@@ -181,4 +181,3 @@ class ValueObjectService
         }
     }
 }
-

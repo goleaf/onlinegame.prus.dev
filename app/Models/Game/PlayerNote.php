@@ -29,10 +29,12 @@ class PlayerNote extends Model
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
     protected $referenceStrategy = 'template';
+
     protected $referenceTemplate = [
         'format' => 'PN-{YEAR}{MONTH}{SEQ}',
         'sequence_length' => 4,
     ];
+
     protected $referencePrefix = 'PN';
 
     public function player(): BelongsTo

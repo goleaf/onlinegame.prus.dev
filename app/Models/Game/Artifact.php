@@ -3,13 +3,14 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use SmartCache\Facades\SmartCache;
-use sbamtr\LaravelQueryEnrich\QE;
-use function sbamtr\LaravelQueryEnrich\c;
+use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
+use sbamtr\LaravelQueryEnrich\QE;
+use SmartCache\Facades\SmartCache;
+
+use function sbamtr\LaravelQueryEnrich\c;
 
 class Artifact extends Model
 {
@@ -106,8 +107,9 @@ class Artifact extends Model
     public function scopeNotExpired($query)
     {
         return $query->where(function ($q) {
-            $q->whereNull('expires_at')
-              ->orWhere('expires_at', '>', now());
+            $q
+                ->whereNull('expires_at')
+                ->orWhere('expires_at', '>', now());
         });
     }
 
@@ -158,7 +160,7 @@ class Artifact extends Model
 
     public function getRarityColorAttribute(): string
     {
-        return match($this->rarity) {
+        return match ($this->rarity) {
             'common' => 'gray',
             'uncommon' => 'green',
             'rare' => 'blue',
@@ -171,7 +173,7 @@ class Artifact extends Model
 
     public function getTypeIconAttribute(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             'weapon' => 'sword',
             'armor' => 'shield',
             'tool' => 'wrench',
@@ -406,7 +408,7 @@ class Artifact extends Model
     public function getTotalPowerAttribute(): int
     {
         $basePower = $this->power_level;
-        $rarityMultiplier = match($this->rarity) {
+        $rarityMultiplier = match ($this->rarity) {
             'common' => 1.0,
             'uncommon' => 1.2,
             'rare' => 1.5,
@@ -451,7 +453,7 @@ class Artifact extends Model
         $type = $options['type'] ?? $types[array_rand($types)];
         $rarity = $options['rarity'] ?? $rarities[array_rand($rarities)];
 
-        $powerLevel = match($rarity) {
+        $powerLevel = match ($rarity) {
             'common' => rand(1, 10),
             'uncommon' => rand(10, 25),
             'rare' => rand(25, 50),
@@ -533,8 +535,13 @@ class Artifact extends Model
     public static function generateArtifactEffects(string $type, string $rarity): array
     {
         $effects = [];
-        $rarityMultiplier = match($rarity) {
-            'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
+        $rarityMultiplier = match ($rarity) {
+            'common' => 1,
+            'uncommon' => 1.5,
+            'rare' => 2,
+            'epic' => 3,
+            'legendary' => 4,
+            'mythic' => 5
         };
 
         switch ($type) {
@@ -598,8 +605,10 @@ class Artifact extends Model
         if ($rarity === 'epic' || $rarity === 'legendary' || $rarity === 'mythic') {
             $requirements[] = [
                 'type' => 'level',
-                'value' => match($rarity) {
-                    'epic' => 20, 'legendary' => 40, 'mythic' => 60
+                'value' => match ($rarity) {
+                    'epic' => 20,
+                    'legendary' => 40,
+                    'mythic' => 60
                 },
             ];
         }
@@ -608,8 +617,9 @@ class Artifact extends Model
             $requirements[] = [
                 'type' => 'building',
                 'building' => 'academy',
-                'level' => match($rarity) {
-                    'legendary' => 15, 'mythic' => 20
+                'level' => match ($rarity) {
+                    'legendary' => 15,
+                    'mythic' => 20
                 },
             ];
         }
@@ -623,30 +633,30 @@ class Artifact extends Model
     public static function getCachedArtifacts($playerId = null, $filters = [])
     {
         $cacheKey = "artifacts_{$playerId}_" . md5(serialize($filters));
-        
+
         return SmartCache::remember($cacheKey, now()->addMinutes(12), function () use ($playerId, $filters) {
             $query = static::with(['owner', 'village']);
-            
+
             if ($playerId) {
                 $query->where('owner_id', $playerId);
             }
-            
+
             if (isset($filters['type'])) {
                 $query->where('type', $filters['type']);
             }
-            
+
             if (isset($filters['rarity'])) {
                 $query->where('rarity', $filters['rarity']);
             }
-            
+
             if (isset($filters['status'])) {
                 $query->where('status', $filters['status']);
             }
-            
+
             if (isset($filters['active'])) {
                 $query->where('status', 'active');
             }
-            
+
             return $query->get();
         });
     }

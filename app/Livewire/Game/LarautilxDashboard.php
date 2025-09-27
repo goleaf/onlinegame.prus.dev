@@ -44,7 +44,6 @@ class LarautilxDashboard extends Component
                 $this->dashboardData = $response['data'];
                 $this->dispatch('dashboardDataLoaded', ['data' => $this->dashboardData]);
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading Larautilx dashboard data', [
                 'error' => $e->getMessage(),
@@ -67,7 +66,6 @@ class LarautilxDashboard extends Component
                 $this->integrationSummary = $response['data'];
                 $this->dispatch('integrationSummaryLoaded', ['data' => $this->integrationSummary]);
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading Larautilx integration summary', [
                 'error' => $e->getMessage(),
@@ -93,7 +91,6 @@ class LarautilxDashboard extends Component
                 $this->dispatch('componentsTested', ['results' => $this->testResults]);
                 $this->addNotification('Components tested successfully', 'success');
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error testing Larautilx components', [
                 'error' => $e->getMessage(),
@@ -153,7 +150,6 @@ class LarautilxDashboard extends Component
             }
 
             throw new \Exception('API request failed: ' . $response->body());
-
         } catch (\Exception $e) {
             LoggingUtil::error('API request failed', [
                 'method' => $method,
@@ -183,4 +179,3 @@ class LarautilxDashboard extends Component
         ]);
     }
 }
-

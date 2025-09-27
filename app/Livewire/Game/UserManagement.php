@@ -149,7 +149,7 @@ class UserManagement extends Component
                     COUNT(CASE WHEN EXISTS(SELECT 1 FROM players WHERE user_id = users.id AND is_online = 1) THEN 1 END) as online_users,
                     COUNT(CASE WHEN created_at >= ? THEN 1 END) as recent_registrations
                 ', [now()->subDays(7)])
-                ->first();
+                    ->first();
 
                 // Get tribe statistics separately for better performance
                 $tribeStats = User::withGamePlayers()

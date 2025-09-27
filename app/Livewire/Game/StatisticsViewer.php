@@ -12,8 +12,9 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
-use SmartCache\Facades\SmartCache;
 use sbamtr\LaravelQueryEnrich\QE;
+use SmartCache\Facades\SmartCache;
+
 use function sbamtr\LaravelQueryEnrich\c;
 
 class StatisticsViewer extends Component

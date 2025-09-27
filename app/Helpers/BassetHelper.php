@@ -28,7 +28,7 @@ class BassetHelper
     public static function asset(string $key): string
     {
         $assets = self::getCommonAssets();
-        
+
         if (!isset($assets[$key])) {
             throw new \InvalidArgumentException("Asset key '{$key}' not found in common assets.");
         }
@@ -50,7 +50,7 @@ class BassetHelper
             }
 
             $url = basset($assets[$key]);
-            
+
             if ($type === 'css') {
                 $tags .= "<link href=\"{$url}\" rel=\"stylesheet\">\n";
             } elseif ($type === 'js') {
@@ -68,7 +68,7 @@ class BassetHelper
     {
         $weightsStr = implode(',', $weights);
         $url = "https://fonts.bunny.net/css?family={$family}:{$weightsStr}&display={$display}";
-        
+
         return basset($url);
     }
 
@@ -77,9 +77,9 @@ class BassetHelper
      */
     public static function getPreconnectTags(): string
     {
-        return '<link rel="preconnect" href="https://fonts.bunny.net">' . "\n" .
-               '<link rel="preconnect" href="https://cdn.jsdelivr.net">' . "\n" .
-               '<link rel="preconnect" href="https://cdnjs.cloudflare.com">' . "\n";
+        return '<link rel="preconnect" href="https://fonts.bunny.net">' . "\n"
+            . '<link rel="preconnect" href="https://cdn.jsdelivr.net">' . "\n"
+            . '<link rel="preconnect" href="https://cdnjs.cloudflare.com">' . "\n";
     }
 
     /**
@@ -106,4 +106,3 @@ class BassetHelper
         ];
     }
 }
-

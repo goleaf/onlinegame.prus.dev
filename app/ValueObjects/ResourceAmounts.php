@@ -64,9 +64,9 @@ readonly class ResourceAmounts
     public function canAfford(ResourceAmounts $required): bool
     {
         return $this->wood >= $required->wood &&
-               $this->clay >= $required->clay &&
-               $this->iron >= $required->iron &&
-               $this->crop >= $required->crop;
+            $this->clay >= $required->clay &&
+            $this->iron >= $required->iron &&
+            $this->crop >= $required->crop;
     }
 
     /**

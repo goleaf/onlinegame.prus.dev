@@ -16,8 +16,9 @@ use LaraUtilX\Utilities\PaginationUtil;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
-use SmartCache\Facades\SmartCache;
 use sbamtr\LaravelQueryEnrich\QE;
+use SmartCache\Facades\SmartCache;
+
 use function sbamtr\LaravelQueryEnrich\c;
 
 class TaskManager extends Component
@@ -310,20 +311,20 @@ class TaskManager extends Component
         $questStats = PlayerQuest::where('player_id', $this->player->id)
             ->select([
                 QE::sum(QE::case()
-                    ->when(QE::eq(c('status'), 'in_progress'), 1)
-                    ->else(0))
+                        ->when(QE::eq(c('status'), 'in_progress'), 1)
+                        ->else(0))
                     ->as('active_count'),
                 QE::sum(QE::case()
-                    ->when(QE::eq(c('status'), 'completed'), 1)
-                    ->else(0))
+                        ->when(QE::eq(c('status'), 'completed'), 1)
+                        ->else(0))
                     ->as('completed_count'),
                 QE::sum(QE::case()
-                    ->when(QE::eq(c('status'), 'available'), 1)
-                    ->else(0))
+                        ->when(QE::eq(c('status'), 'available'), 1)
+                        ->else(0))
                     ->as('available_count'),
                 QE::avg(QE::case()
-                    ->when(QE::eq(c('status'), 'completed'), c('progress'))
-                    ->else(null))
+                        ->when(QE::eq(c('status'), 'completed'), c('progress'))
+                        ->else(null))
                     ->as('avg_progress'),
                 QE::max(c('updated_at'))->as('last_updated')
             ])

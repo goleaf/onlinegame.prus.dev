@@ -23,7 +23,7 @@ class UserPhoneForm extends Component
     public function mount(User $user = null)
     {
         $this->user = $user ?? new User();
-        
+
         if ($this->user->exists) {
             $this->phone = $this->user->phone;
             $this->phone_country = $this->user->phone_country ?? 'US';
@@ -33,7 +33,7 @@ class UserPhoneForm extends Component
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
-        
+
         if ($propertyName === 'phone' && !empty($this->phone)) {
             $this->rules['phone'][] = (new Phone)->country($this->phone_country);
         }
@@ -42,7 +42,7 @@ class UserPhoneForm extends Component
     public function save()
     {
         $rules = $this->rules;
-        
+
         if (!empty($this->phone)) {
             $rules['phone'][] = (new Phone)->country($this->phone_country);
         }
@@ -54,7 +54,7 @@ class UserPhoneForm extends Component
         $this->user->save();
 
         session()->flash('message', 'Phone number saved successfully!');
-        
+
         $this->dispatch('phone-saved');
     }
 

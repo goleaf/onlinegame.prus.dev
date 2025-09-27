@@ -208,4 +208,3 @@ class CacheEvictCommand extends Command
         $this->newLine();
     }
 }
-

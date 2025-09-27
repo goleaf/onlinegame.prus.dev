@@ -128,7 +128,7 @@ class Technology extends Model
     public function scopeByDifficulty($query, $difficulty = null)
     {
         return $query->when($difficulty, function ($q) use ($difficulty) {
-            return $q->where('research_time_base', '>=', $difficulty * 3600); // Convert hours to seconds
+            return $q->where('research_time_base', '>=', $difficulty * 3600);  // Convert hours to seconds
         });
     }
 
@@ -143,33 +143,32 @@ class Technology extends Model
         ');
     }
 
-
     /**
      * Get technologies with SmartCache optimization
      */
     public static function getCachedTechnologies($playerId = null, $filters = [])
     {
         $cacheKey = "technologies_{$playerId}_" . md5(serialize($filters));
-        
+
         return SmartCache::remember($cacheKey, now()->addMinutes(25), function () use ($playerId, $filters) {
             $query = static::active()->withStats();
-            
+
             if (isset($filters['category'])) {
                 $query->byCategory($filters['category']);
             }
-            
+
             if (isset($filters['max_level'])) {
                 $query->byMaxLevel($filters['max_level']);
             }
-            
+
             if (isset($filters['search'])) {
                 $query->search($filters['search']);
             }
-            
+
             if ($playerId) {
                 $query->withPlayerInfo();
             }
-            
+
             return $query->get();
         });
     }

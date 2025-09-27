@@ -9,7 +9,7 @@ use SmartCache\Facades\SmartCache;
 class SeoCacheService
 {
     protected string $cachePrefix = 'seo_metadata_';
-    protected int $cacheTtl = 3600; // 1 hour
+    protected int $cacheTtl = 3600;  // 1 hour
 
     /**
      * Get cached SEO metadata with SmartCache optimization
@@ -49,11 +49,11 @@ class SeoCacheService
     public function generateKey(string $type, array $params = []): string
     {
         $key = $type;
-        
+
         if (!empty($params)) {
             $key .= '_' . md5(serialize($params));
         }
-        
+
         return $key;
     }
 
@@ -63,14 +63,14 @@ class SeoCacheService
     public function cacheGamePageSeo(string $page, array $data): bool
     {
         $key = $this->generateKey('game_page', ['page' => $page, 'data' => $data]);
-        
+
         $seoData = [
             'page' => $page,
             'data' => $data,
             'cached_at' => now(),
             'expires_at' => now()->addSeconds($this->cacheTtl)
         ];
-        
+
         return $this->put($key, $seoData);
     }
 
@@ -93,8 +93,8 @@ class SeoCacheService
             'generated_at' => now(),
             'count' => count($urls)
         ];
-        
-        return $this->put('sitemap', $sitemapData, 86400); // 24 hours
+
+        return $this->put('sitemap', $sitemapData, 86400);  // 24 hours
     }
 
     /**
@@ -115,7 +115,7 @@ class SeoCacheService
             Log::info('SEO cache cleared successfully');
             return true;
         } catch (\Exception $e) {
-            Log::error("Failed to clear SEO cache", ['error' => $e->getMessage()]);
+            Log::error('Failed to clear SEO cache', ['error' => $e->getMessage()]);
             return false;
         }
     }
@@ -141,7 +141,7 @@ class SeoCacheService
     {
         try {
             $keys = Cache::get('seo_cache_keys', []);
-            
+
             return [
                 'total_keys' => count($keys),
                 'cache_prefix' => $this->cachePrefix,
@@ -150,7 +150,7 @@ class SeoCacheService
                 'memory_usage' => memory_get_usage(true),
             ];
         } catch (\Exception $e) {
-            Log::warning("Failed to get SEO cache stats", ['error' => $e->getMessage()]);
+            Log::warning('Failed to get SEO cache stats', ['error' => $e->getMessage()]);
             return [];
         }
     }
@@ -164,16 +164,15 @@ class SeoCacheService
             // Cache common SEO metadata
             $this->cacheGamePageSeo('index', []);
             $this->cacheGamePageSeo('features', []);
-            
+
             // Cache sitemap
             $this->cacheSitemap([]);
-            
+
             Log::info('SEO cache warmed up successfully');
             return true;
         } catch (\Exception $e) {
-            Log::error("Failed to warm up SEO cache", ['error' => $e->getMessage()]);
+            Log::error('Failed to warm up SEO cache', ['error' => $e->getMessage()]);
             return false;
         }
     }
 }
-

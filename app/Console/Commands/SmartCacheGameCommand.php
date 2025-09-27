@@ -53,10 +53,10 @@ class SmartCacheGameCommand extends Command
 
         foreach ($userIds as $userId) {
             $this->line("Optimizing data for user: {$userId}");
-            
+
             try {
                 $results = $optimizer->optimizeGameData($userId, $dataTypes);
-                
+
                 foreach ($results as $type => $data) {
                     $count = is_array($data) ? count($data) : 1;
                     $this->info("  ✅ {$type}: {$count} records optimized");
@@ -82,11 +82,10 @@ class SmartCacheGameCommand extends Command
 
         try {
             $results = $optimizer->intelligentCacheWarmup($userIds);
-            
+
             $this->info("✅ Users processed: {$results['users_processed']}");
             $this->info("✅ Cache entries created: {$results['cache_entries_created']}");
             $this->info('⏱️ Execution time: ' . round($results['execution_time'] * 1000, 2) . 'ms');
-
         } catch (\Exception $e) {
             $this->error("Failed to perform intelligent warmup: {$e->getMessage()}");
             return 1;
@@ -134,12 +133,11 @@ class SmartCacheGameCommand extends Command
             } else {
                 $this->line("  Strategies Count: {$cacheStats['strategies_count']}");
                 $this->line("  Performance Metrics Count: {$cacheStats['performance_metrics_count']}");
-                $this->line("  Cache Operations: " . round($cacheStats['cache_operations'] * 1000, 2) . 'ms');
+                $this->line('  Cache Operations: ' . round($cacheStats['cache_operations'] * 1000, 2) . 'ms');
             }
             $this->newLine();
 
             $this->info("📅 Generated at: {$metrics['timestamp']}");
-
         } catch (\Exception $e) {
             $this->error("Failed to retrieve SmartCache metrics: {$e->getMessage()}");
             return 1;
@@ -164,14 +162,13 @@ class SmartCacheGameCommand extends Command
                 $results = $optimizer->intelligentCacheInvalidation($userId, $dataTypes);
                 $totalInvalidated += $results['invalidated_keys'];
                 $totalTime += $results['execution_time'];
-                
+
                 $this->info("✅ User {$userId}: {$results['invalidated_keys']} keys invalidated");
             }
 
             $this->newLine();
             $this->info("✅ Total keys invalidated: {$totalInvalidated}");
             $this->info('⏱️ Total execution time: ' . round($totalTime * 1000, 2) . 'ms');
-
         } catch (\Exception $e) {
             $this->error("Failed to perform intelligent invalidation: {$e->getMessage()}");
             return 1;
@@ -190,11 +187,10 @@ class SmartCacheGameCommand extends Command
 
         try {
             $results = $optimizer->batchCacheOperations($userIds, $operation);
-            
+
             $this->info("✅ Operation: {$results['operation']}");
             $this->info("✅ Users processed: {$results['users_processed']}");
             $this->info('⏱️ Execution time: ' . round($results['execution_time'] * 1000, 2) . 'ms');
-
         } catch (\Exception $e) {
             $this->error("Failed to perform batch operations: {$e->getMessage()}");
             return 1;
@@ -233,4 +229,3 @@ class SmartCacheGameCommand extends Command
         return 0;
     }
 }
-

@@ -3,8 +3,8 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class ArtifactEffect extends Model
@@ -14,10 +14,12 @@ class ArtifactEffect extends Model
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
     protected $referenceStrategy = 'template';
+
     protected $referenceTemplate = [
         'format' => 'AE-{YEAR}{MONTH}{SEQ}',
         'sequence_length' => 4,
     ];
+
     protected $referencePrefix = 'AE';
 
     protected $fillable = [
@@ -62,11 +64,11 @@ class ArtifactEffect extends Model
     public function scopeByTarget($query, $targetType, $targetId = null)
     {
         $query = $query->where('target_type', $targetType);
-        
+
         if ($targetId !== null) {
             $query->where('target_id', $targetId);
         }
-        
+
         return $query;
     }
 
@@ -77,18 +79,20 @@ class ArtifactEffect extends Model
 
     public function scopeValid($query)
     {
-        return $query->where('is_active', true)
-                    ->where(function ($q) {
-                        $q->whereNull('expires_at')
-                          ->orWhere('expires_at', '>', now());
-                    });
+        return $query
+            ->where('is_active', true)
+            ->where(function ($q) {
+                $q
+                    ->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            });
     }
 
     // Helper methods
     public function isActive(): bool
     {
-        return $this->is_active && 
-               ($this->expires_at === null || $this->expires_at > now());
+        return $this->is_active &&
+            ($this->expires_at === null || $this->expires_at > now());
     }
 
     public function isExpired(): bool
@@ -123,7 +127,7 @@ class ArtifactEffect extends Model
 
     public function getEffectTypeDisplayNameAttribute(): string
     {
-        return match($this->effect_type) {
+        return match ($this->effect_type) {
             'resource_bonus' => 'Resource Bonus',
             'combat_bonus' => 'Combat Bonus',
             'building_bonus' => 'Building Bonus',
@@ -140,7 +144,7 @@ class ArtifactEffect extends Model
 
     public function getTargetTypeDisplayNameAttribute(): string
     {
-        return match($this->target_type) {
+        return match ($this->target_type) {
             'player' => 'Player',
             'village' => 'Village',
             'server' => 'Server',
@@ -152,7 +156,7 @@ class ArtifactEffect extends Model
 
     public function getDurationTypeDisplayNameAttribute(): string
     {
-        return match($this->duration_type) {
+        return match ($this->duration_type) {
             'permanent' => 'Permanent',
             'temporary' => 'Temporary',
             'conditional' => 'Conditional',
@@ -172,7 +176,7 @@ class ArtifactEffect extends Model
     public function getTimeRemainingFormattedAttribute(): ?string
     {
         $minutes = $this->remaining_time;
-        
+
         if ($minutes === null) {
             return 'Permanent';
         }

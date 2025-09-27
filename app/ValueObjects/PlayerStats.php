@@ -51,11 +51,16 @@ readonly class PlayerStats
      */
     public function getRankingCategory(): string
     {
-        if ($this->points >= 1000000) return 'elite';
-        if ($this->points >= 500000) return 'veteran';
-        if ($this->points >= 100000) return 'experienced';
-        if ($this->points >= 10000) return 'intermediate';
-        if ($this->points >= 1000) return 'beginner';
+        if ($this->points >= 1000000)
+            return 'elite';
+        if ($this->points >= 500000)
+            return 'veteran';
+        if ($this->points >= 100000)
+            return 'experienced';
+        if ($this->points >= 10000)
+            return 'intermediate';
+        if ($this->points >= 1000)
+            return 'beginner';
         return 'newbie';
     }
 

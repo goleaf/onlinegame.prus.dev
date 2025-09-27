@@ -24,7 +24,8 @@ trait Commenter
 
     public function getRecentComments(int $limit = 10)
     {
-        return $this->approvedComments()
+        return $this
+            ->approvedComments()
             ->with(['commentable', 'parent'])
             ->orderBy('created_at', 'desc')
             ->limit($limit)
@@ -33,12 +34,13 @@ trait Commenter
 
     public function canComment(): bool
     {
-        return true; // Override in specific models if needed
+        return true;  // Override in specific models if needed
     }
 
     public function hasCommentedOn($model): bool
     {
-        return $this->comments()
+        return $this
+            ->comments()
             ->where('commentable_type', get_class($model))
             ->where('commentable_id', $model->id)
             ->exists();

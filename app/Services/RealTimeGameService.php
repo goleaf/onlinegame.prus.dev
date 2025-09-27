@@ -4,9 +4,9 @@ namespace App\Services;
 
 use App\Events\GameEvent;
 use App\Models\User;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use SmartCache\Facades\SmartCache;
 
 class RealTimeGameService
@@ -29,14 +29,13 @@ class RealTimeGameService
             ];
 
             Redis::lpush("user_updates:{$userId}", json_encode($update));
-            Redis::ltrim("user_updates:{$userId}", 0, 99); // Keep last 100 updates
-            Redis::expire("user_updates:{$userId}", 3600); // Expire after 1 hour
+            Redis::ltrim("user_updates:{$userId}", 0, 99);  // Keep last 100 updates
+            Redis::expire("user_updates:{$userId}", 3600);  // Expire after 1 hour
 
             Log::channel('realtime')->info('Real-time update sent', [
                 'user_id' => $userId,
                 'event_type' => $eventType,
             ]);
-
         } catch (\Exception $e) {
             Log::error('Failed to send real-time update', [
                 'user_id' => $userId,
@@ -69,7 +68,6 @@ class RealTimeGameService
                 'event_type' => $eventType,
                 'user_count' => count($onlineUsers),
             ]);
-
         } catch (\Exception $e) {
             Log::error('Failed to broadcast to all online users', [
                 'event_type' => $eventType,
@@ -85,7 +83,7 @@ class RealTimeGameService
     {
         $data['village_id'] = $villageId;
         $data['update_type'] = $updateType;
-        
+
         self::sendUpdate($userId, 'village_update', $data);
     }
 
@@ -107,7 +105,7 @@ class RealTimeGameService
     {
         $data['battle_id'] = $battleId;
         $data['status'] = $status;
-        
+
         self::sendUpdate($userId, 'battle_update', $data);
     }
 
@@ -118,7 +116,7 @@ class RealTimeGameService
     {
         $data['movement_id'] = $movementId;
         $data['status'] = $status;
-        
+
         self::sendUpdate($userId, 'movement_update', $data);
     }
 
@@ -130,7 +128,7 @@ class RealTimeGameService
         $data['village_id'] = $villageId;
         $data['building_type'] = $buildingType;
         $data['new_level'] = $newLevel;
-        
+
         self::sendUpdate($userId, 'building_update', $data);
     }
 
@@ -141,7 +139,7 @@ class RealTimeGameService
     {
         try {
             $alliance = \App\Models\Game\Alliance::with('members')->find($allianceId);
-            
+
             if (!$alliance) {
                 return;
             }
@@ -149,9 +147,8 @@ class RealTimeGameService
             $userIds = $alliance->members->pluck('user_id')->toArray();
             $data['alliance_id'] = $allianceId;
             $data['update_type'] = $updateType;
-            
-            self::broadcastUpdate($userIds, 'alliance_update', $data);
 
+            self::broadcastUpdate($userIds, 'alliance_update', $data);
         } catch (\Exception $e) {
             Log::error('Failed to send alliance update', [
                 'alliance_id' => $allianceId,
@@ -167,13 +164,12 @@ class RealTimeGameService
     {
         try {
             Redis::sadd('online_users', $userId);
-            Redis::expire('online_users', 3600); // Expire after 1 hour
-            
+            Redis::expire('online_users', 3600);  // Expire after 1 hour
+
             // Update last activity
-            Cache::put("user_activity:{$userId}", now()->timestamp, 300); // 5 minutes
+            Cache::put("user_activity:{$userId}", now()->timestamp, 300);  // 5 minutes
 
             Log::debug('User marked as online', ['user_id' => $userId]);
-
         } catch (\Exception $e) {
             Log::error('Failed to mark user as online', [
                 'user_id' => $userId,
@@ -192,7 +188,6 @@ class RealTimeGameService
             Cache::forget("user_activity:{$userId}");
 
             Log::debug('User marked as offline', ['user_id' => $userId]);
-
         } catch (\Exception $e) {
             Log::error('Failed to mark user as offline', [
                 'user_id' => $userId,
@@ -207,28 +202,27 @@ class RealTimeGameService
     public static function getOnlineUsers(): array
     {
         try {
-            $cacheKey = "online_users_" . now()->format('Y-m-d-H-i');
-            
+            $cacheKey = 'online_users_' . now()->format('Y-m-d-H-i');
+
             return SmartCache::remember($cacheKey, now()->addMinutes(2), function () {
                 $onlineUsers = Redis::smembers('online_users');
-                
+
                 // Filter out inactive users
                 $activeUsers = [];
                 foreach ($onlineUsers as $userId) {
                     $lastActivity = Cache::get("user_activity:{$userId}");
-                    if ($lastActivity && (now()->timestamp - $lastActivity) < 300) { // 5 minutes
+                    if ($lastActivity && (now()->timestamp - $lastActivity) < 300) {  // 5 minutes
                         $activeUsers[] = (int) $userId;
                     }
                 }
 
                 return $activeUsers;
             });
-
         } catch (\Exception $e) {
             Log::error('Failed to get online users', [
                 'error' => $e->getMessage(),
             ]);
-            
+
             return [];
         }
     }
@@ -240,17 +234,16 @@ class RealTimeGameService
     {
         try {
             $updates = Redis::lrange("user_updates:{$userId}", 0, $limit - 1);
-            
+
             return array_map(function ($update) {
                 return json_decode($update, true);
             }, $updates);
-
         } catch (\Exception $e) {
             Log::error('Failed to get user updates', [
                 'user_id' => $userId,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return [];
         }
     }
@@ -264,7 +257,6 @@ class RealTimeGameService
             Redis::del("user_updates:{$userId}");
 
             Log::debug('User updates cleared', ['user_id' => $userId]);
-
         } catch (\Exception $e) {
             Log::error('Failed to clear user updates', [
                 'user_id' => $userId,
@@ -280,7 +272,7 @@ class RealTimeGameService
     {
         try {
             $onlineUsers = self::getOnlineUsers();
-            
+
             $stats = [
                 'online_users_count' => count($onlineUsers),
                 'total_updates_sent' => 0,
@@ -290,19 +282,18 @@ class RealTimeGameService
             // Get total updates sent (approximate)
             $updateKeys = Redis::keys('user_updates:*');
             $stats['active_channels'] = count($updateKeys);
-            
+
             foreach ($updateKeys as $key) {
                 $count = Redis::llen($key);
                 $stats['total_updates_sent'] += $count;
             }
 
             return $stats;
-
         } catch (\Exception $e) {
             Log::error('Failed to get real-time stats', [
                 'error' => $e->getMessage(),
             ]);
-            
+
             return [
                 'online_users_count' => 0,
                 'total_updates_sent' => 0,
@@ -317,7 +308,7 @@ class RealTimeGameService
     public static function sendSystemAnnouncement(string $title, string $message, string $priority = 'normal'): void
     {
         $onlineUsers = self::getOnlineUsers();
-        
+
         $data = [
             'title' => $title,
             'message' => $message,
@@ -341,13 +332,13 @@ class RealTimeGameService
     {
         try {
             $cleaned = 0;
-            
+
             // Clean up old user updates (older than 1 hour)
             $updateKeys = Redis::keys('user_updates:*');
             foreach ($updateKeys as $key) {
                 $userId = str_replace('user_updates:', '', $key);
                 $lastActivity = Cache::get("user_activity:{$userId}");
-                
+
                 if (!$lastActivity || (now()->timestamp - $lastActivity) > 3600) {
                     Redis::del($key);
                     $cleaned++;
@@ -365,7 +356,6 @@ class RealTimeGameService
             }
 
             Log::info('Real-time cleanup completed', ['cleaned_entries' => $cleaned]);
-
         } catch (\Exception $e) {
             Log::error('Failed to cleanup real-time data', [
                 'error' => $e->getMessage(),
@@ -373,4 +363,3 @@ class RealTimeGameService
         }
     }
 }
-

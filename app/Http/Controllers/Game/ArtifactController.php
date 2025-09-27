@@ -7,8 +7,8 @@ use App\Models\Game\Artifact;
 use App\Models\Game\ArtifactEffect;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Traits\ApiResponseTrait;
@@ -107,7 +107,6 @@ class ArtifactController extends Controller
             ], 'artifact_system');
 
             return response()->json($artifacts);
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving artifacts', [
                 'error' => $e->getMessage(),
@@ -192,7 +191,6 @@ class ArtifactController extends Controller
             ], 'artifact_system');
 
             return response()->json($artifact);
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving artifact details', [
                 'error' => $e->getMessage(),
@@ -300,7 +298,6 @@ class ArtifactController extends Controller
                 'success' => true,
                 'artifact' => $artifact
             ], 201);
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error creating artifact', [
                 'error' => $e->getMessage(),
@@ -389,7 +386,6 @@ class ArtifactController extends Controller
                     'message' => 'Failed to activate artifact'
                 ], 400);
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error activating artifact', [
                 'error' => $e->getMessage(),
@@ -456,7 +452,6 @@ class ArtifactController extends Controller
                     'message' => 'Artifact is not active'
                 ], 400);
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error deactivating artifact', [
                 'error' => $e->getMessage(),
@@ -516,7 +511,6 @@ class ArtifactController extends Controller
             ], 'artifact_system');
 
             return response()->json(['data' => $artifacts]);
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving server-wide artifacts', [
                 'error' => $e->getMessage(),
@@ -569,11 +563,11 @@ class ArtifactController extends Controller
     {
         try {
             $options = [];
-            
+
             if ($request->has('type')) {
                 $options['type'] = $request->input('type');
             }
-            
+
             if ($request->has('rarity')) {
                 $options['rarity'] = $request->input('rarity');
             }
@@ -593,7 +587,6 @@ class ArtifactController extends Controller
                 'success' => true,
                 'artifact' => $artifact
             ], 201);
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating random artifact', [
                 'error' => $e->getMessage(),
@@ -621,7 +614,7 @@ class ArtifactController extends Controller
      *       "artifact_id": 1,
      *       "effect_type": "combat_bonus",
      *       "target_type": "player",
-       *       "target_id": null,
+     *       "target_id": null,
      *       "effect_data": {
      *         "attack_bonus": 25,
      *         "defense_bonus": 15
@@ -653,7 +646,6 @@ class ArtifactController extends Controller
             ], 'artifact_system');
 
             return response()->json(['data' => $effects]);
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving artifact effects', [
                 'error' => $e->getMessage(),
@@ -737,7 +729,6 @@ class ArtifactController extends Controller
                 'message' => 'Artifact updated successfully',
                 'artifact' => $artifact->fresh()
             ]);
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error updating artifact', [
                 'error' => $e->getMessage(),
@@ -799,7 +790,6 @@ class ArtifactController extends Controller
                 'success' => true,
                 'message' => 'Artifact deleted successfully'
             ]);
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error deleting artifact', [
                 'error' => $e->getMessage(),

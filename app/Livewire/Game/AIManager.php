@@ -50,7 +50,6 @@ class AIManager extends Component
         try {
             $aiService = app(AIService::class);
             $this->aiStatus = $aiService->getStatus();
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading AI status', [
                 'error' => $e->getMessage(),
@@ -76,7 +75,6 @@ class AIManager extends Component
                 $this->generatedContent['village_names'] = $response['data'];
                 $this->addNotification('Village names generated successfully', 'success');
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating village names', [
                 'error' => $e->getMessage(),
@@ -101,7 +99,6 @@ class AIManager extends Component
                 $this->generatedContent['alliance_names'] = $response['data'];
                 $this->addNotification('Alliance names generated successfully', 'success');
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating alliance names', [
                 'error' => $e->getMessage(),
@@ -135,7 +132,6 @@ class AIManager extends Component
                 $this->generatedContent['quest_description'] = $response['data'];
                 $this->addNotification('Quest description generated successfully', 'success');
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating quest description', [
                 'error' => $e->getMessage(),
@@ -169,7 +165,6 @@ class AIManager extends Component
                 $this->generatedContent['player_message'] = $response['data'];
                 $this->addNotification('Player message generated successfully', 'success');
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating player message', [
                 'error' => $e->getMessage(),
@@ -203,7 +198,6 @@ class AIManager extends Component
                 $this->generatedContent['world_event'] = $response['data'];
                 $this->addNotification('World event generated successfully', 'success');
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating world event', [
                 'error' => $e->getMessage(),
@@ -242,7 +236,6 @@ class AIManager extends Component
                 $this->generatedContent['strategy_suggestion'] = $response['data'];
                 $this->addNotification('Strategy suggestion generated successfully', 'success');
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating strategy suggestion', [
                 'error' => $e->getMessage(),
@@ -277,7 +270,6 @@ class AIManager extends Component
                 $this->generatedContent['custom_content'] = $response['data'];
                 $this->addNotification('Custom content generated successfully', 'success');
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating custom content', [
                 'error' => $e->getMessage(),
@@ -302,7 +294,6 @@ class AIManager extends Component
                 $this->aiStatus = $response['data']['status'];
                 $this->addNotification('AI provider switched successfully', 'success');
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error switching AI provider', [
                 'error' => $e->getMessage(),
@@ -356,7 +347,6 @@ class AIManager extends Component
             }
 
             throw new \Exception('API request failed: ' . $response->body());
-
         } catch (\Exception $e) {
             LoggingUtil::error('API request failed', [
                 'method' => $method,
@@ -380,4 +370,3 @@ class AIManager extends Component
         ]);
     }
 }
-

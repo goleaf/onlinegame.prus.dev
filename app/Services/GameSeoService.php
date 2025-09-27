@@ -22,7 +22,7 @@ class GameSeoService
     public function setGameIndexSeo(): void
     {
         $config = config('seo');
-        
+
         seo()
             ->title($config['default_title'], $config['site_name'])
             ->description($config['default_description'])
@@ -47,7 +47,7 @@ class GameSeoService
     {
         $villageCount = $player->villages->count();
         $totalPopulation = $player->villages->sum('population');
-        
+
         seo()
             ->title("Dashboard - {$player->name}", 'Travian Game')
             ->description("Manage your {$villageCount} village(s) and {$totalPopulation} population in Travian. Build, expand, and strategize your way to victory in the ancient world.")
@@ -67,7 +67,7 @@ class GameSeoService
     public function setVillageSeo(Village $village, Player $player): void
     {
         $villageName = $village->name ?: "Village at ({$village->x}|{$village->y})";
-        
+
         seo()
             ->title("{$villageName} - {$player->name}", 'Travian Game')
             ->description("Manage {$villageName} with {$village->population} population in Travian. Build structures, manage resources, and expand your empire in the ancient world.")
@@ -87,7 +87,7 @@ class GameSeoService
     public function setWorldMapSeo(World $world = null): void
     {
         $worldName = $world ? $world->name : 'Ancient World';
-        
+
         seo()
             ->title("World Map - {$worldName}", 'Travian Game')
             ->description("Explore the {$worldName} in Travian. Discover villages, plan attacks, and expand your empire across the ancient world map.")
@@ -127,7 +127,7 @@ class GameSeoService
     {
         $config = config('seo');
         $jsonLdConfig = $config['json_ld'];
-        
+
         if (!$jsonLdConfig['enabled']) {
             return;
         }
@@ -172,12 +172,12 @@ class GameSeoService
                 $images[] = asset($path);
             }
         }
-        
+
         // Fallback to placeholder if no images exist
         if (empty($images)) {
             $images[] = asset('img/travian/placeholder.svg');
         }
-        
+
         return $images;
     }
 
@@ -189,7 +189,7 @@ class GameSeoService
         if (!$url) {
             $url = request()->url();
         }
-        
+
         seo()->canonical($url);
     }
 
@@ -200,7 +200,7 @@ class GameSeoService
     {
         $defaultRobots = config('seo.robots', []);
         $robots = array_merge($defaultRobots, $robots);
-        
+
         $robotsString = implode(', ', array_filter([
             $robots['index'] ? 'index' : 'noindex',
             $robots['follow'] ? 'follow' : 'nofollow',
@@ -209,7 +209,7 @@ class GameSeoService
             $robots['imageindex'] ? 'imageindex' : 'noimageindex',
             $robots['nocache'] ? 'nocache' : null,
         ]));
-        
+
         seo()->addMeta('robots', $robotsString);
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Models\Game;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class AllianceMessage extends Model
@@ -38,7 +38,6 @@ class AllianceMessage extends Model
     const TYPE_TRADE = 'trade';
     const TYPE_STRATEGY = 'strategy';
     const TYPE_SOCIAL = 'social';
-
     // Priority levels
     const PRIORITY_LOW = 'low';
     const PRIORITY_NORMAL = 'normal';
@@ -119,8 +118,9 @@ class AllianceMessage extends Model
     public function scopeNotExpired($query)
     {
         return $query->where(function ($q) {
-            $q->whereNull('expires_at')
-              ->orWhere('expires_at', '>', now());
+            $q
+                ->whereNull('expires_at')
+                ->orWhere('expires_at', '>', now());
         });
     }
 
@@ -198,7 +198,9 @@ class AllianceMessage extends Model
     public function canBePinnedBy(int $playerId): bool
     {
         // Only alliance leaders and officers can pin messages
-        $allianceMember = $this->alliance->members()
+        $allianceMember = $this
+            ->alliance
+            ->members()
             ->where('player_id', $playerId)
             ->first();
 

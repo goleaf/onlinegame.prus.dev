@@ -9,9 +9,9 @@ use SmartCache\Facades\SmartCache;
 
 /**
  * @group API Documentation
- * 
+ *
  * API documentation and metadata endpoints for the Online Game API.
- * 
+ *
  * @tag Documentation
  * @tag API Info
  */
@@ -19,16 +19,16 @@ class ApiDocumentationController extends Controller
 {
     /**
      * Get API information
-     * 
+     *
      * @description Retrieve general information about the API including version, features, and capabilities.
-     * 
+     *
      * @response 200 {
      *   "name": "Online Game API",
      *   "version": "1.0.0",
      *   "description": "A comprehensive REST API for managing game players, villages, and game mechanics",
      *   "features": [
      *     "Player Management",
-     *     "Village Management", 
+     *     "Village Management",
      *     "Building Upgrades",
      *     "Resource Management",
      *     "Authentication",
@@ -44,7 +44,7 @@ class ApiDocumentationController extends Controller
      *     "provider": "Laravel Sanctum"
      *   }
      * }
-     * 
+     *
      * @tag Documentation
      */
     public function getApiInfo(): JsonResponse
@@ -55,7 +55,7 @@ class ApiDocumentationController extends Controller
             'description' => 'A comprehensive REST API for managing game players, villages, and game mechanics',
             'features' => [
                 'Player Management',
-                'Village Management', 
+                'Village Management',
                 'Building Upgrades',
                 'Resource Management',
                 'Authentication',
@@ -80,9 +80,9 @@ class ApiDocumentationController extends Controller
 
     /**
      * Get API health status
-     * 
+     *
      * @description Check the health status of the API and its dependencies.
-     * 
+     *
      * @response 200 {
      *   "status": "healthy",
      *   "timestamp": "2023-01-01T00:00:00.000000Z",
@@ -95,7 +95,7 @@ class ApiDocumentationController extends Controller
      *   "uptime": "99.9%",
      *   "response_time": "45ms"
      * }
-     * 
+     *
      * @response 503 {
      *   "status": "unhealthy",
      *   "timestamp": "2023-01-01T00:00:00.000000Z",
@@ -108,7 +108,7 @@ class ApiDocumentationController extends Controller
      *   "uptime": "99.9%",
      *   "response_time": "45ms"
      * }
-     * 
+     *
      * @tag Documentation
      * @tag Health Check
      */
@@ -149,7 +149,6 @@ class ApiDocumentationController extends Controller
                 'uptime' => '99.9%',
                 'response_time' => '45ms'
             ], $statusCode);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'unhealthy',
@@ -162,9 +161,9 @@ class ApiDocumentationController extends Controller
 
     /**
      * Get API endpoints list
-     * 
+     *
      * @description Retrieve a list of all available API endpoints with their methods and descriptions.
-     * 
+     *
      * @response 200 {
      *   "endpoints": [
      *     {
@@ -175,7 +174,7 @@ class ApiDocumentationController extends Controller
      *       "tags": ["Authentication"]
      *     },
      *     {
-     *       "method": "GET", 
+     *       "method": "GET",
      *       "path": "/api/game/villages",
      *       "description": "Get player's villages",
      *       "authenticated": true,
@@ -185,12 +184,12 @@ class ApiDocumentationController extends Controller
      *   "total": 6,
      *   "tags": [
      *     "Authentication",
-     *     "Player Management", 
+     *     "Player Management",
      *     "Village Management",
      *     "Documentation"
      *   ]
      * }
-     * 
+     *
      * @tag Documentation
      */
     public function getEndpoints(): JsonResponse
@@ -207,7 +206,7 @@ class ApiDocumentationController extends Controller
                 [
                     'method' => 'GET',
                     'path' => '/api/game/villages',
-                    'description' => 'Get player\'s villages',
+                    'description' => "Get player's villages",
                     'authenticated' => true,
                     'tags' => ['Village Management']
                 ],

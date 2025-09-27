@@ -4,8 +4,8 @@ namespace App\Forms;
 
 use App\Models\Game\BuildingType;
 use App\Models\Game\Village;
-use Metalogico\Formello\Formello;
 use Intervention\Validation\Rules\Username;
+use Metalogico\Formello\Formello;
 
 class BuildingForm extends Formello
 {

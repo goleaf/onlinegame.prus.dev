@@ -3,8 +3,8 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Hero extends Model
@@ -35,10 +35,12 @@ class Hero extends Model
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
     protected $referenceStrategy = 'template';
+
     protected $referenceTemplate = [
         'format' => 'HERO-{YEAR}{MONTH}{SEQ}',
         'sequence_length' => 4,
     ];
+
     protected $referencePrefix = 'HERO';
 
     public function player(): BelongsTo
@@ -61,13 +63,13 @@ class Hero extends Model
     public function gainExperience(int $amount): void
     {
         $this->experience += $amount;
-        
+
         // Check for level up
         $requiredExp = $this->level * 1000;
         if ($this->experience >= $requiredExp) {
             $this->levelUp();
         }
-        
+
         $this->save();
     }
 
@@ -77,7 +79,7 @@ class Hero extends Model
         $this->attack_power += 10;
         $this->defense_power += 10;
         $this->max_health += 100;
-        $this->health = $this->max_health; // Full heal on level up
+        $this->health = $this->max_health;  // Full heal on level up
     }
 
     public function heal(int $amount): void
@@ -170,11 +172,11 @@ class Hero extends Model
     {
         $equipment = $this->equipment ?? [];
         $bonus = 0;
-        
+
         foreach ($equipment as $item => $stats) {
             $bonus += $stats[$stat] ?? 0;
         }
-        
+
         return $bonus;
     }
 
@@ -218,19 +220,19 @@ class Hero extends Model
         if (!$this->is_active) {
             return 'inactive';
         }
-        
+
         if (!$this->isAlive()) {
             return 'dead';
         }
-        
+
         if ($this->getHealthPercentage() < 25) {
             return 'critical';
         }
-        
+
         if ($this->getHealthPercentage() < 50) {
             return 'wounded';
         }
-        
+
         return 'healthy';
     }
 
@@ -239,9 +241,10 @@ class Hero extends Model
      */
     public function scopeReadyForBattle($query)
     {
-        return $query->where('is_active', true)
-                    ->where('health', '>', 0)
-                    ->whereRaw('(health / max_health) > 0.5');
+        return $query
+            ->where('is_active', true)
+            ->where('health', '>', 0)
+            ->whereRaw('(health / max_health) > 0.5');
     }
 
     /**
@@ -249,16 +252,19 @@ class Hero extends Model
      */
     public function scopeByStatus($query, string $status)
     {
-        return match($status) {
-            'healthy' => $query->where('is_active', true)
-                              ->where('health', '>', 0)
-                              ->whereRaw('(health / max_health) >= 0.5'),
-            'wounded' => $query->where('is_active', true)
-                              ->where('health', '>', 0)
-                              ->whereRaw('(health / max_health) BETWEEN 0.25 AND 0.5'),
-            'critical' => $query->where('is_active', true)
-                               ->where('health', '>', 0)
-                               ->whereRaw('(health / max_health) < 0.25'),
+        return match ($status) {
+            'healthy' => $query
+                ->where('is_active', true)
+                ->where('health', '>', 0)
+                ->whereRaw('(health / max_health) >= 0.5'),
+            'wounded' => $query
+                ->where('is_active', true)
+                ->where('health', '>', 0)
+                ->whereRaw('(health / max_health) BETWEEN 0.25 AND 0.5'),
+            'critical' => $query
+                ->where('is_active', true)
+                ->where('health', '>', 0)
+                ->whereRaw('(health / max_health) < 0.25'),
             'dead' => $query->where('health', '<=', 0),
             'inactive' => $query->where('is_active', false),
             default => $query

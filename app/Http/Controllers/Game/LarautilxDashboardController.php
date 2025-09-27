@@ -41,8 +41,8 @@ class LarautilxDashboardController extends Controller
     public function getDashboardData()
     {
         try {
-            $cacheKey = "larautilx_dashboard_data_" . auth()->id();
-            
+            $cacheKey = 'larautilx_dashboard_data_' . auth()->id();
+
             $data = SmartCache::remember($cacheKey, now()->addMinutes(15), function () {
                 return [
                     'integration_status' => $this->integrationService->getIntegrationStatus(),
@@ -64,7 +64,6 @@ class LarautilxDashboardController extends Controller
             ], 'larautilx_dashboard');
 
             return $this->successResponse($data, 'Larautilx dashboard data retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving Larautilx dashboard data', [
                 'error' => $e->getMessage(),
@@ -240,8 +239,8 @@ class LarautilxDashboardController extends Controller
             ],
             'larautilx_usage' => [
                 'api_requests_today' => \App\Models\Game\Player::whereDate('last_active_at', today())->count(),
-                'cache_hits' => 'N/A', // Would need cache driver support
-                'rate_limited_requests' => 'N/A', // Would need rate limiter tracking
+                'cache_hits' => 'N/A',  // Would need cache driver support
+                'rate_limited_requests' => 'N/A',  // Would need rate limiter tracking
             ],
         ];
     }
@@ -419,7 +418,7 @@ class LarautilxDashboardController extends Controller
                     ],
                 ],
                 'api_endpoints' => [
-                    'total_endpoints' => 50, // Approximate count
+                    'total_endpoints' => 50,  // Approximate count
                     'crud_endpoints' => 15,
                     'advanced_endpoints' => 25,
                     'ai_endpoints' => 10,
@@ -438,7 +437,6 @@ class LarautilxDashboardController extends Controller
             ], 'larautilx_dashboard');
 
             return $this->successResponse($summary, 'Larautilx integration summary retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving Larautilx integration summary', [
                 'error' => $e->getMessage(),
@@ -473,7 +471,6 @@ class LarautilxDashboardController extends Controller
             ], 'larautilx_dashboard');
 
             return $this->successResponse($results, 'Larautilx components tested successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error testing Larautilx components', [
                 'error' => $e->getMessage(),

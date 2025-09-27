@@ -126,4 +126,3 @@ class EnhancedDebugMiddleware
         return round($bytes, 2) . ' ' . $units[$pow];
     }
 }
-

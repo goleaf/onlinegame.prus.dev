@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Game\World;
 use App\Models\Game\Player;
+use App\Models\Game\World;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
@@ -63,22 +63,23 @@ class GenerateSitemap extends Command
             }
         } catch (\Exception $e) {
             $this->warn('Could not fetch worlds for sitemap: ' . $e->getMessage());
-            $worlds = collect(); // Empty collection for count
+            $worlds = collect();  // Empty collection for count
         }
 
         // Public player profiles (if any exist and are public)
         // Note: Commenting out until is_public column is added to players table
+
         /*
-        $publicPlayers = Player::where('is_public', true)->limit(100)->get();
-        foreach ($publicPlayers as $player) {
-            $xml .= $this->generateUrlEntry(
-                $baseUrl . '/game/player/' . $player->id,
-                '0.5',
-                'weekly',
-                $player->updated_at
-            );
-        }
-        */
+         * $publicPlayers = Player::where('is_public', true)->limit(100)->get();
+         * foreach ($publicPlayers as $player) {
+         *     $xml .= $this->generateUrlEntry(
+         *         $baseUrl . '/game/player/' . $player->id,
+         *         '0.5',
+         *         'weekly',
+         *         $player->updated_at
+         *     );
+         * }
+         */
 
         $xml .= '</urlset>' . PHP_EOL;
 
@@ -98,13 +99,13 @@ class GenerateSitemap extends Command
     {
         $xml = '  <url>' . PHP_EOL;
         $xml .= '    <loc>' . htmlspecialchars($url) . '</loc>' . PHP_EOL;
-        
+
         if ($lastmod) {
             $xml .= '    <lastmod>' . $lastmod->format('Y-m-d') . '</lastmod>' . PHP_EOL;
         } else {
             $xml .= '    <lastmod>' . now()->format('Y-m-d') . '</lastmod>' . PHP_EOL;
         }
-        
+
         $xml .= '    <changefreq>' . $changefreq . '</changefreq>' . PHP_EOL;
         $xml .= '    <priority>' . $priority . '</priority>' . PHP_EOL;
         $xml .= '  </url>' . PHP_EOL;

@@ -38,7 +38,6 @@ class APIDocumentation extends Component
                 $this->filteredEndpoints = $this->documentation['endpoints'] ?? [];
                 $this->dispatch('documentationLoaded', ['data' => $this->documentation]);
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading API documentation', [
                 'error' => $e->getMessage(),
@@ -74,7 +73,7 @@ class APIDocumentation extends Component
             $filteredCategory = [];
             foreach ($endpoints as $endpoint => $details) {
                 if (str_contains(strtolower($endpoint), $searchQuery) ||
-                    str_contains(strtolower($details['description'] ?? ''), $searchQuery)) {
+                        str_contains(strtolower($details['description'] ?? ''), $searchQuery)) {
                     $filteredCategory[$endpoint] = $details;
                 }
             }
@@ -124,7 +123,6 @@ class APIDocumentation extends Component
             }
 
             throw new \Exception('API request failed: ' . $response->body());
-
         } catch (\Exception $e) {
             LoggingUtil::error('API request failed', [
                 'method' => $method,
@@ -151,4 +149,3 @@ class APIDocumentation extends Component
         ]);
     }
 }
-

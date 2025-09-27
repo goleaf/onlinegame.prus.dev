@@ -11,8 +11,9 @@ use App\Services\QueryOptimizationService;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
-use SmartCache\Facades\SmartCache;
 use sbamtr\LaravelQueryEnrich\QE;
+use SmartCache\Facades\SmartCache;
+
 use function sbamtr\LaravelQueryEnrich\c;
 
 class VillageManager extends Component

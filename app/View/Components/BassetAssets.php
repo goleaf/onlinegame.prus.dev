@@ -35,7 +35,7 @@ class BassetAssets extends Component
     public function getAssetUrls(): array
     {
         $urls = [];
-        
+
         foreach ($this->assets as $asset) {
             if (is_string($asset)) {
                 $urls[] = basset($asset);
@@ -59,4 +59,3 @@ class BassetAssets extends Component
         return BassetHelper::getPreconnectTags();
     }
 }
-

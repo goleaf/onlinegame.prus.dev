@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Game;
 
-use App\Models\Game\Village;
 use App\Models\Game\UnitType;
+use App\Models\Game\Village;
 use App\Services\BattleSimulationService;
 use App\Services\DefenseCalculationService;
 use Livewire\Component;
@@ -32,14 +32,14 @@ class BattleSimulator extends Component
         $this->defenseService = new DefenseCalculationService();
         $this->attackerVillageId = $attackerVillageId;
         $this->defenderVillageId = $defenderVillageId;
-        
+
         if ($this->attackerVillageId) {
             $this->loadAttackerVillage();
         }
         if ($this->defenderVillageId) {
             $this->loadDefenderVillage();
         }
-        
+
         $this->loadAvailableTroops();
     }
 
@@ -47,7 +47,7 @@ class BattleSimulator extends Component
     {
         $this->attackerVillage = Village::with(['troops.unitType', 'resources'])
             ->find($this->attackerVillageId);
-            
+
         if ($this->attackerVillage) {
             $this->loadAttackingTroops();
         }
@@ -57,7 +57,7 @@ class BattleSimulator extends Component
     {
         $this->defenderVillage = Village::with(['troops.unitType', 'buildings.buildingType', 'resources'])
             ->find($this->defenderVillageId);
-            
+
         if ($this->defenderVillage) {
             $this->loadDefendingTroops();
         }
@@ -111,7 +111,7 @@ class BattleSimulator extends Component
     {
         $unitTypes = UnitType::all();
         $this->availableTroops = [];
-        
+
         foreach ($unitTypes as $unitType) {
             $this->availableTroops[$unitType->name] = [
                 'id' => $unitType->id,
@@ -151,14 +151,14 @@ class BattleSimulator extends Component
             $this->availableTroops,
             $this->totalTroops
         );
-        
+
         $this->showOptimization = true;
     }
 
     public function updateTroopCount($index, $count)
     {
         if (isset($this->attackingTroops[$index])) {
-            $this->attackingTroops[$index]['count'] = max(0, (int)$count);
+            $this->attackingTroops[$index]['count'] = max(0, (int) $count);
         }
     }
 
@@ -167,7 +167,7 @@ class BattleSimulator extends Component
         if (!$this->defenderVillage) {
             return null;
         }
-        
+
         return $this->defenseService->getDefenseReport($this->defenderVillage);
     }
 
@@ -176,7 +176,7 @@ class BattleSimulator extends Component
         if (!$this->defenderVillage) {
             return null;
         }
-        
+
         return $this->battleService->analyzeBattleHistory($this->defenderVillage);
     }
 
@@ -185,7 +185,7 @@ class BattleSimulator extends Component
         if (!$this->defenderVillage) {
             return [];
         }
-        
+
         return $this->battleService->getBattleRecommendations($this->defenderVillage);
     }
 
@@ -194,4 +194,3 @@ class BattleSimulator extends Component
         return view('livewire.game.battle-simulator');
     }
 }
-

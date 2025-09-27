@@ -14,8 +14,9 @@ use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use WendellAdriel\Lift\Lift;
 use sbamtr\LaravelQueryEnrich\QE;
+use WendellAdriel\Lift\Lift;
+
 use function sbamtr\LaravelQueryEnrich\c;
 
 class Alliance extends Model implements Auditable
@@ -74,7 +75,6 @@ class Alliance extends Model implements Auditable
     {
         return $this->belongsTo(World::class);
     }
-
 
     public function leader(): BelongsTo
     {
@@ -156,18 +156,20 @@ class Alliance extends Model implements Auditable
                 ->as('max_points'),
             QE::select(QE::count(c('id')))
                 ->from('villages', 'v')
-                ->whereIn('v.player_id', function($subQuery) {
-                    $subQuery->select('id')
-                             ->from('players', 'p5')
-                             ->whereColumn('p5.alliance_id', c('alliances.id'));
+                ->whereIn('v.player_id', function ($subQuery) {
+                    $subQuery
+                        ->select('id')
+                        ->from('players', 'p5')
+                        ->whereColumn('p5.alliance_id', c('alliances.id'));
                 })
                 ->as('total_villages'),
             QE::select(QE::sum(c('population')))
                 ->from('villages', 'v2')
-                ->whereIn('v2.player_id', function($subQuery) {
-                    $subQuery->select('id')
-                             ->from('players', 'p6')
-                             ->whereColumn('p6.alliance_id', c('alliances.id'));
+                ->whereIn('v2.player_id', function ($subQuery) {
+                    $subQuery
+                        ->select('id')
+                        ->from('players', 'p6')
+                        ->whereColumn('p6.alliance_id', c('alliances.id'));
                 })
                 ->as('total_population')
         ]);

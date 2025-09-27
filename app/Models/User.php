@@ -3,21 +3,21 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+use App\Traits\Commenter;
 use EloquentFiltering\AllowedFilterList;
 use EloquentFiltering\Filter;
 use EloquentFiltering\FilterType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Traits\Commenter;
+use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
 use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
+use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
-use MohamedSaid\Referenceable\Traits\HasReference;
 
 class User extends Authenticatable implements Auditable
 {
@@ -83,7 +83,7 @@ class User extends Authenticatable implements Auditable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'phone' => \Propaganistas\LaravelPhone\Casts\RawPhoneNumberCast::class.':phone_country',
+            'phone' => \Propaganistas\LaravelPhone\Casts\RawPhoneNumberCast::class . ':phone_country',
             'reference_number' => 'string',
         ];
     }
@@ -104,7 +104,7 @@ class User extends Authenticatable implements Auditable
     public function getGameStats()
     {
         $startTime = microtime(true);
-        
+
         $player = $this->player;
         if (!$player) {
             ds('User has no player', [
@@ -112,7 +112,7 @@ class User extends Authenticatable implements Auditable
                 'user_name' => $this->name,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
             ])->label('User Game Stats - No Player');
-            
+
             return null;
         }
 
@@ -149,9 +149,9 @@ class User extends Authenticatable implements Auditable
     public function hasActiveGameSession(): bool
     {
         $startTime = microtime(true);
-        
+
         $hasActiveSession = $this->player && $this->player->is_active;
-        
+
         ds('User active game session check', [
             'user_id' => $this->id,
             'user_name' => $this->name,
@@ -182,14 +182,14 @@ class User extends Authenticatable implements Auditable
     public function isOnline(): bool
     {
         $startTime = microtime(true);
-        
+
         if (!$this->player) {
             ds('User is not online - no player', [
                 'user_id' => $this->id,
                 'user_name' => $this->name,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
             ])->label('User Online Check - No Player');
-            
+
             return false;
         }
 
@@ -217,9 +217,9 @@ class User extends Authenticatable implements Auditable
     public function getVillages()
     {
         $startTime = microtime(true);
-        
+
         $villages = $this->player ? $this->player->villages : collect();
-        
+
         ds('User villages retrieved', [
             'user_id' => $this->id,
             'user_name' => $this->name,
@@ -238,9 +238,9 @@ class User extends Authenticatable implements Auditable
     public function getCapitalVillage()
     {
         $startTime = microtime(true);
-        
+
         $capitalVillage = $this->player ? $this->player->villages->where('is_capital', true)->first() : null;
-        
+
         ds('User capital village retrieved', [
             'user_id' => $this->id,
             'user_name' => $this->name,

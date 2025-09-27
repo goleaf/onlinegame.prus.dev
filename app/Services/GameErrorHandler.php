@@ -50,7 +50,7 @@ class GameErrorHandler
         ];
 
         $message = strtolower($exception->getMessage());
-        
+
         foreach ($criticalPatterns as $pattern) {
             if (str_contains($message, $pattern)) {
                 return true;
@@ -67,18 +67,19 @@ class GameErrorHandler
     {
         try {
             $admins = config('game.admin_emails', ['admin@example.com']);
-            
+
             foreach ($admins as $adminEmail) {
                 Mail::raw(
-                    "Critical Game Error Occurred:\n\n" .
-                    "Error: {$exception->getMessage()}\n" .
-                    "File: {$exception->getFile()}\n" .
-                    "Line: {$exception->getLine()}\n" .
-                    "Time: " . now()->toISOString() . "\n" .
-                    "Context: " . json_encode($context, JSON_PRETTY_PRINT),
+                    "Critical Game Error Occurred:\n\n"
+                        . "Error: {$exception->getMessage()}\n"
+                        . "File: {$exception->getFile()}\n"
+                        . "Line: {$exception->getLine()}\n"
+                        . 'Time: ' . now()->toISOString() . "\n"
+                        . 'Context: ' . json_encode($context, JSON_PRETTY_PRINT),
                     function ($message) use ($adminEmail) {
-                        $message->to($adminEmail)
-                               ->subject('Critical Game Error Alert');
+                        $message
+                            ->to($adminEmail)
+                            ->subject('Critical Game Error Alert');
                     }
                 );
             }
@@ -173,7 +174,7 @@ class GameErrorHandler
         ];
 
         $errorType = self::getErrorType($exception);
-        
+
         return $userMessages[$errorType] ?? 'An unexpected error occurred. Please try again.';
     }
 
@@ -183,14 +184,18 @@ class GameErrorHandler
     private static function getErrorType(Exception $exception): string
     {
         $message = strtolower($exception->getMessage());
-        
-        if (str_contains($message, 'battle')) return 'battle';
-        if (str_contains($message, 'building')) return 'building';
-        if (str_contains($message, 'movement')) return 'movement';
-        if (str_contains($message, 'resource')) return 'resource';
-        if (str_contains($message, 'alliance')) return 'alliance';
-        
+
+        if (str_contains($message, 'battle'))
+            return 'battle';
+        if (str_contains($message, 'building'))
+            return 'building';
+        if (str_contains($message, 'movement'))
+            return 'movement';
+        if (str_contains($message, 'resource'))
+            return 'resource';
+        if (str_contains($message, 'alliance'))
+            return 'alliance';
+
         return 'general';
     }
 }
-

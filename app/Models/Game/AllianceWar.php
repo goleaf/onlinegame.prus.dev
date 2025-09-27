@@ -3,8 +3,8 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class AllianceWar extends Model
@@ -77,7 +77,7 @@ class AllianceWar extends Model
         if ($this->ended_at) {
             return $this->declared_at->diffInDays($this->ended_at);
         }
-        
+
         return $this->declared_at->diffInDays(now());
     }
 
@@ -156,8 +156,9 @@ class AllianceWar extends Model
      */
     public function scopeInvolvingAlliance($query, Alliance $alliance)
     {
-        return $query->where('attacker_alliance_id', $alliance->id)
-                    ->orWhere('defender_alliance_id', $alliance->id);
+        return $query
+            ->where('attacker_alliance_id', $alliance->id)
+            ->orWhere('defender_alliance_id', $alliance->id);
     }
 
     /**

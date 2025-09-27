@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Services\GamePerformanceMonitor;
 use App\Services\GameErrorHandler;
+use App\Services\GamePerformanceMonitor;
 use App\Utilities\GameUtility;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 class GameAdminCommand extends Command
@@ -45,22 +45,22 @@ class GameAdminCommand extends Command
     private function showGameStats()
     {
         $this->info('=== Game Statistics ===');
-        
+
         // Player statistics
         $totalPlayers = DB::table('users')->count();
         $activePlayers = DB::table('users')
             ->where('last_activity_at', '>=', now()->subDays(7))
             ->count();
-        
+
         // Village statistics
         $totalVillages = DB::table('villages')->count();
         $activeVillages = DB::table('villages')
             ->where('updated_at', '>=', now()->subDays(1))
             ->count();
-        
+
         // Alliance statistics
         $totalAlliances = DB::table('alliances')->count();
-        
+
         // Battle statistics
         $totalBattles = DB::table('battles')->count();
         $recentBattles = DB::table('battles')
@@ -81,9 +81,9 @@ class GameAdminCommand extends Command
     private function showPerformanceReport()
     {
         $this->info('=== Performance Report ===');
-        
+
         $report = GamePerformanceMonitor::generatePerformanceReport();
-        
+
         $this->info('Performance Statistics:');
         $this->table(
             ['Metric', 'Value'],
@@ -142,7 +142,7 @@ class GameAdminCommand extends Command
                 ->increment($type, $amount);
 
             $this->info("Added {$amount} {$type} to village {$villageId}");
-            
+
             GameErrorHandler::logGameAction('admin_give_resources', [
                 'admin_id' => auth()->id(),
                 'player_id' => $playerId,
@@ -150,7 +150,6 @@ class GameAdminCommand extends Command
                 'resource_type' => $type,
                 'amount' => $amount,
             ]);
-
         } catch (\Exception $e) {
             $this->error('Failed to give resources: ' . $e->getMessage());
             GameErrorHandler::handleGameError($e, [
@@ -207,12 +206,11 @@ class GameAdminCommand extends Command
             DB::commit();
 
             $this->info("Player {$playerId} has been reset successfully");
-            
+
             GameErrorHandler::logGameAction('admin_reset_player', [
                 'admin_id' => auth()->id(),
                 'player_id' => $playerId,
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             $this->error('Failed to reset player: ' . $e->getMessage());
@@ -243,7 +241,7 @@ class GameAdminCommand extends Command
                 ->where('created_at', '<', now()->subDays(14))
                 ->delete();
 
-            $this->info("Cleanup completed:");
+            $this->info('Cleanup completed:');
             $this->line("- Deleted {$deletedBattles} old battle reports");
             $this->line("- Deleted {$deletedMovements} old movements");
             $this->line("- Deleted {$deletedLogs} old log entries");
@@ -254,7 +252,6 @@ class GameAdminCommand extends Command
                 'deleted_movements' => $deletedMovements,
                 'deleted_logs' => $deletedLogs,
             ]);
-
         } catch (\Exception $e) {
             $this->error('Cleanup failed: ' . $e->getMessage());
             GameErrorHandler::handleGameError($e, [
@@ -269,7 +266,7 @@ class GameAdminCommand extends Command
 
         try {
             $backupPath = storage_path('backups/game_backup_' . now()->format('Y_m_d_H_i_s') . '.sql');
-            
+
             // Create backup directory if it doesn't exist
             if (!file_exists(dirname($backupPath))) {
                 mkdir(dirname($backupPath), 0755, true);
@@ -289,7 +286,7 @@ class GameAdminCommand extends Command
 
             if ($returnCode === 0) {
                 $this->info("Backup created successfully: {$backupPath}");
-                
+
                 GameErrorHandler::logGameAction('admin_backup', [
                     'admin_id' => auth()->id(),
                     'backup_path' => $backupPath,
@@ -297,7 +294,6 @@ class GameAdminCommand extends Command
             } else {
                 $this->error('Backup failed');
             }
-
         } catch (\Exception $e) {
             $this->error('Backup failed: ' . $e->getMessage());
             GameErrorHandler::handleGameError($e, [
@@ -322,4 +318,3 @@ class GameAdminCommand extends Command
         $this->line('  php artisan game:admin reset-player --player=1');
     }
 }
-

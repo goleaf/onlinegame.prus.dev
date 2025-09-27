@@ -26,7 +26,9 @@ class CommentSection extends Component
 
     public function loadComments()
     {
-        $this->comments = $this->model->topLevelComments()
+        $this->comments = $this
+            ->model
+            ->topLevelComments()
             ->with(['user', 'approvedReplies.user'])
             ->orderBy('is_pinned', 'desc')
             ->orderBy('created_at', 'desc')
@@ -86,7 +88,7 @@ class CommentSection extends Component
     public function deleteComment($commentId)
     {
         $comment = Comment::findOrFail($commentId);
-        
+
         // Check if user can delete this comment
         if ($comment->user_id !== auth()->id() && !auth()->user()->can('delete-comments')) {
             $this->dispatch('error', 'You are not authorized to delete this comment.');

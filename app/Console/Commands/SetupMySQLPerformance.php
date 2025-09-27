@@ -175,4 +175,3 @@ class SetupMySQLPerformance extends Command
         }
     }
 }
-

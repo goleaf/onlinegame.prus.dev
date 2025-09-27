@@ -115,4 +115,3 @@ class DefenseCalculator extends Component
         return view('livewire.game.defense-calculator');
     }
 }
-

@@ -38,7 +38,6 @@ class AIController extends Controller
             ], 'ai_service');
 
             return $this->successResponse($status, 'AI service status retrieved successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving AI service status', [
                 'error' => $e->getMessage(),
@@ -82,7 +81,6 @@ class AIController extends Controller
                 'count' => count($names),
                 'tribe' => $tribe,
             ], 'Village names generated successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating village names', [
                 'error' => $e->getMessage(),
@@ -123,7 +121,6 @@ class AIController extends Controller
                 'names' => $names,
                 'count' => count($names),
             ], 'Alliance names generated successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating alliance names', [
                 'error' => $e->getMessage(),
@@ -169,7 +166,6 @@ class AIController extends Controller
                 'quest_type' => $validated['quest_type'],
                 'context' => $validated['context'] ?? [],
             ], 'Quest description generated successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating quest description', [
                 'error' => $e->getMessage(),
@@ -222,7 +218,6 @@ class AIController extends Controller
                 'report' => $report,
                 'battle_data' => $battleData,
             ], 'Battle report generated successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating battle report', [
                 'error' => $e->getMessage(),
@@ -269,7 +264,6 @@ class AIController extends Controller
                 'message_type' => $validated['message_type'],
                 'context' => $validated['context'] ?? [],
             ], 'Player message generated successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating player message', [
                 'error' => $e->getMessage(),
@@ -315,7 +309,6 @@ class AIController extends Controller
                 'event_type' => $validated['event_type'],
                 'world_data' => $validated['world_data'] ?? [],
             ], 'World event generated successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating world event', [
                 'error' => $e->getMessage(),
@@ -355,7 +348,6 @@ class AIController extends Controller
                 'suggestion' => $suggestion,
                 'game_state' => $validated['game_state'],
             ], 'Strategy suggestion generated successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating strategy suggestion', [
                 'error' => $e->getMessage(),
@@ -417,7 +409,6 @@ class AIController extends Controller
                 'prompt' => $validated['prompt'],
                 'options' => $options,
             ], 'Custom content generated successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating custom content', [
                 'error' => $e->getMessage(),
@@ -449,7 +440,6 @@ class AIController extends Controller
                 'provider' => $validated['provider'],
                 'status' => $this->aiService->getStatus(),
             ], 'AI provider switched successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error switching AI provider', [
                 'error' => $e->getMessage(),
@@ -460,4 +450,3 @@ class AIController extends Controller
         }
     }
 }
-

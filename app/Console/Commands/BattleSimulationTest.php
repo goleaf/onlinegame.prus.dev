@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Game\Village;
 use App\Models\Game\UnitType;
+use App\Models\Game\Village;
 use App\Services\BattleSimulationService;
 use App\Services\DefenseCalculationService;
 use Illuminate\Console\Command;
@@ -27,7 +27,7 @@ class BattleSimulationTest extends Command
         $optimize = $this->option('optimize');
         $totalTroops = (int) $this->option('total-troops');
 
-        $this->info("Starting battle simulation test...");
+        $this->info('Starting battle simulation test...');
         $this->info("Attacker Village ID: {$attackerVillageId}");
         $this->info("Defender Village ID: {$defenderVillageId}");
         $this->info("Iterations: {$iterations}");
@@ -55,7 +55,7 @@ class BattleSimulationTest extends Command
 
         // Get defender defense report
         $defenseReport = $defenseService->getDefenseReport($defenderVillage);
-        $this->info("Defender Defensive Bonus: " . number_format($defenseReport['defensive_bonus'] * 100, 1) . "%");
+        $this->info('Defender Defensive Bonus: ' . number_format($defenseReport['defensive_bonus'] * 100, 1) . '%');
         $this->info("Defender Spy Defense: {$defenseReport['spy_defense']}%");
 
         // Prepare attacking troops
@@ -100,12 +100,12 @@ class BattleSimulationTest extends Command
             return 1;
         }
 
-        $this->info("Attacking Troops:");
+        $this->info('Attacking Troops:');
         foreach ($attackingTroops as $troop) {
             $this->line("  - {$troop['unit_type']}: {$troop['count']} (Attack: {$troop['attack']})");
         }
 
-        $this->info("Defending Troops:");
+        $this->info('Defending Troops:');
         foreach ($defendingTroops as $troop) {
             $this->line("  - {$troop['unit_type']}: {$troop['count']} (Defense: {$troop['defense_infantry']})");
         }
@@ -113,14 +113,14 @@ class BattleSimulationTest extends Command
         // Run simulation
         $this->info("\nRunning battle simulation...");
         $startTime = microtime(true);
-        
+
         $results = $battleService->simulateBattle(
             $attackingTroops,
             $defendingTroops,
             $defenderVillage,
             $iterations
         );
-        
+
         $endTime = microtime(true);
         $executionTime = round($endTime - $startTime, 2);
 
@@ -128,19 +128,19 @@ class BattleSimulationTest extends Command
         $this->info("\n=== BATTLE SIMULATION RESULTS ===");
         $this->info("Execution Time: {$executionTime} seconds");
         $this->info("Iterations: {$iterations}");
-        
+
         $this->info("\nWin Rates:");
-        $this->line("  Attacker Wins: " . number_format($results['attacker_win_rate'], 1) . "% ({$results['attacker_wins']} battles)");
-        $this->line("  Defender Wins: " . number_format($results['defender_win_rate'], 1) . "% ({$results['defender_wins']} battles)");
-        $this->line("  Draws: " . number_format($results['draw_rate'], 1) . "% ({$results['draws']} battles)");
+        $this->line('  Attacker Wins: ' . number_format($results['attacker_win_rate'], 1) . "% ({$results['attacker_wins']} battles)");
+        $this->line('  Defender Wins: ' . number_format($results['defender_win_rate'], 1) . "% ({$results['defender_wins']} battles)");
+        $this->line('  Draws: ' . number_format($results['draw_rate'], 1) . "% ({$results['draws']} battles)");
 
         $this->info("\nBattle Power Statistics:");
-        $this->line("  Attacker Average: " . number_format($results['battle_power_stats']['attacker_avg'], 0));
-        $this->line("  Defender Average: " . number_format($results['battle_power_stats']['defender_avg'], 0));
-        $this->line("  Attacker Range: " . number_format($results['battle_power_stats']['attacker_min']) . " - " . number_format($results['battle_power_stats']['attacker_max']));
-        $this->line("  Defender Range: " . number_format($results['battle_power_stats']['defender_min']) . " - " . number_format($results['battle_power_stats']['defender_max']));
+        $this->line('  Attacker Average: ' . number_format($results['battle_power_stats']['attacker_avg'], 0));
+        $this->line('  Defender Average: ' . number_format($results['battle_power_stats']['defender_avg'], 0));
+        $this->line('  Attacker Range: ' . number_format($results['battle_power_stats']['attacker_min']) . ' - ' . number_format($results['battle_power_stats']['attacker_max']));
+        $this->line('  Defender Range: ' . number_format($results['battle_power_stats']['defender_min']) . ' - ' . number_format($results['battle_power_stats']['defender_max']));
 
-        $this->info("\nDefensive Bonus: " . number_format($results['defensive_bonus'] * 100, 1) . "%");
+        $this->info("\nDefensive Bonus: " . number_format($results['defensive_bonus'] * 100, 1) . '%');
 
         if (!empty($results['attacker_avg_losses'])) {
             $this->info("\nAttacker Average Losses:");
@@ -166,11 +166,11 @@ class BattleSimulationTest extends Command
         // Run optimization if requested
         if ($optimize) {
             $this->info("\n=== TROOP OPTIMIZATION ===");
-            
+
             // Get available unit types
             $unitTypes = UnitType::all();
             $availableTroops = [];
-            
+
             foreach ($unitTypes as $unitType) {
                 $availableTroops[$unitType->name] = [
                     'id' => $unitType->id,
@@ -183,16 +183,16 @@ class BattleSimulationTest extends Command
             }
 
             $this->info("Optimizing troop composition for {$totalTroops} total troops...");
-            
+
             $optimizationResults = $battleService->optimizeTroopComposition(
                 $defenderVillage,
                 $availableTroops,
                 $totalTroops
             );
 
-            $this->info("Best Win Rate: " . number_format($optimizationResults['win_rate'], 1) . "%");
-            $this->info("Optimal Composition:");
-            
+            $this->info('Best Win Rate: ' . number_format($optimizationResults['win_rate'], 1) . '%');
+            $this->info('Optimal Composition:');
+
             foreach ($optimizationResults['composition'] as $troop) {
                 $totalPower = $troop['count'] * $troop['attack'];
                 $this->line("  - {$troop['unit_type']}: {$troop['count']} (Total Power: {$totalPower})");
@@ -202,9 +202,9 @@ class BattleSimulationTest extends Command
         // Get battle recommendations
         $this->info("\n=== BATTLE RECOMMENDATIONS ===");
         $recommendations = $battleService->getBattleRecommendations($defenderVillage);
-        
+
         if (empty($recommendations)) {
-            $this->info("No specific recommendations at this time.");
+            $this->info('No specific recommendations at this time.');
         } else {
             foreach ($recommendations as $recommendation) {
                 $priority = strtoupper($recommendation['priority']);
@@ -216,4 +216,3 @@ class BattleSimulationTest extends Command
         return 0;
     }
 }
-

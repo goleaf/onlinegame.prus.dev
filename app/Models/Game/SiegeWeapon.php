@@ -3,8 +3,8 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class SiegeWeapon extends Model
@@ -33,10 +33,12 @@ class SiegeWeapon extends Model
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
     protected $referenceStrategy = 'template';
+
     protected $referenceTemplate = [
         'format' => 'SW-{YEAR}{MONTH}{SEQ}',
         'sequence_length' => 4,
     ];
+
     protected $referencePrefix = 'SW';
 
     public function village(): BelongsTo

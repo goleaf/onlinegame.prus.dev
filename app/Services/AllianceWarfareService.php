@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Models\Game\Alliance;
-use App\Models\Game\Village;
-use App\Models\Game\Player;
 use App\Models\Game\Movement;
+use App\Models\Game\Player;
 use App\Models\Game\Report;
+use App\Models\Game\Village;
 use App\Services\BattleSimulationService;
 use App\Services\DefenseCalculationService;
 use App\Services\RabbitMQService;
@@ -32,7 +32,7 @@ class AllianceWarfareService
     public function declareWar(Alliance $attackerAlliance, Alliance $defenderAlliance, string $reason = ''): array
     {
         DB::beginTransaction();
-        
+
         try {
             // Create war record
             $war = \App\Models\Game\AllianceWar::create([
@@ -76,11 +76,10 @@ class AllianceWarfareService
                 'war_id' => $war->id,
                 'message' => "War declared successfully between {$attackerAlliance->name} and {$defenderAlliance->name}",
             ];
-
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Failed to declare war: " . $e->getMessage());
-            
+            Log::error('Failed to declare war: ' . $e->getMessage());
+
             return [
                 'success' => false,
                 'message' => 'Failed to declare war: ' . $e->getMessage(),
@@ -109,7 +108,8 @@ class AllianceWarfareService
         $attackerAlliance = $war->attackerAlliance;
         $defenderAlliance = $war->defenderAlliance;
 
-        $attackerVillageIds = $attackerAlliance->members()
+        $attackerVillageIds = $attackerAlliance
+            ->members()
             ->with('villages')
             ->get()
             ->pluck('villages')
@@ -117,7 +117,8 @@ class AllianceWarfareService
             ->pluck('id')
             ->toArray();
 
-        $defenderVillageIds = $defenderAlliance->members()
+        $defenderVillageIds = $defenderAlliance
+            ->members()
             ->with('villages')
             ->get()
             ->pluck('villages')
@@ -204,7 +205,7 @@ class AllianceWarfareService
 
         // Apply alliance bonuses
         $allianceBonuses = $this->calculateAllianceBonuses($war, $attackerVillage, $defenderVillage);
-        
+
         // Modify battle power based on alliance bonuses
         $attackerPower = $baseResult['battle_power_stats']['attacker_avg'] * (1 + $allianceBonuses['attacker_bonus']);
         $defenderPower = $baseResult['battle_power_stats']['defender_avg'] * (1 + $allianceBonuses['defender_bonus']);
@@ -215,10 +216,10 @@ class AllianceWarfareService
 
         if ($attackerPower > $defenderPower * 1.1) {
             $result = 'attacker_wins';
-            $warScoreChange = 10; // Attacker gains 10 points
+            $warScoreChange = 10;  // Attacker gains 10 points
         } elseif ($defenderPower > $attackerPower * 1.1) {
             $result = 'defender_wins';
-            $warScoreChange = -10; // Attacker loses 10 points
+            $warScoreChange = -10;  // Attacker loses 10 points
         }
 
         return [
@@ -250,8 +251,8 @@ class AllianceWarfareService
         $defenderSize = $defenderAlliance->members()->count();
 
         if ($attackerSize > $defenderSize) {
-            $attackerBonus -= 0.05; // 5% penalty for larger alliance
-            $defenderBonus += 0.05; // 5% bonus for smaller alliance
+            $attackerBonus -= 0.05;  // 5% penalty for larger alliance
+            $defenderBonus += 0.05;  // 5% bonus for smaller alliance
         } elseif ($defenderSize > $attackerSize) {
             $attackerBonus += 0.05;
             $defenderBonus -= 0.05;
@@ -262,7 +263,7 @@ class AllianceWarfareService
         $defenderActivity = $this->calculateAllianceActivity($defenderAlliance);
 
         if ($attackerActivity > $defenderActivity) {
-            $attackerBonus += 0.03; // 3% bonus for more active alliance
+            $attackerBonus += 0.03;  // 3% bonus for more active alliance
         } elseif ($defenderActivity > $attackerActivity) {
             $defenderBonus += 0.03;
         }
@@ -272,13 +273,13 @@ class AllianceWarfareService
         $defenderWarExperience = $this->calculateAllianceWarExperience($defenderAlliance);
 
         if ($attackerWarExperience > $defenderWarExperience) {
-            $attackerBonus += 0.02; // 2% bonus for more experienced alliance
+            $attackerBonus += 0.02;  // 2% bonus for more experienced alliance
         } elseif ($defenderWarExperience > $attackerWarExperience) {
             $defenderBonus += 0.02;
         }
 
         return [
-            'attacker_bonus' => max(-0.2, min(0.2, $attackerBonus)), // Cap at ±20%
+            'attacker_bonus' => max(-0.2, min(0.2, $attackerBonus)),  // Cap at ±20%
             'defender_bonus' => max(-0.2, min(0.2, $defenderBonus)),
         ];
     }
@@ -294,22 +295,22 @@ class AllianceWarfareService
 
         foreach ($members as $member) {
             $memberActivity = 0;
-            
+
             // Check recent battles
             $recentBattles = \App\Models\Game\Battle::where('attacker_id', $member->id)
                 ->orWhere('defender_id', $member->id)
                 ->where('occurred_at', '>=', now()->subDays(7))
                 ->count();
-            
+
             $memberActivity += $recentBattles * 0.1;
-            
+
             // Check recent movements
             $recentMovements = Movement::where('player_id', $member->id)
                 ->where('created_at', '>=', now()->subDays(7))
                 ->count();
-            
+
             $memberActivity += $recentMovements * 0.05;
-            
+
             $totalActivity += $memberActivity;
             $memberCount++;
         }
@@ -437,13 +438,13 @@ class AllianceWarfareService
         $content .= "Current War Score: {$war->war_score}\n\n";
 
         $content .= "=== BATTLE POWER ===\n";
-        $content .= "Attacker Power: " . number_format($battleData['attacker_power'], 0) . "\n";
-        $content .= "Defender Power: " . number_format($battleData['defender_power'], 0) . "\n\n";
+        $content .= 'Attacker Power: ' . number_format($battleData['attacker_power'], 0) . "\n";
+        $content .= 'Defender Power: ' . number_format($battleData['defender_power'], 0) . "\n\n";
 
         if (isset($battleData['alliance_bonuses'])) {
             $content .= "=== ALLIANCE BONUSES ===\n";
-            $content .= "Attacker Bonus: " . number_format($battleData['alliance_bonuses']['attacker_bonus'] * 100, 1) . "%\n";
-            $content .= "Defender Bonus: " . number_format($battleData['alliance_bonuses']['defender_bonus'] * 100, 1) . "%\n\n";
+            $content .= 'Attacker Bonus: ' . number_format($battleData['alliance_bonuses']['attacker_bonus'] * 100, 1) . "%\n";
+            $content .= 'Defender Bonus: ' . number_format($battleData['alliance_bonuses']['defender_bonus'] * 100, 1) . "%\n\n";
         }
 
         return $content;
@@ -510,10 +511,11 @@ class AllianceWarfareService
             ->get();
 
         $totalWars = $wars->count();
-        $warsWon = $wars->where('status', 'completed')
+        $warsWon = $wars
+            ->where('status', 'completed')
             ->filter(function ($war) use ($alliance) {
                 return ($war->attacker_alliance_id === $alliance->id && $war->war_score > 0) ||
-                       ($war->defender_alliance_id === $alliance->id && $war->war_score < 0);
+                    ($war->defender_alliance_id === $alliance->id && $war->war_score < 0);
             })
             ->count();
 
@@ -529,4 +531,3 @@ class AllianceWarfareService
         ];
     }
 }
-

@@ -48,7 +48,7 @@ class SeoValidate extends Command
     protected function validateUrl(string $url): void
     {
         $this->info("Validating URL: {$url}");
-        
+
         // This would require making HTTP requests to validate actual metadata
         // For now, we'll validate the configuration
         $this->validateConfiguration();
@@ -94,13 +94,13 @@ class SeoValidate extends Command
 
         foreach ($pages as $pageName => $metadata) {
             $this->info("\nValidating: {$pageName}");
-            
+
             $errors = SeoHelper::validate($metadata);
-            
+
             if (empty($errors)) {
-                $this->info("  ✅ All SEO metadata is valid");
+                $this->info('  ✅ All SEO metadata is valid');
             } else {
-                $this->error("  ❌ Found " . count($errors) . " issues:");
+                $this->error('  ❌ Found ' . count($errors) . ' issues:');
                 foreach ($errors as $error) {
                     $this->error("    - {$error}");
                 }
@@ -151,9 +151,9 @@ class SeoValidate extends Command
         }
 
         if (empty($errors)) {
-            $this->info("  ✅ SEO configuration is valid");
+            $this->info('  ✅ SEO configuration is valid');
         } else {
-            $this->error("  ❌ Found " . count($errors) . " configuration issues:");
+            $this->error('  ❌ Found ' . count($errors) . ' configuration issues:');
             foreach ($errors as $error) {
                 $this->error("    - {$error}");
             }

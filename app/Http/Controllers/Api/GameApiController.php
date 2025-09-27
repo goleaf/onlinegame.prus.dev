@@ -12,18 +12,18 @@ use Illuminate\Support\Facades\Validator;
 
 /**
  * @group Game API
- * 
+ *
  * API endpoints for managing game players, villages, and game mechanics.
  * All endpoints require authentication via Sanctum token.
- * 
+ *
  * @authenticated
- * 
+ *
  * This API provides comprehensive game management functionality including:
  * - Player authentication and profile management
  * - Village creation and management
  * - Building upgrades and resource management
  * - Game statistics and analytics
- * 
+ *
  * @tag Game Management
  * @tag Player Management
  * @tag Village Management
@@ -32,11 +32,11 @@ class GameApiController extends Controller
 {
     /**
      * Get authenticated user
-     * 
+     *
      * @authenticated
-     * 
+     *
      * @description Retrieve the currently authenticated user's information.
-     * 
+     *
      * @response 200 {
      *   "id": 1,
      *   "name": "John Doe",
@@ -45,39 +45,39 @@ class GameApiController extends Controller
      *   "created_at": "2023-01-01T00:00:00.000000Z",
      *   "updated_at": "2023-01-01T00:00:00.000000Z"
      * }
-     * 
+     *
      * @response 401 {
      *   "message": "Unauthenticated."
      * }
-     * 
+     *
      * @tag Authentication
      */
     public function getUser(Request $request): JsonResponse
     {
         $startTime = microtime(true);
-        
+
         ds('API: Get user request', [
             'endpoint' => 'getUser',
             'user_id' => $request->user()->id ?? null,
             'request_time' => now()
         ]);
-        
+
         $user = $request->user();
         $responseTime = round((microtime(true) - $startTime) * 1000, 2);
-        
+
         ds('API: Get user response', [
             'user_id' => $user->id,
             'response_time_ms' => $responseTime
         ]);
-        
+
         return response()->json($user);
     }
 
     /**
      * Get player's villages
-     * 
+     *
      * @authenticated
-     * 
+     *
      * @response 200 {
      *   "villages": [
      *     {
@@ -95,23 +95,23 @@ class GameApiController extends Controller
      *     }
      *   ]
      * }
-     * 
+     *
      * @response 401 {
      *   "message": "Unauthenticated."
      * }
-     * 
+     *
      * @tag Village Management
      */
     public function getVillages(Request $request): JsonResponse
     {
         $startTime = microtime(true);
-        
+
         ds('API: Get villages request', [
             'endpoint' => 'getVillages',
             'user_id' => $request->user()->id ?? null,
             'request_time' => now()
         ]);
-        
+
         $user = $request->user();
         $player = Player::where('user_id', $user->id)->first();
 
@@ -159,7 +159,7 @@ class GameApiController extends Controller
             });
 
         $responseTime = round((microtime(true) - $startTime) * 1000, 2);
-        
+
         ds('API: Get villages response', [
             'player_id' => $player->id,
             'villages_count' => $villages->count(),
@@ -171,13 +171,13 @@ class GameApiController extends Controller
 
     /**
      * Create a new village
-     * 
+     *
      * @authenticated
-     * 
+     *
      * @bodyParam name string required The name of the village. Example: "New Village"
      * @bodyParam x integer required X coordinate. Example: 50
      * @bodyParam y integer required Y coordinate. Example: 50
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "village": {
@@ -194,7 +194,7 @@ class GameApiController extends Controller
      *     "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     * 
+     *
      * @response 422 {
      *   "success": false,
      *   "message": "The given data was invalid.",
@@ -202,12 +202,12 @@ class GameApiController extends Controller
      *     "name": ["The name field is required."]
      *   }
      * }
-     * 
+     *
      * @response 404 {
      *   "success": false,
      *   "message": "Player not found"
      * }
-     * 
+     *
      * @tag Village Management
      */
     public function createVillage(Request $request): JsonResponse
@@ -258,12 +258,12 @@ class GameApiController extends Controller
 
     /**
      * Upgrade building in a village
-     * 
+     *
      * @authenticated
-     * 
+     *
      * @urlParam id integer required Village ID. Example: 1
      * @bodyParam building_type string required Type of building to upgrade. Example: "wood"
-     * 
+     *
      * @response 200 {
      *   "success": true,
      *   "village": {
@@ -280,17 +280,17 @@ class GameApiController extends Controller
      *     "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     * 
+     *
      * @response 401 {
      *   "success": false,
      *   "message": "Unauthorized"
      * }
-     * 
+     *
      * @response 404 {
      *   "success": false,
      *   "message": "Village not found"
      * }
-     * 
+     *
      * @tag Village Management
      */
     public function upgradeBuilding(Request $request, int $id): JsonResponse
@@ -332,7 +332,7 @@ class GameApiController extends Controller
         $resourceType = $buildingType;
         if (in_array($resourceType, ['wood', 'clay', 'iron', 'crop'])) {
             $village->increment('population', 1);
-            
+
             // Update player population
             $player->increment('population', 1);
         }
@@ -345,11 +345,11 @@ class GameApiController extends Controller
 
     /**
      * Get village details
-     * 
+     *
      * @authenticated
-     * 
+     *
      * @urlParam id integer required Village ID. Example: 1
-     * 
+     *
      * @response 200 {
      *   "village": {
      *     "id": 1,
@@ -367,17 +367,17 @@ class GameApiController extends Controller
      *     "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     * 
+     *
      * @response 401 {
      *   "success": false,
      *   "message": "Unauthorized"
      * }
-     * 
+     *
      * @response 404 {
      *   "success": false,
      *   "message": "Village not found"
      * }
-     * 
+     *
      * @tag Village Management
      */
     public function getVillage(Request $request, int $id): JsonResponse
@@ -418,9 +418,9 @@ class GameApiController extends Controller
 
     /**
      * Get player statistics
-     * 
+     *
      * @authenticated
-     * 
+     *
      * @response 200 {
      *   "player": {
      *     "id": 1,
@@ -438,12 +438,12 @@ class GameApiController extends Controller
      *     "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     * 
+     *
      * @response 404 {
      *   "success": false,
      *   "message": "Player not found"
      * }
-     * 
+     *
      * @tag Player Management
      */
     public function getPlayerStats(Request $request): JsonResponse
@@ -467,13 +467,13 @@ class GameApiController extends Controller
 
     /**
      * Get geographic data for villages
-     * 
+     *
      * @authenticated
-     * 
+     *
      * @queryParam radius integer Distance radius in kilometers. Example: 50
      * @queryParam center_lat float Center latitude. Example: 50.1109
      * @queryParam center_lon float Center longitude. Example: 8.6821
-     * 
+     *
      * @response 200 {
      *   "villages": [
      *     {
@@ -487,7 +487,7 @@ class GameApiController extends Controller
      *     }
      *   ]
      * }
-     * 
+     *
      * @tag Geographic Data
      */
     public function getGeographicData(Request $request): JsonResponse
@@ -526,10 +526,10 @@ class GameApiController extends Controller
             $centerLat = $request->input('center_lat');
             $centerLon = $request->input('center_lon');
 
-            $query->whereRaw("ST_Distance_Sphere(
+            $query->whereRaw('ST_Distance_Sphere(
                 POINT(longitude, latitude), 
                 POINT(?, ?)
-            ) <= ?", [$centerLon, $centerLat, $radius * 1000]);
+            ) <= ?', [$centerLon, $centerLat, $radius * 1000]);
         }
 
         $villages = $query->get()->map(function ($village) use ($request) {
@@ -570,18 +570,18 @@ class GameApiController extends Controller
 
     /**
      * Calculate distance between two villages
-     * 
+     *
      * @authenticated
-     * 
+     *
      * @queryParam village1_id integer required First village ID. Example: 1
      * @queryParam village2_id integer required Second village ID. Example: 2
-     * 
+     *
      * @response 200 {
      *   "distance_km": 15.5,
      *   "bearing": 245.3,
      *   "travel_time_minutes": 23
      * }
-     * 
+     *
      * @tag Geographic Data
      */
     public function calculateDistance(Request $request): JsonResponse
@@ -620,7 +620,7 @@ class GameApiController extends Controller
         }
 
         $geoService = app(\App\Services\GeographicService::class);
-        
+
         $distance = $geoService->calculateDistance(
             $village1->latitude ?? 0,
             $village1->longitude ?? 0,

@@ -57,4 +57,3 @@ class VillageResourcesComponent extends Component
         return $this->resources->getLeastAbundantResource();
     }
 }
-

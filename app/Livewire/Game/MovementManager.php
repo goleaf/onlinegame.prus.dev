@@ -571,7 +571,7 @@ class MovementManager extends Component
     private function calculateDistance(Village $village1, Village $village2)
     {
         $geoService = app(GeographicService::class);
-        
+
         // Use real-world coordinates if available, otherwise fall back to game coordinates
         if ($village1->latitude && $village1->longitude && $village2->latitude && $village2->longitude) {
             return $geoService->calculateDistance(
@@ -581,7 +581,7 @@ class MovementManager extends Component
                 $village2->longitude
             );
         }
-        
+
         // Fallback to game coordinate distance
         return $geoService->calculateGameDistance(
             $village1->x_coordinate,
@@ -594,11 +594,11 @@ class MovementManager extends Component
     private function calculateTravelTime($distance)
     {
         $geoService = app(GeographicService::class);
-        
+
         // Use realistic travel time based on distance
         // Assuming average troop speed of 20 km/h
-        $averageSpeed = 20; // km/h
-        
+        $averageSpeed = 20;  // km/h
+
         return $geoService->calculateTravelTime($distance, $averageSpeed);
     }
 

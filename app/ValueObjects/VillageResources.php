@@ -48,9 +48,9 @@ readonly class VillageResources
     public function isAnyResourceAtCapacity(): bool
     {
         return $this->amounts->wood >= $this->capacity->wood ||
-               $this->amounts->clay >= $this->capacity->clay ||
-               $this->amounts->iron >= $this->capacity->iron ||
-               $this->amounts->crop >= $this->capacity->crop;
+            $this->amounts->clay >= $this->capacity->clay ||
+            $this->amounts->iron >= $this->capacity->iron ||
+            $this->amounts->crop >= $this->capacity->crop;
     }
 
     /**
@@ -59,7 +59,8 @@ readonly class VillageResources
     public function getUtilizationPercentage(): float
     {
         $totalCapacity = $this->getTotalCapacity();
-        if ($totalCapacity === 0) return 0;
+        if ($totalCapacity === 0)
+            return 0;
 
         return ($this->getTotalAmount() / $totalCapacity) * 100;
     }
@@ -78,7 +79,8 @@ readonly class VillageResources
     public function getEfficiency(): float
     {
         $totalCapacity = $this->getTotalCapacity();
-        if ($totalCapacity === 0) return 0;
+        if ($totalCapacity === 0)
+            return 0;
 
         return $this->getTotalProduction() / $totalCapacity;
     }
@@ -149,7 +151,7 @@ readonly class VillageResources
      */
     public function isBalanced(): bool
     {
-        return $this->getResourceBalance() <= 3.0; // Most abundant is no more than 3x least abundant
+        return $this->getResourceBalance() <= 3.0;  // Most abundant is no more than 3x least abundant
     }
 
     /**
@@ -158,7 +160,8 @@ readonly class VillageResources
     public function getTimeToFillStorage(): float
     {
         $totalProduction = $this->getTotalProduction();
-        if ($totalProduction === 0) return 0;
+        if ($totalProduction === 0)
+            return 0;
 
         $availableCapacity = $this->getTotalCapacity() - $this->getTotalAmount();
         return max(0, $availableCapacity / $totalProduction);

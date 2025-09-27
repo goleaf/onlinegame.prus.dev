@@ -149,7 +149,7 @@ class IntrospectService
             } catch (\Exception $e) {
                 // Fallback: get all routes and filter manually
                 $allRoutes = Introspect::routes()->get();
-                $authRoutes = array_filter($allRoutes, function($route) {
+                $authRoutes = array_filter($allRoutes, function ($route) {
                     return str_contains($route, 'auth') || str_contains($route, 'login');
                 });
             }

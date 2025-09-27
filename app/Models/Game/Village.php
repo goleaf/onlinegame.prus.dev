@@ -4,16 +4,16 @@ namespace App\Models\Game;
 
 use App\Services\GeographicService;
 use App\ValueObjects\Coordinates;
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
-use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
-use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
-use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
+use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
+use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
+use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
@@ -77,7 +77,7 @@ class Village extends Model implements Auditable
     protected function coordinates(): Attribute
     {
         return Attribute::make(
-            get: fn () => new Coordinates(
+            get: fn() => new Coordinates(
                 x: $this->x_coordinate,
                 y: $this->y_coordinate,
                 latitude: $this->latitude,
@@ -85,7 +85,7 @@ class Village extends Model implements Auditable
                 elevation: $this->elevation,
                 geohash: $this->geohash
             ),
-            set: fn (Coordinates $coordinates) => [
+            set: fn(Coordinates $coordinates) => [
                 'x_coordinate' => $coordinates->x,
                 'y_coordinate' => $coordinates->y,
                 'latitude' => $coordinates->latitude,

@@ -49,7 +49,7 @@ class IntrospectAnalyzer extends Component
     public function mount()
     {
         $startTime = microtime(true);
-        
+
         ds('IntrospectAnalyzer mounted', [
             'component' => 'IntrospectAnalyzer',
             'mount_time' => now(),
@@ -57,9 +57,9 @@ class IntrospectAnalyzer extends Component
             'admin_panel' => true,
             'selected_tab' => $this->selectedTab
         ]);
-        
+
         $this->loadAnalysis();
-        
+
         $mountTime = round((microtime(true) - $startTime) * 1000, 2);
         ds('IntrospectAnalyzer mount completed', [
             'mount_time_ms' => $mountTime,
@@ -164,7 +164,7 @@ class IntrospectAnalyzer extends Component
         } catch (\Exception $e) {
             $this->isLoading = false;
             session()->flash('error', 'Analysis failed: ' . $e->getMessage());
-            
+
             ds('Analysis failed', [
                 'error' => $e->getMessage(),
                 'exception' => get_class($e),
@@ -375,4 +375,3 @@ class IntrospectAnalyzer extends Component
         ]);
     }
 }
-

@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Game\Message;
 use App\Models\Game\Player;
 use App\Services\MessageService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -76,7 +76,7 @@ class MessageController extends Controller
     public function getAllianceMessages(Request $request): JsonResponse
     {
         $player = Auth::user()->player;
-        
+
         if (!$player->alliance_id) {
             return response()->json([
                 'success' => false,
@@ -129,7 +129,6 @@ class MessageController extends Controller
                 'message' => 'Message sent successfully',
                 'data' => $message,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -144,7 +143,7 @@ class MessageController extends Controller
     public function sendAllianceMessage(Request $request): JsonResponse
     {
         $player = Auth::user()->player;
-        
+
         if (!$player->alliance_id) {
             return response()->json([
                 'success' => false,
@@ -180,7 +179,6 @@ class MessageController extends Controller
                 'message' => 'Alliance message sent successfully',
                 'data' => $message,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -208,7 +206,6 @@ class MessageController extends Controller
                     'message' => 'Message not found or access denied',
                 ], 404);
             }
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -236,7 +233,6 @@ class MessageController extends Controller
                     'message' => 'Message not found or access denied',
                 ], 404);
             }
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -257,7 +253,6 @@ class MessageController extends Controller
                 'success' => true,
                 'data' => $stats,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -295,7 +290,6 @@ class MessageController extends Controller
                 'message' => "{$updated} messages marked as read",
                 'updated_count' => $updated,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -333,7 +327,6 @@ class MessageController extends Controller
                 'message' => "{$deleted} messages deleted",
                 'deleted_count' => $deleted,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -349,15 +342,14 @@ class MessageController extends Controller
     {
         try {
             $players = Player::where('id', '!=', Auth::user()->player->id)
-                           ->select('id', 'name')
-                           ->orderBy('name')
-                           ->get();
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get();
 
             return response()->json([
                 'success' => true,
                 'data' => $players,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -373,12 +365,13 @@ class MessageController extends Controller
     {
         try {
             $message = Message::with(['sender', 'recipient', 'alliance'])
-                            ->where('id', $messageId)
-                            ->where(function ($q) {
-                                $q->where('sender_id', Auth::user()->player->id)
-                                  ->orWhere('recipient_id', Auth::user()->player->id);
-                            })
-                            ->first();
+                ->where('id', $messageId)
+                ->where(function ($q) {
+                    $q
+                        ->where('sender_id', Auth::user()->player->id)
+                        ->orWhere('recipient_id', Auth::user()->player->id);
+                })
+                ->first();
 
             if (!$message) {
                 return response()->json([
@@ -396,7 +389,6 @@ class MessageController extends Controller
                 'success' => true,
                 'data' => $message,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

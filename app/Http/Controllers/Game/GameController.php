@@ -16,14 +16,14 @@ class GameController extends Controller
     public function dashboard()
     {
         $startTime = microtime(true);
-        
+
         ds('GameController: Dashboard request started', [
             'controller' => 'GameController',
             'method' => 'dashboard',
             'request_time' => now(),
             'user_id' => Auth::id()
         ]);
-        
+
         try {
             $user = Auth::user();
             if (!$user) {
@@ -45,9 +45,9 @@ class GameController extends Controller
             $queryStart = microtime(true);
             $dashboardData = GameQueryEnrichService::getPlayerDashboardData($player->id, $player->world_id);
             $queryTime = round((microtime(true) - $queryStart) * 1000, 2);
-            
+
             $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-            
+
             ds('GameController: Dashboard data loaded successfully', [
                 'player_id' => $player->id,
                 'world_id' => $player->world_id,
@@ -55,7 +55,7 @@ class GameController extends Controller
                 'total_time_ms' => $totalTime,
                 'dashboard_data_keys' => array_keys($dashboardData ?? [])
             ]);
-            
+
             return view('game.dashboard', compact('dashboardData'));
         } catch (\Exception $e) {
             ds('GameController: Dashboard error occurred', [
@@ -75,7 +75,7 @@ class GameController extends Controller
     {
         try {
             $dashboardData = GameQueryEnrichService::getPlayerDashboardData($playerId);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $dashboardData
@@ -95,7 +95,7 @@ class GameController extends Controller
     {
         try {
             $leaderboard = GameQueryEnrichService::getWorldLeaderboard($worldId, 100)->get();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $leaderboard
@@ -115,7 +115,7 @@ class GameController extends Controller
     {
         try {
             $buildingStats = GameQueryEnrichService::getBuildingStatistics($playerId)->get();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $buildingStats
@@ -135,7 +135,7 @@ class GameController extends Controller
     {
         try {
             $warnings = GameQueryEnrichService::getResourceCapacityWarnings($playerId, 24)->get();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $warnings

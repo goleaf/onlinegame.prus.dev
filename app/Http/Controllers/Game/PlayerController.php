@@ -112,7 +112,7 @@ class PlayerController extends CrudController
             ->findOrFail($playerId);
 
         $playerStats = $player->stats;
-        
+
         $stats = [
             'player' => $player,
             'player_stats' => $playerStats,

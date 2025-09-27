@@ -50,7 +50,6 @@ class APIDocumentationController extends Controller
             ], 'api_documentation');
 
             return $this->successResponse($documentation, 'Larautilx API documentation generated successfully.');
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error generating Larautilx API documentation', [
                 'error' => $e->getMessage(),
@@ -808,4 +807,3 @@ class APIDocumentationController extends Controller
         ];
     }
 }
-

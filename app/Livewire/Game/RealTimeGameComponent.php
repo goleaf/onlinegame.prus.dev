@@ -2,12 +2,12 @@
 
 namespace App\Livewire\Game;
 
-use Livewire\Component;
-use App\Services\RealTimeGameService;
 use App\Services\GameCacheService;
 use App\Services\GameNotificationService;
+use App\Services\RealTimeGameService;
 use App\Utilities\GameUtility;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class RealTimeGameComponent extends Component
 {
@@ -18,7 +18,7 @@ class RealTimeGameComponent extends Component
     public $lastUpdate = null;
     public $isConnected = false;
     public $autoRefresh = true;
-    public $refreshInterval = 30; // seconds
+    public $refreshInterval = 30;  // seconds
 
     protected $listeners = [
         'refreshUpdates' => 'loadUpdates',
@@ -34,7 +34,7 @@ class RealTimeGameComponent extends Component
         $this->loadUpdates();
         $this->loadNotifications();
         $this->loadOnlineStats();
-        
+
         if ($this->autoRefresh) {
             $this->startAutoRefresh();
         }
@@ -108,7 +108,7 @@ class RealTimeGameComponent extends Component
     public function toggleAutoRefresh()
     {
         $this->autoRefresh = !$this->autoRefresh;
-        
+
         if ($this->autoRefresh) {
             $this->startAutoRefresh();
         } else {
@@ -127,18 +127,18 @@ class RealTimeGameComponent extends Component
                 Livewire.emit('refreshUpdates');
                 Livewire.emit('refreshNotifications');
                 Livewire.emit('loadOnlineStats');
-            }, " . ($this->refreshInterval * 1000) . ");
-        ");
+            }, " . ($this->refreshInterval * 1000) . ');
+        ');
     }
 
     public function stopAutoRefresh()
     {
-        $this->js("
+        $this->js('
             if (window.gameRefreshInterval) {
                 clearInterval(window.gameRefreshInterval);
                 window.gameRefreshInterval = null;
             }
-        ");
+        ');
     }
 
     public function sendTestMessage()
@@ -148,7 +148,7 @@ class RealTimeGameComponent extends Component
                 'message' => 'Test message from Livewire component',
                 'timestamp' => now()->toISOString(),
             ]);
-            
+
             session()->flash('success', 'Test message sent successfully');
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to send test message');
@@ -241,4 +241,3 @@ class RealTimeGameComponent extends Component
         $this->stopAutoRefresh();
     }
 }
-

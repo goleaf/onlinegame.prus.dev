@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
@@ -75,8 +75,9 @@ class Comment extends Model implements Auditable
 
     public function scopeForModel($query, $model)
     {
-        return $query->where('commentable_type', get_class($model))
-                    ->where('commentable_id', $model->id);
+        return $query
+            ->where('commentable_type', get_class($model))
+            ->where('commentable_id', $model->id);
     }
 
     // Helper methods
@@ -89,17 +90,17 @@ class Comment extends Model implements Auditable
     {
         $depth = 0;
         $parent = $this->parent;
-        
+
         while ($parent) {
             $depth++;
             $parent = $parent->parent;
         }
-        
+
         return $depth;
     }
 
     public function canBeRepliedTo(): bool
     {
-        return $this->getDepth() < 3; // Limit nesting to 3 levels
+        return $this->getDepth() < 3;  // Limit nesting to 3 levels
     }
 }

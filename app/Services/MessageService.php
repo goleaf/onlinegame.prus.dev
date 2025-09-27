@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Game\Alliance;
 use App\Models\Game\Message;
 use App\Models\Game\Player;
-use App\Models\Game\Alliance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -63,23 +63,28 @@ class MessageService
     {
         $messages = Message::with(['sender', 'recipient'])
             ->where(function ($q) use ($playerId, $otherPlayerId) {
-                $q->where('sender_id', $playerId)
-                  ->where('recipient_id', $otherPlayerId);
+                $q
+                    ->where('sender_id', $playerId)
+                    ->where('recipient_id', $otherPlayerId);
             })
             ->orWhere(function ($q) use ($playerId, $otherPlayerId) {
-                $q->where('sender_id', $otherPlayerId)
-                  ->where('recipient_id', $playerId);
+                $q
+                    ->where('sender_id', $otherPlayerId)
+                    ->where('recipient_id', $playerId);
             })
             ->where('message_type', 'private')
             ->where(function ($q) use ($playerId) {
-                $q->where(function ($subQ) use ($playerId) {
-                    $subQ->where('sender_id', $playerId)
-                         ->where('is_deleted_by_sender', false);
-                })
-                ->orWhere(function ($subQ) use ($playerId) {
-                    $subQ->where('recipient_id', $playerId)
-                         ->where('is_deleted_by_recipient', false);
-                });
+                $q
+                    ->where(function ($subQ) use ($playerId) {
+                        $subQ
+                            ->where('sender_id', $playerId)
+                            ->where('is_deleted_by_sender', false);
+                    })
+                    ->orWhere(function ($subQ) use ($playerId) {
+                        $subQ
+                            ->where('recipient_id', $playerId)
+                            ->where('is_deleted_by_recipient', false);
+                    });
             })
             ->orderBy('created_at', 'asc')
             ->limit($limit)
@@ -88,15 +93,17 @@ class MessageService
         return [
             'messages' => $messages,
             'total' => Message::where(function ($q) use ($playerId, $otherPlayerId) {
-                $q->where('sender_id', $playerId)
-                  ->where('recipient_id', $otherPlayerId);
+                $q
+                    ->where('sender_id', $playerId)
+                    ->where('recipient_id', $otherPlayerId);
             })
-            ->orWhere(function ($q) use ($playerId, $otherPlayerId) {
-                $q->where('sender_id', $otherPlayerId)
-                  ->where('recipient_id', $playerId);
-            })
-            ->where('message_type', 'private')
-            ->count(),
+                ->orWhere(function ($q) use ($playerId, $otherPlayerId) {
+                    $q
+                        ->where('sender_id', $otherPlayerId)
+                        ->where('recipient_id', $playerId);
+                })
+                ->where('message_type', 'private')
+                ->count(),
         ];
     }
 
@@ -191,8 +198,9 @@ class MessageService
     {
         $message = Message::where('id', $messageId)
             ->where(function ($q) use ($playerId) {
-                $q->where('sender_id', $playerId)
-                  ->orWhere('recipient_id', $playerId);
+                $q
+                    ->where('sender_id', $playerId)
+                    ->orWhere('recipient_id', $playerId);
             })
             ->first();
 

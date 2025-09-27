@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Process;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Process;
 
 class UpdaterService
 {
@@ -43,12 +43,12 @@ class UpdaterService
         try {
             // Fetch latest tags from remote
             Process::run('git fetch --tags');
-            
+
             $result = Process::run('git describe --tags --abbrev=0 origin/main');
             $this->latestVersion = $result->successful() ? trim($result->output()) : $this->currentVersion;
-            
+
             $isUpdateAvailable = version_compare($this->latestVersion, $this->currentVersion, '>');
-            
+
             return [
                 'current_version' => $this->currentVersion,
                 'latest_version' => $this->latestVersion,
@@ -85,48 +85,47 @@ class UpdaterService
     public function performUpdate(): array
     {
         $this->updateSteps = [];
-        
+
         try {
             $this->addStep('Starting update process...');
-            
+
             // Enable maintenance mode
             $this->enableMaintenanceMode();
-            
+
             // Pull latest changes
             $this->pullLatestChanges();
-            
+
             // Install/update dependencies
             $this->updateDependencies();
-            
+
             // Run migrations
             $this->runMigrations();
-            
+
             // Clear caches
             $this->clearCaches();
-            
+
             // Optimize application
             $this->optimizeApplication();
-            
+
             // Disable maintenance mode
             $this->disableMaintenanceMode();
-            
+
             $this->addStep('Update completed successfully!');
-            
+
             return [
                 'success' => true,
                 'steps' => $this->updateSteps,
                 'new_version' => $this->getCurrentVersion(),
             ];
-            
         } catch (\Exception $e) {
             $this->addStep('Update failed: ' . $e->getMessage());
             $this->disableMaintenanceMode();
-            
+
             Log::error('Update failed', [
                 'error' => $e->getMessage(),
                 'steps' => $this->updateSteps,
             ]);
-            
+
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
@@ -163,13 +162,13 @@ class UpdaterService
     protected function pullLatestChanges(): void
     {
         $this->addStep('Pulling latest changes from repository...');
-        
+
         $result = Process::run('git pull origin main');
-        
+
         if (!$result->successful()) {
             throw new \Exception('Failed to pull latest changes: ' . $result->errorOutput());
         }
-        
+
         $this->addStep('Repository updated successfully');
     }
 
@@ -179,13 +178,13 @@ class UpdaterService
     protected function updateDependencies(): void
     {
         $this->addStep('Updating dependencies...');
-        
+
         $result = Process::run('composer install --no-dev --optimize-autoloader');
-        
+
         if (!$result->successful()) {
             throw new \Exception('Failed to update dependencies: ' . $result->errorOutput());
         }
-        
+
         $this->addStep('Dependencies updated successfully');
     }
 
@@ -195,9 +194,9 @@ class UpdaterService
     protected function runMigrations(): void
     {
         $this->addStep('Running database migrations...');
-        
+
         Artisan::call('migrate', ['--force' => true]);
-        
+
         $this->addStep('Database migrations completed');
     }
 
@@ -207,12 +206,12 @@ class UpdaterService
     protected function clearCaches(): void
     {
         $this->addStep('Clearing application caches...');
-        
+
         Artisan::call('cache:clear');
         Artisan::call('config:clear');
         Artisan::call('route:clear');
         Artisan::call('view:clear');
-        
+
         $this->addStep('Caches cleared successfully');
     }
 
@@ -222,11 +221,11 @@ class UpdaterService
     protected function optimizeApplication(): void
     {
         $this->addStep('Optimizing application...');
-        
+
         Artisan::call('config:cache');
         Artisan::call('route:cache');
         Artisan::call('view:cache');
-        
+
         $this->addStep('Application optimized successfully');
     }
 
@@ -262,10 +261,10 @@ class UpdaterService
             'success' => $updateResult['success'],
             'steps' => $updateResult['steps'] ?? [],
         ];
-        
+
         // Keep only last 10 updates
         $history = array_slice($history, -10);
-        
+
         Cache::put('updater.history', $history, now()->addDays(30));
     }
 
@@ -297,4 +296,3 @@ class UpdaterService
         }
     }
 }
-

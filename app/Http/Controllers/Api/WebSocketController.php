@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\RealTimeGameService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class WebSocketController extends Controller
@@ -34,7 +34,7 @@ class WebSocketController extends Controller
             }
 
             $channels = $request->input('channels', ['user']);
-            
+
             // Mark user as online
             RealTimeGameService::markUserOnline($user->id);
 
@@ -49,7 +49,6 @@ class WebSocketController extends Controller
                 'message' => 'Successfully subscribed to real-time updates',
                 'timestamp' => now()->toISOString(),
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -77,7 +76,6 @@ class WebSocketController extends Controller
                 'message' => 'Successfully unsubscribed from real-time updates',
                 'timestamp' => now()->toISOString(),
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -124,7 +122,6 @@ class WebSocketController extends Controller
                 'count' => count($updates),
                 'timestamp' => now()->toISOString(),
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -169,7 +166,6 @@ class WebSocketController extends Controller
                 'message' => 'Test message sent successfully',
                 'timestamp' => now()->toISOString(),
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -196,7 +192,6 @@ class WebSocketController extends Controller
                 'data' => $stats,
                 'timestamp' => now()->toISOString(),
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -234,7 +229,6 @@ class WebSocketController extends Controller
             ];
 
             return response()->json($authData);
-
         } catch (\Exception $e) {
             return response()->json(['error' => 'Authentication failed'], 500);
         }
@@ -248,8 +242,8 @@ class WebSocketController extends Controller
         // Basic channel access validation
         $allowedChannels = [
             "private-game.user.{$userId}",
-            "presence-game.alliance",
-            "presence-game.global",
+            'presence-game.alliance',
+            'presence-game.global',
         ];
 
         return in_array($channel, $allowedChannels);
@@ -295,7 +289,6 @@ class WebSocketController extends Controller
                 'message' => 'Announcement broadcasted successfully',
                 'timestamp' => now()->toISOString(),
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -304,4 +297,3 @@ class WebSocketController extends Controller
         }
     }
 }
-

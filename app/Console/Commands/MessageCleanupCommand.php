@@ -95,10 +95,10 @@ class MessageCleanupCommand extends Command
     private function cleanupOldMessages(int $days, bool $isDryRun): int
     {
         $cutoffDate = now()->subDays($days);
-        
+
         $query = Message::where('created_at', '<', $cutoffDate)
-                       ->where('message_type', '!=', Message::TYPE_SYSTEM) // Keep system messages longer
-                       ->where('priority', '!=', Message::PRIORITY_URGENT); // Keep urgent messages longer
+            ->where('message_type', '!=', Message::TYPE_SYSTEM)  // Keep system messages longer
+            ->where('priority', '!=', Message::PRIORITY_URGENT);  // Keep urgent messages longer
 
         if ($isDryRun) {
             return $query->count();
@@ -110,7 +110,7 @@ class MessageCleanupCommand extends Command
     private function cleanupDeletedMessages(bool $isDryRun): int
     {
         $query = Message::where('is_deleted_by_sender', true)
-                       ->where('is_deleted_by_recipient', true);
+            ->where('is_deleted_by_recipient', true);
 
         if ($isDryRun) {
             return $query->count();
@@ -125,10 +125,10 @@ class MessageCleanupCommand extends Command
         $query = Message::whereHas('sender', function ($q) {
             $q->whereNull('deleted_at');
         }, '=', 0)
-        ->whereHas('recipient', function ($q) {
-            $q->whereNull('deleted_at');
-        }, '=', 0)
-        ->where('message_type', '!=', Message::TYPE_SYSTEM);
+            ->whereHas('recipient', function ($q) {
+                $q->whereNull('deleted_at');
+            }, '=', 0)
+            ->where('message_type', '!=', Message::TYPE_SYSTEM);
 
         if ($isDryRun) {
             return $query->count();

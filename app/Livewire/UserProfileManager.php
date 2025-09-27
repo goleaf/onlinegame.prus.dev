@@ -3,11 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\User;
+use Intervention\Validation\Rules\Username;
+use JonPurvis\Squeaky\Rules\Clean;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Propaganistas\LaravelPhone\Rules\Phone;
-use Intervention\Validation\Rules\Username;
-use JonPurvis\Squeaky\Rules\Clean;
 
 class UserProfileManager extends Component
 {
@@ -33,7 +33,7 @@ class UserProfileManager extends Component
     public function mount(User $user = null)
     {
         $this->user = $user ?? auth()->user();
-        
+
         $this->name = $this->user->name;
         $this->email = $this->user->email;
         $this->phone = $this->user->phone ?? '';
@@ -46,9 +46,9 @@ class UserProfileManager extends Component
         if ($propertyName === 'email') {
             $this->rules['email'] = 'required|email|unique:users,email,' . $this->user->id;
         }
-        
+
         $this->validateOnly($propertyName);
-        
+
         if ($propertyName === 'phone' && !empty($this->phone)) {
             $this->rules['phone'][] = (new Phone)->country($this->phone_country);
         }
@@ -58,7 +58,7 @@ class UserProfileManager extends Component
     {
         $rules = $this->rules;
         $rules['email'] = 'required|email|unique:users,email,' . $this->user->id;
-        
+
         if (!empty($this->phone)) {
             $rules['phone'][] = (new Phone)->country($this->phone_country);
         }
