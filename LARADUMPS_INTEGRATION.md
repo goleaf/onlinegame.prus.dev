@@ -164,6 +164,12 @@ ds('Creating movement', [
 - **Performance**: Reduced database load
 - **Cache Duration**: Optimized TTL for different data types
 
+### Analytics Tracking (New)
+- **Fathom Integration**: User behavior tracking
+- **Event Tracking**: Game actions and interactions
+- **Performance Metrics**: User engagement analytics
+- **Custom Events**: Battle, movement, task, and village interactions
+
 ## Usage Instructions
 
 ### 1. Install Laradumps Desktop App
