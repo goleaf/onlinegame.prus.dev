@@ -5,6 +5,7 @@ namespace App\Models\Game;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use MohamedSaid\Notable\Traits\HasNotables;
 use NunoMaduro\Essentials\Concerns\StrictModel;
 
 class World extends Model

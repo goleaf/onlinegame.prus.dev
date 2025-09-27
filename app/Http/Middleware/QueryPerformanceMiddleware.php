@@ -2,11 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Closure;
 
 class QueryPerformanceMiddleware
 {
@@ -32,7 +32,7 @@ class QueryPerformanceMiddleware
 
         $endTime = microtime(true);
         $endQueries = count(DB::getQueryLog());
-        $executionTime = ($endTime - $startTime) * 1000; // Convert to milliseconds
+        $executionTime = ($endTime - $startTime) * 1000;  // Convert to milliseconds
         $queryCount = $endQueries - $startQueries;
 
         // Log performance metrics
@@ -50,9 +50,9 @@ class QueryPerformanceMiddleware
      */
     private function logPerformanceMetrics(Request $request, float $executionTime, int $queryCount): void
     {
-        $threshold = config('mysql-performance.slow_query_log.long_query_time', 1.0) * 1000; // Convert to ms
-        $slowQueryThreshold = 100; // ms
-        $highQueryThreshold = 50; // queries
+        $threshold = config('mysql-performance.slow_query_log.long_query_time', 1.0) * 1000;  // Convert to ms
+        $slowQueryThreshold = 100;  // ms
+        $highQueryThreshold = 50;  // queries
 
         $metrics = [
             'url' => $request->fullUrl(),

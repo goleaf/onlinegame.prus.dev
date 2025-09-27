@@ -19,7 +19,7 @@ class SetupMySQLPerformance extends Command
      *
      * @var string
      */
-    protected $description = 'Setup MySQL performance monitoring based on Oh Dear\'s optimization guide';
+    protected $description = "Setup MySQL performance monitoring based on Oh Dear's optimization guide";
 
     /**
      * Execute the console command.
@@ -83,7 +83,7 @@ class SetupMySQLPerformance extends Command
             DB::statement("SET GLOBAL slow_query_log_file = '{$config['file']}'");
             DB::statement("SET GLOBAL long_query_time = {$config['long_query_time']}");
             DB::statement("SET GLOBAL slow_query_log = 'ON'");
-            DB::statement("SET GLOBAL log_queries_not_using_indexes = " . ($config['log_queries_not_using_indexes'] ? 'ON' : 'OFF'));
+            DB::statement('SET GLOBAL log_queries_not_using_indexes = ' . ($config['log_queries_not_using_indexes'] ? 'ON' : 'OFF'));
             DB::statement("SET GLOBAL min_examined_row_limit = {$config['min_examined_row_limit']}");
 
             $this->info('✓ Slow query log configured');

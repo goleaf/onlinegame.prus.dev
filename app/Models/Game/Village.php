@@ -13,6 +13,7 @@ use NunoMaduro\Essentials\Concerns\StrictModel;
 class Village extends Model
 {
     use HasFactory;
+    use HasNotables;
     use StrictModel;
 
     protected $fillable = [

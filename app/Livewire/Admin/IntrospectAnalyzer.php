@@ -19,7 +19,6 @@ class IntrospectAnalyzer extends Component
     public $selectedRoute = null;
     public $selectedView = null;
     public $selectedClass = null;
-    
     // Analysis options
     public $includeModels = true;
     public $includeRoutes = true;
@@ -28,17 +27,14 @@ class IntrospectAnalyzer extends Component
     public $includeSchemas = true;
     public $includeDependencies = true;
     public $includePerformance = true;
-    
     // Filter options
     public $searchQuery = '';
     public $filterByType = 'all';
     public $sortBy = 'name';
     public $sortOrder = 'asc';
-    
     // Performance metrics
     public $performanceMetrics = [];
     public $complexityThreshold = 50;
-    
     // Real-time features
     public $autoRefresh = false;
     public $refreshInterval = 30;
@@ -58,46 +54,45 @@ class IntrospectAnalyzer extends Component
     public function loadAnalysis()
     {
         $this->isLoading = true;
-        
+
         try {
             $introspectService = app(IntrospectService::class);
-            
+
             $this->analysisResults = [];
-            
+
             if ($this->includeModels) {
                 $this->analysisResults['models'] = $introspectService->getModelAnalysis();
             }
-            
+
             if ($this->includeRoutes) {
                 $this->analysisResults['routes'] = $introspectService->getRouteAnalysis();
             }
-            
+
             if ($this->includeViews) {
                 $this->analysisResults['views'] = $introspectService->getViewAnalysis();
             }
-            
+
             if ($this->includeClasses) {
                 $this->analysisResults['classes'] = $introspectService->getClassAnalysis();
             }
-            
+
             if ($this->includeSchemas) {
                 $this->analysisResults['schemas'] = $introspectService->getModelSchemas();
             }
-            
+
             if ($this->includeDependencies) {
                 $this->analysisResults['dependencies'] = $introspectService->getModelDependencies();
             }
-            
+
             if ($this->includePerformance) {
                 $this->analysisResults['performance'] = $introspectService->getModelPerformanceMetrics();
                 $this->performanceMetrics = $this->analysisResults['performance'];
             }
-            
+
             $this->lastUpdate = now();
             $this->isLoading = false;
-            
+
             session()->flash('message', 'Analysis completed successfully!');
-            
         } catch (\Exception $e) {
             $this->isLoading = false;
             session()->flash('error', 'Analysis failed: ' . $e->getMessage());
@@ -146,7 +141,7 @@ class IntrospectAnalyzer extends Component
     {
         $filename = 'introspect-analysis-' . now()->format('Y-m-d-H-i-s') . '.json';
         $content = json_encode($this->analysisResults, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        
+
         return response()->streamDownload(
             function () use ($content) {
                 echo $content;
@@ -166,7 +161,7 @@ class IntrospectAnalyzer extends Component
         $this->selectedView = null;
         $this->selectedClass = null;
         $this->lastUpdate = null;
-        
+
         session()->flash('message', 'Analysis cleared!');
     }
 
@@ -178,7 +173,7 @@ class IntrospectAnalyzer extends Component
     public function toggleAutoRefresh()
     {
         $this->autoRefresh = !$this->autoRefresh;
-        
+
         if ($this->autoRefresh) {
             $this->dispatch('start-polling', interval: $this->refreshInterval * 1000);
         } else {
@@ -193,21 +188,21 @@ class IntrospectAnalyzer extends Component
         }
 
         $models = $this->analysisResults['models'];
-        
+
         if ($this->searchQuery) {
             $models = array_filter($models, function ($model, $name) {
                 return stripos($name, $this->searchQuery) !== false;
             }, ARRAY_FILTER_USE_BOTH);
         }
-        
+
         if ($this->filterByType !== 'all') {
             $models = array_filter($models, function ($model) {
-                return $this->filterByType === 'game' ? 
-                    str_contains($model['class'], 'Game') : 
-                    !str_contains($model['class'], 'Game');
+                return $this->filterByType === 'game'
+                    ? str_contains($model['class'], 'Game')
+                    : !str_contains($model['class'], 'Game');
             });
         }
-        
+
         return $models;
     }
 
@@ -218,7 +213,7 @@ class IntrospectAnalyzer extends Component
         }
 
         $routes = $this->analysisResults['routes'];
-        
+
         if ($this->searchQuery) {
             foreach (['game_routes', 'api_routes', 'auth_routes'] as $type) {
                 if (isset($routes[$type])) {
@@ -228,7 +223,7 @@ class IntrospectAnalyzer extends Component
                 }
             }
         }
-        
+
         return $routes;
     }
 
@@ -239,7 +234,7 @@ class IntrospectAnalyzer extends Component
         }
 
         $views = $this->analysisResults['views'];
-        
+
         if ($this->searchQuery) {
             foreach (['game_views', 'livewire_views', 'component_views'] as $type) {
                 if (isset($views[$type])) {
@@ -249,7 +244,7 @@ class IntrospectAnalyzer extends Component
                 }
             }
         }
-        
+
         return $views;
     }
 
@@ -260,7 +255,7 @@ class IntrospectAnalyzer extends Component
         }
 
         $classes = $this->analysisResults['classes'];
-        
+
         if ($this->searchQuery) {
             foreach (['game_controllers', 'game_services', 'livewire_components'] as $type) {
                 if (isset($classes[$type])) {
@@ -270,23 +265,29 @@ class IntrospectAnalyzer extends Component
                 }
             }
         }
-        
+
         return $classes;
     }
 
     public function getComplexityColor($complexity)
     {
-        if ($complexity <= 20) return 'green';
-        if ($complexity <= 50) return 'yellow';
-        if ($complexity <= 100) return 'orange';
+        if ($complexity <= 20)
+            return 'green';
+        if ($complexity <= 50)
+            return 'yellow';
+        if ($complexity <= 100)
+            return 'orange';
         return 'red';
     }
 
     public function getComplexityLabel($complexity)
     {
-        if ($complexity <= 20) return 'Low';
-        if ($complexity <= 50) return 'Medium';
-        if ($complexity <= 100) return 'High';
+        if ($complexity <= 20)
+            return 'Low';
+        if ($complexity <= 50)
+            return 'Medium';
+        if ($complexity <= 100)
+            return 'High';
         return 'Very High';
     }
 

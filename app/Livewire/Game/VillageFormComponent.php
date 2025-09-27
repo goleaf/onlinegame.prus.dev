@@ -3,8 +3,8 @@
 namespace App\Livewire\Game;
 
 use App\Forms\VillageForm;
-use App\Models\Game\Village;
 use App\Models\Game\Player;
+use App\Models\Game\Village;
 use App\Models\Game\World;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -51,7 +51,7 @@ class VillageFormComponent extends Component
 
         session()->flash('success', 'Village created successfully!');
         $this->showForm = false;
-        
+
         return redirect()->route('game.village', $village->id);
     }
 

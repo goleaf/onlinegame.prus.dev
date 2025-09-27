@@ -64,7 +64,8 @@ class ResourceManager extends Component
         } else {
             $player = Player::where('user_id', Auth::id())
                 ->with(['villages' => function ($query) {
-                    $query->withStats()
+                    $query
+                        ->withStats()
                         ->with(['resources:id,village_id,type,amount,production_rate,capacity']);
                 }])
                 ->first();
@@ -95,8 +96,15 @@ class ResourceManager extends Component
             return;
         }
 
-        // Load resources from the relationship
-        $villageResources = $this->village->resources;
+        // Load resources with optimized query
+        $villageResources = $this->village->resources()
+            ->selectRaw('
+                resources.*,
+                (SELECT SUM(amount) FROM resources r2 WHERE r2.village_id = resources.village_id) as total_resources,
+                (SELECT SUM(production_rate) FROM resources r3 WHERE r3.village_id = resources.village_id) as total_production,
+                (SELECT SUM(capacity) FROM resources r4 WHERE r4.village_id = resources.village_id) as total_capacity
+            ')
+            ->get();
 
         $this->resources = [
             'wood' => $villageResources->where('type', 'wood')->first()->amount ?? 0,
@@ -105,12 +113,12 @@ class ResourceManager extends Component
             'crop' => $villageResources->where('type', 'crop')->first()->amount ?? 0,
         ];
 
-        // For now, set default capacities (these would come from buildings in a real game)
+        // Load capacities from resources
         $this->capacities = [
-            'wood' => 800,
-            'clay' => 800,
-            'iron' => 800,
-            'crop' => 800,
+            'wood' => $villageResources->where('type', 'wood')->first()->capacity ?? 800,
+            'clay' => $villageResources->where('type', 'clay')->first()->capacity ?? 800,
+            'iron' => $villageResources->where('type', 'iron')->first()->capacity ?? 800,
+            'crop' => $villageResources->where('type', 'crop')->first()->capacity ?? 800,
         ];
 
         // Calculate production rates based on building levels

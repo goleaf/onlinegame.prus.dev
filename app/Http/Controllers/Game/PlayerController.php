@@ -23,9 +23,9 @@ class PlayerController extends CrudController
         'world_id' => 'required|exists:worlds,id',
     ];
 
-    protected $searchableFields = ['name', 'tribe'];
-    protected $relationships = ['user', 'world', 'alliance', 'villages'];
-    protected $perPage = 20;
+    protected array $searchableFields = ['name', 'tribe'];
+    protected array $relationships = ['user', 'world', 'alliance', 'villages'];
+    protected int $perPage = 20;
 
     public function __construct()
     {

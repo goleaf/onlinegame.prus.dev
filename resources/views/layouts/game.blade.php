@@ -13,6 +13,9 @@
 
     <!-- Livewire Styles -->
     @livewireStyles
+    
+    <!-- Formello Styles -->
+    @formelloStyles
 
     <!-- Custom Game Styles -->
     <style>
@@ -154,8 +157,16 @@
         </div>
     @endif
 
+    <!-- Fathom Analytics -->
+    @if(app(\App\Services\FathomAnalytics::class)->isConfigured())
+        {!! app(\App\Services\FathomAnalytics::class)->getCompleteSetup() !!}
+    @endif
+
     <!-- Livewire Scripts -->
     @livewireScripts
+    
+    <!-- Formello Scripts -->
+    @formelloScripts
 
     <!-- Travian JavaScript -->
     <script src="{{ asset('js/default/jquery-3.2.1.min.js') }}"></script>

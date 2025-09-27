@@ -10,6 +10,7 @@ use NunoMaduro\Essentials\Concerns\StrictModel;
 class Alliance extends Model
 {
     use StrictModel;
+
     protected $fillable = [
         'name',
         'tag',

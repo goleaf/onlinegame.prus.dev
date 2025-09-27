@@ -104,10 +104,15 @@ class StatisticsViewer extends Component
     public function loadPlayerData()
     {
         try {
-            $this->player = Player::where('user_id', Auth::id())
-                ->where('world_id', $this->world->id)
-                ->with(['villages', 'alliance'])
-                ->first();
+            // Use SmartCache for player data with automatic optimization
+            $cacheKey = "world_{$this->world->id}_player_" . Auth::id() . "_data";
+            
+            $this->player = SmartCache::remember($cacheKey, now()->addMinutes(10), function () {
+                return Player::where('user_id', Auth::id())
+                    ->where('world_id', $this->world->id)
+                    ->with(['villages', 'alliance'])
+                    ->first();
+            });
 
             if (!$this->player) {
                 $this->addNotification('Player not found in this world', 'error');
