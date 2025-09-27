@@ -295,10 +295,11 @@ class GamePerformanceOptimizer
     protected function getVillageStatistics(array $params): array
     {
         try {
-            return DB::table('villages')
+            $result = DB::table('villages')
                 ->selectRaw('COUNT(*) as total_villages')
-                ->first()
-                ?->toArray() ?? [];
+                ->first();
+                
+            return $result ? (array) $result : ['total_villages' => 0];
         } catch (\Exception $e) {
             return ['total_villages' => 0];
         }
