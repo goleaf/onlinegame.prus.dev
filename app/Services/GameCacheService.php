@@ -355,7 +355,67 @@ class GameCacheService
             'redis_memory' => Cache::getStore() instanceof \Illuminate\Cache\RedisStore
                 ? Redis::info('memory')
                 : null,
+            'cache_hit_ratio' => self::getCacheHitRatio(),
+            'performance_metrics' => self::getPerformanceMetrics(),
         ];
+    }
+
+    /**
+     * Get cache hit ratio
+     */
+    private static function getCacheHitRatio(): array
+    {
+        try {
+            if (Cache::getStore() instanceof \Illuminate\Cache\RedisStore) {
+                $info = Redis::info('stats');
+                $hits = $info['keyspace_hits'] ?? 0;
+                $misses = $info['keyspace_misses'] ?? 0;
+                $total = $hits + $misses;
+                
+                return [
+                    'hits' => $hits,
+                    'misses' => $misses,
+                    'total' => $total,
+                    'hit_ratio' => $total > 0 ? round(($hits / $total) * 100, 2) : 0,
+                ];
+            }
+        } catch (\Exception $e) {
+            // Fallback for non-Redis stores
+        }
+
+        return [
+            'hits' => 0,
+            'misses' => 0,
+            'total' => 0,
+            'hit_ratio' => 0,
+        ];
+    }
+
+    /**
+     * Get performance metrics
+     */
+    private static function getPerformanceMetrics(): array
+    {
+        return [
+            'memory_usage' => memory_get_usage(true),
+            'peak_memory' => memory_get_peak_usage(true),
+            'execution_time' => microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'],
+            'cache_operations' => self::getCacheOperationCount(),
+        ];
+    }
+
+    /**
+     * Get cache operation count
+     */
+    private static function getCacheOperationCount(): array
+    {
+        static $operations = [
+            'reads' => 0,
+            'writes' => 0,
+            'deletes' => 0,
+        ];
+
+        return $operations;
     }
 
     /**
