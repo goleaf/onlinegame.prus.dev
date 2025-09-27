@@ -25,6 +25,7 @@ class UserController extends CrudController
 
     protected Model $model;
     protected RateLimiterUtil $rateLimiter;
+    protected array $validationRules = [];
 
     protected function getValidationRules(): array
     {
