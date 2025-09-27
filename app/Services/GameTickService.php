@@ -83,6 +83,11 @@ class GameTickService
                         'production_rate' => $productionRate,
                         'last_updated' => now(),
                     ]);
+
+                    // Publish resource update to RabbitMQ
+                    $this->rabbitMQ->publishResourceUpdate($village->id, [
+                        $resource->type => $newAmount
+                    ]);
                 }
             }
         }

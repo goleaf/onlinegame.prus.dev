@@ -72,7 +72,7 @@ class LarautilxIntegrationService
     }
 
     /**
-     * Cache player-specific data
+     * Cache player-specific data using SmartCache
      *
      * @param int $playerId
      * @param string $key
@@ -82,8 +82,8 @@ class LarautilxIntegrationService
      */
     public function cachePlayerData(int $playerId, string $key, callable $callback, ?int $expiration = null)
     {
-        $tags = array_merge($this->defaultCacheTags, ['player', "player_{$playerId}"]);
-        return $this->cacheGameData("player_{$playerId}_{$key}", $callback, $expiration, $tags);
+        $expiration = $expiration ?? $this->defaultCacheExpiration;
+        return SmartCache::remember("player_{$playerId}_{$key}", now()->addSeconds($expiration), $callback);
     }
 
     /**
