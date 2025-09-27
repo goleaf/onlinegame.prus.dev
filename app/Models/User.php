@@ -7,6 +7,8 @@ use App\Traits\Commenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
+use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
 use LaraUtilX\Traits\Auditable as LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
@@ -46,24 +48,24 @@ class User extends Authenticatable implements Auditable
 
     /**
      * Determine if auditing is disabled for this model instance.
-     *
+     * 
      * @return bool
      */
     public function auditingDisabled(): bool
     {
         // You can customize this logic based on your business requirements
         // For example, disable auditing for certain user types or conditions
-
+        
         // Disable auditing for system users or admin users
-        if (str_contains($this->email, 'admin@') || str_contains($this->email, 'system@')) {
+        if (isset($this->email) && (str_contains($this->email, 'admin@') || str_contains($this->email, 'system@'))) {
             return true;
         }
-
+        
         // Disable auditing for users created before a certain date
-        if ($this->created_at && $this->created_at->isBefore(now()->subYear())) {
+        if (isset($this->created_at) && $this->created_at->isBefore(now()->subYear())) {
             return true;
         }
-
+        
         // By default, enable auditing
         return false;
     }

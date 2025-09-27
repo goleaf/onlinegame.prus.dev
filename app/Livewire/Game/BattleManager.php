@@ -6,11 +6,15 @@ use App\Models\Game\Battle;
 use App\Models\Game\Movement;
 use App\Models\Game\Troop;
 use App\Models\Game\Village;
+use App\Services\GeographicService;
 use App\Services\QueryOptimizationService;
+use App\Services\GameIntegrationService;
+use App\Services\GameNotificationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use Livewire\Component;
 use Livewire\WithPagination;
+use SmartCache\Facades\SmartCache;
 
 class BattleManager extends Component
 {
@@ -29,6 +33,8 @@ class BattleManager extends Component
 
     public function mount()
     {
+        $startTime = microtime(true);
+
         $user = Auth::user();
         $player = $user->player;
 
@@ -43,7 +49,21 @@ class BattleManager extends Component
                     (SELECT SUM(quantity * unit_types.defense_power) FROM troops JOIN unit_types ON troops.unit_type_id = unit_types.id WHERE village_id = villages.id) as total_defense_power
                 ')
                 ->first();
+
+            // Laradumps debugging
+            ds('BattleManager mounted', [
+                'user_id' => $user->id,
+                'player_id' => $player->id,
+                'village' => $this->village,
+                'available_troops_count' => $this->village?->troops?->count() ?? 0,
+                'mount_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            ])->label('BattleManager Mount');
+
             $this->loadBattleData();
+            $this->initializeBattleRealTime();
+
+            // Track component load time
+            $this->dispatch('fathom-track', name: 'component_load_time', value: round((microtime(true) - $startTime) * 1000));
         }
     }
 
@@ -58,27 +78,85 @@ class BattleManager extends Component
     public function loadRecentBattles()
     {
         if ($this->village) {
-            $this->recentBattles = Battle::byPlayer($this->village->player_id)
-                ->withStats()
-                ->withPlayerInfo()
-                ->recent(7)
-                ->orderBy('occurred_at', 'desc')
-                ->limit(10)
-                ->get();
+            $cacheKey = "player_{$this->village->player_id}_recent_battles";
+
+            $this->recentBattles = SmartCache::remember($cacheKey, now()->addMinutes(2), function () {
+                // Use the new eloquent filtering system for battle queries
+                $filters = [
+                    [
+                        'target' => 'attacker_id',
+                        'type' => '$eq',
+                        'value' => $this->village->player_id
+                    ],
+                    [
+                        'target' => 'occurred_at',
+                        'type' => '$gte',
+                        'value' => now()->subDays(7)->toISOString()
+                    ]
+                ];
+
+                return Battle::filter($filters)
+                    ->withStats()
+                    ->withPlayerInfo()
+                    ->orderBy('occurred_at', 'desc')
+                    ->limit(10)
+                    ->get();
+            });
         }
     }
 
     public function selectTarget($villageId)
     {
-        $this->selectedTarget = Village::with(['player:id,name', 'troops.unitType:id,name,attack_power,defense_power,speed'])
-            ->selectRaw('
-                villages.*,
-                (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as total_troops,
-                (SELECT SUM(quantity * unit_types.attack_power) FROM troops JOIN unit_types ON troops.unit_type_id = unit_types.id WHERE village_id = villages.id) as total_attack_power,
-                (SELECT SUM(quantity * unit_types.defense_power) FROM troops JOIN unit_types ON troops.unit_type_id = unit_types.id WHERE village_id = villages.id) as total_defense_power
-            ')
-            ->find($villageId);
-        $this->showBattleModal = true;
+        try {
+            // Validate input
+            if (!$villageId || !is_numeric($villageId)) {
+                $this->addNotification('Invalid village ID provided.', 'error');
+                return;
+            }
+
+            // Check if target is the same as current village
+            if ($villageId == $this->village->id) {
+                $this->addNotification('Cannot attack your own village.', 'error');
+                return;
+            }
+
+            $cacheKey = "village_{$villageId}_battle_target_data";
+
+            $this->selectedTarget = SmartCache::remember($cacheKey, now()->addMinutes(1), function () use ($villageId) {
+                return Village::with(['player:id,name', 'troops.unitType:id,name,attack_power,defense_power,speed'])
+                    ->selectRaw('
+                        villages.*,
+                        (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as total_troops,
+                        (SELECT SUM(quantity * unit_types.attack_power) FROM troops JOIN unit_types ON troops.unit_type_id = unit_types.id WHERE village_id = villages.id) as total_attack_power,
+                        (SELECT SUM(quantity * unit_types.defense_power) FROM troops JOIN unit_types ON troops.unit_type_id = unit_types.id WHERE village_id = villages.id) as total_defense_power
+                    ')
+                    ->find($villageId);
+            });
+
+            if (!$this->selectedTarget) {
+                $this->addNotification('Target village not found.', 'error');
+                return;
+            }
+
+            $this->showBattleModal = true;
+
+            // Track target selection
+            $this->dispatch('fathom-track', name: 'battle target selected', value: $villageId);
+
+            ds('Target selected successfully', [
+                'target_village_id' => $villageId,
+                'target_village_name' => $this->selectedTarget->name,
+                'target_player' => $this->selectedTarget->player->name ?? 'Unknown'
+            ])->label('BattleManager Target Selected');
+        } catch (\Exception $e) {
+            $this->addNotification('Error selecting target: ' . $e->getMessage(), 'error');
+
+            ds('Target selection error', [
+                'village_id' => $villageId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ])->label('BattleManager Target Selection Error');
+        }
     }
 
     public function addTroopToAttack($troopId, $count)
@@ -106,6 +184,10 @@ class BattleManager extends Component
     public function launchAttack()
     {
         if (!$this->selectedTarget || empty($this->attackingTroops)) {
+            ds('Attack launch failed - missing target or troops', [
+                'selected_target' => $this->selectedTarget,
+                'attacking_troops' => $this->attackingTroops
+            ])->label('BattleManager Attack Launch Failed');
             return;
         }
 
@@ -113,6 +195,22 @@ class BattleManager extends Component
             // Calculate travel time based on distance and troop speed
             $distance = $this->calculateDistance();
             $travelTime = $this->calculateTravelTime($distance);
+
+            // Calculate real-world distance for additional context
+            $realWorldDistance = $this->calculateRealWorldDistance();
+
+            // Laradumps debugging for attack launch
+            ds('Launching attack', [
+                'from_village' => $this->village->name,
+                'to_village' => $this->selectedTarget->name,
+                'game_distance' => $distance,
+                'real_world_distance_km' => $realWorldDistance,
+                'travel_time' => $travelTime,
+                'attacking_troops' => $this->attackingTroops,
+                'total_attack_power' => array_sum(array_column($this->attackingTroops, 'attack')),
+                'from_coordinates' => "({$this->village->x_coordinate}|{$this->village->y_coordinate})",
+                'to_coordinates' => "({$this->selectedTarget->x_coordinate}|{$this->selectedTarget->y_coordinate})"
+            ])->label('BattleManager Attack Launch');
 
             // Create movement record
             $movement = Movement::create([
@@ -125,6 +223,9 @@ class BattleManager extends Component
                 'arrives_at' => now()->addSeconds($travelTime),
                 'status' => 'travelling',
             ]);
+
+            // Generate reference number for the movement
+            $movement->generateReference();
 
             // Update troop counts
             foreach ($this->attackingTroops as $troop) {
@@ -139,11 +240,26 @@ class BattleManager extends Component
             $this->attackingTroops = [];
             $this->loadBattleData();
 
+            ds('Attack launched successfully', [
+                'movement_id' => $movement->id,
+                'reference_number' => $movement->reference_number,
+                'arrives_at' => $movement->arrives_at
+            ])->label('BattleManager Attack Success');
+
+            // Track attack launch
+            $totalAttackPower = array_sum(array_column($this->attackingTroops, 'attack'));
+            $this->dispatch('fathom-track', name: 'attack launched', value: $totalAttackPower);
+
             $this->dispatch('attackLaunched', [
                 'target' => $this->selectedTarget->name,
+                'reference_number' => $movement->reference_number,
                 'arrives_at' => $movement->arrives_at,
             ]);
         } catch (\Exception $e) {
+            ds('Attack launch error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ])->label('BattleManager Attack Error');
             $this->dispatch('attackError', ['message' => $e->getMessage()]);
         }
     }
@@ -154,12 +270,27 @@ class BattleManager extends Component
             return 0;
         }
 
-        $x1 = $this->village->x_coordinate;
-        $y1 = $this->village->y_coordinate;
-        $x2 = $this->selectedTarget->x_coordinate;
-        $y2 = $this->selectedTarget->y_coordinate;
+        $geoService = app(GeographicService::class);
+        return $geoService->calculateGameDistance(
+            $this->village->x_coordinate,
+            $this->village->y_coordinate,
+            $this->selectedTarget->x_coordinate,
+            $this->selectedTarget->y_coordinate
+        );
+    }
 
-        return sqrt(pow($x2 - $x1, 2) + pow($y2 - $y1, 2));
+    /**
+     * Calculate real-world distance between villages
+     *
+     * @return float
+     */
+    public function calculateRealWorldDistance()
+    {
+        if (!$this->selectedTarget) {
+            return 0;
+        }
+
+        return $this->village->realWorldDistanceTo($this->selectedTarget);
     }
 
     public function calculateTravelTime($distance)
@@ -171,10 +302,16 @@ class BattleManager extends Component
         // Find the slowest troop
         $slowestSpeed = min(array_column($this->attackingTroops, 'speed'));
 
-        // Base travel time calculation
-        $baseTime = 60;  // 1 minute per distance unit
+        // Use geographic service for more accurate travel time calculation
+        $geoService = app(GeographicService::class);
 
-        return ($distance * $baseTime) / $slowestSpeed;
+        // Convert game distance to approximate real-world distance (km)
+        $realWorldDistanceKm = $distance * 0.1;  // Rough conversion: 1 game unit = 0.1 km
+
+        // Convert speed from game units to km/h (rough conversion)
+        $speedKmh = $slowestSpeed * 10;  // Rough conversion: 1 game speed = 10 km/h
+
+        return $geoService->calculateTravelTime($realWorldDistanceKm, $speedKmh);
     }
 
     public function simulateBattle($attackerTroops, $defenderTroops)
@@ -193,21 +330,118 @@ class BattleManager extends Component
         }
 
         // Add some randomness
-        $attackerPower *= (0.8 + (rand(0, 40) / 100));
-        $defenderPower *= (0.8 + (rand(0, 40) / 100));
+        $randomFactor = (0.8 + (rand(0, 40) / 100));
+        $attackerPower *= $randomFactor;
+        $defenderPower *= $randomFactor;
 
-        if ($attackerPower > $defenderPower) {
-            return 'attacker_wins';
-        } elseif ($defenderPower > $attackerPower) {
-            return 'defender_wins';
-        } else {
-            return 'draw';
-        }
+        $result = $attackerPower > $defenderPower
+            ? 'attacker_wins'
+            : ($defenderPower > $attackerPower ? 'defender_wins' : 'draw');
+
+        // Laradumps debugging for battle simulation
+        ds('Battle simulation completed', [
+            'attacker_troops' => $attackerTroops,
+            'defender_troops' => $defenderTroops,
+            'attacker_power' => $attackerPower,
+            'defender_power' => $defenderPower,
+            'random_factor' => $randomFactor,
+            'result' => $result
+        ])->label('BattleManager Battle Simulation');
+
+        return $result;
     }
 
     public function refreshBattles()
     {
         $this->loadBattleData();
+    }
+
+    /**
+     * Initialize battle real-time features
+     */
+    public function initializeBattleRealTime()
+    {
+        try {
+            $user = Auth::user();
+            if ($user) {
+                // Initialize real-time features for the user
+                GameIntegrationService::initializeUserRealTime($user->id);
+                
+                $this->dispatch('battle-initialized', [
+                    'message' => 'Battle manager real-time features activated',
+                    'user_id' => $user->id,
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to initialize battle real-time features: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Launch attack with real-time integration
+     */
+    public function launchAttackWithIntegration()
+    {
+        try {
+            $this->launchAttack();
+
+            $user = Auth::user();
+            if ($user) {
+                // Send notification about attack launch
+                GameNotificationService::sendNotification(
+                    $user->id,
+                    'attack_launched',
+                    [
+                        'user_id' => $user->id,
+                        'target_village_id' => $this->selectedTarget['id'] ?? null,
+                        'troops_count' => count($this->attackingTroops),
+                        'timestamp' => now()->toISOString(),
+                    ],
+                    'high'
+                );
+
+                $this->dispatch('attack-launched', [
+                    'message' => 'Attack launched successfully with notifications',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to launch attack: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Refresh battles with real-time integration
+     */
+    public function refreshBattlesWithIntegration()
+    {
+        try {
+            $this->refreshBattles();
+
+            $user = Auth::user();
+            if ($user) {
+                // Send notification about battle refresh
+                GameNotificationService::sendNotification(
+                    $user->id,
+                    'battles_refreshed',
+                    [
+                        'user_id' => $user->id,
+                        'timestamp' => now()->toISOString(),
+                    ]
+                );
+
+                $this->dispatch('battles-refreshed', [
+                    'message' => 'Battles refreshed successfully with notifications',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to refresh battles: ' . $e->getMessage(),
+            ]);
+        }
     }
 
     public function render()
