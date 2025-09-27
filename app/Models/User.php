@@ -27,7 +27,6 @@ class User extends Authenticatable implements Auditable, IsFilterable
     use HasNotables;
     use AuditableTrait;
     use Lift;
-    use HasReference;
     use Filterable;
 
     // Laravel Lift typed properties
@@ -102,7 +101,6 @@ class User extends Authenticatable implements Auditable, IsFilterable
     /**
      * Get user's game statistics
      */
-    public function getGameStats()
     {
         $startTime = microtime(true);
 
