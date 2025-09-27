@@ -1,206 +1,241 @@
-<div class="space-y-6">
-    <!-- Header -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h2>
-                <p class="text-gray-600 dark:text-gray-400 mt-1">System overview and management tools</p>
-            </div>
-            <div class="flex space-x-3">
-                <x-flux::button wire:click="refreshStats" variant="outline" icon="arrow-path">
-                    Refresh Stats
-                </x-flux::button>
-                <a href="{{ route('admin.updater') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                    </svg>
-                    Application Updater
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- System Statistics -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                        </svg>
-                    </div>
+<div class="container mx-auto px-4 py-6">
+    <div class="bg-white rounded-lg shadow-lg">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+                    <p class="text-blue-100 mt-1">System overview and management</p>
                 </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Users</dt>
-                        <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ $systemStats['total_users'] ?? 0 }}</dd>
-                    </dl>
+                <div class="flex space-x-2">
+                    <button wire:click="refreshStats" 
+                            class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                    </div>
+        <!-- System Statistics -->
+        <div class="p-6">
+            <h2 class="text-xl font-semibold mb-4">System Statistics</h2>
+            
+            @if($isLoading)
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span class="ml-2 text-gray-600">Loading statistics...</span>
                 </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Active Players</dt>
-                        <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ $systemStats['active_sessions'] ?? 0 }}</dd>
-                    </dl>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
-                    </div>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Villages</dt>
-                        <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ $systemStats['total_villages'] ?? 0 }}</dd>
-                    </dl>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                    </div>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Memory Usage</dt>
-                        <dd class="text-lg font-medium text-gray-900 dark:text-white">{{ $systemStats['memory_usage'] ?? 'Unknown' }}</dd>
-                    </dl>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- System Health -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">System Health</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            @foreach(['database', 'cache', 'storage', 'queue'] as $component)
-                <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">{{ $component }}</span>
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                        {{ ($systemHealth[$component] ?? 'error') === 'healthy' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                        {{ $systemHealth[$component] ?? 'error' }}
-                    </span>
-                </div>
-            @endforeach
-        </div>
-    </div>
-
-    <!-- Recent Updates -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Updates</h3>
-        <div class="space-y-4">
-            @forelse($recentUpdates as $update)
-                <div class="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center
-                            {{ $update['type'] === 'system' ? 'bg-blue-100 text-blue-600' : 
-                               ($update['type'] === 'feature' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600') }}">
-                            @if($update['type'] === 'system')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                            @elseif($update['type'] === 'feature')
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            @else
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            @endif
+            @else
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Total Users -->
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <i class="fas fa-users text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Users</p>
+                                <p class="text-2xl font-bold text-blue-600">{{ number_format($systemStats['total_users'] ?? 0) }}</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $update['title'] }}</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $update['description'] }}</p>
-                        <p class="text-xs text-gray-400 dark:text-gray-500">{{ $update['date']->diffForHumans() }}</p>
+
+                    <!-- Total Players -->
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 rounded-lg">
+                                <i class="fas fa-gamepad text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Players</p>
+                                <p class="text-2xl font-bold text-green-600">{{ number_format($systemStats['total_players'] ?? 0) }}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex-shrink-0">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {{ $update['status'] }}
-                        </span>
+
+                    <!-- Total Villages -->
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <i class="fas fa-home text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Villages</p>
+                                <p class="text-2xl font-bold text-purple-600">{{ number_format($systemStats['total_villages'] ?? 0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Sessions -->
+                    <div class="bg-orange-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-orange-100 rounded-lg">
+                                <i class="fas fa-signal text-orange-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Active Sessions</p>
+                                <p class="text-2xl font-bold text-orange-600">{{ number_format($systemStats['active_sessions'] ?? 0) }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            @empty
-                <p class="text-gray-500 dark:text-gray-400 text-center py-4">No recent updates found.</p>
-            @endforelse
+
+                <!-- System Health -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- System Uptime -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-gray-100 rounded-lg">
+                                <i class="fas fa-clock text-gray-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">System Uptime</p>
+                                <p class="text-sm font-bold text-gray-800">{{ $systemStats['system_uptime'] ?? 'Unknown' }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Memory Usage -->
+                    <div class="bg-yellow-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-yellow-100 rounded-lg">
+                                <i class="fas fa-memory text-yellow-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Memory Usage</p>
+                                <p class="text-sm font-bold text-yellow-800">{{ $systemStats['memory_usage'] ?? 'Unknown' }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Disk Usage -->
+                    <div class="bg-red-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-red-100 rounded-lg">
+                                <i class="fas fa-hdd text-red-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Disk Usage</p>
+                                <p class="text-sm font-bold text-red-800">{{ $systemStats['disk_usage'] ?? 'Unknown' }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Overall Health -->
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 rounded-lg">
+                                <i class="fas fa-heartbeat text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">System Health</p>
+                                <p class="text-sm font-bold text-green-800 capitalize">{{ $systemHealth['overall'] ?? 'Unknown' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
-    </div>
 
-    <!-- Quick Actions -->
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <a href="{{ route('admin.updater') }}" class="flex items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
-                <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                        </svg>
+        <!-- System Health Details -->
+        <div class="px-6 pb-6">
+            <h2 class="text-xl font-semibold mb-4">System Health Details</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Database Health -->
+                <div class="bg-white border rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <i class="fas fa-database text-blue-600"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-600">Database</p>
+                                <p class="text-sm font-bold text-gray-800 capitalize">{{ $systemHealth['database'] ?? 'Unknown' }}</p>
+                            </div>
+                        </div>
+                        <div class="w-3 h-3 rounded-full {{ $systemHealth['database'] === 'healthy' ? 'bg-green-500' : 'bg-red-500' }}"></div>
                     </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-900 dark:text-white">Application Updater</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Check for updates and manage system</p>
-                </div>
-            </a>
 
-            <a href="{{ route('game.system') }}" class="flex items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
-                <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
+                <!-- Cache Health -->
+                <div class="bg-white border rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-yellow-100 rounded-lg">
+                                <i class="fas fa-bolt text-yellow-600"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-600">Cache</p>
+                                <p class="text-sm font-bold text-gray-800 capitalize">{{ $systemHealth['cache'] ?? 'Unknown' }}</p>
+                            </div>
+                        </div>
+                        <div class="w-3 h-3 rounded-full {{ $systemHealth['cache'] === 'healthy' ? 'bg-green-500' : 'bg-red-500' }}"></div>
                     </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-900 dark:text-white">System Management</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Monitor and configure system settings</p>
-                </div>
-            </a>
 
-            <a href="{{ route('game.dashboard') }}" class="flex items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">
-                <div class="flex-shrink-0">
-                    <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"></path>
-                        </svg>
+                <!-- Storage Health -->
+                <div class="bg-white border rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <i class="fas fa-folder text-purple-600"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-600">Storage</p>
+                                <p class="text-sm font-bold text-gray-800 capitalize">{{ $systemHealth['storage'] ?? 'Unknown' }}</p>
+                            </div>
+                        </div>
+                        <div class="w-3 h-3 rounded-full {{ $systemHealth['storage'] === 'healthy' ? 'bg-green-500' : 'bg-red-500' }}"></div>
                     </div>
                 </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-900 dark:text-white">Game Dashboard</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Return to main game interface</p>
+
+                <!-- Queue Health -->
+                <div class="bg-white border rounded-lg p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 rounded-lg">
+                                <i class="fas fa-tasks text-green-600"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-600">Queue</p>
+                                <p class="text-sm font-bold text-gray-800 capitalize">{{ $systemHealth['queue'] ?? 'Unknown' }}</p>
+                            </div>
+                        </div>
+                        <div class="w-3 h-3 rounded-full {{ $systemHealth['queue'] === 'healthy' ? 'bg-green-500' : 'bg-red-500' }}"></div>
+                    </div>
                 </div>
-            </a>
+            </div>
+        </div>
+
+        <!-- Recent Updates -->
+        <div class="px-6 pb-6">
+            <h2 class="text-xl font-semibold mb-4">Recent Updates</h2>
+            
+            <div class="space-y-4">
+                @foreach($recentUpdates as $update)
+                    <div class="bg-white border rounded-lg p-4">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start">
+                                <div class="p-2 bg-blue-100 rounded-lg mr-4">
+                                    <i class="fas fa-{{ $update['type'] === 'system' ? 'cog' : ($update['type'] === 'feature' ? 'star' : 'wrench') }} text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">{{ $update['title'] }}</h3>
+                                    <p class="text-sm text-gray-600 mt-1">{{ $update['description'] }}</p>
+                                    <p class="text-xs text-gray-500 mt-2">{{ $update['date']->diffForHumans() }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full 
+                                    {{ $update['status'] === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                    {{ ucfirst($update['status']) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
 </div>

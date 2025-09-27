@@ -88,6 +88,76 @@ class ChatMessage extends Model
         return $query->orderBy('created_at', 'desc')->limit($limit);
     }
 
+    // Optimized query scopes using when() and selectRaw
+    public function scopeWithStats($query)
+    {
+        return $query->selectRaw('
+            chat_messages.*,
+            (SELECT COUNT(*) FROM chat_messages cm2 WHERE cm2.sender_id = chat_messages.sender_id) as sender_total_messages,
+            (SELECT COUNT(*) FROM chat_messages cm3 WHERE cm3.channel_id = chat_messages.channel_id AND cm3.channel_type = chat_messages.channel_type) as channel_total_messages,
+            (SELECT COUNT(*) FROM chat_messages cm4 WHERE cm4.sender_id = chat_messages.sender_id AND cm4.is_deleted = 0) as sender_active_messages,
+            (SELECT AVG(LENGTH(message)) FROM chat_messages cm5 WHERE cm5.sender_id = chat_messages.sender_id) as sender_avg_message_length
+        ');
+    }
+
+    public function scopeBySender($query, $senderId)
+    {
+        return $query->where('sender_id', $senderId);
+    }
+
+    public function scopeByChannelType($query, $channelType = null)
+    {
+        return $query->when($channelType, function ($q) use ($channelType) {
+            return $q->where('channel_type', $channelType);
+        });
+    }
+
+    public function scopeByMessageType($query, $messageType = null)
+    {
+        return $query->when($messageType, function ($q) use ($messageType) {
+            return $q->where('message_type', $messageType);
+        });
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_deleted', false);
+    }
+
+    public function scopeDeleted($query)
+    {
+        return $query->where('is_deleted', true);
+    }
+
+    public function scopeToday($query)
+    {
+        return $query->whereDate('created_at', today());
+    }
+
+    public function scopeThisWeek($query)
+    {
+        return $query->where('created_at', '>=', now()->startOfWeek());
+    }
+
+    public function scopeThisMonth($query)
+    {
+        return $query->where('created_at', '>=', now()->startOfMonth());
+    }
+
+    public function scopeSearch($query, $searchTerm)
+    {
+        return $query->when($searchTerm, function ($q) use ($searchTerm) {
+            return $q->where('message', 'like', '%' . $searchTerm . '%');
+        });
+    }
+
+    public function scopeWithSenderInfo($query)
+    {
+        return $query->with([
+            'sender:id,name,alliance_id'
+        ]);
+    }
+
     // Methods
     public function softDelete(): void
     {
