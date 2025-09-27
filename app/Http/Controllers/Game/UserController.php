@@ -26,13 +26,16 @@ class UserController extends CrudController
     protected Model $model;
     protected RateLimiterUtil $rateLimiter;
 
-    protected array $validationRules = [
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|string|min:8',
-        'phone' => 'nullable|string',
-        'phone_country' => 'nullable|string|size:2',
-    ];
+    protected function getValidationRules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:255', new Username(), new Clean],
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8',
+            'phone' => 'nullable|string',
+            'phone_country' => 'nullable|string|size:2',
+        ];
+    }
 
     protected array $searchableFields = ['name', 'email', 'phone', 'phone_normalized', 'phone_e164'];
     protected array $relationships = ['player', 'players'];

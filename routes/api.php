@@ -291,7 +291,12 @@ Route::prefix('public')->group(function () {
 
 // Game Integration Services
 Route::middleware('auth:sanctum')->prefix('game/integration')->group(function () {
-    Route::post('/initialize-realtime', [GameApiController::class, 'initializeRealTime']);
-    Route::get('/game-statistics', [GameApiController::class, 'getGameStatisticsWithRealTime']);
-    Route::post('/system-announcement', [GameApiController::class, 'sendSystemAnnouncement'])->middleware('admin');
+    Route::post('/initialize-realtime', [GameIntegrationController::class, 'initializeRealTime']);
+    Route::post('/deinitialize-realtime', [GameIntegrationController::class, 'deinitializeRealTime']);
+    Route::post('/create-village', [GameIntegrationController::class, 'createVillage']);
+    Route::post('/upgrade-building', [GameIntegrationController::class, 'upgradeBuilding']);
+    Route::post('/join-alliance', [GameIntegrationController::class, 'joinAlliance']);
+    Route::get('/game-statistics', [GameIntegrationController::class, 'getGameStatistics']);
+    Route::post('/system-announcement', [GameIntegrationController::class, 'sendSystemAnnouncement'])->middleware('admin');
+    Route::post('/maintenance', [GameIntegrationController::class, 'performMaintenance'])->middleware('admin');
 });

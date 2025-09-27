@@ -12,25 +12,85 @@ class GameSecurityService
 {
     public function validateGameAction(Request $request, string $action, array $data = [])
     {
+        $startTime = microtime(true);
+        
+        ds('GameSecurityService: Validating game action', [
+            'service' => 'GameSecurityService',
+            'method' => 'validateGameAction',
+            'action' => $action,
+            'user_id' => $request->user()?->id,
+            'ip_address' => $request->ip(),
+            'data_keys' => array_keys($data),
+            'validation_time' => now()
+        ]);
+        
         // Check rate limiting
-        if (!$this->checkRateLimit($request, $action)) {
+        $rateLimitStart = microtime(true);
+        $rateLimitPassed = $this->checkRateLimit($request, $action);
+        $rateLimitTime = round((microtime(true) - $rateLimitStart) * 1000, 2);
+        
+        if (!$rateLimitPassed) {
+            ds('GameSecurityService: Rate limit check failed', [
+                'action' => $action,
+                'ip_address' => $request->ip(),
+                'rate_limit_time_ms' => $rateLimitTime
+            ]);
             return false;
         }
 
         // Check player ownership
-        if (!$this->checkPlayerOwnership($request, $data)) {
+        $ownershipStart = microtime(true);
+        $ownershipPassed = $this->checkPlayerOwnership($request, $data);
+        $ownershipTime = round((microtime(true) - $ownershipStart) * 1000, 2);
+        
+        if (!$ownershipPassed) {
+            ds('GameSecurityService: Player ownership check failed', [
+                'action' => $action,
+                'user_id' => $request->user()?->id,
+                'ownership_time_ms' => $ownershipTime
+            ]);
             return false;
         }
 
         // Check village ownership
-        if (isset($data['village_id']) && !$this->checkVillageOwnership($request, $data['village_id'])) {
-            return false;
+        if (isset($data['village_id'])) {
+            $villageStart = microtime(true);
+            $villagePassed = $this->checkVillageOwnership($request, $data['village_id']);
+            $villageTime = round((microtime(true) - $villageStart) * 1000, 2);
+            
+            if (!$villagePassed) {
+                ds('GameSecurityService: Village ownership check failed', [
+                    'action' => $action,
+                    'village_id' => $data['village_id'],
+                    'village_time_ms' => $villageTime
+                ]);
+                return false;
+            }
         }
 
         // Check action-specific security
-        if (!$this->checkActionSecurity($request, $action, $data)) {
+        $securityStart = microtime(true);
+        $securityPassed = $this->checkActionSecurity($request, $action, $data);
+        $securityTime = round((microtime(true) - $securityStart) * 1000, 2);
+        
+        if (!$securityPassed) {
+            ds('GameSecurityService: Action security check failed', [
+                'action' => $action,
+                'security_time_ms' => $securityTime
+            ]);
             return false;
         }
+
+        $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ds('GameSecurityService: Game action validation completed successfully', [
+            'action' => $action,
+            'rate_limit_time_ms' => $rateLimitTime,
+            'ownership_time_ms' => $ownershipTime,
+            'security_time_ms' => $securityTime,
+            'total_time_ms' => $totalTime,
+            'all_checks_passed' => true
+        ]);
 
         return true;
     }
