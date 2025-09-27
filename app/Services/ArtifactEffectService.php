@@ -10,6 +10,8 @@ use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use SmartCache\Facades\SmartCache;
+use LaraUtilX\Utilities\CachingUtil;
+use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * Artifact Effect Service
