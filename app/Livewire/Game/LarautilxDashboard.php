@@ -252,6 +252,43 @@ class LarautilxDashboard extends Component
         }
     }
 
+    /**
+     * Refresh all dashboard data
+     */
+    public function refreshAllData()
+    {
+        $this->loadDashboardData();
+        $this->loadIntegrationSummary();
+        
+        $this->addNotification('Dashboard data refreshed successfully', 'success');
+    }
+
+    /**
+     * Handle real-time updates
+     */
+    public function handleRealTimeUpdate($data)
+    {
+        try {
+            // Update dashboard data with real-time information
+            if (isset($data['type']) && $data['type'] === 'cache_stats') {
+                $this->dashboardData['cache_stats'] = $data['stats'];
+            }
+            
+            if (isset($data['type']) && $data['type'] === 'integration_status') {
+                $this->integrationSummary['status'] = $data['status'];
+            }
+
+            // Dispatch event to update UI
+            $this->dispatch('realTimeDataUpdated', $data);
+            
+        } catch (\Exception $e) {
+            LoggingUtil::error('Error handling real-time update', [
+                'error' => $e->getMessage(),
+                'data' => $data,
+            ], 'larautilx_dashboard');
+        }
+    }
+
     public function render()
     {
         return view('livewire.game.larautilx-dashboard', [

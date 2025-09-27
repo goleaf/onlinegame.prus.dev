@@ -241,7 +241,7 @@ class SeoAnalyticsService
             
             while ($currentDate->lte($endDateObj)) {
                 $key = "seo_metrics_{$page}_" . $currentDate->format('Y-m-d');
-                $metrics = Cache::get($key, []);
+                $metrics = $this->cachingUtil->get($key, []);
                 
                 if (!empty($metrics)) {
                     $exportData[$page][$currentDate->format('Y-m-d')] = $metrics;
