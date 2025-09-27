@@ -157,6 +157,23 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::post('/{id}/deactivate', [ArtifactController::class, 'deactivate']);
         Route::get('/{id}/effects', [ArtifactController::class, 'effects']);
     });
+    
+    // Message System
+    Route::prefix('messages')->group(function () {
+        Route::get('/inbox', [MessageController::class, 'getInbox']);
+        Route::get('/sent', [MessageController::class, 'getSent']);
+        Route::get('/alliance', [MessageController::class, 'getAllianceMessages']);
+        Route::get('/conversation/{otherPlayerId}', [MessageController::class, 'getConversation']);
+        Route::get('/stats', [MessageController::class, 'getStats']);
+        Route::get('/players', [MessageController::class, 'getPlayers']);
+        Route::post('/send', [MessageController::class, 'sendMessage']);
+        Route::post('/send-alliance', [MessageController::class, 'sendAllianceMessage']);
+        Route::post('/bulk-mark-read', [MessageController::class, 'bulkMarkAsRead']);
+        Route::post('/bulk-delete', [MessageController::class, 'bulkDelete']);
+        Route::get('/{messageId}', [MessageController::class, 'getMessage']);
+        Route::post('/{messageId}/mark-read', [MessageController::class, 'markAsRead']);
+        Route::delete('/{messageId}', [MessageController::class, 'deleteMessage']);
+    });
 });
 
 // WebSocket/Real-time API Routes

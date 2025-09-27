@@ -47,6 +47,13 @@ class GameController extends Controller
             // Use Query Enrich service for enhanced dashboard data
             $queryStart = microtime(true);
             $dashboardData = GameQueryEnrichService::getPlayerDashboardData($player->id, $player->world_id);
+            
+            // Enhance with value objects
+            $valueObjectService = app(ValueObjectService::class);
+            $playerStats = $player->stats;
+            $dashboardData['player_stats'] = $playerStats;
+            $dashboardData['value_objects_integration'] = true;
+            
             $queryTime = round((microtime(true) - $queryStart) * 1000, 2);
 
             $totalTime = round((microtime(true) - $startTime) * 1000, 2);

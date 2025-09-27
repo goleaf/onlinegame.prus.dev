@@ -397,14 +397,31 @@ class UserController extends CrudController
 
         if ($request->has('is_online')) {
             if ($request->get('is_online') === 'true') {
-                $query->onlineUsers();
+                $filters[] = [
+                    'type' => '$has',
+                    'target' => 'player',
+                    'value' => [
+                        ['target' => 'is_online', 'type' => '$eq', 'value' => true]
+                    ]
+                ];
             }
         }
 
         if ($request->has('is_active')) {
             if ($request->get('is_active') === 'true') {
-                $query->activeGameUsers();
+                $filters[] = [
+                    'type' => '$has',
+                    'target' => 'player',
+                    'value' => [
+                        ['target' => 'is_active', 'type' => '$eq', 'value' => true]
+                    ]
+                ];
             }
+        }
+
+        // Apply eloquent filtering
+        if (!empty($filters)) {
+            $query = $query->filter($filters);
         }
 
         // Apply sorting
