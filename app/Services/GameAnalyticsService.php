@@ -17,10 +17,10 @@ class GameAnalyticsService
     protected CachingUtil $cachingUtil;
     protected LoggingUtil $loggingUtil;
 
-    public function __construct(CachingUtil $cachingUtil, LoggingUtil $loggingUtil)
+    public function __construct()
     {
-        $this->cachingUtil = $cachingUtil;
-        $this->loggingUtil = $loggingUtil;
+        $this->cachingUtil = new CachingUtil(3600, ['game_analytics']);
+        $this->loggingUtil = new LoggingUtil();
     }
 
     /**

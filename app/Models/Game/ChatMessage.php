@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Traits\HasReference;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class ChatMessage extends Model
+class ChatMessage extends Model implements Auditable
 {
-    use HasFactory, HasReference;
+    use HasFactory, HasReference, AuditableTrait;
 
     protected $fillable = [
         'sender_id',

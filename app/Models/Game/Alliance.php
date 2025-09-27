@@ -8,6 +8,7 @@ namespace App\Models\Game;
 // use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
 // use IndexZer0\EloquentFiltering\Filter\FilterType;
 use App\Traits\Commentable;
+use App\Traits\GameValidationTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;

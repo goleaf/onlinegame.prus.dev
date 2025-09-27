@@ -2,101 +2,116 @@
 
 namespace App\ValueObjects;
 
-readonly class Coordinates
+class Coordinates
 {
     public function __construct(
-        public int $x,
-        public int $y,
-        public ?float $latitude = null,
-        public ?float $longitude = null,
-        public ?float $elevation = null,
-        public ?string $geohash = null
+        public readonly int $x,
+        public readonly int $y,
+        public readonly ?float $latitude = null,
+        public readonly ?float $longitude = null,
     ) {}
 
-    /**
-     * Get coordinates as string representation
-     */
-    public function toString(): string
+    public static function fromArray(array $data): self
     {
-        return "({$this->x}|{$this->y})";
+        return new self(
+            x: $data['x'] ?? $data['x_coordinate'] ?? 0,
+            y: $data['y'] ?? $data['y_coordinate'] ?? 0,
+            latitude: $data['latitude'] ?? $data['lat'] ?? null,
+            longitude: $data['longitude'] ?? $data['lon'] ?? null,
+        );
     }
 
-    /**
-     * Check if coordinates have real-world data
-     */
-    public function hasRealWorldData(): bool
+    public function toArray(): array
     {
-        return $this->latitude !== null && $this->longitude !== null;
+        return [
+            'x' => $this->x,
+            'y' => $this->y,
+            'x_coordinate' => $this->x,
+            'y_coordinate' => $this->y,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
+            'lat' => $this->latitude,
+            'lon' => $this->longitude,
+        ];
     }
 
-    /**
-     * Calculate distance to another coordinate set
-     */
     public function distanceTo(Coordinates $other): float
     {
-        return sqrt(pow($this->x - $other->x, 2) + pow($this->y - $other->y, 2));
+        return sqrt(
+            pow($this->x - $other->x, 2) + pow($this->y - $other->y, 2)
+        );
     }
 
-    /**
-     * Calculate real-world distance to another coordinate set
-     */
     public function realWorldDistanceTo(Coordinates $other): ?float
     {
-        if (!$this->hasRealWorldData() || !$other->hasRealWorldData()) {
+        if ($this->latitude === null || $this->longitude === null || 
+            $other->latitude === null || $other->longitude === null) {
             return null;
         }
 
-        $earthRadius = 6371;  // km
+        $earthRadius = 6371; // Earth's radius in kilometers
 
         $lat1 = deg2rad($this->latitude);
+        $lon1 = deg2rad($this->longitude);
         $lat2 = deg2rad($other->latitude);
-        $deltaLat = deg2rad($other->latitude - $this->latitude);
-        $deltaLon = deg2rad($other->longitude - $this->longitude);
+        $lon2 = deg2rad($other->longitude);
 
-        $a = sin($deltaLat / 2) * sin($deltaLat / 2)
-            + cos($lat1) * cos($lat2)
-                * sin($deltaLon / 2) * sin($deltaLon / 2);
+        $deltaLat = $lat2 - $lat1;
+        $deltaLon = $lon2 - $lon1;
+
+        $a = sin($deltaLat / 2) * sin($deltaLat / 2) +
+             cos($lat1) * cos($lat2) *
+             sin($deltaLon / 2) * sin($deltaLon / 2);
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
         return $earthRadius * $c;
     }
 
-    /**
-     * Get bearing to another coordinate set
-     */
-    public function bearingTo(Coordinates $other): ?float
+    public function getBearingTo(Coordinates $other): float
     {
-        if (!$this->hasRealWorldData() || !$other->hasRealWorldData()) {
-            return null;
+        if ($this->latitude === null || $this->longitude === null || 
+            $other->latitude === null || $other->longitude === null) {
+            return 0;
         }
 
         $lat1 = deg2rad($this->latitude);
+        $lon1 = deg2rad($this->longitude);
         $lat2 = deg2rad($other->latitude);
-        $deltaLon = deg2rad($other->longitude - $this->longitude);
+        $lon2 = deg2rad($other->longitude);
+
+        $deltaLon = $lon2 - $lon1;
 
         $y = sin($deltaLon) * cos($lat2);
         $x = cos($lat1) * sin($lat2) - sin($lat1) * cos($lat2) * cos($deltaLon);
 
         $bearing = atan2($y, $x);
-        $bearing = fmod(rad2deg($bearing) + 360, 360);
+        $bearing = rad2deg($bearing);
+        $bearing = fmod($bearing + 360, 360);
 
         return $bearing;
     }
 
-    /**
-     * Check if coordinates are within radius of another coordinate set
-     */
-    public function isWithinRadius(Coordinates $center, float $radius): bool
+    public function getQuadrant(): string
     {
-        return $this->distanceTo($center) <= $radius;
+        if ($this->x >= 500 && $this->y >= 500) {
+            return 'northeast';
+        } elseif ($this->x < 500 && $this->y >= 500) {
+            return 'northwest';
+        } elseif ($this->x >= 500 && $this->y < 500) {
+            return 'southeast';
+        } else {
+            return 'southwest';
+        }
     }
 
-    /**
-     * Check if coordinates are within real-world radius of another coordinate set
-     */
-    public function isWithinRealWorldRadius(Coordinates $center, float $radiusKm): bool
+    public function isWithinBounds(int $minX = 0, int $maxX = 999, int $minY = 0, int $maxY = 999): bool
     {
-        $distance = $this->realWorldDistanceTo($center);
-        return $distance !== null && $distance <= $radiusKm;
+        return $this->x >= $minX && $this->x <= $maxX && 
+               $this->y >= $minY && $this->y <= $maxY;
+    }
+
+    public function __toString(): string
+    {
+        return "({$this->x}|{$this->y})";
     }
 }

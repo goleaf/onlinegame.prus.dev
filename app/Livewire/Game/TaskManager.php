@@ -66,18 +66,8 @@ class TaskManager extends Component
     public $currentPage = 1;
 
     // Task categories
-    public $taskCategories = [
-        'tasks' => 'Tasks',
-        'quests' => 'Quests',
-        'achievements' => 'Achievements',
-    ];
-
-    public $taskTypes = [
-        'all' => 'All Tasks',
-        'active' => 'Active',
-        'completed' => 'Completed',
-        'available' => 'Available',
-    ];
+    public $taskCategories = [];
+    public $taskTypes = [];
 
     public $questTypes = [
         'all' => 'All Quests',
