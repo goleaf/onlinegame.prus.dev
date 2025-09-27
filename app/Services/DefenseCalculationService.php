@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Game\Building;
 use App\Models\Game\Village;
+use App\Services\GeographicService;
 use Illuminate\Support\Facades\Log;
 
 class DefenseCalculationService
