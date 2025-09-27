@@ -438,3 +438,4 @@ class EnhancedLivewireTest extends TestCase
         $component->assertSet('connectionStatus', 'connected');
     }
 }
+
