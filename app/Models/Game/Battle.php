@@ -69,6 +69,14 @@ class Battle extends Model implements Auditable, IsFilterable
         return $this->belongsTo(Village::class);
     }
 
+    /**
+     * Get the alliance war this battle belongs to
+     */
+    public function war(): BelongsTo
+    {
+        return $this->belongsTo(AllianceWar::class, 'war_id');
+    }
+
     // Optimized query scopes using when() and selectRaw
     public function scopeWithStats($query)
     {
