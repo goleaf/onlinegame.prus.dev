@@ -133,18 +133,6 @@ class QueryOptimizationService
         return $query->orderBy($sortBy, $sortOrder);
     }
 
-    /**
-     * Optimize N+1 queries with selectRaw subqueries
-     */
-    public static function optimizeNPlusOne(Builder $query, array $subqueries): Builder
-    {
-        $selectRaw = [];
-        foreach ($subqueries as $alias => $subquery) {
-            $selectRaw[] = '(' . $subquery . ') as ' . $alias;
-        }
-
-        return $query->selectRaw(implode(', ', $selectRaw));
-    }
 
     /**
      * Create conditional ordering

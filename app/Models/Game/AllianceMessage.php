@@ -5,7 +5,7 @@ namespace App\Models\Game;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Traits\HasReference;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 class AllianceMessage extends Model
 {
