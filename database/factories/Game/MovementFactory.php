@@ -58,7 +58,7 @@ class MovementFactory extends Factory
      */
     public function travelling(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'travelling',
             'started_at' => now()->subMinutes(30),
             'arrives_at' => now()->addMinutes(30),
@@ -70,7 +70,7 @@ class MovementFactory extends Factory
      */
     public function arrived(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'arrived',
             'started_at' => now()->subHour(),
             'arrives_at' => now()->subMinutes(30),
@@ -82,7 +82,7 @@ class MovementFactory extends Factory
      */
     public function returning(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'returning',
             'started_at' => now()->subHours(2),
             'arrives_at' => now()->subHour(),
@@ -95,7 +95,7 @@ class MovementFactory extends Factory
      */
     public function completed(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'completed',
             'started_at' => now()->subHours(3),
             'arrives_at' => now()->subHours(2),
@@ -108,7 +108,7 @@ class MovementFactory extends Factory
      */
     public function forPlayer(Player $player): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'player_id' => $player->id,
         ]);
     }
@@ -118,7 +118,7 @@ class MovementFactory extends Factory
      */
     public function betweenVillages(Village $fromVillage, Village $toVillage): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'from_village_id' => $fromVillage->id,
             'to_village_id' => $toVillage->id,
         ]);

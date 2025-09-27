@@ -52,7 +52,8 @@ class QueryOptimizationService
     public static function optimizeWhereHas(Builder $query, string $relation, string $column, $value): Builder
     {
         return $query->whereIn($column, function ($subQuery) use ($relation, $value) {
-            $subQuery->select('id')
+            $subQuery
+                ->select('id')
                 ->from($relation)
                 ->where('name', 'like', '%' . $value . '%');
         });
@@ -90,7 +91,8 @@ class QueryOptimizationService
      */
     public static function createPaginatedQuery(Builder $query, int $perPage = 15, array $with = []): Builder
     {
-        return $query->with($with)
+        return $query
+            ->with($with)
             ->selectRaw('*, (SELECT COUNT(*) FROM related_table WHERE foreign_key = main_table.id) as related_count');
     }
 

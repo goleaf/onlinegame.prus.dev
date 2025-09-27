@@ -35,7 +35,7 @@ class PlayerQuestFactory extends Factory
 
     public function inProgress(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'in_progress',
             'started_at' => $this->faker->dateTimeBetween('-1 day', 'now'),
             'completed_at' => null,
@@ -44,7 +44,7 @@ class PlayerQuestFactory extends Factory
 
     public function completed(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'completed',
             'started_at' => $this->faker->dateTimeBetween('-2 days', '-1 day'),
             'completed_at' => $this->faker->dateTimeBetween('-1 day', 'now'),
@@ -53,7 +53,7 @@ class PlayerQuestFactory extends Factory
 
     public function available(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'available',
             'started_at' => null,
             'completed_at' => null,
@@ -62,7 +62,7 @@ class PlayerQuestFactory extends Factory
 
     public function failed(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'failed',
             'started_at' => $this->faker->dateTimeBetween('-2 days', '-1 day'),
             'completed_at' => null,
@@ -71,7 +71,7 @@ class PlayerQuestFactory extends Factory
 
     public function expired(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'status' => 'expired',
             'started_at' => $this->faker->dateTimeBetween('-2 days', '-1 day'),
             'completed_at' => null,

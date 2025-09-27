@@ -23,12 +23,12 @@ class SecureGameController extends Controller
     {
         try {
             $user = Auth::user();
-            if (! $user) {
+            if (!$user) {
                 return redirect()->route('login');
             }
 
             $player = Player::where('user_id', $user->id)->first();
-            if (! $player) {
+            if (!$player) {
                 return view('game.no-player', compact('user'));
             }
 
@@ -51,7 +51,7 @@ class SecureGameController extends Controller
         }
 
         // Check security
-        if (! $this->securityService->validateGameAction($request, 'building_upgrade', $request->all())) {
+        if (!$this->securityService->validateGameAction($request, 'building_upgrade', $request->all())) {
             return response()->json(['error' => 'Unauthorized action'], 403);
         }
 
@@ -64,7 +64,7 @@ class SecureGameController extends Controller
             $village = $request->get('village');
             $building = $village->buildings()->find($request->building_id);
 
-            if (! $building) {
+            if (!$building) {
                 return response()->json(['error' => 'Building not found'], 404);
             }
 
@@ -95,7 +95,7 @@ class SecureGameController extends Controller
         }
 
         // Check security
-        if (! $this->securityService->validateGameAction($request, 'troop_training', $request->all())) {
+        if (!$this->securityService->validateGameAction($request, 'troop_training', $request->all())) {
             return response()->json(['error' => 'Unauthorized action'], 403);
         }
 
@@ -132,7 +132,7 @@ class SecureGameController extends Controller
         }
 
         // Check security
-        if (! $this->securityService->validateGameAction($request, 'resource_spend', $request->all())) {
+        if (!$this->securityService->validateGameAction($request, 'resource_spend', $request->all())) {
             return response()->json(['error' => 'Unauthorized action'], 403);
         }
 
@@ -156,7 +156,7 @@ class SecureGameController extends Controller
     public function getVillageData(Request $request, $villageId)
     {
         // Check security
-        if (! $this->securityService->validateGameAction($request, 'village_management', ['village_id' => $villageId])) {
+        if (!$this->securityService->validateGameAction($request, 'village_management', ['village_id' => $villageId])) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 

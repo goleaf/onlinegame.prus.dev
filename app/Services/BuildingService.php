@@ -29,7 +29,7 @@ class BuildingService
         }
 
         // Check requirements
-        if (! $this->checkRequirements($village, $buildingType, $level)) {
+        if (!$this->checkRequirements($village, $buildingType, $level)) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class BuildingService
                 })
                 ->first();
 
-            if (! $building || $building->level < $requiredLevel) {
+            if (!$building || $building->level < $requiredLevel) {
                 return false;
             }
         }
@@ -83,7 +83,7 @@ class BuildingService
 
     public function startUpgrade($village, $buildingType, $level = 1)
     {
-        if (! $this->canBuild($village, $buildingType, $level)) {
+        if (!$this->canBuild($village, $buildingType, $level)) {
             return false;
         }
 
@@ -208,7 +208,7 @@ class BuildingService
 
     private function calculateUpgradeProgress($building)
     {
-        if (! $building->upgrade_started_at) {
+        if (!$building->upgrade_started_at) {
             return 0;
         }
 

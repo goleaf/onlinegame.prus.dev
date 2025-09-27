@@ -3,8 +3,8 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Model;
 
 class Quest extends Model
 {
@@ -111,22 +111,25 @@ class Quest extends Model
 
     public function scopeAvailableForPlayer($query, $playerId)
     {
-        return $query->where('is_active', true)
+        return $query
+            ->where('is_active', true)
             ->whereNotIn('id', function ($q) use ($playerId) {
-                $q->select('quest_id')
-                  ->from('player_quests')
-                  ->where('player_id', $playerId)
-                  ->where('status', 'in_progress');
+                $q
+                    ->select('quest_id')
+                    ->from('player_quests')
+                    ->where('player_id', $playerId)
+                    ->where('status', 'in_progress');
             });
     }
 
     public function scopeCompletedByPlayer($query, $playerId)
     {
         return $query->whereIn('id', function ($q) use ($playerId) {
-            $q->select('quest_id')
-              ->from('player_quests')
-              ->where('player_id', $playerId)
-              ->where('status', 'completed');
+            $q
+                ->select('quest_id')
+                ->from('player_quests')
+                ->where('player_id', $playerId)
+                ->where('status', 'completed');
         });
     }
 
@@ -134,9 +137,10 @@ class Quest extends Model
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
             return $q->where(function ($subQ) use ($searchTerm) {
-                $subQ->where('name', 'like', '%' . $searchTerm . '%')
-                     ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                     ->orWhere('category', 'like', '%' . $searchTerm . '%');
+                $subQ
+                    ->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('category', 'like', '%' . $searchTerm . '%');
             });
         });
     }

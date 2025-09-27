@@ -134,7 +134,8 @@ class ReportManager extends Component
             $filters = [
                 $this->showOnlyMyReports => function ($q) {
                     return $q->where(function ($subQ) {
-                        $subQ->where('attacker_id', Auth::id())
+                        $subQ
+                            ->where('attacker_id', Auth::id())
                             ->orWhere('defender_id', Auth::id());
                     });
                 },
@@ -155,15 +156,18 @@ class ReportManager extends Component
                 },
                 $this->searchQuery => function ($q) {
                     return $q->where(function ($subQ) {
-                        $subQ->where('title', 'like', '%' . $this->searchQuery . '%')
+                        $subQ
+                            ->where('title', 'like', '%' . $this->searchQuery . '%')
                             ->orWhere('content', 'like', '%' . $this->searchQuery . '%')
                             ->orWhereIn('attacker_id', function ($playerQ) {
-                                $playerQ->select('id')
+                                $playerQ
+                                    ->select('id')
                                     ->from('players')
                                     ->where('name', 'like', '%' . $this->searchQuery . '%');
                             })
                             ->orWhereIn('defender_id', function ($playerQ) {
-                                $playerQ->select('id')
+                                $playerQ
+                                    ->select('id')
                                     ->from('players')
                                     ->where('name', 'like', '%' . $this->searchQuery . '%');
                             });
@@ -229,7 +233,7 @@ class ReportManager extends Component
             $reportId = $reportId['reportId'] ?? null;
         }
 
-        if (! $reportId) {
+        if (!$reportId) {
             return;
         }
 
@@ -249,7 +253,7 @@ class ReportManager extends Component
             $reportId = $reportId['reportId'] ?? null;
         }
 
-        if (! $reportId) {
+        if (!$reportId) {
             return;
         }
 
@@ -269,7 +273,7 @@ class ReportManager extends Component
             $reportId = $reportId['reportId'] ?? null;
         }
 
-        if (! $reportId) {
+        if (!$reportId) {
             return;
         }
 
@@ -289,7 +293,7 @@ class ReportManager extends Component
             $reportId = $reportId['reportId'] ?? null;
         }
 
-        if (! $reportId) {
+        if (!$reportId) {
             return;
         }
 
@@ -344,7 +348,7 @@ class ReportManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = ! $this->showDetails;
+        $this->showDetails = !$this->showDetails;
     }
 
     public function filterByType($type)
@@ -400,7 +404,7 @@ class ReportManager extends Component
 
     public function toggleUnreadFilter()
     {
-        $this->showOnlyUnread = ! $this->showOnlyUnread;
+        $this->showOnlyUnread = !$this->showOnlyUnread;
         $this->addNotification(
             $this->showOnlyUnread ? 'Showing only unread reports' : 'Showing all reports',
             'info'
@@ -409,7 +413,7 @@ class ReportManager extends Component
 
     public function toggleImportantFilter()
     {
-        $this->showOnlyImportant = ! $this->showOnlyImportant;
+        $this->showOnlyImportant = !$this->showOnlyImportant;
         $this->addNotification(
             $this->showOnlyImportant ? 'Showing only important reports' : 'Showing all reports',
             'info'
@@ -418,7 +422,7 @@ class ReportManager extends Component
 
     public function toggleMyReportsFilter()
     {
-        $this->showOnlyMyReports = ! $this->showOnlyMyReports;
+        $this->showOnlyMyReports = !$this->showOnlyMyReports;
         $this->addNotification(
             $this->showOnlyMyReports ? 'Showing only my reports' : 'Showing all reports',
             'info'
@@ -430,8 +434,9 @@ class ReportManager extends Component
         // Use single query with selectRaw to get all stats at once
         $stats = Report::where('world_id', $this->world->id)
             ->where(function ($q) {
-                $q->where('attacker_id', Auth::id())
-                  ->orWhere('defender_id', Auth::id());
+                $q
+                    ->where('attacker_id', Auth::id())
+                    ->orWhere('defender_id', Auth::id());
             })
             ->selectRaw('
                 COUNT(*) as total_reports,
@@ -454,8 +459,9 @@ class ReportManager extends Component
         // Use single query with selectRaw to get all battle stats at once
         $stats = Report::where('world_id', $this->world->id)
             ->where(function ($q) {
-                $q->where('attacker_id', Auth::id())
-                  ->orWhere('defender_id', Auth::id());
+                $q
+                    ->where('attacker_id', Auth::id())
+                    ->orWhere('defender_id', Auth::id());
             })
             ->selectRaw('
                 SUM(CASE WHEN type = "attack" THEN 1 ELSE 0 END) as total_battles,
@@ -519,7 +525,7 @@ class ReportManager extends Component
         if ($report['is_important']) {
             return 'red';
         }
-        if (! $report['is_read']) {
+        if (!$report['is_read']) {
             return 'blue';
         }
 
@@ -549,7 +555,7 @@ class ReportManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = ! $this->realTimeUpdates;
+        $this->realTimeUpdates = !$this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -558,7 +564,7 @@ class ReportManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'

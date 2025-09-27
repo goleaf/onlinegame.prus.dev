@@ -16,12 +16,12 @@ class GameController extends Controller
     {
         try {
             $user = Auth::user();
-            if (! $user) {
+            if (!$user) {
                 return redirect()->route('login');
             }
 
             $player = \App\Models\Game\Player::where('user_id', $user->id)->first();
-            if (! $player) {
+            if (!$player) {
                 return view('game.no-player', compact('user'));
             }
 

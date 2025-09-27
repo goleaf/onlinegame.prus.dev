@@ -33,10 +33,14 @@ class TravianDashboard extends Component
     public function loadGameData()
     {
         $user = Auth::user();
-        $this->player = Player::where('user_id', $user->id)->first();
+        $this->player = Player::where('user_id', $user->id)
+            ->with(['villages' => function ($query) {
+                $query->with(['resources', 'buildings.buildingType:id,name,description']);
+            }, 'alliance:id,name'])
+            ->first();
 
         if ($this->player) {
-            $this->villages = $this->player->villages()->with(['resources', 'buildings.buildingType'])->get();
+            $this->villages = $this->player->villages;
             $this->currentVillage = $this->villages->first();
             $this->loadRecentEvents();
             $this->loadGameStats();
@@ -47,7 +51,10 @@ class TravianDashboard extends Component
     public function loadRecentEvents()
     {
         if ($this->player) {
-            $this->recentEvents = GameEvent::where('player_id', $this->player->id)
+            $this->recentEvents = GameEvent::byPlayer($this->player->id)
+                ->withStats()
+                ->withPlayerInfo()
+                ->recent(7)
                 ->orderBy('occurred_at', 'desc')
                 ->limit(10)
                 ->get();
@@ -57,8 +64,23 @@ class TravianDashboard extends Component
     public function loadGameStats()
     {
         if ($this->player) {
+            // Use optimized query with selectRaw for village stats
+            $villageStats = $this
+                ->player
+                ->villages()
+                ->selectRaw('
+                    COUNT(*) as total_villages,
+                    SUM(population) as total_population,
+                    AVG(population) as avg_population,
+                    MAX(population) as max_population
+                ')
+                ->first();
+
             $this->gameStats = [
-                'total_villages' => $this->player->villages()->count(),
+                'total_villages' => $villageStats->total_villages ?? 0,
+                'total_population' => $villageStats->total_population ?? 0,
+                'avg_population' => round($villageStats->avg_population ?? 0, 2),
+                'max_population' => $villageStats->max_population ?? 0,
                 'total_points' => $this->player->points ?? 0,
                 'alliance_name' => $this->player->alliance?->name ?? 'No Alliance',
                 'online_status' => $this->player->is_online ? 'Online' : 'Offline',
@@ -87,7 +109,7 @@ class TravianDashboard extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
     }
 
     public function setRefreshInterval($interval)

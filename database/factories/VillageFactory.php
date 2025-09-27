@@ -47,7 +47,7 @@ class VillageFactory extends Factory
      */
     public function capital(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_capital' => true,
             'population' => $this->faker->numberBetween(1000, 5000),
             'culture_points' => $this->faker->numberBetween(5000, 50000),
@@ -59,7 +59,7 @@ class VillageFactory extends Factory
      */
     public function newVillage(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'population' => 0,
             'culture_points' => 0,
             'wood' => 1000,
@@ -78,7 +78,7 @@ class VillageFactory extends Factory
      */
     public function developed(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'population' => $this->faker->numberBetween(2000, 10000),
             'culture_points' => $this->faker->numberBetween(10000, 100000),
             'wood' => $this->faker->numberBetween(50000, 200000),
@@ -97,7 +97,7 @@ class VillageFactory extends Factory
      */
     public function atCoordinates(int $x, int $y): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'x_coordinate' => $x,
             'y_coordinate' => $y,
         ]);

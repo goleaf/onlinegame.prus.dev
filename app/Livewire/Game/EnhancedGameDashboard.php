@@ -5,18 +5,21 @@ namespace App\Livewire\Game;
 use App\Models\Game\GameEvent;
 use App\Models\Game\Player;
 use App\Services\GameTickService;
+use App\Services\GeographicService;
 use App\Services\ResourceProductionService;
 use Illuminate\Support\Facades\Auth;
+use LaraUtilX\Traits\ApiResponseTrait;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
+use SmartCache\Facades\SmartCache;
 
 class EnhancedGameDashboard extends Component
 {
-    use WithPagination;
+    use WithPagination, ApiResponseTrait;
 
     #[Locked]
     public $player;
@@ -79,7 +82,7 @@ class EnhancedGameDashboard extends Component
     #[Computed]
     public function totalResources()
     {
-        if (! $this->currentVillage) {
+        if (!$this->currentVillage) {
             return [];
         }
 
@@ -94,7 +97,7 @@ class EnhancedGameDashboard extends Component
     #[Computed]
     public function resourceCapacities()
     {
-        if (! $this->currentVillage) {
+        if (!$this->currentVillage) {
             return [];
         }
 
@@ -109,7 +112,7 @@ class EnhancedGameDashboard extends Component
     #[Computed]
     public function playerRanking()
     {
-        if (! $this->player) {
+        if (!$this->player) {
             return null;
         }
 
@@ -124,12 +127,12 @@ class EnhancedGameDashboard extends Component
     #[Computed]
     public function gameTimeRemaining()
     {
-        if (! $this->worldInfo) {
+        if (!$this->worldInfo) {
             return null;
         }
 
         $endDate = $this->worldInfo['end_date'] ?? null;
-        if (! $endDate) {
+        if (!$endDate) {
             return null;
         }
 
@@ -138,14 +141,22 @@ class EnhancedGameDashboard extends Component
 
     public function mount()
     {
-        if (! Auth::check()) {
+        if (!Auth::check()) {
             return redirect('/login');
         }
 
         $this->player = Auth::user()->player;
-        if (! $this->player) {
+        if (!$this->player) {
             return redirect('/game/no-player');
         }
+
+        // Laradumps debugging
+        ds('EnhancedGameDashboard mounted', [
+            'user_id' => Auth::id(),
+            'player_id' => $this->player->id,
+            'world_id' => $this->player->world_id,
+            'villages_count' => $this->player->villages->count() ?? 0
+        ])->label('EnhancedGameDashboard Mount');
 
         $this->loadGameData();
         $this->initializeRealTimeFeatures();
@@ -156,12 +167,12 @@ class EnhancedGameDashboard extends Component
     public function boot()
     {
         // Ensure player is loaded in test environment
-        if (app()->environment('testing') && Auth::check() && ! $this->player) {
+        if (app()->environment('testing') && Auth::check() && !$this->player) {
             $this->player = Auth::user()->player;
         }
 
         // If player is null after boot, redirect to no-player page
-        if (! $this->player && Auth::check()) {
+        if (!$this->player && Auth::check()) {
             return redirect('/game/no-player');
         }
     }
@@ -192,7 +203,7 @@ class EnhancedGameDashboard extends Component
 
     public function togglePolling()
     {
-        $this->pollingEnabled = ! $this->pollingEnabled;
+        $this->pollingEnabled = !$this->pollingEnabled;
 
         if ($this->pollingEnabled) {
             $this->startPolling();
@@ -220,17 +231,40 @@ class EnhancedGameDashboard extends Component
 
     public function loadGameData()
     {
-        $this->villages = $this->player->villages;
+        // Use SmartCache for performance optimization with automatic compression
+        $cacheKey = "player_{$this->player->id}_villages_data";
+
+        $this->villages = SmartCache::remember($cacheKey, now()->addMinutes(5), function () {
+            return $this
+                ->player
+                ->villages()
+                ->selectRaw('
+                    villages.*,
+                    (SELECT COUNT(*) FROM buildings WHERE village_id = villages.id) as building_count,
+                    (SELECT COUNT(*) FROM troops WHERE village_id = villages.id) as troop_count,
+                    (SELECT SUM(wood + clay + iron + crop) FROM resources WHERE village_id = villages.id) as total_resources
+                ')
+                ->get();
+        });
+
         $this->currentVillage = $this->villages->first();
         $this->calculateGameStats();
     }
 
     public function loadRecentEvents()
     {
-        $this->recentEvents = GameEvent::where('player_id', $this->player->id)
-            ->orderBy('occurred_at', 'desc')
-            ->limit(5)
-            ->get();
+        // Use SmartCache for recent events with automatic optimization
+        $cacheKey = "player_{$this->player->id}_recent_events";
+
+        $this->recentEvents = SmartCache::remember($cacheKey, now()->addMinutes(1), function () {
+            return GameEvent::byPlayer($this->player->id)
+                ->withStats()
+                ->withPlayerInfo()
+                ->recent(7)
+                ->orderBy('occurred_at', 'desc')
+                ->limit(5)
+                ->get();
+        });
     }
 
     public function calculateGameStats()
@@ -255,7 +289,7 @@ class EnhancedGameDashboard extends Component
 
     public function calculateResourceProductionRates()
     {
-        if (! $this->currentVillage) {
+        if (!$this->currentVillage) {
             return;
         }
 
@@ -265,29 +299,37 @@ class EnhancedGameDashboard extends Component
 
     public function loadBuildingQueues()
     {
-        if (! $this->currentVillage) {
+        if (!$this->currentVillage) {
             return;
         }
 
         $this->buildingQueues = $this
             ->currentVillage
             ->buildingQueues()
-            ->with('buildingType')
+            ->with('buildingType:id,name,description')
             ->where('is_active', true)
+            ->selectRaw('
+                building_queues.*,
+                (SELECT COUNT(*) FROM building_queues bq2 WHERE bq2.village_id = building_queues.village_id AND bq2.is_active = 1) as total_active_queues
+            ')
             ->get();
     }
 
     public function loadTrainingQueues()
     {
-        if (! $this->currentVillage) {
+        if (!$this->currentVillage) {
             return;
         }
 
         $this->trainingQueues = $this
             ->currentVillage
             ->trainingQueues()
-            ->with('unitType')
+            ->with('unitType:id,name,attack_power,defense_power')
             ->where('is_active', true)
+            ->selectRaw('
+                training_queues.*,
+                (SELECT COUNT(*) FROM training_queues tq2 WHERE tq2.village_id = training_queues.village_id AND tq2.is_active = 1) as total_active_queues
+            ')
             ->get();
     }
 
@@ -296,14 +338,18 @@ class EnhancedGameDashboard extends Component
         $this->activeQuests = $this
             ->player
             ->playerQuests()
-            ->with('quest')
+            ->with('quest:id,name,description,category,difficulty')
             ->where('is_completed', false)
+            ->selectRaw('
+                player_quests.*,
+                (SELECT COUNT(*) FROM player_quests pq2 WHERE pq2.player_id = player_quests.player_id AND pq2.is_completed = 0) as total_active_quests
+            ')
             ->get();
     }
 
     public function loadAllianceInfo()
     {
-        if (! $this->player || ! $this->player->alliance) {
+        if (!$this->player || !$this->player->alliance) {
             return;
         }
 
@@ -329,8 +375,10 @@ class EnhancedGameDashboard extends Component
 
     public function loadNotifications()
     {
-        $this->notifications = GameEvent::where('player_id', $this->player->id)
-            ->where('is_read', false)
+        $this->notifications = GameEvent::byPlayer($this->player->id)
+            ->unread()
+            ->withStats()
+            ->withPlayerInfo()
             ->orderBy('occurred_at', 'desc')
             ->limit(10)
             ->get();
@@ -339,13 +387,31 @@ class EnhancedGameDashboard extends Component
     public function processGameTick()
     {
         try {
+            // Laradumps debugging
+            ds('Processing game tick', [
+                'player_id' => $this->player->id,
+                'current_village' => $this->currentVillage?->name,
+                'last_update_time' => $this->lastUpdateTime
+            ])->label('EnhancedGameDashboard Game Tick Start');
+
             $gameTickService = app(GameTickService::class);
             $gameTickService->processGameTick();
 
             $this->lastUpdateTime = now();
             $this->loadGameData();
             $this->dispatch('gameTickProcessed');
+
+            ds('Game tick processed successfully', [
+                'player_id' => $this->player->id,
+                'new_update_time' => $this->lastUpdateTime,
+                'villages_count' => $this->villages->count()
+            ])->label('EnhancedGameDashboard Game Tick Success');
         } catch (\Exception $e) {
+            ds('Game tick error', [
+                'player_id' => $this->player->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ])->label('EnhancedGameDashboard Game Tick Error');
             $this->addNotification('Game tick error: ' . $e->getMessage(), 'error');
             $this->dispatch('gameTickError', ['message' => $e->getMessage()]);
         }
@@ -378,17 +444,32 @@ class EnhancedGameDashboard extends Component
         $this->selectedVillageId = $villageId;
         $this->currentVillage = $this->villages->find($villageId);
 
+        // Laradumps debugging
+        ds('Village selected', [
+            'village_id' => $villageId,
+            'village_name' => $this->currentVillage?->name,
+            'player_id' => $this->player->id,
+            'total_villages' => $this->villages->count()
+        ])->label('EnhancedGameDashboard Village Selection');
+
         if ($this->currentVillage) {
             $this->calculateResourceProductionRates();
             $this->loadBuildingQueues();
             $this->loadTrainingQueues();
             $this->addNotification('Village selected: ' . $this->currentVillage->name, 'info');
+
+            ds('Village data loaded', [
+                'village_id' => $villageId,
+                'resource_production_rates' => $this->resourceProductionRates,
+                'building_queues_count' => $this->buildingQueues->count(),
+                'training_queues_count' => $this->trainingQueues->count()
+            ])->label('EnhancedGameDashboard Village Data Loaded');
         }
     }
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
 
         if ($this->autoRefresh) {
             $this->startPolling();

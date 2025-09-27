@@ -29,14 +29,14 @@ class PlayerAchievementFactory extends Factory
 
     public function unlocked(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'unlocked_at' => $this->faker->dateTimeBetween('-1 day', 'now'),
         ]);
     }
 
     public function available(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'unlocked_at' => null,
         ]);
     }

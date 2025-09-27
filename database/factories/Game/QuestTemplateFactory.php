@@ -49,7 +49,7 @@ class QuestTemplateFactory extends Factory
 
     public function main(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'type' => 'main',
             'title' => 'Main Quest: ' . $this->faker->sentence(3),
             'description' => 'A crucial quest that advances the main storyline.',
@@ -58,7 +58,7 @@ class QuestTemplateFactory extends Factory
 
     public function side(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'type' => 'side',
             'title' => 'Side Quest: ' . $this->faker->sentence(3),
             'description' => 'An optional quest that provides additional rewards.',
@@ -67,7 +67,7 @@ class QuestTemplateFactory extends Factory
 
     public function daily(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'type' => 'daily',
             'title' => 'Daily Quest: ' . $this->faker->sentence(3),
             'description' => 'A quest that can be completed once per day.',
@@ -76,7 +76,7 @@ class QuestTemplateFactory extends Factory
 
     public function weekly(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'type' => 'weekly',
             'title' => 'Weekly Quest: ' . $this->faker->sentence(3),
             'description' => 'A quest that can be completed once per week.',
@@ -85,7 +85,7 @@ class QuestTemplateFactory extends Factory
 
     public function special(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'type' => 'special',
             'title' => 'Special Quest: ' . $this->faker->sentence(3),
             'description' => 'A limited-time quest with special rewards.',

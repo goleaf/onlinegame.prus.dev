@@ -14,7 +14,7 @@ class TroopService
         $costs = $this->calculateTrainingCost($unitType, $quantity);
         $resourceService = new ResourceProductionService();
 
-        if (! $resourceService->canAfford($village, $costs)) {
+        if (!$resourceService->canAfford($village, $costs)) {
             return false;
         }
 
@@ -29,7 +29,7 @@ class TroopService
                 })
                 ->first();
 
-            if (! $building || $building->level < $requiredLevel) {
+            if (!$building || $building->level < $requiredLevel) {
                 return false;
             }
         }
@@ -59,7 +59,7 @@ class TroopService
 
     public function startTraining($village, $unitType, $quantity = 1)
     {
-        if (! $this->canTrain($village, $unitType, $quantity)) {
+        if (!$this->canTrain($village, $unitType, $quantity)) {
             return false;
         }
 

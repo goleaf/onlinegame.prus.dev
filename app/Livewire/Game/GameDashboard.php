@@ -52,7 +52,7 @@ class GameDashboard extends Component
 
     public function mount()
     {
-        if (! Auth::check()) {
+        if (!Auth::check()) {
             return redirect('/login');
         }
 
@@ -82,20 +82,20 @@ class GameDashboard extends Component
 
         try {
             $user = Auth::user();
-            if (! $user) {
+            if (!$user) {
                 $this->loadGameStats();  // Load default stats even when no user
                 $this->isLoading = false;
 
                 return;
             }
-            $this->player = Player::where('user_id', $user->id)->first();
+            $this->player = Player::where('user_id', $user->id)
+                ->with(['villages' => function ($query) {
+                    $query->with(['resources', 'buildings', 'buildingQueues']);
+                }])
+                ->first();
 
             if ($this->player) {
-                $this->villages = $this
-                    ->player
-                    ->villages()
-                    ->with(['resources', 'buildings', 'buildingQueues'])
-                    ->get();
+                $this->villages = $this->player->villages;
                 $this->currentVillage = $this->villages->first();
                 $this->loadRecentEvents();
                 $this->loadGameStats();
@@ -110,7 +110,10 @@ class GameDashboard extends Component
     public function loadRecentEvents()
     {
         if ($this->player) {
-            $this->recentEvents = GameEvent::where('player_id', $this->player->id)
+            $this->recentEvents = GameEvent::byPlayer($this->player->id)
+                ->withStats()
+                ->withPlayerInfo()
+                ->recent(7)
                 ->orderBy('occurred_at', 'desc')
                 ->limit(10)
                 ->get();
@@ -147,7 +150,7 @@ class GameDashboard extends Component
     #[On('tick')]
     public function processGameTick()
     {
-        if (! $this->autoRefresh) {
+        if (!$this->autoRefresh) {
             return;
         }
 
@@ -175,7 +178,7 @@ class GameDashboard extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -265,7 +268,7 @@ class GameDashboard extends Component
 
     public function calculateResourceProductionRates()
     {
-        if (! $this->currentVillage) {
+        if (!$this->currentVillage) {
             return;
         }
 
@@ -282,7 +285,7 @@ class GameDashboard extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = ! $this->realTimeUpdates;
+        $this->realTimeUpdates = !$this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -291,7 +294,7 @@ class GameDashboard extends Component
 
     public function toggleNotifications()
     {
-        $this->showNotifications = ! $this->showNotifications;
+        $this->showNotifications = !$this->showNotifications;
         $this->addNotification(
             $this->showNotifications ? 'Notifications enabled' : 'Notifications disabled',
             'info'

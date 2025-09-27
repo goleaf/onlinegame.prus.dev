@@ -4,7 +4,12 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "format": "./pretty-php.phar app database tests",
+        "format:check": "./pretty-php.phar app database tests --check",
+        "format:app": "./pretty-php.phar app",
+        "format:database": "./pretty-php.phar database",
+        "format:tests": "./pretty-php.phar tests"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

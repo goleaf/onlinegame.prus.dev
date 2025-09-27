@@ -116,7 +116,8 @@ class MarketManager extends Component
                 },
                 $this->searchQuery => function ($q) {
                     return $q->where(function ($subQ) {
-                        $subQ->where('resource_type', 'like', '%' . $this->searchQuery . '%')
+                        $subQ
+                            ->where('resource_type', 'like', '%' . $this->searchQuery . '%')
                             ->orWhereHas('seller', function ($sellerQ) {
                                 $sellerQ->where('name', 'like', '%' . $this->searchQuery . '%');
                             });
@@ -170,7 +171,7 @@ class MarketManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = ! $this->showDetails;
+        $this->showDetails = !$this->showDetails;
     }
 
     public function setOfferType($type)
@@ -251,7 +252,7 @@ class MarketManager extends Component
 
     public function toggleActiveFilter()
     {
-        $this->showOnlyActive = ! $this->showOnlyActive;
+        $this->showOnlyActive = !$this->showOnlyActive;
         $this->addNotification(
             $this->showOnlyActive ? 'Showing only active offers' : 'Showing all offers',
             'info'
@@ -260,7 +261,7 @@ class MarketManager extends Component
 
     public function toggleMyOffersFilter()
     {
-        $this->showOnlyMyOffers = ! $this->showOnlyMyOffers;
+        $this->showOnlyMyOffers = !$this->showOnlyMyOffers;
         $this->addNotification(
             $this->showOnlyMyOffers ? 'Showing only my offers' : 'Showing all offers',
             'info'
@@ -269,7 +270,7 @@ class MarketManager extends Component
 
     public function toggleExpiredFilter()
     {
-        $this->showOnlyExpired = ! $this->showOnlyExpired;
+        $this->showOnlyExpired = !$this->showOnlyExpired;
         $this->addNotification(
             $this->showOnlyExpired ? 'Showing only expired offers' : 'Showing all offers',
             'info'
@@ -287,7 +288,7 @@ class MarketManager extends Component
         if ($this->selectedType === 'sell') {
             // Check if player has enough resources
             $resource = $this->village->resources->where('type', $this->selectedResource)->first();
-            if (! $resource || $resource->amount < $this->offerQuantity) {
+            if (!$resource || $resource->amount < $this->offerQuantity) {
                 $this->addNotification('Insufficient resources to create offer', 'error');
 
                 return;
@@ -333,7 +334,7 @@ class MarketManager extends Component
     public function acceptOffer($offerId)
     {
         $offer = MarketOffer::find($offerId);
-        if (! $offer) {
+        if (!$offer) {
             $this->addNotification('Offer not found', 'error');
 
             return;
@@ -375,14 +376,14 @@ class MarketManager extends Component
 
         foreach (['wood', 'clay', 'iron', 'crop'] as $resourceType) {
             $resource = $this->village->resources->where('type', $resourceType)->first();
-            if (! $resource || $resource->amount < $costPerResource) {
+            if (!$resource || $resource->amount < $costPerResource) {
                 $canAfford = false;
 
                 break;
             }
         }
 
-        if (! $canAfford) {
+        if (!$canAfford) {
             $this->addNotification('Insufficient resources to buy', 'error');
 
             return;
@@ -419,7 +420,7 @@ class MarketManager extends Component
     {
         // Check if player has enough resources to sell
         $resource = $this->village->resources->where('type', $offer->resource_type)->first();
-        if (! $resource || $resource->amount < $offer->quantity) {
+        if (!$resource || $resource->amount < $offer->quantity) {
             $this->addNotification('Insufficient resources to sell', 'error');
 
             return;
@@ -455,7 +456,7 @@ class MarketManager extends Component
     public function cancelOffer($offerId)
     {
         $offer = MarketOffer::find($offerId);
-        if (! $offer) {
+        if (!$offer) {
             $this->addNotification('Offer not found', 'error');
 
             return;
@@ -727,7 +728,7 @@ class MarketManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = ! $this->realTimeUpdates;
+        $this->realTimeUpdates = !$this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -736,7 +737,7 @@ class MarketManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'

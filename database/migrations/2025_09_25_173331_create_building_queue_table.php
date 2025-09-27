@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
@@ -16,7 +16,7 @@ return new class () extends Migration {
             $table->integer('building_type');
             $table->integer('level');
             $table->integer('position');
-            $table->integer('queue_position'); // Position in the queue (1, 2, 3, etc.)
+            $table->integer('queue_position');  // Position in the queue (1, 2, 3, etc.)
             $table->timestamp('start_time');
             $table->timestamp('finish_time');
             $table->boolean('is_completed')->default(false);

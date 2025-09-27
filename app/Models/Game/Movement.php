@@ -3,12 +3,14 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Movement extends Model
 {
-    use HasFactory;
+    use HasFactory, HasReference;
+
     protected $fillable = [
         'player_id',
         'from_village_id',
@@ -21,6 +23,7 @@ class Movement extends Model
         'returned_at',
         'status',
         'metadata',
+        'reference_number',
     ];
 
     protected $casts = [
@@ -31,6 +34,17 @@ class Movement extends Model
         'returned_at' => 'datetime',
         'metadata' => 'array',
     ];
+
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+
+    protected $referenceTemplate = [
+        'format' => 'MOV-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+
+    protected $referencePrefix = 'MOV';
 
     public function player(): BelongsTo
     {
@@ -62,8 +76,9 @@ class Movement extends Model
     public function scopeByVillage($query, $villageId)
     {
         return $query->where(function ($q) use ($villageId) {
-            $q->where('from_village_id', $villageId)
-              ->orWhere('to_village_id', $villageId);
+            $q
+                ->where('from_village_id', $villageId)
+                ->orWhere('to_village_id', $villageId);
         });
     }
 
@@ -106,11 +121,13 @@ class Movement extends Model
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
             return $q->where(function ($subQ) use ($searchTerm) {
                 $subQ->whereIn('to_village_id', function ($villageQ) use ($searchTerm) {
-                    $villageQ->select('id')
+                    $villageQ
+                        ->select('id')
                         ->from('villages')
                         ->where('name', 'like', '%' . $searchTerm . '%');
                 })->orWhereIn('from_village_id', function ($villageQ) use ($searchTerm) {
-                    $villageQ->select('id')
+                    $villageQ
+                        ->select('id')
                         ->from('villages')
                         ->where('name', 'like', '%' . $searchTerm . '%');
                 });
@@ -123,7 +140,7 @@ class Movement extends Model
         return $query->with([
             'fromVillage:id,name,x_coordinate,y_coordinate',
             'toVillage:id,name,x_coordinate,y_coordinate',
-            'player:id,name'
+            'player:id,name',
         ]);
     }
 }

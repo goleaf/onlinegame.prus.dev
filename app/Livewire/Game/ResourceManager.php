@@ -83,7 +83,7 @@ class ResourceManager extends Component
 
     public function loadResources()
     {
-        if (! $this->village) {
+        if (!$this->village) {
             return;
         }
 
@@ -111,7 +111,7 @@ class ResourceManager extends Component
 
     public function calculateProductionRates()
     {
-        if (! $this->village) {
+        if (!$this->village) {
             return;
         }
 
@@ -147,7 +147,7 @@ class ResourceManager extends Component
     #[On('tick')]
     public function processTick()
     {
-        if (! $this->village || ! $this->autoUpdate) {
+        if (!$this->village || !$this->autoUpdate) {
             return;
         }
 
@@ -161,7 +161,7 @@ class ResourceManager extends Component
 
     public function updateResourceProduction()
     {
-        if (! $this->village) {
+        if (!$this->village) {
             return;
         }
 
@@ -182,7 +182,7 @@ class ResourceManager extends Component
 
     public function spendResources($costs)
     {
-        if (! $this->village) {
+        if (!$this->village) {
             return false;
         }
 
@@ -214,7 +214,7 @@ class ResourceManager extends Component
 
     public function addResources($amounts)
     {
-        if (! $this->village) {
+        if (!$this->village) {
             return;
         }
 
@@ -300,7 +300,7 @@ class ResourceManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = ! $this->realTimeUpdates;
+        $this->realTimeUpdates = !$this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -309,7 +309,7 @@ class ResourceManager extends Component
 
     public function toggleAutoUpdate()
     {
-        $this->autoUpdate = ! $this->autoUpdate;
+        $this->autoUpdate = !$this->autoUpdate;
 
         if ($this->autoUpdate) {
             $this->startResourcePolling();
@@ -349,7 +349,7 @@ class ResourceManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = ! $this->showDetails;
+        $this->showDetails = !$this->showDetails;
     }
 
     public function getResourceIcon($type)

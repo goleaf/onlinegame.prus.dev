@@ -253,7 +253,7 @@ class GameMechanicsService
             $requirements = $building->buildingType->requirements ?? [];
 
             foreach ($requirements as $requirement) {
-                if (! $this->checkRequirement($village, $requirement)) {
+                if (!$this->checkRequirement($village, $requirement)) {
                     // Handle requirement not met
                     $this->handleRequirementNotMet($village, $building, $requirement);
                 }

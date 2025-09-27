@@ -732,7 +732,7 @@ class GameSeeder extends Seeder
                 $rank = $index === 0 ? 'leader' : ($index < 3 ? 'elder' : 'member');
 
                 // Check if player already has an alliance membership
-                if (! $member->allianceMembership()->exists()) {
+                if (!$member->allianceMembership()->exists()) {
                     $member->allianceMembership()->create([
                         'alliance_id' => $alliance->id,
                         'rank' => $rank,

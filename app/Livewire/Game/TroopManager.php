@@ -6,6 +6,7 @@ use App\Models\Game\Player;
 use App\Models\Game\TrainingQueue;
 use App\Models\Game\UnitType;
 use App\Models\Game\Village;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
@@ -58,11 +59,18 @@ class TroopManager extends Component
     public function mount($villageId = null)
     {
         if ($villageId) {
-            $this->village = Village::with(['troops.unitType', 'player'])
+            $this->village = Village::withStats()
+                ->with(['troops.unitType:id,name,attack_power,defense_power,speed,cost', 'player:id,name,tribe'])
                 ->findOrFail($villageId);
         } else {
-            $player = Player::where('user_id', Auth::id())->first();
-            $this->village = $player?->villages()->with(['troops.unitType', 'player'])->first();
+            $player = Player::where('user_id', Auth::id())
+                ->with(['villages' => function ($query) {
+                    $query
+                        ->withStats()
+                        ->with(['troops.unitType:id,name,attack_power,defense_power,speed,cost']);
+                }])
+                ->first();
+            $this->village = $player?->villages->first();
         }
 
         if ($this->village) {
@@ -89,14 +97,28 @@ class TroopManager extends Component
 
         try {
             $this->troops = $this->village->troops;
+
+            // Use optimized query for unit types
             $this->unitTypes = UnitType::where('is_active', true)
                 ->where('tribe', $this->village->player->tribe)
+                ->selectRaw('
+                    unit_types.*,
+                    (SELECT COUNT(*) FROM troops t WHERE t.unit_type_id = unit_types.id AND t.quantity > 0) as total_troops,
+                    (SELECT SUM(quantity) FROM troops t2 WHERE t2.unit_type_id = unit_types.id) as total_quantity,
+                    (SELECT AVG(quantity) FROM troops t3 WHERE t3.unit_type_id = unit_types.id AND t3.quantity > 0) as avg_quantity
+                ')
                 ->get();
+
+            // Use optimized query for training queues
             $this->trainingQueues = $this
                 ->village
                 ->trainingQueues()
                 ->where('is_completed', false)
-                ->with('unitType')
+                ->with('unitType:id,name,attack_power,defense_power,speed')
+                ->selectRaw('
+                    training_queues.*,
+                    (SELECT COUNT(*) FROM training_queues tq2 WHERE tq2.village_id = training_queues.village_id AND tq2.is_completed = 0) as total_active_queues
+                ')
                 ->get();
         } finally {
             $this->isLoading = false;
@@ -105,13 +127,19 @@ class TroopManager extends Component
 
     public function selectUnitType($unitTypeId)
     {
-        $this->selectedUnitType = UnitType::find($unitTypeId);
+        $this->selectedUnitType = UnitType::selectRaw('
+                unit_types.*,
+                (SELECT COUNT(*) FROM troops t WHERE t.unit_type_id = unit_types.id AND t.quantity > 0) as total_troops,
+                (SELECT SUM(quantity) FROM troops t2 WHERE t2.unit_type_id = unit_types.id) as total_quantity,
+                (SELECT AVG(quantity) FROM troops t3 WHERE t3.unit_type_id = unit_types.id AND t3.quantity > 0) as avg_quantity
+            ')
+            ->find($unitTypeId);
         $this->calculateTrainingCost();
     }
 
     public function calculateTrainingCost()
     {
-        if (! $this->selectedUnitType) {
+        if (!$this->selectedUnitType) {
             return;
         }
 
@@ -165,7 +193,7 @@ class TroopManager extends Component
                     })
                     ->first();
 
-                if (! $building || $building->level < $level) {
+                if (!$building || $building->level < $level) {
                     $this->canTrain = false;
 
                     break;
@@ -176,7 +204,7 @@ class TroopManager extends Component
 
     public function startTraining()
     {
-        if (! $this->canTrain || ! $this->selectedUnitType) {
+        if (!$this->canTrain || !$this->selectedUnitType) {
             return;
         }
 
@@ -218,7 +246,7 @@ class TroopManager extends Component
 
     public function calculateTrainingTime()
     {
-        if (! $this->selectedUnitType) {
+        if (!$this->selectedUnitType) {
             return 0;
         }
 
@@ -343,7 +371,7 @@ class TroopManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = ! $this->realTimeUpdates;
+        $this->realTimeUpdates = !$this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -352,7 +380,7 @@ class TroopManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -379,7 +407,7 @@ class TroopManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = ! $this->showDetails;
+        $this->showDetails = !$this->showDetails;
     }
 
     public function filterByType($type)
@@ -422,7 +450,7 @@ class TroopManager extends Component
 
     public function toggleAvailableFilter()
     {
-        $this->showOnlyAvailable = ! $this->showOnlyAvailable;
+        $this->showOnlyAvailable = !$this->showOnlyAvailable;
         $this->addNotification(
             $this->showOnlyAvailable ? 'Showing only available troops' : 'Showing all troops',
             'info'
@@ -431,7 +459,7 @@ class TroopManager extends Component
 
     public function toggleTrainingFilter()
     {
-        $this->showOnlyTraining = ! $this->showOnlyTraining;
+        $this->showOnlyTraining = !$this->showOnlyTraining;
         $this->addNotification(
             $this->showOnlyTraining ? 'Showing only training troops' : 'Showing all troops',
             'info'
@@ -452,7 +480,7 @@ class TroopManager extends Component
 
     public function toggleContinuousTraining()
     {
-        $this->continuousTraining = ! $this->continuousTraining;
+        $this->continuousTraining = !$this->continuousTraining;
         $this->addNotification(
             $this->continuousTraining ? 'Continuous training enabled' : 'Continuous training disabled',
             'info'
@@ -535,7 +563,7 @@ class TroopManager extends Component
     public function getTrainingCost($unitType, $quantity)
     {
         $unit = $this->unitTypes[$unitType] ?? null;
-        if (! $unit) {
+        if (!$unit) {
             return [];
         }
 
@@ -554,7 +582,7 @@ class TroopManager extends Component
 
         foreach ($cost as $resource => $amount) {
             $resourceModel = $resources->where('type', $resource)->first();
-            if (! $resourceModel || $resourceModel->amount < $amount) {
+            if (!$resourceModel || $resourceModel->amount < $amount) {
                 return false;
             }
         }
@@ -575,7 +603,7 @@ class TroopManager extends Component
 
     public function startContinuousTraining()
     {
-        if (! $this->continuousTraining) {
+        if (!$this->continuousTraining) {
             $this->addNotification('Continuous training not enabled', 'error');
 
             return;
@@ -599,7 +627,7 @@ class TroopManager extends Component
         }
 
         $troop = $this->troops->where('unit_type', $unitType)->first();
-        if (! $troop || $troop->count < $quantity) {
+        if (!$troop || $troop->count < $quantity) {
             $this->addNotification('Not enough troops to disband', 'error');
 
             return;

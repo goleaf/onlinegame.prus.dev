@@ -13,22 +13,22 @@ class GameSecurityService
     public function validateGameAction(Request $request, string $action, array $data = [])
     {
         // Check rate limiting
-        if (! $this->checkRateLimit($request, $action)) {
+        if (!$this->checkRateLimit($request, $action)) {
             return false;
         }
 
         // Check player ownership
-        if (! $this->checkPlayerOwnership($request, $data)) {
+        if (!$this->checkPlayerOwnership($request, $data)) {
             return false;
         }
 
         // Check village ownership
-        if (isset($data['village_id']) && ! $this->checkVillageOwnership($request, $data['village_id'])) {
+        if (isset($data['village_id']) && !$this->checkVillageOwnership($request, $data['village_id'])) {
             return false;
         }
 
         // Check action-specific security
-        if (! $this->checkActionSecurity($request, $action, $data)) {
+        if (!$this->checkActionSecurity($request, $action, $data)) {
             return false;
         }
 
@@ -73,12 +73,12 @@ class GameSecurityService
     private function checkPlayerOwnership(Request $request, array $data)
     {
         $user = $request->user();
-        if (! $user) {
+        if (!$user) {
             return false;
         }
 
         $player = Player::where('user_id', $user->id)->first();
-        if (! $player || ! $player->is_active) {
+        if (!$player || !$player->is_active) {
             return false;
         }
 
@@ -91,7 +91,7 @@ class GameSecurityService
     private function checkVillageOwnership(Request $request, int $villageId)
     {
         $player = $request->get('player');
-        if (! $player) {
+        if (!$player) {
             return false;
         }
 
@@ -99,7 +99,7 @@ class GameSecurityService
             ->where('player_id', $player->id)
             ->first();
 
-        if (! $village) {
+        if (!$village) {
             Log::warning('Unauthorized village access attempt', [
                 'user_id' => $request->user()?->id,
                 'village_id' => $villageId,
@@ -133,7 +133,7 @@ class GameSecurityService
     private function validateBuildingUpgrade(Request $request, array $data)
     {
         $village = $request->get('village');
-        if (! $village) {
+        if (!$village) {
             return false;
         }
 
@@ -143,7 +143,7 @@ class GameSecurityService
             ->where('id', $data['building_id'] ?? 0)
             ->first();
 
-        if (! $building) {
+        if (!$building) {
             return false;
         }
 
@@ -158,13 +158,13 @@ class GameSecurityService
     private function validateTroopTraining(Request $request, array $data)
     {
         $village = $request->get('village');
-        if (! $village) {
+        if (!$village) {
             return false;
         }
 
         // Check if unit type is valid for player's tribe
         $unitType = $village->player->tribe;
-        if (! in_array($data['unit_type_id'] ?? 0, $this->getValidUnitTypes($unitType))) {
+        if (!in_array($data['unit_type_id'] ?? 0, $this->getValidUnitTypes($unitType))) {
             return false;
         }
 
@@ -180,7 +180,7 @@ class GameSecurityService
     private function validateResourceSpending(Request $request, array $data)
     {
         $village = $request->get('village');
-        if (! $village) {
+        if (!$village) {
             return false;
         }
 
@@ -188,7 +188,7 @@ class GameSecurityService
         $costs = $data['costs'] ?? [];
         foreach ($costs as $resource => $amount) {
             $resourceModel = $village->resources()->where('type', $resource)->first();
-            if (! $resourceModel || $resourceModel->amount < $amount) {
+            if (!$resourceModel || $resourceModel->amount < $amount) {
                 return false;
             }
         }
@@ -199,12 +199,12 @@ class GameSecurityService
     private function validateVillageManagement(Request $request, array $data)
     {
         $village = $request->get('village');
-        if (! $village) {
+        if (!$village) {
             return false;
         }
 
         // Check if village is active
-        if (! $village->is_active) {
+        if (!$village->is_active) {
             return false;
         }
 

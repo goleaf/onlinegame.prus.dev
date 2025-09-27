@@ -188,17 +188,17 @@ class WorldMap extends Component
 
     public function toggleCoordinates()
     {
-        $this->showCoordinates = ! $this->showCoordinates;
+        $this->showCoordinates = !$this->showCoordinates;
     }
 
     public function toggleVillageNames()
     {
-        $this->showVillageNames = ! $this->showVillageNames;
+        $this->showVillageNames = !$this->showVillageNames;
     }
 
     public function toggleAlliances()
     {
-        $this->showAlliances = ! $this->showAlliances;
+        $this->showAlliances = !$this->showAlliances;
     }
 
     public function setFilterAlliance($allianceId)
@@ -289,7 +289,7 @@ class WorldMap extends Component
 
     public function calculateMapStats()
     {
-        if (! $this->world) {
+        if (!$this->world) {
             return;
         }
 
@@ -365,7 +365,7 @@ class WorldMap extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = ! $this->realTimeUpdates;
+        $this->realTimeUpdates = !$this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -374,7 +374,7 @@ class WorldMap extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'

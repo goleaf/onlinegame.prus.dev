@@ -43,7 +43,7 @@ class PlayerFactory extends Factory
      */
     public function roman(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'tribe' => 'roman',
         ]);
     }
@@ -53,7 +53,7 @@ class PlayerFactory extends Factory
      */
     public function teuton(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'tribe' => 'teuton',
         ]);
     }
@@ -63,7 +63,7 @@ class PlayerFactory extends Factory
      */
     public function gaul(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'tribe' => 'gaul',
         ]);
     }
@@ -73,7 +73,7 @@ class PlayerFactory extends Factory
      */
     public function online(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_online' => true,
             'last_active_at' => now(),
         ]);
@@ -84,7 +84,7 @@ class PlayerFactory extends Factory
      */
     public function offline(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_online' => false,
             'last_active_at' => $this->faker->dateTimeBetween('-1 week', '-1 hour'),
         ]);
@@ -95,7 +95,7 @@ class PlayerFactory extends Factory
      */
     public function highLevel(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'points' => $this->faker->numberBetween(5000, 50000),
             'population' => $this->faker->numberBetween(2000, 20000),
             'villages_count' => $this->faker->numberBetween(5, 20),
@@ -107,7 +107,7 @@ class PlayerFactory extends Factory
      */
     public function newPlayer(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'points' => 0,
             'population' => 0,
             'villages_count' => 0,

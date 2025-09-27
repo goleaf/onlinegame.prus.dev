@@ -15,7 +15,7 @@ class RealTimeUpdater extends Component
 {
     public $player;
     public $isActive = true;
-    public $tickInterval = 5; // seconds
+    public $tickInterval = 5;  // seconds
     public $lastTick = null;
     public $tickCount = 0;
     public $updates = [];
@@ -53,7 +53,7 @@ class RealTimeUpdater extends Component
     #[On('tick')]
     public function processTick()
     {
-        if (! $this->isActive || ! $this->player) {
+        if (!$this->isActive || !$this->player) {
             return;
         }
 
@@ -84,7 +84,6 @@ class RealTimeUpdater extends Component
                 'tickCount' => $this->tickCount,
                 'timestamp' => $this->lastTick,
             ]);
-
         } catch (\Exception $e) {
             $this->addError("Tick #{$this->tickCount} failed: " . $e->getMessage());
             $this->dispatch('gameTickError', ['message' => $e->getMessage()]);
@@ -93,7 +92,7 @@ class RealTimeUpdater extends Component
 
     public function updateResources()
     {
-        if (! $this->player) {
+        if (!$this->player) {
             return;
         }
 
@@ -125,7 +124,7 @@ class RealTimeUpdater extends Component
 
     public function updateBuildingQueues()
     {
-        if (! $this->player) {
+        if (!$this->player) {
             return;
         }
 
@@ -141,7 +140,7 @@ class RealTimeUpdater extends Component
 
     public function updateTrainingQueues()
     {
-        if (! $this->player) {
+        if (!$this->player) {
             return;
         }
 
@@ -161,7 +160,9 @@ class RealTimeUpdater extends Component
             $building->update(['is_completed' => true]);
 
             // Update village building
-            $villageBuilding = $building->village->buildings()
+            $villageBuilding = $building
+                ->village
+                ->buildings()
                 ->where('building_type_id', $building->building_type_id)
                 ->first();
 
@@ -176,9 +177,8 @@ class RealTimeUpdater extends Component
                 'level' => $building->target_level,
                 'village_id' => $building->village_id,
             ]);
-
         } catch (\Exception $e) {
-            $this->addError("Failed to complete building: " . $e->getMessage());
+            $this->addError('Failed to complete building: ' . $e->getMessage());
         }
     }
 
@@ -189,7 +189,8 @@ class RealTimeUpdater extends Component
 
             // Add troops to village
             $village = $training->village;
-            $troop = $village->troops()
+            $troop = $village
+                ->troops()
                 ->where('unit_type_id', $training->unit_type_id)
                 ->first();
 
@@ -209,15 +210,14 @@ class RealTimeUpdater extends Component
                 'quantity' => $training->quantity,
                 'village_id' => $training->village_id,
             ]);
-
         } catch (\Exception $e) {
-            $this->addError("Failed to complete training: " . $e->getMessage());
+            $this->addError('Failed to complete training: ' . $e->getMessage());
         }
     }
 
     private function checkCompletedEvents()
     {
-        if (! $this->player) {
+        if (!$this->player) {
             return;
         }
 
@@ -243,9 +243,8 @@ class RealTimeUpdater extends Component
                 'title' => $event->title,
                 'description' => $event->description,
             ]);
-
         } catch (\Exception $e) {
-            $this->addError("Failed to complete event: " . $e->getMessage());
+            $this->addError('Failed to complete event: ' . $e->getMessage());
         }
     }
 

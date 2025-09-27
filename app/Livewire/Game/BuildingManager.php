@@ -5,6 +5,7 @@ namespace App\Livewire\Game;
 use App\Models\Game\Building;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
@@ -41,10 +42,16 @@ class BuildingManager extends Component
     public function mount($villageId = null)
     {
         if ($villageId) {
-            $this->village = Village::findOrFail($villageId);
+            $this->village = Village::withStats()
+                ->withPlayerInfo()
+                ->findOrFail($villageId);
         } else {
-            $player = Player::where('user_id', Auth::id())->first();
-            $this->village = $player?->villages()->first();
+            $player = Player::where('user_id', Auth::id())
+                ->with(['villages' => function ($query) {
+                    $query->withStats()->withPlayerInfo();
+                }])
+                ->first();
+            $this->village = $player?->villages->first();
         }
 
         $this->loadBuildings();
@@ -66,13 +73,20 @@ class BuildingManager extends Component
 
     public function loadBuildings()
     {
-        if (! $this->village) {
+        if (!$this->village) {
             return;
         }
 
         $this->buildings = $this
             ->village
             ->buildings()
+            ->with(['buildingType:id,name,description,costs,production_bonus'])
+            ->selectRaw('
+                buildings.*,
+                (SELECT COUNT(*) FROM buildings b2 WHERE b2.village_id = buildings.village_id AND b2.is_active = 1) as total_buildings,
+                (SELECT AVG(level) FROM buildings b3 WHERE b3.village_id = buildings.village_id AND b3.is_active = 1) as avg_level,
+                (SELECT MAX(level) FROM buildings b4 WHERE b4.village_id = buildings.village_id AND b4.is_active = 1) as max_level
+            ')
             ->where('is_active', true)
             ->get()
             ->keyBy('type')
@@ -130,7 +144,7 @@ class BuildingManager extends Component
 
     public function calculateUpgradeCosts()
     {
-        if (! $this->selectedBuilding || ! $this->village) {
+        if (!$this->selectedBuilding || !$this->village) {
             return;
         }
 
@@ -146,7 +160,7 @@ class BuildingManager extends Component
 
     public function upgradeBuilding()
     {
-        if (! $this->selectedBuilding || ! $this->village) {
+        if (!$this->selectedBuilding || !$this->village) {
             return;
         }
 
@@ -160,7 +174,7 @@ class BuildingManager extends Component
             }
         }
 
-        if (! $canAfford) {
+        if (!$canAfford) {
             $this->dispatch('insufficient-resources', [
                 'message' => 'Not enough resources to upgrade this building!',
             ]);
@@ -202,7 +216,7 @@ class BuildingManager extends Component
 
     public function updateVillageStats($building)
     {
-        if (! $this->village) {
+        if (!$this->village) {
             return;
         }
 
@@ -277,7 +291,7 @@ class BuildingManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = ! $this->realTimeUpdates;
+        $this->realTimeUpdates = !$this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -286,7 +300,7 @@ class BuildingManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -313,7 +327,7 @@ class BuildingManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = ! $this->showDetails;
+        $this->showDetails = !$this->showDetails;
     }
 
     public function filterByType($type)
@@ -356,7 +370,7 @@ class BuildingManager extends Component
 
     public function toggleUpgradeableFilter()
     {
-        $this->showOnlyUpgradeable = ! $this->showOnlyUpgradeable;
+        $this->showOnlyUpgradeable = !$this->showOnlyUpgradeable;
         $this->addNotification(
             $this->showOnlyUpgradeable ? 'Showing only upgradeable buildings' : 'Showing all buildings',
             'info'
@@ -365,7 +379,7 @@ class BuildingManager extends Component
 
     public function toggleMaxLevelFilter()
     {
-        $this->showOnlyMaxLevel = ! $this->showOnlyMaxLevel;
+        $this->showOnlyMaxLevel = !$this->showOnlyMaxLevel;
         $this->addNotification(
             $this->showOnlyMaxLevel ? 'Showing only max level buildings' : 'Showing all buildings',
             'info'

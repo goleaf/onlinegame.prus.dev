@@ -38,7 +38,7 @@ class ResourceFactory extends Factory
      */
     public function wood(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'type' => 'wood',
             'production_rate' => $this->faker->numberBetween(20, 50),
         ]);
@@ -49,7 +49,7 @@ class ResourceFactory extends Factory
      */
     public function clay(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'type' => 'clay',
             'production_rate' => $this->faker->numberBetween(20, 50),
         ]);
@@ -60,7 +60,7 @@ class ResourceFactory extends Factory
      */
     public function iron(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'type' => 'iron',
             'production_rate' => $this->faker->numberBetween(20, 50),
         ]);
@@ -71,7 +71,7 @@ class ResourceFactory extends Factory
      */
     public function crop(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'type' => 'crop',
             'production_rate' => $this->faker->numberBetween(10, 30),
         ]);
@@ -82,7 +82,7 @@ class ResourceFactory extends Factory
      */
     public function highProduction(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'production_rate' => $this->faker->numberBetween(100, 500),
             'level' => $this->faker->numberBetween(15, 20),
         ]);

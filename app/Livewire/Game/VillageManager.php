@@ -7,6 +7,7 @@ use App\Models\Game\BuildingQueue;
 use App\Models\Game\BuildingType;
 use App\Models\Game\Resource;
 use App\Models\Game\Village;
+use App\Services\QueryOptimizationService;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -65,7 +66,8 @@ class VillageManager extends Component
 
     public function mount($village)
     {
-        $this->village = Village::with(['buildings.buildingType', 'resources', 'player'])
+        $this->village = Village::withStats()
+            ->with(['buildings.buildingType:id,name,description,costs,production_bonus', 'resources', 'player:id,name,points'])
             ->findOrFail($village);
 
         $this->loadVillageData();
@@ -93,12 +95,26 @@ class VillageManager extends Component
         try {
             $this->buildings = $this->village->buildings;
             $this->resources = $this->village->resources;
-            $this->buildingTypes = BuildingType::where('is_active', true)->get();
+
+            // Use optimized query for building types
+            $this->buildingTypes = BuildingType::where('is_active', true)
+                ->selectRaw('
+                    building_types.*,
+                    (SELECT COUNT(*) FROM buildings b WHERE b.building_type_id = building_types.id AND b.is_active = 1) as total_buildings,
+                    (SELECT AVG(level) FROM buildings b2 WHERE b2.building_type_id = building_types.id AND b2.is_active = 1) as avg_level
+                ')
+                ->get();
+
+            // Use optimized query for building queues
             $this->buildingQueues = $this
                 ->village
                 ->buildingQueues()
                 ->where('is_completed', false)
-                ->with('buildingType')
+                ->with('buildingType:id,name,description')
+                ->selectRaw('
+                    building_queues.*,
+                    (SELECT COUNT(*) FROM building_queues bq2 WHERE bq2.village_id = building_queues.village_id AND bq2.is_completed = 0) as total_active_queues
+                ')
                 ->get();
         } finally {
             $this->isLoading = false;
@@ -107,14 +123,20 @@ class VillageManager extends Component
 
     public function selectBuilding($buildingId)
     {
-        $this->selectedBuilding = Building::with('buildingType')->find($buildingId);
+        $this->selectedBuilding = Building::with('buildingType:id,name,description,costs,production_bonus')
+            ->selectRaw('
+                buildings.*,
+                (SELECT COUNT(*) FROM buildings b2 WHERE b2.village_id = buildings.village_id AND b2.building_type_id = buildings.building_type_id) as same_type_count,
+                (SELECT AVG(level) FROM buildings b3 WHERE b3.village_id = buildings.village_id AND b3.building_type_id = buildings.building_type_id) as avg_type_level
+            ')
+            ->find($buildingId);
         $this->calculateUpgradeCost();
         $this->showUpgradeModal = true;
     }
 
     public function calculateUpgradeCost()
     {
-        if (! $this->selectedBuilding) {
+        if (!$this->selectedBuilding) {
             return;
         }
 
@@ -154,7 +176,7 @@ class VillageManager extends Component
 
     public function upgradeBuilding()
     {
-        if (! $this->canUpgrade || ! $this->selectedBuilding) {
+        if (!$this->canUpgrade || !$this->selectedBuilding) {
             return;
         }
 
@@ -197,7 +219,7 @@ class VillageManager extends Component
 
     public function calculateUpgradeTime()
     {
-        if (! $this->selectedBuilding) {
+        if (!$this->selectedBuilding) {
             return 0;
         }
 
@@ -297,7 +319,7 @@ class VillageManager extends Component
 
     public function calculateResourceProductionRates()
     {
-        if (! $this->village) {
+        if (!$this->village) {
             return;
         }
 
@@ -338,7 +360,7 @@ class VillageManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = ! $this->realTimeUpdates;
+        $this->realTimeUpdates = !$this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -347,7 +369,7 @@ class VillageManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'

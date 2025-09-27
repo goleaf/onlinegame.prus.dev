@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Game\Battle;
 use App\Models\Game\BuildingQueue;
 use App\Models\Game\GameEvent;
+use App\Models\Game\Movement;
 use App\Models\Game\Player;
+use App\Models\Game\Report;
 use App\Models\Game\Resource;
 use App\Models\Game\TrainingQueue;
 use App\Models\Game\Village;
@@ -27,6 +30,9 @@ class GameTickService
             // Process training queues
             $this->processTrainingQueues();
 
+            // Process movements (attacks, support, etc.)
+            $this->processMovements();
+
             // Process game events
             $this->processGameEvents();
 
@@ -36,7 +42,6 @@ class GameTickService
             DB::commit();
 
             Log::info('Game tick processed successfully');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Game tick failed: ' . $e->getMessage());
@@ -78,7 +83,7 @@ class GameTickService
     private function processBuildingQueues()
     {
         $completedBuildings = BuildingQueue::where('completed_at', '<=', now())
-            ->where('is_completed', false)
+            ->where('status', 'in_progress')
             ->get();
 
         foreach ($completedBuildings as $building) {
@@ -89,7 +94,7 @@ class GameTickService
     private function processTrainingQueues()
     {
         $completedTraining = TrainingQueue::where('completed_at', '<=', now())
-            ->where('is_completed', false)
+            ->where('status', 'in_progress')
             ->get();
 
         foreach ($completedTraining as $training) {
@@ -97,15 +102,368 @@ class GameTickService
         }
     }
 
-    private function processGameEvents()
+    private function processMovements()
     {
-        $events = GameEvent::where('triggered_at', '<=', now())
-            ->where('is_completed', false)
+        $arrivedMovements = Movement::where('arrives_at', '<=', now())
+            ->where('status', 'travelling')
+            ->with(['fromVillage', 'toVillage', 'player'])
             ->get();
 
-        foreach ($events as $event) {
-            $this->completeEvent($event);
+        foreach ($arrivedMovements as $movement) {
+            $this->processMovementArrival($movement);
         }
+    }
+
+    private function processMovementArrival(Movement $movement)
+    {
+        try {
+            $movement->update(['status' => 'arrived']);
+
+            switch ($movement->type) {
+                case 'attack':
+                    $this->processAttack($movement);
+                    break;
+                case 'support':
+                    $this->processSupport($movement);
+                    break;
+                case 'spy':
+                    $this->processSpy($movement);
+                    break;
+                case 'trade':
+                    $this->processTrade($movement);
+                    break;
+                default:
+                    Log::warning("Unknown movement type: {$movement->type}");
+            }
+
+            // Schedule return movement
+            $this->scheduleReturnMovement($movement);
+        } catch (\Exception $e) {
+            Log::error("Failed to process movement {$movement->id}: " . $e->getMessage());
+        }
+    }
+
+    private function processAttack(Movement $movement)
+    {
+        $attackerVillage = $movement->fromVillage;
+        $defenderVillage = $movement->toVillage;
+        $attackingTroops = $movement->troops;
+
+        // Get defending troops
+        $defendingTroops = $defenderVillage
+            ->troops()
+            ->with('unitType')
+            ->where('in_village', '>', 0)
+            ->get()
+            ->map(function ($troop) {
+                return [
+                    'troop_id' => $troop->id,
+                    'unit_type' => $troop->unitType->name,
+                    'count' => $troop->in_village,
+                    'attack' => $troop->unitType->attack_power,
+                    'defense_infantry' => $troop->unitType->defense_power,
+                    'defense_cavalry' => $troop->unitType->defense_power,
+                    'speed' => $troop->unitType->speed,
+                ];
+            })
+            ->toArray();
+
+        // Calculate battle result
+        $battleResult = $this->calculateBattleResult($attackingTroops, $defendingTroops);
+
+        // Create battle record
+        $battle = Battle::create([
+            'attacker_id' => $attackerVillage->player_id,
+            'defender_id' => $defenderVillage->player_id,
+            'village_id' => $defenderVillage->id,
+            'battle_type' => 'attack',
+            'result' => $battleResult['result'],
+            'attacker_losses' => $battleResult['attacker_losses'],
+            'defender_losses' => $battleResult['defender_losses'],
+            'resources_looted' => $battleResult['resources_looted'],
+            'battle_data' => [
+                'attacking_troops' => $attackingTroops,
+                'defending_troops' => $defendingTroops,
+                'battle_power' => $battleResult['battle_power'],
+            ],
+            'occurred_at' => now(),
+        ]);
+
+        // Update troop counts
+        $this->updateTroopLosses($attackerVillage, $battleResult['attacker_losses']);
+        $this->updateTroopLosses($defenderVillage, $battleResult['defender_losses']);
+
+        // Loot resources if attacker wins
+        if ($battleResult['result'] === 'attacker_wins') {
+            $this->lootResources($defenderVillage, $battleResult['resources_looted']);
+        }
+
+        // Create battle reports
+        $this->createBattleReports($battle);
+
+        Log::info("Battle processed: {$battleResult['result']} at village {$defenderVillage->name}");
+    }
+
+    private function calculateBattleResult($attackingTroops, $defendingTroops)
+    {
+        $attackerPower = 0;
+        $defenderPower = 0;
+
+        // Calculate attacker power
+        foreach ($attackingTroops as $troop) {
+            $attackerPower += $troop['count'] * $troop['attack'];
+        }
+
+        // Calculate defender power
+        foreach ($defendingTroops as $troop) {
+            $defenderPower += $troop['count'] * ($troop['defense_infantry'] + $troop['defense_cavalry']);
+        }
+
+        // Add randomness (80-120% of calculated power)
+        $attackerPower *= (0.8 + (rand(0, 40) / 100));
+        $defenderPower *= (0.8 + (rand(0, 40) / 100));
+
+        $result = 'draw';
+        $attackerLosses = [];
+        $defenderLosses = [];
+        $resourcesLooted = [];
+
+        if ($attackerPower > $defenderPower) {
+            $result = 'attacker_wins';
+            // Calculate losses (attacker loses 10-30%, defender loses 50-80%)
+            $attackerLossRate = 0.1 + (rand(0, 20) / 100);
+            $defenderLossRate = 0.5 + (rand(0, 30) / 100);
+
+            $attackerLosses = $this->calculateTroopLosses($attackingTroops, $attackerLossRate);
+            $defenderLosses = $this->calculateTroopLosses($defendingTroops, $defenderLossRate);
+
+            // Calculate loot (10-25% of defender's resources)
+            $resourcesLooted = $this->calculateResourceLoot($defendingTroops);
+        } elseif ($defenderPower > $attackerPower) {
+            $result = 'defender_wins';
+            // Calculate losses (attacker loses 50-80%, defender loses 10-30%)
+            $attackerLossRate = 0.5 + (rand(0, 30) / 100);
+            $defenderLossRate = 0.1 + (rand(0, 20) / 100);
+
+            $attackerLosses = $this->calculateTroopLosses($attackingTroops, $attackerLossRate);
+            $defenderLosses = $this->calculateTroopLosses($defendingTroops, $defenderLossRate);
+        } else {
+            // Draw - both sides lose 20-40%
+            $lossRate = 0.2 + (rand(0, 20) / 100);
+            $attackerLosses = $this->calculateTroopLosses($attackingTroops, $lossRate);
+            $defenderLosses = $this->calculateTroopLosses($defendingTroops, $lossRate);
+        }
+
+        return [
+            'result' => $result,
+            'attacker_losses' => $attackerLosses,
+            'defender_losses' => $defenderLosses,
+            'resources_looted' => $resourcesLooted,
+            'battle_power' => [
+                'attacker' => $attackerPower,
+                'defender' => $defenderPower,
+            ],
+        ];
+    }
+
+    private function calculateTroopLosses($troops, $lossRate)
+    {
+        $losses = [];
+        foreach ($troops as $troop) {
+            $losses[] = [
+                'troop_id' => $troop['troop_id'],
+                'unit_type' => $troop['unit_type'],
+                'count' => max(0, floor($troop['count'] * $lossRate)),
+            ];
+        }
+        return $losses;
+    }
+
+    private function calculateResourceLoot($defendingTroops)
+    {
+        // Simple loot calculation - 10-25% of each resource
+        $lootRate = 0.1 + (rand(0, 15) / 100);
+        return [
+            'wood' => rand(100, 1000) * $lootRate,
+            'clay' => rand(100, 1000) * $lootRate,
+            'iron' => rand(100, 1000) * $lootRate,
+            'crop' => rand(100, 1000) * $lootRate,
+        ];
+    }
+
+    private function updateTroopLosses($village, $losses)
+    {
+        foreach ($losses as $loss) {
+            $troop = $village->troops()->find($loss['troop_id']);
+            if ($troop && $loss['count'] > 0) {
+                $troop->decrement('in_village', $loss['count']);
+            }
+        }
+    }
+
+    private function lootResources($village, $loot)
+    {
+        foreach ($loot as $resourceType => $amount) {
+            $resource = $village->resources()->where('type', $resourceType)->first();
+            if ($resource && $amount > 0) {
+                $resource->decrement('amount', min($amount, $resource->amount));
+            }
+        }
+    }
+
+    private function createBattleReports(Battle $battle)
+    {
+        // Create report for attacker
+        Report::create([
+            'player_id' => $battle->attacker_id,
+            'type' => 'attack',
+            'title' => 'Battle Report - Attack',
+            'content' => $this->generateBattleReportContent($battle, 'attacker'),
+            'data' => [
+                'battle_id' => $battle->id,
+                'result' => $battle->result,
+                'losses' => $battle->attacker_losses,
+                'loot' => $battle->resources_looted,
+            ],
+            'is_read' => false,
+        ]);
+
+        // Create report for defender
+        Report::create([
+            'player_id' => $battle->defender_id,
+            'type' => 'defense',
+            'title' => 'Battle Report - Defense',
+            'content' => $this->generateBattleReportContent($battle, 'defender'),
+            'data' => [
+                'battle_id' => $battle->id,
+                'result' => $battle->result === 'attacker_wins' ? 'defeat' : 'victory',
+                'losses' => $battle->defender_losses,
+                'loot' => $battle->resources_looted,
+            ],
+            'is_read' => false,
+        ]);
+    }
+
+    private function generateBattleReportContent(Battle $battle, $perspective)
+    {
+        $result = $battle->result;
+        if ($perspective === 'defender') {
+            $result = $battle->result === 'attacker_wins' ? 'defeat' : 'victory';
+        }
+
+        return "Battle at {$battle->village->name}: {$result}. "
+            . "Attacker power: {$battle->battle_data['battle_power']['attacker']}, "
+            . "Defender power: {$battle->battle_data['battle_power']['defender']}";
+    }
+
+    private function processSupport(Movement $movement)
+    {
+        // Add supporting troops to target village
+        $targetVillage = $movement->toVillage;
+        $supportingTroops = $movement->troops;
+
+        foreach ($supportingTroops as $troop) {
+            $villageTroop = $targetVillage
+                ->troops()
+                ->where('unit_type_id', $troop['unit_type_id'])
+                ->first();
+
+            if ($villageTroop) {
+                $villageTroop->increment('in_village', $troop['count']);
+            } else {
+                $targetVillage->troops()->create([
+                    'unit_type_id' => $troop['unit_type_id'],
+                    'quantity' => $troop['count'],
+                    'in_village' => $troop['count'],
+                ]);
+            }
+        }
+
+        Log::info("Support troops arrived at village {$targetVillage->name}");
+    }
+
+    private function processSpy(Movement $movement)
+    {
+        // Create spy report
+        $targetVillage = $movement->toVillage;
+
+        Report::create([
+            'player_id' => $movement->player_id,
+            'type' => 'spy',
+            'title' => 'Spy Report',
+            'content' => "Spy report from {$targetVillage->name}: "
+                . "Population: {$targetVillage->population}, "
+                . 'Resources: ' . $this->getVillageResourceSummary($targetVillage),
+            'data' => [
+                'village_id' => $targetVillage->id,
+                'spy_data' => $this->getSpyData($targetVillage),
+            ],
+            'is_read' => false,
+        ]);
+
+        Log::info("Spy mission completed at village {$targetVillage->name}");
+    }
+
+    private function processTrade(Movement $movement)
+    {
+        // Process trade movement
+        $targetVillage = $movement->toVillage;
+        $resources = $movement->resources ?? [];
+
+        foreach ($resources as $resourceType => $amount) {
+            $resource = $targetVillage->resources()->where('type', $resourceType)->first();
+            if ($resource) {
+                $resource->increment('amount', $amount);
+            }
+        }
+
+        Log::info("Trade completed at village {$targetVillage->name}");
+    }
+
+    private function scheduleReturnMovement(Movement $movement)
+    {
+        // Calculate return time (same as travel time)
+        $travelTime = $movement->arrives_at->diffInSeconds($movement->started_at);
+
+        Movement::create([
+            'player_id' => $movement->player_id,
+            'from_village_id' => $movement->to_village_id,
+            'to_village_id' => $movement->from_village_id,
+            'type' => 'return',
+            'troops' => $movement->troops,
+            'resources' => $movement->resources,
+            'started_at' => now(),
+            'arrives_at' => now()->addSeconds($travelTime),
+            'status' => 'travelling',
+            'metadata' => ['original_movement_id' => $movement->id],
+        ]);
+    }
+
+    private function getVillageResourceSummary($village)
+    {
+        $resources = $village->resources;
+        $summary = [];
+        foreach ($resources as $resource) {
+            $summary[] = "{$resource->type}: {$resource->amount}";
+        }
+        return implode(', ', $summary);
+    }
+
+    private function getSpyData($village)
+    {
+        return [
+            'population' => $village->population,
+            'resources' => $village->resources->pluck('amount', 'type'),
+            'buildings' => $village->buildings->pluck('level', 'building_type_id'),
+            'troops' => $village->troops->pluck('in_village', 'unit_type_id'),
+        ];
+    }
+
+    private function processGameEvents()
+    {
+        // Game events are processed immediately when created
+        // This method can be used for scheduled events in the future
+        return;
     }
 
     private function updatePlayerStatistics()
@@ -132,7 +490,9 @@ class GameTickService
             $building->update(['is_completed' => true]);
 
             // Update village building
-            $villageBuilding = $building->village->buildings()
+            $villageBuilding = $building
+                ->village
+                ->buildings()
                 ->where('building_type_id', $building->building_type_id)
                 ->first();
 
@@ -155,7 +515,6 @@ class GameTickService
                 'triggered_at' => now(),
                 'is_completed' => true,
             ]);
-
         } catch (\Exception $e) {
             Log::error("Failed to complete building {$building->id}: " . $e->getMessage());
         }
@@ -164,20 +523,23 @@ class GameTickService
     private function completeTraining($training)
     {
         try {
-            $training->update(['is_completed' => true]);
+            $training->update(['status' => 'completed']);
 
             // Add troops to village
             $village = $training->village;
-            $troop = $village->troops()
+            $troop = $village
+                ->troops()
                 ->where('unit_type_id', $training->unit_type_id)
                 ->first();
 
             if ($troop) {
-                $troop->increment('quantity', $training->quantity);
+                $troop->increment('quantity', $training->count);
+                $troop->increment('in_village', $training->count);
             } else {
                 $village->troops()->create([
                     'unit_type_id' => $training->unit_type_id,
-                    'quantity' => $training->quantity,
+                    'quantity' => $training->count,
+                    'in_village' => $training->count,
                 ]);
             }
 
@@ -185,18 +547,16 @@ class GameTickService
             GameEvent::create([
                 'player_id' => $training->village->player_id,
                 'village_id' => $training->village_id,
-                'type' => 'training_completed',
-                'title' => 'Training Completed',
-                'description' => "{$training->quantity} {$training->unitType->name} trained",
+                'event_type' => 'training_completed',
+                'event_subtype' => 'unit_training',
+                'description' => "{$training->count} {$training->unitType->name} trained",
                 'data' => [
                     'unit_name' => $training->unitType->name,
-                    'quantity' => $training->quantity,
+                    'quantity' => $training->count,
                     'village_id' => $training->village_id,
                 ],
-                'triggered_at' => now(),
-                'is_completed' => true,
+                'occurred_at' => now(),
             ]);
-
         } catch (\Exception $e) {
             Log::error("Failed to complete training {$training->id}: " . $e->getMessage());
         }
@@ -211,7 +571,6 @@ class GameTickService
             if ($event->rewards) {
                 $this->processEventRewards($event);
             }
-
         } catch (\Exception $e) {
             Log::error("Failed to complete event {$event->id}: " . $e->getMessage());
         }
@@ -286,7 +645,8 @@ class GameTickService
 
         $levels = [];
         foreach ($buildingTypes as $buildingType) {
-            $building = $village->buildings()
+            $building = $village
+                ->buildings()
                 ->whereHas('buildingType', function ($query) use ($buildingType) {
                     $query->where('key', $buildingType);
                 })

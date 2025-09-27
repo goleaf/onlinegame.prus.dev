@@ -108,7 +108,7 @@ class StatisticsViewer extends Component
                 ->with(['villages', 'alliance'])
                 ->first();
 
-            if (! $this->player) {
+            if (!$this->player) {
                 $this->addNotification('Player not found in this world', 'error');
 
                 return;
@@ -167,7 +167,8 @@ class StatisticsViewer extends Component
         // Use subquery optimization to get all stats in one query
         $playerStats = Player::where('id', $this->player->id)
             ->with(['villages' => function ($query) {
-                $query->selectRaw('player_id, COUNT(*) as village_count, SUM(population) as total_population, 
+                $query
+                    ->selectRaw('player_id, COUNT(*) as village_count, SUM(population) as total_population, 
                     SUM(wood) as total_wood, SUM(clay) as total_clay, SUM(iron) as total_iron, SUM(crop) as total_crop,
                     SUM(wood_production) as wood_prod, SUM(clay_production) as clay_prod, 
                     SUM(iron_production) as iron_prod, SUM(crop_production) as crop_prod')
@@ -189,8 +190,9 @@ class StatisticsViewer extends Component
         // Optimize battle stats with single query using subqueries
         $battleStats = Report::where('world_id', $this->world->id)
             ->where(function ($q) {
-                $q->where('attacker_id', $this->player->id)
-                  ->orWhere('defender_id', $this->player->id);
+                $q
+                    ->where('attacker_id', $this->player->id)
+                    ->orWhere('defender_id', $this->player->id);
             })
             ->selectRaw('
                 SUM(CASE WHEN attacker_id = ? AND status = "victory" THEN 1 ELSE 0 END) as attacks_won,
@@ -246,8 +248,9 @@ class StatisticsViewer extends Component
     {
         $query = Player::where('world_id', $this->world->id)
             ->with(['villages' => function ($q) {
-                $q->selectRaw('player_id, COUNT(*) as village_count, SUM(population) as total_population')
-                  ->groupBy('player_id');
+                $q
+                    ->selectRaw('player_id, COUNT(*) as village_count, SUM(population) as total_population')
+                    ->groupBy('player_id');
             }, 'alliance:id,name']);
 
         // Use QueryOptimizationService for conditional filters
@@ -268,7 +271,8 @@ class StatisticsViewer extends Component
 
         $query = QueryOptimizationService::applyConditionalFilters($query, $filters);
 
-        $query->selectRaw('
+        $query
+            ->selectRaw('
                 id, name, points, alliance_id, created_at, updated_at,
                 (SELECT COUNT(*) FROM villages WHERE player_id = players.id) as village_count,
                 (SELECT SUM(population) FROM villages WHERE player_id = players.id) as total_population
@@ -557,7 +561,7 @@ class StatisticsViewer extends Component
     // Real-time features
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = ! $this->realTimeUpdates;
+        $this->realTimeUpdates = !$this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -566,7 +570,7 @@ class StatisticsViewer extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'

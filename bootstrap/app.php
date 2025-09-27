@@ -14,6 +14,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'game.auth' => \App\Http\Middleware\GameAuthMiddleware::class,
             'game.rate_limit' => \App\Http\Middleware\GameRateLimitMiddleware::class,
+            'access.log' => \LaraUtilX\Http\Middleware\AccessLogMiddleware::class,
+        ]);
+        
+        // Add AccessLogMiddleware to web middleware group
+        $middleware->web(append: [
+            \LaraUtilX\Http\Middleware\AccessLogMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

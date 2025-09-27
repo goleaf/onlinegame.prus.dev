@@ -61,7 +61,6 @@ class ConfigUtil
         Storage::put($filePath, json_encode($settings));
     }
 
-
     /**
      * Get all application settings.
      *

@@ -3,12 +3,13 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Report extends Model
 {
-    use HasFactory;
+    use HasFactory, HasReference;
 
     protected $fillable = [
         'world_id',
@@ -25,6 +26,7 @@ class Report extends Model
         'is_read',
         'is_important',
         'read_at',
+        'reference_number',
     ];
 
     protected $casts = [
@@ -34,6 +36,15 @@ class Report extends Model
         'is_important' => 'boolean',
         'read_at' => 'datetime',
     ];
+
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+    protected $referenceTemplate = [
+        'format' => 'RPT-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+    protected $referencePrefix = 'RPT';
 
     public function world(): BelongsTo
     {

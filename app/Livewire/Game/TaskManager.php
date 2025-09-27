@@ -7,14 +7,18 @@ use App\Models\Game\PlayerAchievement;
 use App\Models\Game\PlayerQuest;
 use App\Models\Game\Task;
 use App\Models\Game\World;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
+use LaraUtilX\Traits\ApiResponseTrait;
+use LaraUtilX\Utilities\FilteringUtil;
+use LaraUtilX\Utilities\PaginationUtil;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class TaskManager extends Component
 {
-    use WithPagination;
+    use WithPagination, ApiResponseTrait;
 
     public $world;
     public $player;
@@ -104,6 +108,14 @@ class TaskManager extends Component
             $this->world = $player?->village?->world;
         }
 
+        // Laradumps debugging
+        ds('TaskManager mounted', [
+            'world_id' => $this->world?->id,
+            'world_name' => $this->world?->name,
+            'user_id' => Auth::id(),
+            'player_id' => $player?->id
+        ])->label('TaskManager Mount');
+
         if ($this->world) {
             $this->loadPlayerData();
             $this->loadTasks();
@@ -119,7 +131,7 @@ class TaskManager extends Component
                 ->with(['villages', 'alliance'])
                 ->first();
 
-            if (! $this->player) {
+            if (!$this->player) {
                 $this->addNotification('Player not found in this world', 'error');
 
                 return;
@@ -159,109 +171,194 @@ class TaskManager extends Component
 
     private function loadTaskData()
     {
-        $query = Task::where('world_id', $this->world->id)
-            ->where('player_id', $this->player->id);
+        // Laradumps debugging
+        ds('Loading task data', [
+            'world_id' => $this->world->id,
+            'player_id' => $this->player->id,
+            'task_type' => $this->taskType,
+            'search_query' => $this->searchQuery,
+            'sort_by' => $this->sortBy,
+            'sort_order' => $this->sortOrder
+        ])->label('TaskManager Load Task Data');
 
-        switch ($this->taskType) {
-            case 'active':
-                $query->where('status', 'active');
+        // Use optimized scopes from Task model
+        $query = Task::byWorld($this->world->id)
+            ->byPlayer($this->player->id)
+            ->withStats()
+            ->withPlayerInfo()
+            ->byStatusFilter($this->taskType)
+            ->search($this->searchQuery)
+            ->orderBy($this->sortBy, $this->sortOrder);
 
-                break;
-            case 'completed':
-                $query->where('status', 'completed');
+        $this->tasks = $query->get();
 
-                break;
-            case 'available':
-                $query->where('status', 'available');
-
-                break;
+        // Apply additional filtering using FilteringUtil for complex filters
+        if (!empty($this->searchQuery)) {
+            $this->tasks = FilteringUtil::filter(
+                $this->tasks,
+                'title',
+                'contains',
+                $this->searchQuery
+            );
         }
 
-        if ($this->searchQuery) {
-            $query
-                ->where('title', 'like', '%' . $this->searchQuery . '%')
-                ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
-        }
+        // Use single query with selectRaw to get all task stats at once
+        $taskStats = Task::where('world_id', $this->world->id)
+            ->where('player_id', $this->player->id)
+            ->selectRaw('
+                SUM(CASE WHEN status = "active" THEN 1 ELSE 0 END) as active_count,
+                SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed_count,
+                SUM(CASE WHEN status = "available" THEN 1 ELSE 0 END) as available_count,
+                AVG(CASE WHEN status = "completed" THEN progress ELSE NULL END) as avg_progress,
+                MAX(updated_at) as last_updated
+            ')
+            ->first();
 
-        $this->tasks = $query->orderBy($this->sortBy, $this->sortOrder)->get();
-        $this->activeTasks = Task::where('world_id', $this->world->id)
-            ->where('player_id', $this->player->id)
-            ->where('status', 'active')
+        // Get tasks by status using optimized scopes
+        $this->activeTasks = Task::byWorld($this->world->id)
+            ->byPlayer($this->player->id)
+            ->active()
+            ->withStats()
             ->get();
-        $this->completedTasks = Task::where('world_id', $this->world->id)
-            ->where('player_id', $this->player->id)
-            ->where('status', 'completed')
+
+        $this->completedTasks = Task::byWorld($this->world->id)
+            ->byPlayer($this->player->id)
+            ->completed()
+            ->withStats()
             ->get();
-        $this->availableTasks = Task::where('world_id', $this->world->id)
-            ->where('player_id', $this->player->id)
-            ->where('status', 'available')
+
+        $this->availableTasks = Task::byWorld($this->world->id)
+            ->byPlayer($this->player->id)
+            ->available()
+            ->withStats()
             ->get();
+
+        // Laradumps debugging for loaded data
+        ds('Task data loaded', [
+            'total_tasks' => $this->tasks->count(),
+            'active_tasks' => $this->activeTasks->count(),
+            'completed_tasks' => $this->completedTasks->count(),
+            'available_tasks' => $this->availableTasks->count(),
+            'task_stats' => $taskStats
+        ])->label('TaskManager Task Data Loaded');
     }
 
     private function loadQuestData()
     {
-        $query = PlayerQuest::where('player_id', $this->player->id);
+        // Create base query for reuse
+        $baseQuery = PlayerQuest::where('player_id', $this->player->id)
+            ->with('quest:id,name,description,category,difficulty');
 
-        switch ($this->questType) {
-            case 'active':
-                $query->where('status', 'in_progress');
+        // Use QueryOptimizationService for conditional filters
+        $filters = [
+            $this->questType === 'active' => function ($q) {
+                return $q->where('status', 'in_progress');
+            },
+            $this->questType === 'completed' => function ($q) {
+                return $q->where('status', 'completed');
+            },
+            $this->questType === 'available' => function ($q) {
+                return $q->where('status', 'available');
+            },
+            $this->searchQuery => function ($q) {
+                return $q->where(function ($subQ) {
+                    $subQ->whereHas('quest', function ($questQ) {
+                        $questQ
+                            ->where('name', 'like', '%' . $this->searchQuery . '%')
+                            ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
+                    });
+                });
+            },
+        ];
 
-                break;
-            case 'completed':
-                $query->where('status', 'completed');
+        $query = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters);
+        $query = QueryOptimizationService::applyConditionalOrdering($query, $this->sortBy, $this->sortOrder);
 
-                break;
-            case 'available':
-                $query->where('status', 'available');
+        $this->quests = $query->get();
 
-                break;
-        }
+        // Use single query with selectRaw to get all quest stats at once
+        $questStats = PlayerQuest::where('player_id', $this->player->id)
+            ->selectRaw('
+                SUM(CASE WHEN status = "in_progress" THEN 1 ELSE 0 END) as active_count,
+                SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed_count,
+                SUM(CASE WHEN status = "available" THEN 1 ELSE 0 END) as available_count,
+                AVG(CASE WHEN status = "completed" THEN progress ELSE NULL END) as avg_progress,
+                MAX(updated_at) as last_updated
+            ')
+            ->first();
 
-        if ($this->searchQuery) {
-            $query
-                ->where('title', 'like', '%' . $this->searchQuery . '%')
-                ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
-        }
-
-        $this->quests = $query->orderBy($this->sortBy, $this->sortOrder)->get();
+        // Get quests by status using optimized queries
         $this->activeQuests = PlayerQuest::where('player_id', $this->player->id)
             ->where('status', 'in_progress')
+            ->with('quest:id,name,description,category,difficulty')
+            ->selectRaw('player_quests.*, (SELECT COUNT(*) FROM player_quests pq2 WHERE pq2.player_id = player_quests.player_id AND pq2.status = "in_progress") as total_active')
             ->get();
+
         $this->completedQuests = PlayerQuest::where('player_id', $this->player->id)
             ->where('status', 'completed')
+            ->with('quest:id,name,description,category,difficulty')
+            ->selectRaw('player_quests.*, (SELECT COUNT(*) FROM player_quests pq2 WHERE pq2.player_id = player_quests.player_id AND pq2.status = "completed") as total_completed')
             ->get();
+
         $this->availableQuests = PlayerQuest::where('player_id', $this->player->id)
             ->where('status', 'available')
+            ->with('quest:id,name,description,category,difficulty')
+            ->selectRaw('player_quests.*, (SELECT COUNT(*) FROM player_quests pq2 WHERE pq2.player_id = player_quests.player_id AND pq2.status = "available") as total_available')
             ->get();
     }
 
     private function loadAchievementData()
     {
-        $query = PlayerAchievement::where('player_id', $this->player->id);
+        // Create base query for reuse
+        $baseQuery = PlayerAchievement::where('player_id', $this->player->id)
+            ->with('achievement:id,name,description,category,points');
 
-        switch ($this->achievementType) {
-            case 'unlocked':
-                $query->whereNotNull('unlocked_at');
+        // Use QueryOptimizationService for conditional filters
+        $filters = [
+            $this->achievementType === 'unlocked' => function ($q) {
+                return $q->whereNotNull('unlocked_at');
+            },
+            $this->achievementType === 'available' => function ($q) {
+                return $q->whereNull('unlocked_at');
+            },
+            $this->searchQuery => function ($q) {
+                return $q->where(function ($subQ) {
+                    $subQ->whereHas('achievement', function ($achievementQ) {
+                        $achievementQ
+                            ->where('name', 'like', '%' . $this->searchQuery . '%')
+                            ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
+                    });
+                });
+            },
+        ];
 
-                break;
-            case 'available':
-                $query->whereNull('unlocked_at');
+        $query = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters);
+        $query = QueryOptimizationService::applyConditionalOrdering($query, $this->sortBy, $this->sortOrder);
 
-                break;
-        }
+        $this->achievements = $query->get();
 
-        if ($this->searchQuery) {
-            $query
-                ->where('title', 'like', '%' . $this->searchQuery . '%')
-                ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
-        }
+        // Use single query with selectRaw to get all achievement stats at once
+        $achievementStats = PlayerAchievement::where('player_id', $this->player->id)
+            ->selectRaw('
+                SUM(CASE WHEN unlocked_at IS NOT NULL THEN 1 ELSE 0 END) as unlocked_count,
+                SUM(CASE WHEN unlocked_at IS NULL THEN 1 ELSE 0 END) as available_count,
+                SUM(CASE WHEN unlocked_at IS NOT NULL THEN achievements.points ELSE 0 END) as total_points,
+                MAX(unlocked_at) as last_unlocked
+            ')
+            ->join('achievements', 'player_achievements.achievement_id', '=', 'achievements.id')
+            ->first();
 
-        $this->achievements = $query->orderBy($this->sortBy, $this->sortOrder)->get();
+        // Get achievements by status using optimized queries
         $this->unlockedAchievements = PlayerAchievement::where('player_id', $this->player->id)
             ->whereNotNull('unlocked_at')
+            ->with('achievement:id,name,description,category,points')
+            ->selectRaw('player_achievements.*, (SELECT COUNT(*) FROM player_achievements pa2 WHERE pa2.player_id = player_achievements.player_id AND pa2.unlocked_at IS NOT NULL) as total_unlocked')
             ->get();
+
         $this->availableAchievements = PlayerAchievement::where('player_id', $this->player->id)
             ->whereNull('unlocked_at')
+            ->with('achievement:id,name,description,category,points')
+            ->selectRaw('player_achievements.*, (SELECT COUNT(*) FROM player_achievements pa2 WHERE pa2.player_id = player_achievements.player_id AND pa2.unlocked_at IS NULL) as total_available')
             ->get();
     }
 
@@ -269,6 +366,15 @@ class TaskManager extends Component
     public function startTask($taskId)
     {
         $task = Task::find($taskId);
+
+        // Laradumps debugging
+        ds('Starting task', [
+            'task_id' => $taskId,
+            'task' => $task,
+            'task_status' => $task?->status,
+            'player_id' => $this->player?->id
+        ])->label('TaskManager Start Task');
+
         if ($task && $task->status === 'available') {
             $task->update([
                 'status' => 'active',
@@ -277,7 +383,18 @@ class TaskManager extends Component
             $this->loadTasks();
             $this->addNotification("Task '{$task->title}' started", 'success');
             $this->dispatch('taskStarted', ['taskId' => $taskId]);
+
+            ds('Task started successfully', [
+                'task_id' => $taskId,
+                'task_title' => $task->title,
+                'started_at' => $task->started_at
+            ])->label('TaskManager Task Started');
         } else {
+            ds('Task start failed', [
+                'task_id' => $taskId,
+                'reason' => 'Task not available or already active',
+                'task_status' => $task?->status
+            ])->label('TaskManager Task Start Failed');
             $this->addNotification('Task not available or already active', 'error');
         }
     }
@@ -285,6 +402,15 @@ class TaskManager extends Component
     public function completeTask($taskId)
     {
         $task = Task::find($taskId);
+
+        // Laradumps debugging
+        ds('Completing task', [
+            'task_id' => $taskId,
+            'task' => $task,
+            'task_status' => $task?->status,
+            'player_id' => $this->player?->id
+        ])->label('TaskManager Complete Task');
+
         if ($task && $task->status === 'active') {
             $task->update([
                 'status' => 'completed',
@@ -294,7 +420,19 @@ class TaskManager extends Component
             $this->loadTasks();
             $this->addNotification("Task '{$task->title}' completed!", 'success');
             $this->dispatch('taskCompleted', ['taskId' => $taskId]);
+
+            ds('Task completed successfully', [
+                'task_id' => $taskId,
+                'task_title' => $task->title,
+                'completed_at' => $task->completed_at,
+                'rewards' => $task->rewards
+            ])->label('TaskManager Task Completed');
         } else {
+            ds('Task completion failed', [
+                'task_id' => $taskId,
+                'reason' => 'Task not active or already completed',
+                'task_status' => $task?->status
+            ])->label('TaskManager Task Completion Failed');
             $this->addNotification('Task not active or already completed', 'error');
         }
     }
@@ -493,7 +631,7 @@ class TaskManager extends Component
     // Real-time features
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = ! $this->realTimeUpdates;
+        $this->realTimeUpdates = !$this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -502,7 +640,7 @@ class TaskManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = ! $this->autoRefresh;
+        $this->autoRefresh = !$this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -626,7 +764,7 @@ class TaskManager extends Component
 
     public function formatTimeRemaining($endTime)
     {
-        if (! $endTime) {
+        if (!$endTime) {
             return 'No time limit';
         }
 
@@ -659,11 +797,20 @@ class TaskManager extends Component
 
     public function render()
     {
+        // Use PaginationUtil for consistent pagination
+        $paginatedTasks = PaginationUtil::paginate(
+            $this->tasks->toArray(),
+            $this->perPage,
+            $this->currentPage,
+            ['path' => request()->url()]
+        );
+
         return view('livewire.game.task-manager', [
             'taskCategories' => $this->taskCategories,
             'taskTypes' => $this->taskTypes,
             'questTypes' => $this->questTypes,
             'achievementTypes' => $this->achievementTypes,
+            'paginatedTasks' => $paginatedTasks,
         ]);
     }
 }

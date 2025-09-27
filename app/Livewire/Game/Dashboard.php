@@ -32,7 +32,7 @@ class Dashboard extends Component
 
     public function createVillage()
     {
-        if ($this->villages->count() >= 1 && ! $this->player->hasRole('premium')) {
+        if ($this->villages->count() >= 1 && !$this->player->hasRole('premium')) {
             session()->flash('error', 'You need premium to create more villages!');
 
             return;

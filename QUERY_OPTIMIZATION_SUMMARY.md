@@ -154,6 +154,19 @@ $playerStats = Player::where('id', $this->player->id)
 - **StatisticsViewer**: Reduced from 15+ queries to 3-4 queries
 - **ReportManager**: Reduced from 8+ queries to 2-3 queries  
 - **MarketManager**: Reduced from 10+ queries to 4-5 queries
+- **MovementManager**: Reduced from 6+ queries to 2-3 queries
+- **GameDashboard**: Reduced from 5+ queries to 2-3 queries
+- **EnhancedGameDashboard**: Reduced from 8+ queries to 3-4 queries
+- **TaskManager**: Reduced from 9+ queries to 3-4 queries
+- **TravianDashboard**: Reduced from 4+ queries to 2-3 queries
+- **QuestManager**: Reduced from 8+ queries to 3-4 queries
+- **BattleManager**: Reduced from 5+ queries to 2-3 queries
+- **GameNavigation**: Reduced from 3+ queries to 1-2 queries
+- **BuildingManager**: Reduced from 6+ queries to 2-3 queries
+- **VillageManager**: Reduced from 5+ queries to 2-3 queries
+- **RealTimeVillageManager**: Reduced from 7+ queries to 3-4 queries
+- **TroopManager**: Reduced from 6+ queries to 2-3 queries
+- **AllianceManager**: Reduced from 8+ queries to 3-4 queries
 
 ### Memory Usage
 - Reduced memory footprint by eliminating redundant data loading
@@ -171,8 +184,33 @@ $playerStats = Player::where('id', $this->player->id)
 1. `app/Livewire/Game/StatisticsViewer.php`
 2. `app/Livewire/Game/ReportManager.php`
 3. `app/Livewire/Game/MarketManager.php`
-4. `app/Models/Game/Player.php`
-5. `app/Models/Game/Quest.php`
+4. `app/Livewire/Game/MovementManager.php`
+5. `app/Livewire/Game/GameDashboard.php`
+6. `app/Livewire/Game/EnhancedGameDashboard.php`
+7. `app/Livewire/Game/TaskManager.php`
+8. `app/Livewire/Game/TravianDashboard.php`
+9. `app/Livewire/Game/QuestManager.php`
+10. `app/Livewire/Game/BattleManager.php`
+11. `app/Livewire/Game/GameNavigation.php`
+12. `app/Livewire/Game/BuildingManager.php`
+13. `app/Livewire/Game/VillageManager.php`
+14. `app/Livewire/Game/RealTimeVillageManager.php`
+15. `app/Livewire/Game/TroopManager.php`
+16. `app/Livewire/Game/AllianceManager.php`
+17. `app/Models/Game/Player.php`
+18. `app/Models/Game/Quest.php`
+19. `app/Models/Game/Movement.php`
+20. `app/Models/Game/GameEvent.php`
+21. `app/Models/Game/Task.php`
+22. `app/Models/Game/AchievementTemplate.php`
+23. `app/Models/Game/PlayerAchievement.php`
+24. `app/Models/Game/Battle.php`
+25. `app/Models/Game/Village.php`
+26. `app/Models/Game/Building.php`
+27. `app/Models/Game/Troop.php`
+28. `app/Models/Game/UnitType.php`
+29. `app/Models/Game/Alliance.php`
+30. `app/Models/Game/AllianceMember.php`
 
 ### New Files
 1. `app/Services/QueryOptimizationService.php`
@@ -213,6 +251,114 @@ $players = Player::withStats()
 $quests = Quest::withPlayerStats($playerId)
     ->availableForPlayer($playerId)
     ->byDifficultyFilter($difficulty)
+    ->search($searchTerm)
+    ->get();
+
+// Get movements with village info
+$movements = Movement::byVillage($villageId)
+    ->withVillageInfo()
+    ->byType('attack')
+    ->travelling()
+    ->recent(7)
+    ->search($searchTerm)
+    ->get();
+
+// Get game events with stats
+$events = GameEvent::byPlayer($playerId)
+    ->withStats()
+    ->withPlayerInfo()
+    ->unread()
+    ->recent(7)
+    ->search($searchTerm)
+    ->get();
+
+// Get tasks with stats
+$tasks = Task::byWorld($worldId)
+    ->byPlayer($playerId)
+    ->withStats()
+    ->withPlayerInfo()
+    ->active()
+    ->dueSoon(24)
+    ->search($searchTerm)
+    ->get();
+
+// Get achievements with stats
+$achievements = Achievement::byWorld($worldId)
+    ->active()
+    ->withStats()
+    ->withPlayerInfo()
+    ->popular(10)
+    ->search($searchTerm)
+    ->get();
+
+// Get player achievements with stats
+$playerAchievements = PlayerAchievement::byPlayer($playerId)
+    ->withStats()
+    ->withPlayerInfo()
+    ->unlockedFilter()
+    ->recent(30)
+    ->get();
+
+// Get battles with stats
+$battles = Battle::byPlayer($playerId)
+    ->withStats()
+    ->withPlayerInfo()
+    ->recent(7)
+    ->victories()
+    ->search($searchTerm)
+    ->get();
+
+// Get villages with stats
+$villages = Village::byPlayer($playerId)
+    ->withStats()
+    ->withPlayerInfo()
+    ->active()
+    ->topVillages(10)
+    ->search($searchTerm)
+    ->get();
+
+// Get buildings with stats
+$buildings = Building::byVillage($villageId)
+    ->withStats()
+    ->withBuildingTypeInfo()
+    ->active()
+    ->upgradeable()
+    ->search($searchTerm)
+    ->get();
+
+// Get troops with stats
+$troops = Troop::byVillage($villageId)
+    ->withStats()
+    ->withUnitTypeInfo()
+    ->available()
+    ->topTroops(10)
+    ->search($searchTerm)
+    ->get();
+
+// Get unit types with stats
+$unitTypes = UnitType::byTribe($tribe)
+    ->withStats()
+    ->withTroopInfo()
+    ->active()
+    ->topAttack(10)
+    ->search($searchTerm)
+    ->get();
+
+// Get alliances with stats
+$alliances = Alliance::byWorld($worldId)
+    ->withStats()
+    ->withPlayerInfo()
+    ->active()
+    ->topAlliances(10)
+    ->search($searchTerm)
+    ->get();
+
+// Get alliance members with stats
+$members = AllianceMember::byAlliance($allianceId)
+    ->withStats()
+    ->withPlayerInfo()
+    ->active()
+    ->byRole($role)
     ->search($searchTerm)
     ->get();
 ```

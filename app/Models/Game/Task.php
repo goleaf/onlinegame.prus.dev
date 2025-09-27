@@ -3,8 +3,8 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
@@ -80,8 +80,85 @@ class Task extends Model
     public function scopeNotExpired($query)
     {
         return $query->where(function ($q) {
-            $q->whereNull('deadline')
-              ->orWhere('deadline', '>', now());
+            $q
+                ->whereNull('deadline')
+                ->orWhere('deadline', '>', now());
         });
+    }
+
+    // Optimized query scopes using when() and selectRaw
+    public function scopeWithStats($query)
+    {
+        return $query->selectRaw('
+            player_tasks.*,
+            (SELECT COUNT(*) FROM player_tasks pt2 WHERE pt2.player_id = player_tasks.player_id) as total_tasks,
+            (SELECT COUNT(*) FROM player_tasks pt3 WHERE pt3.player_id = player_tasks.player_id AND pt3.status = "active") as active_tasks,
+            (SELECT COUNT(*) FROM player_tasks pt4 WHERE pt4.player_id = player_tasks.player_id AND pt4.status = "completed") as completed_tasks,
+            (SELECT AVG(progress) FROM player_tasks pt5 WHERE pt5.player_id = player_tasks.player_id AND pt5.status = "active") as avg_progress
+        ');
+    }
+
+    public function scopeByWorld($query, $worldId)
+    {
+        return $query->where('world_id', $worldId);
+    }
+
+    public function scopeByPlayer($query, $playerId)
+    {
+        return $query->where('player_id', $playerId);
+    }
+
+    public function scopeByTypeFilter($query, $type = null)
+    {
+        return $query->when($type, function ($q) use ($type) {
+            return $q->where('type', $type);
+        });
+    }
+
+    public function scopeByStatusFilter($query, $status = null)
+    {
+        return $query->when($status, function ($q) use ($status) {
+            return $q->where('status', $status);
+        });
+    }
+
+    public function scopeRecent($query, $days = 7)
+    {
+        return $query->where('created_at', '>=', now()->subDays($days));
+    }
+
+    public function scopeDueSoon($query, $hours = 24)
+    {
+        return $query
+            ->where('deadline', '<=', now()->addHours($hours))
+            ->where('deadline', '>', now())
+            ->where('status', 'active');
+    }
+
+    public function scopeOverdue($query)
+    {
+        return $query
+            ->where('deadline', '<', now())
+            ->where('status', 'active');
+    }
+
+    public function scopeSearch($query, $searchTerm)
+    {
+        return $query->when($searchTerm, function ($q) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm) {
+                $subQ
+                    ->where('title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('type', 'like', '%' . $searchTerm . '%');
+            });
+        });
+    }
+
+    public function scopeWithPlayerInfo($query)
+    {
+        return $query->with([
+            'player:id,name',
+            'world:id,name',
+        ]);
     }
 }

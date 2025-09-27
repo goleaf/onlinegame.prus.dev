@@ -115,7 +115,7 @@ class ResourceProductionService
 
         foreach ($costs as $resource => $amount) {
             $resourceModel = $resources->where('type', $resource)->first();
-            if (! $resourceModel || $resourceModel->amount < $amount) {
+            if (!$resourceModel || $resourceModel->amount < $amount) {
                 return false;
             }
         }
@@ -125,7 +125,7 @@ class ResourceProductionService
 
     public function spendResources($village, $costs)
     {
-        if (! $this->canAfford($village, $costs)) {
+        if (!$this->canAfford($village, $costs)) {
             return false;
         }
 

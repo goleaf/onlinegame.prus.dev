@@ -147,7 +147,7 @@ class RealTimeVillageManager extends Component
 
     public function mount(Village $village)
     {
-        if (! Auth::check()) {
+        if (!Auth::check()) {
             return redirect('/login');
         }
 
@@ -177,12 +177,38 @@ class RealTimeVillageManager extends Component
         $this->isLoading = true;
 
         try {
-            $this->village->load(['resources', 'buildings.buildingType', 'buildingQueues.buildingType', 'trainingQueues.unitType']);
+            $this->village->load([
+                'resources',
+                'buildings.buildingType:id,name,description,costs,production_bonus',
+                'buildingQueues.buildingType:id,name,description',
+                'trainingQueues.unitType:id,name,attack_power,defense_power'
+            ]);
 
             $this->resources = $this->village->resources->keyBy('type');
             $this->buildings = $this->village->buildings;
-            $this->buildingQueues = $this->village->buildingQueues()->where('status', 'in_progress')->get();
-            $this->trainingQueues = $this->village->trainingQueues()->where('status', 'in_progress')->get();
+
+            // Use optimized queries for queues
+            $this->buildingQueues = $this
+                ->village
+                ->buildingQueues()
+                ->where('status', 'in_progress')
+                ->with('buildingType:id,name,description')
+                ->selectRaw('
+                    building_queues.*,
+                    (SELECT COUNT(*) FROM building_queues bq2 WHERE bq2.village_id = building_queues.village_id AND bq2.status = "in_progress") as total_active_queues
+                ')
+                ->get();
+
+            $this->trainingQueues = $this
+                ->village
+                ->trainingQueues()
+                ->where('status', 'in_progress')
+                ->with('unitType:id,name,attack_power,defense_power')
+                ->selectRaw('
+                    training_queues.*,
+                    (SELECT COUNT(*) FROM training_queues tq2 WHERE tq2.village_id = training_queues.village_id AND tq2.status = "in_progress") as total_active_queues
+                ')
+                ->get();
 
             $this->loadAvailableBuildings();
             $this->loadAvailableUnits();
@@ -200,6 +226,11 @@ class RealTimeVillageManager extends Component
     public function loadAvailableBuildings()
     {
         $this->availableBuildings = BuildingType::where('is_active', true)
+            ->selectRaw('
+                building_types.*,
+                (SELECT COUNT(*) FROM buildings b WHERE b.building_type_id = building_types.id AND b.is_active = 1) as total_buildings,
+                (SELECT AVG(level) FROM buildings b2 WHERE b2.building_type_id = building_types.id AND b2.is_active = 1) as avg_level
+            ')
             ->orderBy('name')
             ->get();
     }
@@ -270,7 +301,7 @@ class RealTimeVillageManager extends Component
 
     public function buildBuilding($x, $y)
     {
-        if (! $this->selectedBuildingType) {
+        if (!$this->selectedBuildingType) {
             return;
         }
 
@@ -286,7 +317,7 @@ class RealTimeVillageManager extends Component
         $costs = json_decode($this->selectedBuildingType->costs, true);
         $resourceService = app(ResourceProductionService::class);
 
-        if (! $resourceService->canAfford($this->village, $costs)) {
+        if (!$resourceService->canAfford($this->village, $costs)) {
             $this->addError('error', 'Insufficient resources');
 
             return;
@@ -318,7 +349,7 @@ class RealTimeVillageManager extends Component
     public function upgradeBuilding($buildingId)
     {
         $building = $this->buildings->find($buildingId);
-        if (! $building) {
+        if (!$building) {
             return;
         }
 
@@ -341,7 +372,7 @@ class RealTimeVillageManager extends Component
         $costs = $this->calculateUpgradeCosts($building);
         $resourceService = app(ResourceProductionService::class);
 
-        if (! $resourceService->canAfford($this->village, $costs)) {
+        if (!$resourceService->canAfford($this->village, $costs)) {
             $this->addError('error', 'Insufficient resources');
 
             return;
@@ -372,7 +403,7 @@ class RealTimeVillageManager extends Component
     public function trainUnits($unitTypeId, $quantity)
     {
         $unitType = UnitType::find($unitTypeId);
-        if (! $unitType) {
+        if (!$unitType) {
             return;
         }
 
@@ -385,7 +416,7 @@ class RealTimeVillageManager extends Component
 
         $resourceService = app(ResourceProductionService::class);
 
-        if (! $resourceService->canAfford($this->village, $totalCosts)) {
+        if (!$resourceService->canAfford($this->village, $totalCosts)) {
             $this->addError('error', 'Insufficient resources');
 
             return;

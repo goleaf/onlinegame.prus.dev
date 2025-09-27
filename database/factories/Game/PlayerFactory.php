@@ -27,7 +27,7 @@ class PlayerFactory extends Factory
             'name' => $this->faker->userName(),
             'tribe' => $this->faker->randomElement(['roman', 'teuton', 'gaul', 'natars']),
             'points' => $this->faker->numberBetween(0, 100000),
-            'is_online' => $this->faker->boolean(20), // 20% chance of being online
+            'is_online' => $this->faker->boolean(20),  // 20% chance of being online
             'last_active_at' => $this->faker->dateTimeBetween('-7 days', 'now'),
             'population' => $this->faker->numberBetween(100, 10000),
             'villages_count' => $this->faker->numberBetween(1, 10),
@@ -41,7 +41,7 @@ class PlayerFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_active' => false,
         ]);
     }
@@ -51,7 +51,7 @@ class PlayerFactory extends Factory
      */
     public function online(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_active' => true,
             'last_login' => now(),
         ]);
@@ -62,7 +62,7 @@ class PlayerFactory extends Factory
      */
     public function tribe(string $tribe): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'tribe' => $tribe,
         ]);
     }
