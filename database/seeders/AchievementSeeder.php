@@ -125,7 +125,7 @@ class AchievementSeeder extends Seeder
 
         foreach ($achievements as $achievement) {
             Achievement::firstOrCreate(
-                ['name' => $achievement['name']],
+                ['key' => $achievement['key']],
                 $achievement
             );
         }

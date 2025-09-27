@@ -137,6 +137,18 @@ class BuildingService
                 'status' => 'in_progress',
             ]);
 
+            // Publish building start event to RabbitMQ
+            $this->rabbitMQ->publishPlayerAction(
+                $village->player_id,
+                'building_started',
+                [
+                    'building_name' => $buildingType->name,
+                    'level' => $level,
+                    'village_id' => $village->id,
+                    'completion_time' => now()->addSeconds($upgradeTime)->toISOString(),
+                ]
+            );
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to start building upgrade: ' . $e->getMessage());
