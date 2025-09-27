@@ -335,13 +335,49 @@ class ArtifactEffectService
     }
 
     /**
-     * Clean up expired effects
+     * Clean up expired effects with query optimization
      */
     public function cleanupExpiredEffects(): int
     {
-        return ArtifactEffect::expired()
+        return ArtifactEffect::selectRaw('COUNT(*) as expired_count')
+            ->expired()
             ->where('is_active', true)
             ->update(['is_active' => false]);
+    }
+
+    /**
+     * Get artifact effect statistics with query optimization
+     */
+    public function getEffectStatistics(): array
+    {
+        return SmartCache::remember('artifact_effect_stats', now()->addMinutes(10), function () {
+            $stats = ArtifactEffect::selectRaw('
+                COUNT(*) as total_effects,
+                SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active_effects,
+                SUM(CASE WHEN is_active = 0 THEN 1 ELSE 0 END) as inactive_effects,
+                COUNT(DISTINCT artifact_id) as unique_artifacts,
+                COUNT(DISTINCT effect_type) as unique_effect_types,
+                AVG(magnitude) as avg_magnitude,
+                MAX(magnitude) as max_magnitude,
+                MIN(magnitude) as min_magnitude,
+                SUM(CASE WHEN duration_type = "permanent" THEN 1 ELSE 0 END) as permanent_effects,
+                SUM(CASE WHEN duration_type != "permanent" THEN 1 ELSE 0 END) as temporary_effects
+            ')
+            ->first();
+
+            return [
+                'total_effects' => $stats->total_effects ?? 0,
+                'active_effects' => $stats->active_effects ?? 0,
+                'inactive_effects' => $stats->inactive_effects ?? 0,
+                'unique_artifacts' => $stats->unique_artifacts ?? 0,
+                'unique_effect_types' => $stats->unique_effect_types ?? 0,
+                'avg_magnitude' => round($stats->avg_magnitude ?? 0, 2),
+                'max_magnitude' => $stats->max_magnitude ?? 0,
+                'min_magnitude' => $stats->min_magnitude ?? 0,
+                'permanent_effects' => $stats->permanent_effects ?? 0,
+                'temporary_effects' => $stats->temporary_effects ?? 0,
+            ];
+        });
     }
 
     /**

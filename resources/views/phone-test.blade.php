@@ -83,6 +83,26 @@
                                 <span class="text-green-500 mr-2">✓</span>
                                 User management integration
                             </li>
+                            <li class="flex items-center">
+                                <span class="text-green-500 mr-2">✓</span>
+                                Alliance member phone statistics
+                            </li>
+                            <li class="flex items-center">
+                                <span class="text-green-500 mr-2">✓</span>
+                                Phone statistics dashboard
+                            </li>
+                            <li class="flex items-center">
+                                <span class="text-green-500 mr-2">✓</span>
+                                Bulk operations (export, validate, format)
+                            </li>
+                            <li class="flex items-center">
+                                <span class="text-green-500 mr-2">✓</span>
+                                CSV import/export functionality
+                            </li>
+                            <li class="flex items-center">
+                                <span class="text-green-500 mr-2">✓</span>
+                                Admin phone management tools
+                            </li>
                         </ul>
                         
                         <div class="mt-6">
