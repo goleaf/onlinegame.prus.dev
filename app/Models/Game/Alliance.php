@@ -15,7 +15,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Alliance extends Model implements Auditable, IsFilterable
+class Alliance extends Model implements Auditable
 {
     use HasNotables, HasReference;
     use AuditableTrait;
