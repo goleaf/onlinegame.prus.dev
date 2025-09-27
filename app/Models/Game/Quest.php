@@ -290,11 +290,6 @@ class Quest extends Model implements Auditable
         ]);
     }
 }
-
-            $selectColumns[] = QE::select(c('progress'))
-                ->from('player_quests')
-                ->whereColumn('quest_id', c('quests.id'))
-                ->where('player_id', $playerId)
                 ->limit(1)
                 ->as('player_progress');
         }

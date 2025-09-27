@@ -79,7 +79,7 @@
                                 {{ $selectedChannel === 'diplomacy' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600' }}"
                         >
                             <div class="flex items-center">
-                                <x-heroicon-o-users class="w-4 h-4 mr-2" />
+                                <x-heroicon-o-handshake class="w-4 h-4 mr-2" />
                                 Diplomacy Chat
                             </div>
                         </button>
@@ -158,6 +158,7 @@
                                 <div class="flex-shrink-0">
                                     <button 
                                         wire:click="deleteMessage({{ $message->id }})"
+                                        wire:confirm="Are you sure you want to delete this message? This action cannot be undone."
                                         class="text-gray-400 hover:text-red-500 transition-colors"
                                         title="Delete message"
                                     >
