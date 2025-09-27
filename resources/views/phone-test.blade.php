@@ -9,8 +9,23 @@
 </head>
 <body class="bg-gray-100 min-h-screen py-8">
     <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto">
-            <h1 class="text-3xl font-bold text-center mb-8">Laravel Phone Integration Test</h1>
+            <div class="max-w-4xl mx-auto">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-bold">Laravel Phone Integration Test</h1>
+                    <div class="flex space-x-4">
+                        <a href="{{ route('profile') }}" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+                            Profile Manager
+                        </a>
+                        <a href="{{ route('phone-search') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                            Phone Search
+                        </a>
+                        @auth
+                            <a href="{{ route('game.dashboard') }}" class="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600">
+                                Dashboard
+                            </a>
+                        @endauth
+                    </div>
+                </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div>

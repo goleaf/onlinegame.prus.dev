@@ -18,6 +18,25 @@ class Quest extends Model
 {
     use HasFactory, HasTaxonomy, HasNotables, HasReference, Commentable, Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public string $name;
+    public string $key;
+    public ?string $description;
+    public ?string $instructions;
+    public ?string $category;
+    public ?string $difficulty;
+    public ?array $requirements;
+    public ?array $rewards;
+    public ?int $experience_reward;
+    public ?int $gold_reward;
+    public ?array $resource_rewards;
+    public bool $is_repeatable;
+    public bool $is_active;
+    public ?string $reference_number;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $fillable = [
         'name',
         'key',
