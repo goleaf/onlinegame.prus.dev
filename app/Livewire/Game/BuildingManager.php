@@ -17,6 +17,8 @@ use SmartCache\Facades\SmartCache;
 
 class BuildingManager extends Component
 {
+    use ApiResponseTrait;
+{
     #[Reactive]
     public $village;
 
