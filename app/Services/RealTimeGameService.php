@@ -438,7 +438,7 @@ class RealTimeGameService
     /**
      * Send movement update with geographic context
      */
-    public static function sendMovementUpdate(int $movementId, string $eventType, array $data = []): void
+    public static function sendMovementUpdateWithGeo(int $movementId, string $eventType, array $data = []): void
     {
         try {
             $movement = \App\Models\Game\Movement::with(['fromVillage', 'toVillage', 'player'])

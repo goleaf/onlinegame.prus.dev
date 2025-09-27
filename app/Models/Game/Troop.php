@@ -5,14 +5,16 @@ namespace App\Models\Game;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 use sbamtr\LaravelQueryEnrich\QE;
 use WendellAdriel\Lift\Lift;
 
 use function sbamtr\LaravelQueryEnrich\c;
 
-class Troop extends Model
+class Troop extends Model implements Auditable
 {
-    use HasFactory, Lift;
+    use HasFactory, Lift, AuditableTrait;
 
     // Laravel Lift typed properties
     public int $id;

@@ -24,6 +24,8 @@ use Intervention\Validation\Rules\Username;
 use Intervention\Validation\Rules\Latitude;
 use Intervention\Validation\Rules\Longitude;
 use JonPurvis\Squeaky\Rules\Clean;
+use sbamtr\LaravelQueryEnrich\QE;
+use function sbamtr\LaravelQueryEnrich\c;
 
 /**
  * @group Game API

@@ -19,6 +19,7 @@ class Battle extends Model implements Auditable, IsFilterable
     use HasReference;
     use AuditableTrait;
     use Filterable;
+    use Lift;
 
     protected $fillable = [
         'attacker_id',

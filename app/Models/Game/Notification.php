@@ -2,18 +2,14 @@
 
 namespace App\Models\Game;
 
-use App\Services\GameIntegrationService;
-use App\Services\GameNotificationService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
-use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Notification extends Model implements Auditable
+class Notification extends Model
 {
-    use HasFactory, AuditableTrait;
+    use HasFactory, HasReference;
 
     protected $fillable = [
         'player_id',
@@ -30,6 +26,7 @@ class Notification extends Model implements Auditable
         'is_persistent',
         'is_auto_dismiss',
         'auto_dismiss_seconds',
+        'reference_number',
     ];
 
     protected $casts = [
