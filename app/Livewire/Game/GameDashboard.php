@@ -76,15 +76,30 @@ class GameDashboard extends Component
 
     public function initializeRealTimeFeatures()
     {
-        $this->worldTime = now();
-        $this->calculateResourceProductionRates();
+        try {
+            // Initialize real-time features for the user
+            GameIntegrationService::initializeUserRealTime(Auth::id());
+            
+            $this->worldTime = now();
+            $this->calculateResourceProductionRates();
 
-        // Dispatch initial real-time setup
-        $this->dispatch('initializeRealTime', [
-            'interval' => $this->refreshInterval * 1000,
-            'autoRefresh' => $this->autoRefresh,
-            'realTimeUpdates' => $this->realTimeUpdates,
-        ]);
+            // Dispatch initial real-time setup
+            $this->dispatch('initializeRealTime', [
+                'interval' => $this->refreshInterval * 1000,
+                'autoRefresh' => $this->autoRefresh,
+                'realTimeUpdates' => $this->realTimeUpdates,
+            ]);
+
+            $this->dispatch('game-dashboard-initialized', [
+                'message' => 'Game dashboard real-time features activated',
+                'user_id' => Auth::id(),
+            ]);
+
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to initialize game dashboard real-time features: ' . $e->getMessage(),
+            ]);
+        }
     }
 
     public function loadGameData()
