@@ -73,7 +73,8 @@
         "phpunit/phpunit": "^11.5.3",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-permission": "^6.21",
-        "tyghaykal/laravel-seed-generator": "*"
+        "tyghaykal/laravel-seed-generator": "*",
+        "vcian/laravel-db-auditor": "*"
     },
     "autoload": {
         "psr-4": {

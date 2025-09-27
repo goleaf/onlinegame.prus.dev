@@ -258,12 +258,6 @@ class GeographicService
      * @param float $speedKmh
      * @return int Travel time in seconds
      */
-    public function calculateTravelTime(float $lat1, float $lon1, float $lat2, float $lon2, float $speedKmh): int
-    {
-        $distance = $this->calculateDistance($lat1, $lon1, $lat2, $lon2);
-        return $this->calculateTravelTime($distance, $speedKmh);
-    }
-
     /**
      * Get bearing (direction) from one point to another
      *

@@ -44,6 +44,12 @@ class GameDashboard extends Component
 
     public $resourceProductionRates = [];
 
+    public function __construct()
+    {
+        parent::__construct();
+        $this->seoService = app(GameSeoService::class);
+    }
+
     protected $listeners = [
         'refreshGameData',
         'gameTickProcessed',
