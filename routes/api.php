@@ -15,6 +15,13 @@ use Illuminate\Support\Facades\Route;
  * |
  */
 
+// Public API documentation endpoints
+Route::prefix('docs')->group(function () {
+    Route::get('/info', [ApiDocumentationController::class, 'getApiInfo']);
+    Route::get('/health', [ApiDocumentationController::class, 'getHealthStatus']);
+    Route::get('/endpoints', [ApiDocumentationController::class, 'getEndpoints']);
+});
+
 Route::middleware('auth:sanctum')->get('/user', [GameApiController::class, 'getUser']);
 
 // Game API Routes
