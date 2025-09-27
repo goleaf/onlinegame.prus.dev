@@ -138,13 +138,17 @@ class TroopManager extends Component
 
     public function selectUnitType($unitTypeId)
     {
-        $this->selectedUnitType = UnitType::selectRaw('
-                unit_types.*,
-                (SELECT COUNT(*) FROM troops t WHERE t.unit_type_id = unit_types.id AND t.quantity > 0) as total_troops,
-                (SELECT SUM(quantity) FROM troops t2 WHERE t2.unit_type_id = unit_types.id) as total_quantity,
-                (SELECT AVG(quantity) FROM troops t3 WHERE t3.unit_type_id = unit_types.id AND t3.quantity > 0) as avg_quantity
-            ')
-            ->find($unitTypeId);
+        // Use SmartCache for unit type selection with automatic optimization
+        $unitTypeCacheKey = "unit_type_{$unitTypeId}_detailed";
+        $this->selectedUnitType = SmartCache::remember($unitTypeCacheKey, now()->addMinutes(5), function () use ($unitTypeId) {
+            return UnitType::selectRaw('
+                    unit_types.*,
+                    (SELECT COUNT(*) FROM troops t WHERE t.unit_type_id = unit_types.id AND t.quantity > 0) as total_troops,
+                    (SELECT SUM(quantity) FROM troops t2 WHERE t2.unit_type_id = unit_types.id) as total_quantity,
+                    (SELECT AVG(quantity) FROM troops t3 WHERE t3.unit_type_id = unit_types.id AND t3.quantity > 0) as avg_quantity
+                ')
+                ->find($unitTypeId);
+        });
         $this->calculateTrainingCost();
     }
 
