@@ -122,9 +122,9 @@ class UpdaterComponent extends Component
             \Artisan::call('route:clear');
             \Artisan::call('view:clear');
             
-            $this->alert('success', 'Application caches cleared successfully!');
+            session()->flash('message', 'Application caches cleared successfully!');
         } catch (\Exception $e) {
-            $this->alert('error', 'Failed to clear caches: ' . $e->getMessage());
+            session()->flash('error', 'Failed to clear caches: ' . $e->getMessage());
         }
     }
 
