@@ -29,7 +29,29 @@ return [
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => 'Online Game API - A comprehensive REST API for managing game players, villages, and game mechanics.',
+        'description' => 'Online Game API - A comprehensive REST API for managing game players, villages, and game mechanics. This API provides complete functionality for game management including player authentication, village creation and management, building upgrades, and resource management.',
+        
+        /*
+         * Contact information
+         */
+        'contact' => [
+            'name' => 'Game API Support',
+            'email' => 'api@game.example.com',
+            'url' => 'https://game.example.com/support',
+        ],
+        
+        /*
+         * License information
+         */
+        'license' => [
+            'name' => 'MIT',
+            'url' => 'https://opensource.org/licenses/MIT',
+        ],
+        
+        /*
+         * Terms of service
+         */
+        'terms_of_service' => 'https://game.example.com/terms',
     ],
 
     /*
