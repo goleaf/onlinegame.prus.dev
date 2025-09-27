@@ -51,6 +51,7 @@
         "spatie/laravel-tags": "^4.10",
         "usmonaliyev/laravel-simple-rabbitmq": "^1.2",
         "vectorial1024/laravel-cache-evict": "^2.0",
+        "wendelladriel/laravel-lift": "*",
         "wireui/wireui": "^2.4",
         "ziming/laravel-zxcvbn": "^2.3"
     },

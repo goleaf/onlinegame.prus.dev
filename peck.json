@@ -139,9 +139,7 @@
             "storage/",
             "bootstrap/cache/",
             ".git/",
-            "public/build/",
-            "public/hot",
-            "public/storage/",
+            "public/",
             "tests/",
             "app/ValueObjects/",
             "app/Models/"
