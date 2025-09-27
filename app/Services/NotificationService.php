@@ -2,13 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\Game\Player;
-use App\Models\Game\Village;
-use App\Models\Game\GameEvent;
 use App\Models\Game\Notification;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Mail;
+use App\Models\Game\Player;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\LoggingUtil;
 
@@ -19,12 +18,12 @@ class NotificationService
 
     public function __construct()
     {
-        $this->cachingUtil = new CachingUtil(3600, []);
+        $this->cachingUtil = new CachingUtil(1800, ['notifications']);
         $this->loggingUtil = new LoggingUtil();
     }
 
     /**
-     * Send notification to player
+     * Send notification to a player
      */
     public function sendNotification(
         Player $player,
@@ -32,308 +31,414 @@ class NotificationService
         string $title,
         string $message,
         array $data = [],
-        ?string $priority = 'normal'
+        string $priority = 'normal'
     ): Notification {
-        $notification = Notification::create([
-            'player_id' => $player->id,
-            'type' => $type,
-            'title' => $title,
-            'message' => $message,
-            'data' => $data,
-            'priority' => $priority,
-            'is_read' => false,
-            'created_at' => now(),
-        ]);
+        DB::beginTransaction();
 
-        $this->loggingUtil->info('Notification sent', [
-            'player_id' => $player->id,
-            'type' => $type,
-            'title' => $title,
-        ]);
+        try {
+            $notification = Notification::create([
+                'player_id' => $player->id,
+                'type' => $type,
+                'title' => $title,
+                'message' => $message,
+                'data' => $data,
+                'priority' => $priority,
+                'read_at' => null,
+                'sent_at' => now(),
+            ]);
 
-        // Clear player notifications cache
-        $this->clearPlayerNotificationsCache($player);
+            // Generate reference number
+            $notification->generateReference();
 
-        return $notification;
+            DB::commit();
+
+            $this->loggingUtil->info('Notification sent', [
+                'notification_id' => $notification->id,
+                'player_id' => $player->id,
+                'type' => $type,
+                'priority' => $priority
+            ]);
+
+            // Clear cache
+            $this->clearPlayerNotificationCache($player);
+
+            return $notification;
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->loggingUtil->error('Failed to send notification', [
+                'player_id' => $player->id,
+                'type' => $type,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
     }
 
     /**
-     * Send battle notification
+     * Send email notification
      */
-    public function sendBattleNotification(
+    public function sendEmailNotification(
         Player $player,
-        string $battleType,
-        array $battleData
-    ): Notification {
-        $title = match ($battleType) {
-            'attack' => 'Battle Report - Attack',
-            'defend' => 'Battle Report - Defense',
-            'raid' => 'Raid Report',
-            default => 'Battle Report'
-        };
+        string $type,
+        string $subject,
+        string $template,
+        array $data = []
+    ): bool {
+        try {
+            $user = $player->user;
+            if (!$user || !$user->email) {
+                return false;
+            }
 
-        $message = $this->generateBattleMessage($battleType, $battleData);
+            Mail::send($template, array_merge($data, [
+                'player' => $player,
+                'user' => $user,
+                'notification_type' => $type,
+            ]), function ($message) use ($user, $subject) {
+                $message->to($user->email, $user->name)
+                    ->subject($subject);
+            });
 
-        return $this->sendNotification(
-            $player,
-            'battle',
-            $title,
-            $message,
-            $battleData,
-            'high'
-        );
-    }
+            $this->loggingUtil->info('Email notification sent', [
+                'player_id' => $player->id,
+                'user_email' => $user->email,
+                'type' => $type,
+                'subject' => $subject
+            ]);
 
-    /**
-     * Send movement notification
-     */
-    public function sendMovementNotification(
-        Player $player,
-        string $movementType,
-        array $movementData
-    ): Notification {
-        $title = match ($movementType) {
-            'attack' => 'Attack Arrived',
-            'support' => 'Support Arrived',
-            'return' => 'Troops Returned',
-            default => 'Movement Complete'
-        };
+            return true;
 
-        $message = $this->generateMovementMessage($movementType, $movementData);
-
-        return $this->sendNotification(
-            $player,
-            'movement',
-            $title,
-            $message,
-            $movementData,
-            'normal'
-        );
-    }
-
-    /**
-     * Send building notification
-     */
-    public function sendBuildingNotification(
-        Player $player,
-        string $buildingType,
-        array $buildingData
-    ): Notification {
-        $title = match ($buildingType) {
-            'completed' => 'Building Completed',
-            'cancelled' => 'Building Cancelled',
-            'demolished' => 'Building Demolished',
-            default => 'Building Update'
-        };
-
-        $message = $this->generateBuildingMessage($buildingType, $buildingData);
-
-        return $this->sendNotification(
-            $player,
-            'building',
-            $title,
-            $message,
-            $buildingData,
-            'low'
-        );
-    }
-
-    /**
-     * Send alliance notification
-     */
-    public function sendAllianceNotification(
-        Player $player,
-        string $allianceType,
-        array $allianceData
-    ): Notification {
-        $title = match ($allianceType) {
-            'invitation' => 'Alliance Invitation',
-            'accepted' => 'Member Joined',
-            'rejected' => 'Invitation Rejected',
-            'kicked' => 'Member Removed',
-            'promoted' => 'Rank Promotion',
-            'demoted' => 'Rank Demotion',
-            default => 'Alliance Update'
-        };
-
-        $message = $this->generateAllianceMessage($allianceType, $allianceData);
-
-        return $this->sendNotification(
-            $player,
-            'alliance',
-            $title,
-            $message,
-            $allianceData,
-            'normal'
-        );
-    }
-
-    /**
-     * Get player notifications
-     */
-    public function getPlayerNotifications(Player $player, int $limit = 50): array
-    {
-        $cacheKey = "player_notifications_{$player->id}_{$limit}";
-        
-        return $this->cachingUtil->remember($cacheKey, 60, function () use ($player, $limit) {
-            return Notification::where('player_id', $player->id)
-                ->orderBy('created_at', 'desc')
-                ->limit($limit)
-                ->get()
-                ->map(function ($notification) {
-                    return [
-                        'id' => $notification->id,
-                        'type' => $notification->type,
-                        'title' => $notification->title,
-                        'message' => $notification->message,
-                        'data' => $notification->data,
-                        'priority' => $notification->priority,
-                        'is_read' => $notification->is_read,
-                        'created_at' => $notification->created_at->toISOString(),
-                    ];
-                })
-                ->toArray();
-        });
+        } catch (\Exception $e) {
+            $this->loggingUtil->error('Failed to send email notification', [
+                'player_id' => $player->id,
+                'type' => $type,
+                'error' => $e->getMessage()
+            ]);
+            return false;
+        }
     }
 
     /**
      * Mark notification as read
      */
-    public function markAsRead(Player $player, int $notificationId): bool
+    public function markAsRead(Notification $notification): Notification
     {
-        $notification = Notification::where('player_id', $player->id)
-            ->where('id', $notificationId)
-            ->first();
+        $notification->update([
+            'read_at' => now(),
+        ]);
 
-        if (!$notification) {
-            return false;
-        }
+        $this->loggingUtil->debug('Notification marked as read', [
+            'notification_id' => $notification->id,
+            'player_id' => $notification->player_id
+        ]);
 
-        $notification->update(['is_read' => true]);
-        $this->clearPlayerNotificationsCache($player);
+        // Clear cache
+        $this->clearPlayerNotificationCache($notification->player);
 
-        return true;
+        return $notification;
     }
 
     /**
-     * Mark all notifications as read
+     * Mark all notifications as read for a player
      */
     public function markAllAsRead(Player $player): int
     {
         $updated = Notification::where('player_id', $player->id)
-            ->where('is_read', false)
-            ->update(['is_read' => true]);
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
 
-        $this->clearPlayerNotificationsCache($player);
+        $this->loggingUtil->info('All notifications marked as read', [
+            'player_id' => $player->id,
+            'updated_count' => $updated
+        ]);
+
+        // Clear cache
+        $this->clearPlayerNotificationCache($player);
 
         return $updated;
     }
 
     /**
-     * Get unread notification count
+     * Get unread notifications for a player
      */
-    public function getUnreadCount(Player $player): int
+    public function getUnreadNotifications(Player $player, int $limit = 20): \Illuminate\Database\Eloquent\Collection
     {
-        $cacheKey = "player_unread_count_{$player->id}";
-        
-        return $this->cachingUtil->remember($cacheKey, 30, function () use ($player) {
+        $cacheKey = "unread_notifications_{$player->id}_{$limit}";
+
+        return $this->cachingUtil->remember($cacheKey, 300, function () use ($player, $limit) {
             return Notification::where('player_id', $player->id)
-                ->where('is_read', false)
-                ->count();
+                ->whereNull('read_at')
+                ->orderBy('priority', 'desc')
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get();
         });
     }
 
     /**
-     * Delete old notifications
+     * Get all notifications for a player
      */
-    public function cleanupOldNotifications(int $daysOld = 30): int
+    public function getPlayerNotifications(Player $player, int $limit = 50): \Illuminate\Database\Eloquent\Collection
     {
-        $deleted = Notification::where('created_at', '<', now()->subDays($daysOld))
+        $cacheKey = "player_notifications_{$player->id}_{$limit}";
+
+        return $this->cachingUtil->remember($cacheKey, 600, function () use ($player, $limit) {
+            return Notification::where('player_id', $player->id)
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get();
+        });
+    }
+
+    /**
+     * Get notification statistics
+     */
+    public function getNotificationStatistics(): array
+    {
+        $cacheKey = 'notification_statistics';
+
+        return $this->cachingUtil->remember($cacheKey, 1800, function () {
+            $stats = Notification::selectRaw('
+                COUNT(*) as total_notifications,
+                SUM(CASE WHEN read_at IS NULL THEN 1 ELSE 0 END) as unread_notifications,
+                SUM(CASE WHEN read_at IS NOT NULL THEN 1 ELSE 0 END) as read_notifications,
+                COUNT(DISTINCT player_id) as players_with_notifications,
+                COUNT(DISTINCT type) as unique_notification_types,
+                AVG(CASE WHEN read_at IS NOT NULL THEN TIMESTAMPDIFF(MINUTE, created_at, read_at) ELSE NULL END) as avg_read_time_minutes
+            ')->first();
+
+            $typeStats = Notification::selectRaw('
+                type,
+                COUNT(*) as count,
+                SUM(CASE WHEN read_at IS NULL THEN 1 ELSE 0 END) as unread_count,
+                AVG(CASE WHEN read_at IS NOT NULL THEN TIMESTAMPDIFF(MINUTE, created_at, read_at) ELSE NULL END) as avg_read_time_minutes
+            ')
+                ->groupBy('type')
+                ->get();
+
+            $priorityStats = Notification::selectRaw('
+                priority,
+                COUNT(*) as count,
+                SUM(CASE WHEN read_at IS NULL THEN 1 ELSE 0 END) as unread_count
+            ')
+                ->groupBy('priority')
+                ->get();
+
+            return [
+                'overview' => [
+                    'total_notifications' => $stats->total_notifications ?? 0,
+                    'unread_notifications' => $stats->unread_notifications ?? 0,
+                    'read_notifications' => $stats->read_notifications ?? 0,
+                    'players_with_notifications' => $stats->players_with_notifications ?? 0,
+                    'unique_notification_types' => $stats->unique_notification_types ?? 0,
+                    'avg_read_time_minutes' => round($stats->avg_read_time_minutes ?? 0, 2),
+                ],
+                'type_breakdown' => $typeStats->toArray(),
+                'priority_breakdown' => $priorityStats->toArray(),
+            ];
+        });
+    }
+
+    /**
+     * Clean up old notifications
+     */
+    public function cleanupOldNotifications(int $daysToKeep = 30): int
+    {
+        $cutoffDate = now()->subDays($daysToKeep);
+
+        $deleted = Notification::where('created_at', '<', $cutoffDate)
             ->delete();
 
-        $this->loggingUtil->info('Cleaned up old notifications', [
+        $this->loggingUtil->info('Old notifications cleaned up', [
             'deleted_count' => $deleted,
-            'days_old' => $daysOld
+            'days_kept' => $daysToKeep
         ]);
+
+        // Clear cache
+        $this->clearNotificationCache();
 
         return $deleted;
     }
 
     /**
-     * Generate battle message
+     * Send system-wide notification
      */
-    protected function generateBattleMessage(string $type, array $data): string
-    {
-        $village = $data['village_name'] ?? 'Unknown Village';
-        $result = $data['result'] ?? 'unknown';
+    public function sendSystemNotification(
+        string $type,
+        string $title,
+        string $message,
+        array $data = [],
+        string $priority = 'normal'
+    ): int {
+        $players = Player::where('is_active', true)->get();
+        $sent = 0;
 
-        return match ($type) {
-            'attack' => "Your attack on {$village} resulted in: {$result}",
-            'defend' => "Your village {$village} was attacked. Result: {$result}",
-            'raid' => "Raid on {$village} completed. Loot: " . ($data['loot'] ?? 'None'),
-            default => "Battle at {$village} completed"
-        };
+        foreach ($players as $player) {
+            try {
+                $this->sendNotification($player, $type, $title, $message, $data, $priority);
+                $sent++;
+            } catch (\Exception $e) {
+                $this->loggingUtil->error('Failed to send system notification to player', [
+                    'player_id' => $player->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+
+        $this->loggingUtil->info('System notification sent', [
+            'type' => $type,
+            'total_players' => $players->count(),
+            'sent_count' => $sent
+        ]);
+
+        return $sent;
     }
 
     /**
-     * Generate movement message
+     * Get notification types
      */
-    protected function generateMovementMessage(string $type, array $data): string
+    public function getNotificationTypes(): array
     {
-        $destination = $data['destination'] ?? 'Unknown';
-        $troops = $data['troop_count'] ?? 0;
-
-        return match ($type) {
-            'attack' => "Your attack force ({$troops} troops) has arrived at {$destination}",
-            'support' => "Support troops ({$troops} troops) have arrived at {$destination}",
-            'return' => "Your troops have returned to {$destination}",
-            default => "Movement to {$destination} completed"
-        };
+        return [
+            'battle' => 'Battle notifications',
+            'alliance' => 'Alliance notifications',
+            'village' => 'Village notifications',
+            'quest' => 'Quest notifications',
+            'achievement' => 'Achievement notifications',
+            'system' => 'System notifications',
+            'maintenance' => 'Maintenance notifications',
+            'trade' => 'Trade notifications',
+            'wonder' => 'Wonder notifications',
+            'event' => 'Event notifications',
+        ];
     }
 
     /**
-     * Generate building message
+     * Get notification priorities
      */
-    protected function generateBuildingMessage(string $type, array $data): string
+    public function getNotificationPriorities(): array
     {
-        $building = $data['building_name'] ?? 'Building';
-        $level = $data['level'] ?? 1;
-
-        return match ($type) {
-            'completed' => "{$building} has been completed to level {$level}",
-            'cancelled' => "Construction of {$building} has been cancelled",
-            'demolished' => "{$building} has been demolished",
-            default => "{$building} update completed"
-        };
+        return [
+            'low' => 'Low priority',
+            'normal' => 'Normal priority',
+            'high' => 'High priority',
+            'urgent' => 'Urgent priority',
+        ];
     }
 
     /**
-     * Generate alliance message
+     * Create notification templates
      */
-    protected function generateAllianceMessage(string $type, array $data): string
+    public function createNotificationTemplates(): array
     {
-        $player = $data['player_name'] ?? 'Player';
-        $alliance = $data['alliance_name'] ?? 'Alliance';
-
-        return match ($type) {
-            'invitation' => "You have been invited to join {$alliance}",
-            'accepted' => "{$player} has joined {$alliance}",
-            'rejected' => "{$player} has rejected the invitation to {$alliance}",
-            'kicked' => "{$player} has been removed from {$alliance}",
-            'promoted' => "{$player} has been promoted in {$alliance}",
-            'demoted' => "{$player} has been demoted in {$alliance}",
-            default => "Alliance update for {$alliance}"
-        };
+        return [
+            'battle_attack' => [
+                'title' => 'Village Under Attack!',
+                'message' => 'Your village {village_name} is under attack by {attacker_name}!',
+                'priority' => 'high',
+                'data_template' => [
+                    'village_name' => '',
+                    'attacker_name' => '',
+                    'attack_time' => '',
+                ]
+            ],
+            'alliance_war' => [
+                'title' => 'Alliance War Started',
+                'message' => 'Your alliance {alliance_name} has declared war on {enemy_alliance}!',
+                'priority' => 'normal',
+                'data_template' => [
+                    'alliance_name' => '',
+                    'enemy_alliance' => '',
+                    'war_duration' => '',
+                ]
+            ],
+            'quest_completed' => [
+                'title' => 'Quest Completed!',
+                'message' => 'You have completed the quest "{quest_name}" and received {reward}!',
+                'priority' => 'normal',
+                'data_template' => [
+                    'quest_name' => '',
+                    'reward' => '',
+                    'experience_gained' => '',
+                ]
+            ],
+            'achievement_unlocked' => [
+                'title' => 'Achievement Unlocked!',
+                'message' => 'Congratulations! You have unlocked the achievement "{achievement_name}"!',
+                'priority' => 'normal',
+                'data_template' => [
+                    'achievement_name' => '',
+                    'achievement_description' => '',
+                    'reward' => '',
+                ]
+            ],
+            'maintenance_scheduled' => [
+                'title' => 'Scheduled Maintenance',
+                'message' => 'The server will undergo maintenance on {maintenance_date} from {start_time} to {end_time}.',
+                'priority' => 'high',
+                'data_template' => [
+                    'maintenance_date' => '',
+                    'start_time' => '',
+                    'end_time' => '',
+                    'duration' => '',
+                ]
+            ],
+        ];
     }
 
     /**
-     * Clear player notifications cache
+     * Send templated notification
      */
-    protected function clearPlayerNotificationsCache(Player $player): void
+    public function sendTemplatedNotification(
+        Player $player,
+        string $templateKey,
+        array $templateData,
+        string $priority = null
+    ): Notification {
+        $templates = $this->createNotificationTemplates();
+        
+        if (!isset($templates[$templateKey])) {
+            throw new \Exception("Notification template '{$templateKey}' not found");
+        }
+
+        $template = $templates[$templateKey];
+        
+        // Replace template variables
+        $title = $this->replaceTemplateVariables($template['title'], $templateData);
+        $message = $this->replaceTemplateVariables($template['message'], $templateData);
+        $priority = $priority ?? $template['priority'];
+
+        return $this->sendNotification(
+            $player,
+            $templateKey,
+            $title,
+            $message,
+            array_merge($template['data_template'], $templateData),
+            $priority
+        );
+    }
+
+    /**
+     * Replace template variables
+     */
+    protected function replaceTemplateVariables(string $text, array $data): string
+    {
+        foreach ($data as $key => $value) {
+            $text = str_replace('{' . $key . '}', $value, $text);
+        }
+        
+        return $text;
+    }
+
+    /**
+     * Clear player notification cache
+     */
+    protected function clearPlayerNotificationCache(Player $player): void
     {
         $patterns = [
+            "unread_notifications_{$player->id}_*",
             "player_notifications_{$player->id}_*",
-            "player_unread_count_{$player->id}",
         ];
 
         foreach ($patterns as $pattern) {
@@ -342,56 +447,18 @@ class NotificationService
     }
 
     /**
-     * Send email notification (if enabled)
+     * Clear notification cache
      */
-    public function sendEmailNotification(
-        Player $player,
-        string $type,
-        string $title,
-        string $message,
-        array $data = []
-    ): bool {
-        if (!$player->email_notifications_enabled) {
-            return false;
-        }
-
-        try {
-            Mail::send('emails.game-notification', [
-                'player' => $player,
-                'title' => $title,
-                'message' => $message,
-                'data' => $data,
-            ], function ($mail) use ($player, $title) {
-                $mail->to($player->user->email)
-                    ->subject("[Game] {$title}");
-            });
-
-            return true;
-        } catch (\Exception $e) {
-            $this->loggingUtil->error('Failed to send email notification', [
-                'player_id' => $player->id,
-                'error' => $e->getMessage()
-            ]);
-
-            return false;
-        }
-    }
-
-    /**
-     * Get notification statistics
-     */
-    public function getNotificationStats(): array
+    protected function clearNotificationCache(): void
     {
-        $cacheKey = 'notification_stats';
-        
-        return $this->cachingUtil->remember($cacheKey, 300, function () {
-            return [
-                'total_notifications' => Notification::count(),
-                'unread_notifications' => Notification::where('is_read', false)->count(),
-                'notifications_by_type' => Notification::groupBy('type')->selectRaw('type, count(*) as count')->pluck('count', 'type'),
-                'notifications_by_priority' => Notification::groupBy('priority')->selectRaw('priority, count(*) as count')->pluck('count', 'priority'),
-                'today_notifications' => Notification::whereDate('created_at', today())->count(),
-            ];
-        });
+        $patterns = [
+            'notification_statistics',
+            'unread_notifications_*',
+            'player_notifications_*',
+        ];
+
+        foreach ($patterns as $pattern) {
+            $this->cachingUtil->forgetPattern($pattern);
+        }
     }
 }

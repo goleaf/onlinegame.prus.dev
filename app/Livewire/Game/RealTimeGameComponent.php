@@ -260,6 +260,88 @@ class RealTimeGameComponent extends Component
         }
     }
 
+    /**
+     * Initialize real-time features
+     */
+    public function initializeRealTimeFeatures()
+    {
+        try {
+            if ($this->userId) {
+                // Initialize real-time features for the user
+                GameIntegrationService::initializeUserRealTime($this->userId);
+                
+                $this->dispatch('realtime-initialized', [
+                    'message' => 'Real-time game component features activated',
+                    'user_id' => $this->userId,
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to initialize real-time features: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Clear updates with real-time integration
+     */
+    public function clearUpdatesWithIntegration()
+    {
+        try {
+            $this->clearUpdates();
+
+            if ($this->userId) {
+                // Send notification about clearing updates
+                GameNotificationService::sendNotification(
+                    $this->userId,
+                    'updates_cleared',
+                    [
+                        'user_id' => $this->userId,
+                        'timestamp' => now()->toISOString(),
+                    ]
+                );
+
+                $this->dispatch('updates-cleared', [
+                    'message' => 'Updates cleared successfully with notifications',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to clear updates: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Clear notifications with real-time integration
+     */
+    public function clearNotificationsWithIntegration()
+    {
+        try {
+            $this->clearNotifications();
+
+            if ($this->userId) {
+                // Send notification about clearing notifications
+                GameNotificationService::sendNotification(
+                    $this->userId,
+                    'notifications_cleared',
+                    [
+                        'user_id' => $this->userId,
+                        'timestamp' => now()->toISOString(),
+                    ]
+                );
+
+                $this->dispatch('notifications-cleared', [
+                    'message' => 'Notifications cleared successfully with notifications',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to clear notifications: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
     public function dehydrate()
     {
         $this->stopAutoRefresh();

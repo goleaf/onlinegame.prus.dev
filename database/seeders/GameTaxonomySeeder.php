@@ -88,14 +88,17 @@ class GameTaxonomySeeder extends Seeder
         ];
 
         foreach ($questDifficulties as $key => $difficulty) {
-            Taxonomy::create([
-                'name' => $difficulty['name'],
-                'slug' => $key,
-                'type' => 'quest_difficulty',
-                'description' => $difficulty['description'],
-                'meta' => $difficulty['meta'],
-                'sort_order' => $difficulty['meta']['order']
-            ]);
+            Taxonomy::firstOrCreate(
+                ['slug' => $key, 'type' => 'quest_difficulty'],
+                [
+                    'name' => $difficulty['name'],
+                    'slug' => $key,
+                    'type' => 'quest_difficulty',
+                    'description' => $difficulty['description'],
+                    'meta' => $difficulty['meta'],
+                    'sort_order' => $difficulty['meta']['order']
+                ]
+            );
         }
 
         // Building Categories

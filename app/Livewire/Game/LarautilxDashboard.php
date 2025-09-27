@@ -27,6 +27,8 @@ class LarautilxDashboard extends Component
         'dashboardDataLoaded' => 'handleDashboardDataLoaded',
         'integrationSummaryLoaded' => 'handleIntegrationSummaryLoaded',
         'componentsTested' => 'handleComponentsTested',
+        'refreshDashboard' => 'refreshAllData',
+        'realTimeUpdate' => 'handleRealTimeUpdate',
     ];
 
     public function mount()

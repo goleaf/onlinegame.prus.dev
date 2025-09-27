@@ -204,6 +204,29 @@ Authorization: Bearer your-token-here
 | POST | `/api/game/quests/{id}/start` | Start quest |
 | POST | `/api/game/quests/{id}/complete` | Complete quest |
 
+### Report System
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/game/reports` | List all reports |
+| GET | `/api/game/reports/statistics` | Get report statistics |
+| GET | `/api/game/reports/unread-count` | Get unread reports count |
+| POST | `/api/game/reports/mark-all-read` | Mark all reports as read |
+| GET | `/api/game/reports/{id}` | Get specific report |
+| POST | `/api/game/reports/{id}/mark-read` | Mark report as read |
+| DELETE | `/api/game/reports/{id}` | Delete report |
+
+### Notification System
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/game/notifications` | List all notifications |
+| POST | `/api/game/notifications` | Create notification |
+| GET | `/api/game/notifications/statistics` | Get notification statistics |
+| GET | `/api/game/notifications/unread-count` | Get unread notifications count |
+| POST | `/api/game/notifications/mark-all-read` | Mark all notifications as read |
+| GET | `/api/game/notifications/{id}` | Get specific notification |
+| POST | `/api/game/notifications/{id}/mark-read` | Mark notification as read |
+| DELETE | `/api/game/notifications/{id}` | Delete notification |
+
 ## Response Format
 
 ### Success Response

@@ -126,7 +126,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" wire:click="cancelUpgrade">
+                        <button type="button" class="btn btn-secondary" 
+                                wire:click="cancelUpgrade"
+                                wire:confirm="Are you sure you want to cancel this upgrade? This action cannot be undone.">
                             <i class="fas fa-times"></i> Cancel
                         </button>
                         <button type="button" class="btn btn-primary" wire:click="upgradeBuilding">

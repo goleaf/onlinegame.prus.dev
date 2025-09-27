@@ -16,6 +16,25 @@ class Notification extends Model implements Auditable
 {
     use HasFactory, AuditableTrait, Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public int $player_id;
+    public string $title;
+    public string $message;
+    public string $type;
+    public string $priority;
+    public string $status;
+    public ?array $data;
+    public ?string $icon;
+    public ?string $action_url;
+    public ?\Carbon\Carbon $read_at;
+    public ?\Carbon\Carbon $expires_at;
+    public bool $is_persistent;
+    public bool $is_auto_dismiss;
+    public ?int $auto_dismiss_seconds;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $fillable = [
         'player_id',
         'title',
