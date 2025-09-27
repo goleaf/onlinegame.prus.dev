@@ -4,6 +4,9 @@ namespace App\Services;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use sbamtr\LaravelQueryEnrich\QE;
+use function sbamtr\LaravelQueryEnrich\c;
 
 class QueryOptimizationService
 {
