@@ -18,6 +18,7 @@ class PlayerAchievement extends Model
         'achievement_id',
         'unlocked_at',
         'progress_data',
+        'reference_number',
     ];
 
     protected $casts = [
