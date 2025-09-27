@@ -158,8 +158,10 @@ This index is automatically generated and lists all documentation files:
 * **config/**
   * [Documentation: app.php](config/app.md)
   * [Documentation: auth.php](config/auth.md)
+  * [Documentation: blade-heroicons.php](config/blade-heroicons.md)
   * [Documentation: cache.php](config/cache.md)
   * [Documentation: database.php](config/database.md)
+  * [Documentation: debugbar.php](config/debugbar.md)
   * [Documentation: filesystems.php](config/filesystems.md)
   * [Documentation: lara-util-x.php](config/lara-util-x.md)
   * [Documentation: livewire.php](config/livewire.md)
@@ -171,4 +173,5 @@ This index is automatically generated and lists all documentation files:
   * [Documentation: sanctum.php](config/sanctum.md)
   * [Documentation: services.php](config/services.md)
   * [Documentation: session.php](config/session.md)
+  * [Documentation: taxonomy.php](config/taxonomy.md)
   * [Documentation: wireui.php](config/wireui.md)
