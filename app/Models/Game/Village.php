@@ -26,6 +26,24 @@ class Village extends Model implements Auditable
     use AuditableTrait;
     use Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public int $player_id;
+    public int $world_id;
+    public string $name;
+    public ?int $x_coordinate;
+    public ?int $y_coordinate;
+    public ?float $latitude;
+    public ?float $longitude;
+    public ?string $geohash;
+    public ?float $elevation;
+    public ?array $geographic_metadata;
+    public int $population;
+    public bool $is_capital;
+    public bool $is_active;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $fillable = [
         'player_id',
         'world_id',
