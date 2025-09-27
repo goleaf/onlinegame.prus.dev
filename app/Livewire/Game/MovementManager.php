@@ -6,19 +6,14 @@ use App\Models\Game\Movement;
 use App\Models\Game\Player;
 use App\Models\Game\Troop;
 use App\Models\Game\Village;
-use App\Services\GeographicService;
 use Illuminate\Support\Facades\Auth;
-use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\PaginationUtil;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
-use SmartCache\Facades\SmartCache;
 
 class MovementManager extends Component
 {
-    use WithPagination, ApiResponseTrait;
+    use WithPagination;
 
     public $village;
 
@@ -111,21 +106,14 @@ class MovementManager extends Component
             $this->village = $player?->village;
         }
 
-        // Laradumps debugging
-        $startTime = microtime(true);
-        ds('MovementManager mounted', [
-            'village_id' => $this->village?->id,
-            'village_name' => $this->village?->name,
-            'player_id' => $this->village?->player_id,
-            'user_id' => Auth::id(),
-            'mount_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
-        ])->label('MovementManager Mount');
-
         if ($this->village) {
             $this->movements = collect();
             $this->loadMovementData();
             $this->initializeMovementFeatures();
         }
+        
+        // Track component load time
+        $this->dispatch('fathom-track', name: 'component_load_time', value: round((microtime(true) - $startTime) * 1000));
     }
 
     public function initializeMovementFeatures()
@@ -148,75 +136,20 @@ class MovementManager extends Component
     {
         $this->isLoading = true;
 
-        // Laradumps debugging
-        ds('Loading movement data', [
-            'village_id' => $this->village->id,
-            'filter_by_type' => $this->filterByType,
-            'filter_by_status' => $this->filterByStatus,
-            'show_only_my_movements' => $this->showOnlyMyMovements,
-            'search_query' => $this->searchQuery,
-            'sort_by' => $this->sortBy,
-            'sort_order' => $this->sortOrder
-        ])->label('MovementManager Load Movement Data');
-
         try {
-            // Use SmartCache for movement data with automatic optimization
-            $cacheKey = "village_{$this->village->id}_movements_{$this->filterByType}_{$this->filterByStatus}_{$this->showOnlyMyMovements}_{$this->sortBy}_{$this->sortOrder}";
+            // Use optimized scopes from Movement model
+            $query = Movement::byVillage($this->village->id)
+                ->withVillageInfo()
+                ->byType($this->filterByType)
+                ->byStatus($this->filterByStatus)
+                ->when($this->showOnlyMyMovements, function ($q) {
+                    return $q->byPlayer($this->village->player_id);
+                })
+                ->search($this->searchQuery)
+                ->orderBy($this->sortBy, $this->sortOrder);
 
-            $this->movements = SmartCache::remember($cacheKey, now()->addMinutes(2), function () {
-                // Use optimized scopes from Movement model
-                $query = Movement::byVillage($this->village->id)
-                    ->withVillageInfo()
-                    ->byType($this->filterByType)
-                    ->byStatus($this->filterByStatus)
-                    ->when($this->showOnlyMyMovements, function ($q) {
-                        return $q->byPlayer($this->village->player_id);
-                    })
-                    ->search($this->searchQuery)
-                    ->orderBy($this->sortBy, $this->sortOrder);
-
-                return $query->get();
-            });
-
-            // Apply additional filtering using FilteringUtil for complex filters
-            if (!empty($this->searchQuery)) {
-                $this->movements = FilteringUtil::filter(
-                    $this->movements,
-                    'type',
-                    'contains',
-                    $this->searchQuery
-                );
-            }
-
-            if ($this->showOnlyTravelling) {
-                $this->movements = FilteringUtil::filter(
-                    $this->movements,
-                    'status',
-                    'equals',
-                    'travelling'
-                );
-            }
-
-            if ($this->showOnlyCompleted) {
-                $this->movements = FilteringUtil::filter(
-                    $this->movements,
-                    'status',
-                    'equals',
-                    'completed'
-                );
-            }
-
-            ds('Movement data loaded successfully', [
-                'total_movements' => $this->movements->count(),
-                'travelling_movements' => $this->movements->where('status', 'travelling')->count(),
-                'completed_movements' => $this->movements->where('status', 'completed')->count(),
-                'movement_types' => $this->movements->groupBy('type')->map->count()
-            ])->label('MovementManager Movement Data Loaded');
+            $this->movements = $query->get();
         } catch (\Exception $e) {
-            ds('Error loading movement data', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ])->label('MovementManager Load Movement Data Error');
             $this->addNotification('Error loading movement data: ' . $e->getMessage(), 'error');
             $this->movements = collect();
         }
@@ -259,21 +192,15 @@ class MovementManager extends Component
         ]);
 
         $targetVillage = Village::find($this->targetVillageId);
-        if (!$targetVillage) {
-            ds('Movement creation failed - target village not found', [
-                'target_village_id' => $this->targetVillageId,
-                'village_id' => $this->village->id
-            ])->label('MovementManager Create Movement Failed');
+        if (! $targetVillage) {
             $this->addNotification('Target village not found.', 'error');
+
             return;
         }
 
         if ($targetVillage->id === $this->village->id) {
-            ds('Movement creation failed - same village', [
-                'village_id' => $this->village->id,
-                'target_village_id' => $targetVillage->id
-            ])->label('MovementManager Create Movement Failed');
             $this->addNotification('Cannot move to the same village.', 'error');
+
             return;
         }
 
@@ -283,23 +210,6 @@ class MovementManager extends Component
 
         $this->movementTime = now();
         $this->arrivalTime = now()->addSeconds($this->travelTime);
-
-        // Calculate real-world distance for additional context
-        $realWorldDistance = $this->calculateRealWorldDistance($this->village, $targetVillage);
-
-        // Laradumps debugging
-        ds('Creating movement', [
-            'from_village' => $this->village->name,
-            'to_village' => $targetVillage->name,
-            'movement_type' => $this->movementType,
-            'game_distance' => $distance,
-            'real_world_distance_km' => $realWorldDistance,
-            'travel_time' => $this->travelTime,
-            'selected_troops' => $this->selectedTroops,
-            'troop_quantities' => $this->troopQuantities,
-            'from_coordinates' => "({$this->village->x_coordinate}|{$this->village->y_coordinate})",
-            'to_coordinates' => "({$targetVillage->x_coordinate}|{$targetVillage->y_coordinate})"
-        ])->label('MovementManager Create Movement');
 
         // Create movement
         $movement = Movement::create([
@@ -332,30 +242,16 @@ class MovementManager extends Component
 
         $movement->update(['troops' => $troopsData]);
 
-        // Generate reference number for the movement
-        $movement->generateReferenceNumber();
-
-        ds('Movement created successfully', [
-            'movement_id' => $movement->id,
-            'reference_number' => $movement->reference_number,
-            'troops_data' => $troopsData,
-            'arrives_at' => $this->arrivalTime
-        ])->label('MovementManager Movement Created');
-
         $this->reset(['targetVillageId', 'selectedTroops', 'troopQuantities', 'movementTime', 'arrivalTime']);
         $this->loadMovementData();
         $this->addNotification('Movement created successfully!', 'success');
         $this->dispatch('movementCreated', ['movementId' => $movement->id]);
-
-        // Track movement creation
-        $totalTroops = array_sum($this->troopQuantities);
-        $this->dispatch('fathom-track', name: 'movement created', value: $totalTroops);
     }
 
     public function cancelMovement($movementId)
     {
         $movement = Movement::find($movementId);
-        if (!$movement || $movement->status !== 'travelling') {
+        if (! $movement || $movement->status !== 'travelling') {
             $this->addNotification('Movement not found or cannot be cancelled.', 'error');
 
             return;
@@ -387,9 +283,6 @@ class MovementManager extends Component
         $this->loadMovementData();
         $this->addNotification("Movement {$movementId} cancelled.", 'info');
         $this->dispatch('movementCancelled', ['movementId' => $movementId]);
-
-        // Track movement cancellation
-        $this->dispatch('fathom-track', name: 'movement cancelled', value: $movementId);
     }
 
     public function selectMovement($movementId)
@@ -400,7 +293,7 @@ class MovementManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function setTargetVillage($villageId)
@@ -418,7 +311,7 @@ class MovementManager extends Component
     public function selectTroop($troopId, $quantity = 1)
     {
         $troop = Troop::find($troopId);
-        if (!$troop || $troop->village_id !== $this->village->id) {
+        if (! $troop || $troop->village_id !== $this->village->id) {
             $this->addNotification("Invalid troop ID: {$troopId}", 'error');
 
             return;
@@ -497,7 +390,7 @@ class MovementManager extends Component
 
     public function toggleMyMovementsFilter()
     {
-        $this->showOnlyMyMovements = !$this->showOnlyMyMovements;
+        $this->showOnlyMyMovements = ! $this->showOnlyMyMovements;
         $this->addNotification(
             $this->showOnlyMyMovements ? 'Showing only my movements' : 'Showing all movements',
             'info'
@@ -506,7 +399,7 @@ class MovementManager extends Component
 
     public function toggleTravellingFilter()
     {
-        $this->showOnlyTravelling = !$this->showOnlyTravelling;
+        $this->showOnlyTravelling = ! $this->showOnlyTravelling;
         $this->addNotification(
             $this->showOnlyTravelling ? 'Showing only travelling movements' : 'Showing all movements',
             'info'
@@ -515,7 +408,7 @@ class MovementManager extends Component
 
     public function toggleCompletedFilter()
     {
-        $this->showOnlyCompleted = !$this->showOnlyCompleted;
+        $this->showOnlyCompleted = ! $this->showOnlyCompleted;
         $this->addNotification(
             $this->showOnlyCompleted ? 'Showing only completed movements' : 'Showing all movements',
             'info'
@@ -658,39 +551,17 @@ class MovementManager extends Component
 
     private function calculateDistance(Village $village1, Village $village2)
     {
-        $geoService = app(GeographicService::class);
-        return $geoService->calculateGameDistance(
-            $village1->x_coordinate,
-            $village1->y_coordinate,
-            $village2->x_coordinate,
-            $village2->y_coordinate
-        );
-    }
+        $dx = $village1->x - $village2->x;
+        $dy = $village1->y - $village2->y;
 
-    /**
-     * Calculate real-world distance between villages
-     *
-     * @param Village $village1
-     * @param Village $village2
-     * @return float
-     */
-    private function calculateRealWorldDistance(Village $village1, Village $village2)
-    {
-        return $village1->realWorldDistanceTo($village2);
+        return sqrt($dx * $dx + $dy * $dy);
     }
 
     private function calculateTravelTime($distance)
     {
-        // Use geographic service for more accurate travel time calculation
-        $geoService = app(GeographicService::class);
-
-        // Convert game distance to approximate real-world distance (km)
-        $realWorldDistanceKm = $distance * 0.1;  // Rough conversion: 1 game unit = 0.1 km
-
-        // Use average troop speed (can be made configurable)
-        $averageSpeedKmh = 20;  // 20 km/h average speed
-
-        return $geoService->calculateTravelTime($realWorldDistanceKm, $averageSpeedKmh);
+        // Base travel time calculation (simplified)
+        // In real Travian, this would depend on troop types and speeds
+        return max(60, $distance * 30);  // Minimum 1 minute, 30 seconds per distance unit
     }
 
     public function getMovementIcon($movement)
@@ -780,7 +651,7 @@ class MovementManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -789,7 +660,7 @@ class MovementManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -891,17 +762,8 @@ class MovementManager extends Component
 
     public function render()
     {
-        // Use PaginationUtil for consistent pagination
-        $paginatedMovements = PaginationUtil::paginate(
-            $this->movements->toArray(),
-            15,  // per page
-            request()->get('page', 1),
-            ['path' => request()->url()]
-        );
-
         return view('livewire.game.movement-manager', [
             'movements' => $this->movements,
-            'paginatedMovements' => $paginatedMovements,
             'selectedMovement' => $this->selectedMovement,
             'notifications' => $this->notifications,
             'isLoading' => $this->isLoading,
