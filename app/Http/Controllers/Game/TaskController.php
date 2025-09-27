@@ -98,7 +98,7 @@ class TaskController extends CrudController
     /**
      * Start a task
      */
-    public function startTask(Request $request, $taskId)
+    public function start(Request $request, $taskId)
     {
         $task = Task::findOrFail($taskId);
 
