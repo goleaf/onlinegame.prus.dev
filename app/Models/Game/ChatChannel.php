@@ -283,4 +283,30 @@ class ChatChannel extends Model implements Auditable
 
         return $reference;
     }
+
+    /**
+     * Get chat channels with SmartCache optimization
+     */
+    public static function getCachedChannels($filters = [])
+    {
+        $cacheKey = "chat_channels_" . md5(serialize($filters));
+        
+        return SmartCache::remember($cacheKey, now()->addMinutes(10), function () use ($filters) {
+            $query = static::with(['alliance']);
+            
+            if (isset($filters['type'])) {
+                $query->where('channel_type', $filters['type']);
+            }
+            
+            if (isset($filters['active'])) {
+                $query->where('is_active', $filters['active']);
+            }
+            
+            if (isset($filters['public'])) {
+                $query->where('is_public', $filters['public']);
+            }
+            
+            return $query->orderBy('created_at', 'desc')->get();
+        });
+    }
 }
