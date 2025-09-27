@@ -50,10 +50,6 @@ class Alliance extends Model implements Auditable
         return $this->belongsTo(World::class);
     }
 
-    public function founder(): BelongsTo
-    {
-        return $this->belongsTo(Player::class, 'founder_id');
-    }
 
     public function leader(): BelongsTo
     {
