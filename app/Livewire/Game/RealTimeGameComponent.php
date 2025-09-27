@@ -346,6 +346,109 @@ class RealTimeGameComponent extends Component
         }
     }
 
+    /**
+     * Handle real-time events
+     */
+    public function handleRealTimeEvent($eventData)
+    {
+        try {
+            $this->updates[] = [
+                'type' => 'real_time',
+                'data' => $eventData,
+                'timestamp' => now()->toISOString(),
+            ];
+
+            // Keep only last 50 updates
+            if (count($this->updates) > 50) {
+                array_shift($this->updates);
+            }
+
+            $this->dispatch('realTimeEventProcessed', $eventData);
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to handle real-time event: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Handle game events
+     */
+    public function handleGameEvent($gameEvent)
+    {
+        try {
+            $this->updates[] = [
+                'type' => 'game_event',
+                'event_type' => $gameEvent['type'] ?? 'unknown',
+                'data' => $gameEvent,
+                'timestamp' => now()->toISOString(),
+            ];
+
+            // Send notification if it's an important event
+            if (in_array($gameEvent['type'] ?? '', ['village_attacked', 'building_completed', 'quest_completed'])) {
+                $this->notifications[] = [
+                    'type' => 'game_event',
+                    'title' => ucfirst(str_replace('_', ' ', $gameEvent['type'] ?? 'Game Event')),
+                    'message' => $gameEvent['message'] ?? 'A game event occurred',
+                    'timestamp' => now()->toISOString(),
+                ];
+            }
+
+            $this->dispatch('gameEventProcessed', $gameEvent);
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to handle game event: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Handle system notifications
+     */
+    public function handleSystemNotification($notification)
+    {
+        try {
+            $this->notifications[] = [
+                'type' => 'system',
+                'title' => $notification['title'] ?? 'System Notification',
+                'message' => $notification['message'] ?? 'System update',
+                'timestamp' => now()->toISOString(),
+            ];
+
+            $this->dispatch('systemNotificationProcessed', $notification);
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to handle system notification: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Handle user status updates
+     */
+    public function handleUserStatusUpdate($statusData)
+    {
+        try {
+            if (isset($statusData['online_users'])) {
+                $this->onlineUsers = $statusData['online_users'];
+            }
+
+            if (isset($statusData['user_status'])) {
+                $this->updates[] = [
+                    'type' => 'user_status',
+                    'data' => $statusData,
+                    'timestamp' => now()->toISOString(),
+                ];
+            }
+
+            $this->dispatch('userStatusUpdated', $statusData);
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to handle user status update: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
     public function dehydrate()
     {
         $this->stopAutoRefresh();
