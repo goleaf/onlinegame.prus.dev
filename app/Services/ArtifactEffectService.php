@@ -6,6 +6,7 @@ use App\Models\Game\Artifact;
 use App\Models\Game\ArtifactEffect;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
+use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use SmartCache\Facades\SmartCache;

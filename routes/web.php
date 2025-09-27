@@ -93,8 +93,41 @@ Route::get('/game-simple', function () {
 
 // Auth::routes();
 
-// Laravel Decomposer route (commented out due to missing controller)
-// Route::get('decompose', 'Lubusin\Decomposer\Controllers\DecomposerController@index');
+// Laravel Decomposer route - using closure since controller has issues
+Route::get('decompose', function () {
+    try {
+        $composerArray = \Lubusin\Decomposer\Decomposer::getComposerArray();
+        $packages = \Lubusin\Decomposer\Decomposer::getPackagesAndDependencies(array_reverse($composerArray['require']));
+        $version = \Lubusin\Decomposer\Decomposer::getDecomposerVersion($composerArray, $packages);
+        $laravelEnv = \Lubusin\Decomposer\Decomposer::getLaravelEnv($version);
+        $serverEnv = \Lubusin\Decomposer\Decomposer::getServerEnv();
+        $serverExtras = \Lubusin\Decomposer\Decomposer::getServerExtras();
+        $laravelExtras = \Lubusin\Decomposer\Decomposer::getLaravelExtras();
+        $extraStats = \Lubusin\Decomposer\Decomposer::getExtraStats();
+        
+        $svgIcons = [
+            "composer" => \Lubusin\Decomposer\Decomposer::svg('composer', 'h-5'),
+            "statusTrue" => \Lubusin\Decomposer\Decomposer::svg('status_true', 'h-5'),
+            "statusFalse" => \Lubusin\Decomposer\Decomposer::svg('status_false', 'h-5'),
+            "laravelIcon" => \Lubusin\Decomposer\Decomposer::svg('laravel_icon', 'h-5'),
+            "serverIcon" => \Lubusin\Decomposer\Decomposer::svg('server', 'h-5')
+        ];
+        
+        $formattedPackages = collect($packages)->map(function ($pkg) {
+            return [
+                'name' => $pkg['name'],
+                'version' => $pkg['version'],
+                'dependencies' => is_array($pkg['dependencies']) ? collect($pkg['dependencies'])->map(function ($v, $k) {
+                    return ['name' => $k, 'version' => $v];
+                })->values() : [['name' => 'N/A', 'version' => $pkg['dependencies']]]
+            ];
+        })->values();
+        
+        return view('Decomposer::app', compact('packages', 'laravelEnv', 'serverEnv', 'extraStats', 'serverExtras', 'laravelExtras', 'formattedPackages', 'svgIcons'));
+    } catch (\Exception $e) {
+        return "Laravel Decomposer Error: " . $e->getMessage();
+    }
+});
 
 // Admin routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
