@@ -154,6 +154,15 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::get('/users/search', [UserController::class, 'searchUsers'])->name('game.api.users.search');
     Route::get('/users/{userId}/feature-toggles', [UserController::class, 'getUserFeatureToggles'])->name('game.api.users.feature-toggles');
     Route::post('/users/bulk-update-status', [UserController::class, 'bulkUpdateUserStatus'])->name('game.api.users.bulk-update-status');
+
+    // System management
+    Route::get('/system/config', [SystemController::class, 'getSystemConfig'])->name('game.api.system.config');
+    Route::put('/system/config', [SystemController::class, 'updateSystemConfig'])->name('game.api.system.config.update');
+    Route::get('/system/scheduled-tasks', [SystemController::class, 'getScheduledTasks'])->name('game.api.system.scheduled-tasks');
+    Route::get('/system/health', [SystemController::class, 'getSystemHealth'])->name('game.api.system.health');
+    Route::get('/system/metrics', [SystemController::class, 'getSystemMetrics'])->name('game.api.system.metrics');
+    Route::post('/system/clear-caches', [SystemController::class, 'clearSystemCaches'])->name('game.api.system.clear-caches');
+    Route::get('/system/logs', [SystemController::class, 'getSystemLogs'])->name('game.api.system.logs');
 });
 
 // Error pages

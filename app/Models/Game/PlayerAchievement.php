@@ -9,7 +9,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class PlayerAchievement extends Model
 {
-    use HasFactory;
+    use HasFactory, HasReference;
 
     protected $table = 'player_achievements';
 
