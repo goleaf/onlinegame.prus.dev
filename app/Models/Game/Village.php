@@ -126,6 +126,9 @@ class Village extends Model implements Auditable
     }
 
     public function resources(): HasMany
+    {
+        return $this->hasMany(Resource::class);
+    }
 
     /**
      * Get the village resources as a value object
