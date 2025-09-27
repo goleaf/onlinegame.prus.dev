@@ -131,6 +131,72 @@
                 </form>
             @endif
         </div>
+
+        <!-- Password Management -->
+        <div>
+            <h4 class="text-lg font-semibold mb-4">Password Management</h4>
+            
+            <button 
+                wire:click="togglePasswordForm"
+                class="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 mb-4"
+            >
+                {{ $showPasswordForm ? 'Cancel' : 'Change Password' }}
+            </button>
+
+            @if($showPasswordForm)
+                <form wire:submit.prevent="updatePassword">
+                    <div class="mb-4">
+                        <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-2">
+                            Current Password
+                        </label>
+                        <input 
+                            wire:model="currentPassword" 
+                            type="password" 
+                            id="currentPassword" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                        >
+                        @error('currentPassword') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-2">
+                            New Password
+                        </label>
+                        <input 
+                            wire:model="newPassword" 
+                            type="password" 
+                            id="newPassword" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                        >
+                        <div id="password-strength" class="password-strength mt-2"></div>
+                        @error('newPassword') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="newPasswordConfirmation" class="block text-sm font-medium text-gray-700 mb-2">
+                            Confirm New Password
+                        </label>
+                        <input 
+                            wire:model="newPasswordConfirmation" 
+                            type="password" 
+                            id="newPasswordConfirmation" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required
+                        >
+                        @error('newPasswordConfirmation') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        class="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    >
+                        Update Password
+                    </button>
+                </form>
+            @endif
+        </div>
     </div>
 
     <!-- User Statistics -->

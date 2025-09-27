@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
 
-class Hero extends Model
+class Hero extends Model implements Auditable
 {
-    use HasFactory, HasReference, Lift;
+    use HasFactory, HasReference, Lift, AuditableTrait;
 
     // Laravel Lift typed properties
     public int $id;
