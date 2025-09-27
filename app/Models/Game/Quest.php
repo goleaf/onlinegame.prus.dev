@@ -16,7 +16,7 @@ use WendellAdriel\Lift\Lift;
 
 class Quest extends Model
 {
-    use HasFactory, HasTaxonomy, HasNotables, HasReference, Commentable;
+    use HasFactory, HasTaxonomy, HasNotables, HasReference, Commentable, Lift;
 
     protected $fillable = [
         'name',
