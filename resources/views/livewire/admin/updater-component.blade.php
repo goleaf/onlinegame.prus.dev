@@ -126,7 +126,9 @@
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Maintenance Tools</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <x-flux::button wire:click="clearCache" variant="outline" icon="trash" class="w-full">
+            <x-flux::button wire:click="clearCache" 
+                            wire:confirm="Are you sure you want to clear all caches? This action cannot be undone."
+                            variant="outline" icon="trash" class="w-full">
                 Clear Caches
             </x-flux::button>
             <x-flux::button wire:click="optimizeApplication" variant="outline" icon="bolt" class="w-full">

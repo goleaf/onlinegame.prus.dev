@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AllianceMessage extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory;
 
     protected $fillable = [
         'alliance_id',
