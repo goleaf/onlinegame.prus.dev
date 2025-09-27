@@ -8,6 +8,9 @@
 
     <title>@text('game.title', 'Travian Game - Laravel Edition')</title>
 
+    <!-- SEO Metadata -->
+    @metadata
+
     <!-- Travian Game Assets -->
     <link rel="stylesheet" href="{{ asset('game/styles.css') }}">
     <link rel="stylesheet" href="{{ asset('game/travian.css') }}">
