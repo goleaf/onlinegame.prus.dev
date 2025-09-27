@@ -34,7 +34,7 @@ class UserTechForm extends Component
         'jwt_secret' => 'nullable|string|max:500',
         'base64_encoded_data' => 'nullable|string|max:10000',
         'data_uri' => 'nullable|string|max:10000',
-        'tech_description' => ['nullable', 'string', 'max:1000', new Clean],
+        'tech_description' => 'nullable|string|max:1000',
         'preferred_language' => 'required|string|in:en,es,fr,de,it,pt,ru,ja,ko,zh',
         'timezone' => 'required|string|max:50',
     ];

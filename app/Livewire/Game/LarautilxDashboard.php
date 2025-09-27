@@ -164,6 +164,92 @@ class LarautilxDashboard extends Component
         }
     }
 
+    /**
+     * Initialize Larautilx real-time features
+     */
+    public function initializeLarautilxRealTime()
+    {
+        try {
+            $userId = Auth::id();
+            if ($userId) {
+                // Initialize real-time features for the user
+                GameIntegrationService::initializeUserRealTime($userId);
+                
+                $this->dispatch('larautilx-initialized', [
+                    'message' => 'Larautilx dashboard real-time features activated',
+                    'user_id' => $userId,
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to initialize Larautilx real-time features: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Test components with real-time integration
+     */
+    public function testComponentsWithIntegration()
+    {
+        try {
+            $this->testComponents();
+
+            $userId = Auth::id();
+            if ($userId) {
+                // Send notification about component testing
+                GameNotificationService::sendNotification(
+                    $userId,
+                    'components_tested',
+                    [
+                        'user_id' => $userId,
+                        'components' => $this->selectedTestComponents,
+                        'timestamp' => now()->toISOString(),
+                    ]
+                );
+
+                $this->dispatch('components-tested', [
+                    'message' => 'Components tested successfully with notifications',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to test components: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Refresh dashboard with real-time integration
+     */
+    public function refreshDashboardWithIntegration()
+    {
+        try {
+            $this->refreshDashboard();
+
+            $userId = Auth::id();
+            if ($userId) {
+                // Send notification about dashboard refresh
+                GameNotificationService::sendNotification(
+                    $userId,
+                    'dashboard_refreshed',
+                    [
+                        'user_id' => $userId,
+                        'timestamp' => now()->toISOString(),
+                    ]
+                );
+
+                $this->dispatch('dashboard-refreshed', [
+                    'message' => 'Dashboard refreshed successfully with notifications',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to refresh dashboard: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
     public function render()
     {
         return view('livewire.game.larautilx-dashboard', [

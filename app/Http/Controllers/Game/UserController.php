@@ -426,45 +426,69 @@ class UserController extends CrudController
     {
         $query = User::query();
 
+        // Build filters array for eloquent filtering
+        $filters = [];
+
         // Apply search filters
         if ($request->has('name')) {
-            $query->where('name', 'like', '%' . $request->get('name') . '%');
+            $filters[] = ['target' => 'name', 'type' => '$like', 'value' => $request->get('name')];
         }
 
         if ($request->has('email')) {
-            $query->where('email', 'like', '%' . $request->get('email') . '%');
+            $filters[] = ['target' => 'email', 'type' => '$like', 'value' => $request->get('email')];
         }
 
         if ($request->has('phone')) {
             $phoneTerm = $request->get('phone');
             $cleanPhoneTerm = preg_replace('/[^0-9+]/', '', $phoneTerm);
-
-            $query->where(function ($q) use ($phoneTerm, $cleanPhoneTerm) {
-                $q
-                    ->where('phone', 'like', '%' . $phoneTerm . '%')
-                    ->orWhere('phone_normalized', 'like', '%' . $cleanPhoneTerm . '%')
-                    ->orWhere('phone_e164', 'like', '%' . $cleanPhoneTerm . '%');
-            });
+            
+            $filters[] = [
+                'type' => '$or',
+                'value' => [
+                    ['target' => 'phone', 'type' => '$like', 'value' => $phoneTerm],
+                    ['target' => 'phone_normalized', 'type' => '$like', 'value' => $cleanPhoneTerm],
+                    ['target' => 'phone_e164', 'type' => '$like', 'value' => $cleanPhoneTerm]
+                ]
+            ];
         }
 
         if ($request->has('has_player')) {
             if ($request->get('has_player') === 'true') {
-                $query->withGamePlayers();
+                $filters[] = ['type' => '$has', 'target' => 'player'];
+                $query = $query->withGamePlayers();
             } else {
-                $query->whereDoesntHave('player');
+                $filters[] = ['type' => '$doesntHas', 'target' => 'player'];
             }
         }
 
         if ($request->has('world_id')) {
-            $query->byWorld($request->get('world_id'));
+            $filters[] = [
+                'type' => '$has',
+                'target' => 'player',
+                'value' => [
+                    ['target' => 'world_id', 'type' => '$eq', 'value' => $request->get('world_id')]
+                ]
+            ];
         }
 
         if ($request->has('tribe')) {
-            $query->byTribe($request->get('tribe'));
+            $filters[] = [
+                'type' => '$has',
+                'target' => 'player',
+                'value' => [
+                    ['target' => 'tribe', 'type' => '$eq', 'value' => $request->get('tribe')]
+                ]
+            ];
         }
 
         if ($request->has('alliance_id')) {
-            $query->byAlliance($request->get('alliance_id'));
+            $filters[] = [
+                'type' => '$has',
+                'target' => 'player',
+                'value' => [
+                    ['target' => 'alliance_id', 'type' => '$eq', 'value' => $request->get('alliance_id')]
+                ]
+            ];
         }
 
         if ($request->has('is_online')) {
