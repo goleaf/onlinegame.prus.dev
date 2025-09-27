@@ -14,7 +14,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Movement extends Model implements Auditable, IsFilterable
+class Movement extends Model implements Auditable
 {
     use HasFactory, HasReference, AuditableTrait, Filterable;
 

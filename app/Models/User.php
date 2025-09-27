@@ -16,8 +16,6 @@ use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use EloquentFiltering\Contracts\IsFilterable;
-use EloquentFiltering\Filterable;
 
 class User extends Authenticatable implements Auditable, IsFilterable
 {
