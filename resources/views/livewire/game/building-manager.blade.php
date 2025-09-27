@@ -88,7 +88,9 @@
                             <i class="fas fa-arrow-up"></i> 
                             {{ $isBuilt ? 'Upgrade' : 'Build' }} {{ $availableBuildings[$selectedBuilding]['name'] }}
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" wire:click="cancelUpgrade"></button>
+                        <button type="button" class="btn-close btn-close-white" 
+                                wire:click="cancelUpgrade"
+                                wire:confirm="Are you sure you want to cancel this upgrade? This action cannot be undone."></button>
                     </div>
                     <div class="modal-body">
                         <div class="upgrade-info">

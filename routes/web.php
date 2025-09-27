@@ -182,6 +182,7 @@ Route::get('decompose/markdown', function () {
 Route::middleware(['auth'])->prefix('game')->name('game.')->group(function () {
     Route::get('/chat', App\Livewire\Game\ChatManager::class)->name('chat');
     Route::get('/messages', App\Livewire\Game\MessageManager::class)->name('messages');
+    Route::get('/player/{playerId}', App\Livewire\Game\PlayerDetail::class)->name('player.detail');
 });
 
 // Admin routes
