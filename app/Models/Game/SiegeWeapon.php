@@ -9,7 +9,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class SiegeWeapon extends Model
 {
-    use HasFactory;
+    use HasFactory, HasReference;
 
     protected $fillable = [
         'village_id',
