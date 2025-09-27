@@ -2,11 +2,11 @@
 
 namespace App\Models\Game;
 
-use EloquentFiltering\Filterable;
-use EloquentFiltering\Contracts\IsFilterable;
-use EloquentFiltering\AllowedFilterList;
-use EloquentFiltering\Filter;
-use EloquentFiltering\FilterType;
+use IndexZer0\EloquentFiltering\Filterable;
+use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+use IndexZer0\EloquentFiltering\AllowedFilterList;
+use IndexZer0\EloquentFiltering\Filter;
+use IndexZer0\EloquentFiltering\FilterType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;

@@ -41,6 +41,7 @@
         "propaganistas/laravel-phone": "*",
         "pusher/pusher-php-server": "^7.2",
         "rappasoft/laravel-livewire-tables": "^3.7",
+        "salahhusa9/updater": "^0.0.12",
         "sbamtr/laravel-query-enrich": "^1.3",
         "spatie/laravel-backup": "^9.3",
         "spatie/laravel-error-solutions": "^1.0",
