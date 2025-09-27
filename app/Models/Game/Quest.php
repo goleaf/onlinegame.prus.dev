@@ -9,15 +9,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 use sbamtr\LaravelQueryEnrich\QE;
 use SmartCache\Facades\SmartCache;
 use WendellAdriel\Lift\Lift;
 
 use function sbamtr\LaravelQueryEnrich\c;
 
-class Quest extends Model
+class Quest extends Model implements Auditable
 {
-    use HasFactory, HasTaxonomy, HasNotables, HasReference, Commentable, Lift;
+    use HasFactory, HasTaxonomy, HasNotables, HasReference, Commentable, Lift, AuditableTrait;
 
     // Laravel Lift typed properties
     public int $id;

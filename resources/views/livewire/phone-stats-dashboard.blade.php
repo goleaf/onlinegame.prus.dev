@@ -1,134 +1,180 @@
-<div class="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="text-2xl font-semibold">Phone Number Statistics Dashboard</h3>
-        <button 
-            wire:click="refreshStatistics"
-            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-            <i class="fas fa-sync-alt mr-2"></i>Refresh
-        </button>
+<div class="container mx-auto px-4 py-6">
+    <div class="bg-white rounded-lg shadow-lg">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-green-600 to-blue-600 text-white p-6 rounded-t-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold">Phone Statistics Dashboard</h1>
+                    <p class="text-green-100 mt-1">Phone number analytics and verification tracking</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button wire:click="refreshStats" 
+                            class="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-green-50 transition-colors">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phone Statistics -->
+        <div class="p-6">
+            <h2 class="text-xl font-semibold mb-4">Phone Statistics</h2>
+            
+            @if($isLoading)
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                    <span class="ml-2 text-gray-600">Loading phone statistics...</span>
+                </div>
+            @else
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Total Phones -->
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <i class="fas fa-phone text-blue-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Total Phones</p>
+                                <p class="text-2xl font-bold text-blue-600">{{ number_format($phoneStats['total_phones'] ?? 0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Verified Phones -->
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-green-100 rounded-lg">
+                                <i class="fas fa-check-circle text-green-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Verified Phones</p>
+                                <p class="text-2xl font-bold text-green-600">{{ number_format($phoneStats['verified_phones'] ?? 0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Unverified Phones -->
+                    <div class="bg-yellow-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-yellow-100 rounded-lg">
+                                <i class="fas fa-exclamation-circle text-yellow-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Unverified Phones</p>
+                                <p class="text-2xl font-bold text-yellow-600">{{ number_format($phoneStats['unverified_phones'] ?? 0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phone Countries -->
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <i class="fas fa-globe text-purple-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Phone Countries</p>
+                                <p class="text-2xl font-bold text-purple-600">{{ number_format($phoneStats['phone_countries'] ?? 0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Verifications -->
+                    <div class="bg-orange-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-orange-100 rounded-lg">
+                                <i class="fas fa-clock text-orange-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Recent Verifications</p>
+                                <p class="text-2xl font-bold text-orange-600">{{ number_format($phoneStats['recent_verifications'] ?? 0) }}</p>
+                                <p class="text-xs text-gray-500">Last 7 days</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Verification Rate -->
+                    <div class="bg-indigo-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-indigo-100 rounded-lg">
+                                <i class="fas fa-percentage text-indigo-600"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-600">Verification Rate</p>
+                                <p class="text-2xl font-bold text-indigo-600">{{ $phoneStats['verification_rate'] ?? 0 }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification Progress -->
+                <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                    <h3 class="text-lg font-semibold mb-4">Verification Progress</h3>
+                    
+                    <div class="w-full bg-gray-200 rounded-full h-4 mb-4">
+                        <div class="bg-green-600 h-4 rounded-full transition-all duration-300" 
+                             style="width: {{ $phoneStats['verification_rate'] ?? 0 }}%"></div>
+                    </div>
+                    
+                    <div class="flex justify-between text-sm text-gray-600">
+                        <span>0%</span>
+                        <span class="font-medium">{{ $phoneStats['verification_rate'] ?? 0 }}% Verified</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+
+                <!-- Phone Statistics Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Verification Summary -->
+                    <div class="bg-white border rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">Verification Summary</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Phones</span>
+                                <span class="font-semibold">{{ number_format($phoneStats['total_phones'] ?? 0) }}</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Verified</span>
+                                <span class="font-semibold text-green-600">{{ number_format($phoneStats['verified_phones'] ?? 0) }}</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Unverified</span>
+                                <span class="font-semibold text-yellow-600">{{ number_format($phoneStats['unverified_phones'] ?? 0) }}</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Verification Rate</span>
+                                <span class="font-semibold text-blue-600">{{ $phoneStats['verification_rate'] ?? 0 }}%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Geographic Distribution -->
+                    <div class="bg-white border rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4">Geographic Distribution</h3>
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Countries Represented</span>
+                                <span class="font-semibold">{{ number_format($phoneStats['phone_countries'] ?? 0) }}</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Recent Verifications</span>
+                                <span class="font-semibold text-green-600">{{ number_format($phoneStats['recent_verifications'] ?? 0) }}</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Last 7 Days</span>
+                                <span class="font-semibold text-blue-600">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
-
-    @if($loading)
-        <div class="flex justify-center items-center py-12">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-        </div>
-    @elseif(isset($stats['error']))
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {{ $stats['error'] }}
-        </div>
-    @else
-        <!-- Main Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-blue-50 p-6 rounded-lg">
-                <div class="text-3xl font-bold text-blue-600">{{ number_format($stats['total_users']) }}</div>
-                <div class="text-sm text-blue-800">Total Users</div>
-            </div>
-            
-            <div class="bg-green-50 p-6 rounded-lg">
-                <div class="text-3xl font-bold text-green-600">{{ number_format($stats['users_with_phone']) }}</div>
-                <div class="text-sm text-green-800">Users with Phone</div>
-            </div>
-            
-            <div class="bg-yellow-50 p-6 rounded-lg">
-                <div class="text-3xl font-bold text-yellow-600">{{ $stats['phone_coverage_percentage'] }}%</div>
-                <div class="text-sm text-yellow-800">Phone Coverage</div>
-            </div>
-            
-            <div class="bg-purple-50 p-6 rounded-lg">
-                <div class="text-3xl font-bold text-purple-600">{{ $stats['countries_with_phones'] }}</div>
-                <div class="text-sm text-purple-800">Countries</div>
-            </div>
-        </div>
-
-        <!-- Phone Format Statistics -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white border border-gray-200 rounded-lg p-6">
-                <h4 class="text-lg font-semibold mb-4">Phone Format Distribution</h4>
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">E164 Format:</span>
-                        <span class="font-semibold">{{ number_format($stats['phone_formats']['with_e164']) }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Normalized Format:</span>
-                        <span class="font-semibold">{{ number_format($stats['phone_formats']['with_normalized']) }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">National Format:</span>
-                        <span class="font-semibold">{{ number_format($stats['phone_formats']['with_national']) }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white border border-gray-200 rounded-lg p-6">
-                <h4 class="text-lg font-semibold mb-4">Recent Activity</h4>
-                <div class="space-y-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Last 30 Days:</span>
-                        <span class="font-semibold">{{ number_format($stats['recent_phone_registrations']) }}</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-600">Validation Errors:</span>
-                        <span class="font-semibold">{{ $stats['phone_validation_errors']['total_errors'] }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Top Countries -->
-        @if($stats['top_countries']->count() > 0)
-            <div class="bg-white border border-gray-200 rounded-lg p-6 mb-8">
-                <h4 class="text-lg font-semibold mb-4">Top Countries by Phone Usage</h4>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Users</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($stats['top_countries'] as $country)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {{ $country['country_name'] }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                            {{ $country['country'] }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ number_format($country['count']) }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $stats['users_with_phone'] > 0 ? round(($country['count'] / $stats['users_with_phone']) * 100, 2) : 0 }}%
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @endif
-
-        <!-- Coverage Progress Bar -->
-        <div class="bg-white border border-gray-200 rounded-lg p-6">
-            <h4 class="text-lg font-semibold mb-4">Phone Coverage Progress</h4>
-            <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
-                <div 
-                    class="bg-blue-600 h-4 rounded-full transition-all duration-500" 
-                    style="width: {{ $stats['phone_coverage_percentage'] }}%"
-                ></div>
-            </div>
-            <div class="flex justify-between text-sm text-gray-600">
-                <span>0%</span>
-                <span class="font-semibold">{{ $stats['phone_coverage_percentage'] }}% Coverage</span>
-                <span>100%</span>
-            </div>
-        </div>
-    @endif
 </div>

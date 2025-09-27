@@ -238,15 +238,28 @@ class ChatMessage extends Model
     public static function getMessageStats(): array
     {
         return SmartCache::remember('chat_message_stats', 300, function () {
+            // Use single selectRaw query to get all statistics at once
+            $stats = self::selectRaw('
+                COUNT(*) as total_messages,
+                SUM(CASE WHEN channel_type = ? AND is_deleted = 0 THEN 1 ELSE 0 END) as global_messages,
+                SUM(CASE WHEN channel_type = ? AND is_deleted = 0 THEN 1 ELSE 0 END) as alliance_messages,
+                SUM(CASE WHEN channel_type = ? AND is_deleted = 0 THEN 1 ELSE 0 END) as private_messages,
+                SUM(CASE WHEN DATE(created_at) = CURDATE() AND is_deleted = 0 THEN 1 ELSE 0 END) as messages_today,
+                COUNT(DISTINCT CONCAT(channel_id, "_", channel_type)) as active_channels,
+                AVG(LENGTH(message)) as avg_message_length,
+                MAX(created_at) as last_message_time
+            ', [self::CHANNEL_GLOBAL, self::CHANNEL_ALLIANCE, self::CHANNEL_PRIVATE])
+            ->first();
+
             return [
-                'total_messages' => self::notDeleted()->count(),
-                'global_messages' => self::where('channel_type', self::CHANNEL_GLOBAL)->notDeleted()->count(),
-                'alliance_messages' => self::where('channel_type', self::CHANNEL_ALLIANCE)->notDeleted()->count(),
-                'private_messages' => self::where('channel_type', self::CHANNEL_PRIVATE)->notDeleted()->count(),
-                'messages_today' => self::whereDate('created_at', today())->notDeleted()->count(),
-                'active_channels' => self::select('channel_id', 'channel_type')
-                    ->distinct()
-                    ->count(),
+                'total_messages' => $stats->total_messages ?? 0,
+                'global_messages' => $stats->global_messages ?? 0,
+                'alliance_messages' => $stats->alliance_messages ?? 0,
+                'private_messages' => $stats->private_messages ?? 0,
+                'messages_today' => $stats->messages_today ?? 0,
+                'active_channels' => $stats->active_channels ?? 0,
+                'avg_message_length' => round($stats->avg_message_length ?? 0, 2),
+                'last_message_time' => $stats->last_message_time,
             ];
         });
     }
