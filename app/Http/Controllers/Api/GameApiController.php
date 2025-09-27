@@ -464,4 +464,184 @@ class GameApiController extends Controller
             'player' => $player
         ]);
     }
+
+    /**
+     * Get geographic data for villages
+     * 
+     * @authenticated
+     * 
+     * @queryParam radius integer Distance radius in kilometers. Example: 50
+     * @queryParam center_lat float Center latitude. Example: 50.1109
+     * @queryParam center_lon float Center longitude. Example: 8.6821
+     * 
+     * @response 200 {
+     *   "villages": [
+     *     {
+     *       "id": 1,
+     *       "name": "Main Village",
+     *       "latitude": 50.1109,
+     *       "longitude": 8.6821,
+     *       "geohash": "u0y0y0",
+     *       "distance_km": 0,
+     *       "bearing": 0
+     *     }
+     *   ]
+     * }
+     * 
+     * @tag Geographic Data
+     */
+    public function getGeographicData(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'radius' => 'nullable|integer|min:1|max:1000',
+            'center_lat' => 'nullable|numeric|between:-90,90',
+            'center_lon' => 'nullable|numeric|between:-180,180',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The given data was invalid.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = $request->user();
+        $player = Player::where('user_id', $user->id)->first();
+
+        if (!$player) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Player not found'
+            ], 404);
+        }
+
+        $query = Village::where('player_id', $player->id)
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude');
+
+        // Apply radius filter if provided
+        if ($request->has('radius') && $request->has('center_lat') && $request->has('center_lon')) {
+            $radius = $request->input('radius');
+            $centerLat = $request->input('center_lat');
+            $centerLon = $request->input('center_lon');
+
+            $query->whereRaw("ST_Distance_Sphere(
+                POINT(longitude, latitude), 
+                POINT(?, ?)
+            ) <= ?", [$centerLon, $centerLat, $radius * 1000]);
+        }
+
+        $villages = $query->get()->map(function ($village) use ($request) {
+            $data = [
+                'id' => $village->id,
+                'name' => $village->name,
+                'latitude' => $village->latitude,
+                'longitude' => $village->longitude,
+                'geohash' => $village->geohash,
+                'elevation' => $village->elevation,
+            ];
+
+            // Calculate distance and bearing if center coordinates provided
+            if ($request->has('center_lat') && $request->has('center_lon')) {
+                $geoService = app(\App\Services\GeographicService::class);
+                $data['distance_km'] = $geoService->calculateDistance(
+                    $request->input('center_lat'),
+                    $request->input('center_lon'),
+                    $village->latitude,
+                    $village->longitude
+                );
+                $data['bearing'] = $geoService->calculateBearing(
+                    $request->input('center_lat'),
+                    $request->input('center_lon'),
+                    $village->latitude,
+                    $village->longitude
+                );
+            }
+
+            return $data;
+        });
+
+        return response()->json([
+            'success' => true,
+            'villages' => $villages
+        ]);
+    }
+
+    /**
+     * Calculate distance between two villages
+     * 
+     * @authenticated
+     * 
+     * @queryParam village1_id integer required First village ID. Example: 1
+     * @queryParam village2_id integer required Second village ID. Example: 2
+     * 
+     * @response 200 {
+     *   "distance_km": 15.5,
+     *   "bearing": 245.3,
+     *   "travel_time_minutes": 23
+     * }
+     * 
+     * @tag Geographic Data
+     */
+    public function calculateDistance(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'village1_id' => 'required|integer|exists:villages,id',
+            'village2_id' => 'required|integer|exists:villages,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The given data was invalid.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = $request->user();
+        $player = Player::where('user_id', $user->id)->first();
+
+        if (!$player) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Player not found'
+            ], 404);
+        }
+
+        $village1 = Village::where('player_id', $player->id)->find($request->input('village1_id'));
+        $village2 = Village::where('player_id', $player->id)->find($request->input('village2_id'));
+
+        if (!$village1 || !$village2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'One or both villages not found or not owned by player'
+            ], 404);
+        }
+
+        $geoService = app(\App\Services\GeographicService::class);
+        
+        $distance = $geoService->calculateDistance(
+            $village1->latitude ?? 0,
+            $village1->longitude ?? 0,
+            $village2->latitude ?? 0,
+            $village2->longitude ?? 0
+        );
+
+        $bearing = $geoService->calculateBearing(
+            $village1->latitude ?? 0,
+            $village1->longitude ?? 0,
+            $village2->latitude ?? 0,
+            $village2->longitude ?? 0
+        );
+
+        $travelTime = $geoService->calculateTravelTimeFromDistance($distance);
+
+        return response()->json([
+            'success' => true,
+            'distance_km' => round($distance, 2),
+            'bearing' => round($bearing, 1),
+            'travel_time_minutes' => $travelTime
+        ]);
+    }
 }
