@@ -12,14 +12,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use LaraUtilX\Traits\LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
-use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use WendellAdriel\Lift\Lift;
 
-class User extends Authenticatable implements Auditable, IsFilterable
+class User extends Authenticatable implements Auditable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -28,7 +26,7 @@ class User extends Authenticatable implements Auditable, IsFilterable
     use AuditableTrait;
     use Lift;
     use HasReference;
-    use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
+    use Filterable;
 
     // Laravel Lift typed properties
     public int $id;

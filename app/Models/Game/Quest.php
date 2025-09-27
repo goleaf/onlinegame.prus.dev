@@ -4,6 +4,7 @@ namespace App\Models\Game;
 
 use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use App\Traits\Commentable;
+use App\Traits\GameValidationTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
