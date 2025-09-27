@@ -27,7 +27,7 @@ class GamePerformanceOptimizer
     }
 
     /**
-     * Optimize game data loading with enhanced caching
+     * Optimize game data loading with SmartCache
      */
     public function optimizeGameData(string $userId, array $dataTypes = []): array
     {
@@ -36,12 +36,10 @@ class GamePerformanceOptimizer
 
         foreach ($dataTypes as $type) {
             $cacheKey = "game_data_{$userId}_{$type}";
-            $tags = ["user:{$userId}", "game_data", $type];
 
-            $results[$type] = $this->cacheService->rememberWithTags(
+            $results[$type] = SmartCache::remember(
                 $cacheKey,
-                $tags,
-                1800, // 30 minutes
+                now()->addMinutes(30),
                 function () use ($type, $userId) {
                     return $this->loadGameData($type, $userId);
                 }
@@ -331,11 +329,10 @@ class GamePerformanceOptimizer
     protected function getResourceProduction(array $params): array
     {
         try {
-            $result = DB::table('resources')
+            return DB::table('resources')
                 ->selectRaw('COUNT(*) as total_resources')
-                ->first();
-                
-            return $result ? (array) $result : ['total_resources' => 0];
+                ->first()
+                ?->toArray() ?? [];
         } catch (\Exception $e) {
             return ['total_resources' => 0];
         }

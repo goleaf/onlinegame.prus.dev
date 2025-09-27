@@ -39,6 +39,25 @@ class WorldMap extends Component
     public $mapMode = 'normal';  // normal, alliance, tribe, player
     public $highlightedVillages = [];
     public $mapStats = [];
+    
+    // Enhanced map features
+    public $showGrid = true;
+    public $showDistance = false;
+    public $showMovementPaths = false;
+    public $showResourceFields = false;
+    public $showOasis = false;
+    public $showBarbarianVillages = true;
+    public $showNatarianVillages = true;
+    public $coordinateSystem = 'game';  // game, decimal, dms
+    public $mapTheme = 'classic';  // classic, modern, dark
+    public $showPlayerStats = false;
+    public $showAllianceStats = false;
+    public $showBattleHistory = false;
+    public $showTradeRoutes = false;
+    public $selectedCoordinates = null;
+    public $mapBounds = ['min_x' => 0, 'max_x' => 400, 'min_y' => 0, 'max_y' => 400];
+    public $visibleVillages = [];
+    public $mapLayers = ['villages' => true, 'alliances' => true, 'resources' => false, 'movements' => false];
 
     protected $listeners = [
         'refreshMap',

@@ -642,22 +642,7 @@ class GameTickService
 
     private function calculateSpyDefense($village)
     {
-        $spyDefense = 0;
-
-        // Get trap level for spy defense
-        $trap = $village
-            ->buildings()
-            ->whereHas('buildingType', function ($query) {
-                $query->where('key', 'trap');
-            })
-            ->first();
-
-        if ($trap) {
-            // Each trap level provides 5% chance to catch spies
-            $spyDefense = $trap->level * 5;
-        }
-
-        return min($spyDefense, 100);  // Cap at 100%
+        return $this->defenseService->calculateSpyDefense($village);
     }
 
     private function processSpyDefense($movement)
