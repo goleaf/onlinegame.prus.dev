@@ -72,4 +72,69 @@ class PlayerStats
 
         return 'offline';
     }
+
+    public function getPowerLevel(): string
+    {
+        $totalPower = $this->getTotalPower();
+        
+        if ($totalPower >= 1000000) {
+            return 'legendary';
+        } elseif ($totalPower >= 500000) {
+            return 'epic';
+        } elseif ($totalPower >= 100000) {
+            return 'rare';
+        } elseif ($totalPower >= 10000) {
+            return 'uncommon';
+        } else {
+            return 'common';
+        }
+    }
+
+    public function getVillageCount(): int
+    {
+        return $this->villages;
+    }
+
+    public function getPopulationDensity(): float
+    {
+        if ($this->villages === 0) {
+            return 0.0;
+        }
+        
+        return round($this->population / $this->villages, 2);
+    }
+
+    public function getPointsPerVillage(): float
+    {
+        if ($this->villages === 0) {
+            return 0.0;
+        }
+        
+        return round($this->points / $this->villages, 2);
+    }
+
+    public function isHighRank(): bool
+    {
+        return $this->rank <= 100;
+    }
+
+    public function getTimeSinceLastActive(): ?string
+    {
+        if (!$this->last_active_at) {
+            return null;
+        }
+
+        $now = new \DateTime();
+        $diff = $now->diff($this->last_active_at);
+
+        if ($diff->days > 0) {
+            return $diff->days . ' days ago';
+        } elseif ($diff->h > 0) {
+            return $diff->h . ' hours ago';
+        } elseif ($diff->i > 0) {
+            return $diff->i . ' minutes ago';
+        } else {
+            return 'Just now';
+        }
+    }
 }
