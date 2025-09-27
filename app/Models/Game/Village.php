@@ -4,6 +4,11 @@ namespace App\Models\Game;
 
 use App\Services\GeographicService;
 use App\ValueObjects\Coordinates;
+use EloquentFiltering\Filterable;
+use EloquentFiltering\Contracts\IsFilterable;
+use EloquentFiltering\AllowedFilterList;
+use EloquentFiltering\Filter;
+use EloquentFiltering\FilterType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

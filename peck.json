@@ -70,7 +70,9 @@
             "public/build/",
             "public/hot",
             "public/storage/",
-            "tests/Coverage/"
+            "tests/Coverage/",
+            "app/ValueObjects/",
+            "app/Models/"
         ]
     }
 }

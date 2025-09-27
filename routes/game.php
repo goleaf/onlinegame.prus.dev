@@ -169,6 +169,18 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::get('/system/metrics', [SystemController::class, 'getSystemMetrics'])->name('game.api.system.metrics');
     Route::post('/system/clear-caches', [SystemController::class, 'clearSystemCaches'])->name('game.api.system.clear-caches');
     Route::get('/system/logs', [SystemController::class, 'getSystemLogs'])->name('game.api.system.logs');
+
+    // AI management
+    Route::get('/ai/status', [AIController::class, 'getStatus'])->name('game.api.ai.status');
+    Route::post('/ai/village-names', [AIController::class, 'generateVillageNames'])->name('game.api.ai.village-names');
+    Route::post('/ai/alliance-names', [AIController::class, 'generateAllianceNames'])->name('game.api.ai.alliance-names');
+    Route::post('/ai/quest-description', [AIController::class, 'generateQuestDescription'])->name('game.api.ai.quest-description');
+    Route::post('/ai/battle-report', [AIController::class, 'generateBattleReport'])->name('game.api.ai.battle-report');
+    Route::post('/ai/player-message', [AIController::class, 'generatePlayerMessage'])->name('game.api.ai.player-message');
+    Route::post('/ai/world-event', [AIController::class, 'generateWorldEvent'])->name('game.api.ai.world-event');
+    Route::post('/ai/strategy-suggestion', [AIController::class, 'generateStrategySuggestion'])->name('game.api.ai.strategy-suggestion');
+    Route::post('/ai/custom-content', [AIController::class, 'generateCustomContent'])->name('game.api.ai.custom-content');
+    Route::post('/ai/switch-provider', [AIController::class, 'switchProvider'])->name('game.api.ai.switch-provider');
 });
 
 // Error pages
