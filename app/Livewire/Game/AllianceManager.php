@@ -143,13 +143,25 @@ class AllianceManager extends Component
             $this->alliances = SmartCache::remember($alliancesCacheKey, now()->addMinutes(5), function () {
                 $query = Alliance::where('world_id', $this->world->id)
                     ->with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status'])
-                    ->selectRaw('
-                        alliances.*,
-                        (SELECT COUNT(*) FROM players p WHERE p.alliance_id = alliances.id) as member_count,
-                        (SELECT SUM(points) FROM players p2 WHERE p2.alliance_id = alliances.id) as total_points,
-                        (SELECT AVG(points) FROM players p3 WHERE p3.alliance_id = alliances.id) as avg_points,
-                        (SELECT MAX(points) FROM players p4 WHERE p4.alliance_id = alliances.id) as max_points
-                    ');
+                    ->select([
+                        'alliances.*',
+                        QE::select(QE::count(c('id')))
+                            ->from('players', 'p')
+                            ->whereColumn('p.alliance_id', c('alliances.id'))
+                            ->as('member_count'),
+                        QE::select(QE::sum(c('points')))
+                            ->from('players', 'p2')
+                            ->whereColumn('p2.alliance_id', c('alliances.id'))
+                            ->as('total_points'),
+                        QE::select(QE::avg(c('points')))
+                            ->from('players', 'p3')
+                            ->whereColumn('p3.alliance_id', c('alliances.id'))
+                            ->as('avg_points'),
+                        QE::select(QE::max(c('points')))
+                            ->from('players', 'p4')
+                            ->whereColumn('p4.alliance_id', c('alliances.id'))
+                            ->as('max_points')
+                    ]);
 
                 // Apply filters using the new eloquent filtering system
                 $filters = [];

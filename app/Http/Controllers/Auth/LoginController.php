@@ -80,10 +80,28 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
+        $startTime = microtime(true);
+        $userId = Auth::id();
+        
+        ds('LoginController: Logout started', [
+            'controller' => 'LoginController',
+            'method' => 'logout',
+            'user_id' => $userId,
+            'logout_time' => now()
+        ]);
+        
         Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ds('LoginController: Logout completed', [
+            'user_id' => $userId,
+            'total_time_ms' => $totalTime,
+            'redirect_to' => route('login')
+        ]);
 
         return redirect()
             ->route('login')
