@@ -13,6 +13,24 @@ class Task extends Model
 {
     use HasFactory, HasReference, Commentable, Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public int $world_id;
+    public int $player_id;
+    public string $title;
+    public ?string $description;
+    public string $type;
+    public string $status;
+    public int $progress;
+    public ?int $target;
+    public ?array $rewards;
+    public ?\Carbon\Carbon $deadline;
+    public ?\Carbon\Carbon $started_at;
+    public ?\Carbon\Carbon $completed_at;
+    public ?string $reference_number;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $table = 'player_tasks';
 
     protected $fillable = [
