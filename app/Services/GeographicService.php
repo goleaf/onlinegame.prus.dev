@@ -262,11 +262,11 @@ class GeographicService
         $coord1 = new Coordinate([$lat1, $lon1]);
         $coord2 = new Coordinate([$lat2, $lon2]);
 
-        $distance = new Distance();
-        $distance->setFrom($coord1);
-        $distance->setTo($coord2);
+        $vertex = new Vertex();
+        $vertex->setFrom($coord1);
+        $vertex->setTo($coord2);
 
-        return $distance->getBearing();
+        return $vertex->initialBearing();
     }
 
     /**
