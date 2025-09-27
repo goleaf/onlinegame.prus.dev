@@ -68,8 +68,19 @@
                                     <p><strong>Coordinates:</strong> ({{ $selectedTarget['x'] }},
                                         {{ $selectedTarget['y'] }})</p>
                                     <p><strong>Distance:</strong> {{ $selectedTarget['distance'] ?? 0 }} fields</p>
-                                    <p><strong>Travel Time:</strong> {{ $selectedTarget['travel_time'] ?? '0 seconds' }}
-                                    </p>
+                                    <p><strong>Travel Time:</strong> {{ $selectedTarget['travel_time'] ?? '0 seconds' }}</p>
+                                    
+                                    @if(isset($selectedTarget['real_world_distance_km']))
+                                        <p><strong>Real Distance:</strong> {{ number_format($selectedTarget['real_world_distance_km'], 2) }} km</p>
+                                    @endif
+                                    
+                                    @if(isset($selectedTarget['bearing']))
+                                        <p><strong>Direction:</strong> {{ number_format($selectedTarget['bearing'], 1) }}°</p>
+                                    @endif
+                                    
+                                    @if(isset($selectedTarget['geohash']))
+                                        <p><strong>Geohash:</strong> {{ $selectedTarget['geohash'] }}</p>
+                                    @endif
                                 @endif
                             </div>
                         </div>
