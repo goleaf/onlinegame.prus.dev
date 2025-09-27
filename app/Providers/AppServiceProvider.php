@@ -57,6 +57,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\CacheEvictionService::class);
         $this->app->singleton(\App\Services\QueryOptimizationService::class);
         $this->app->singleton(\App\Services\SmartCacheGameOptimizer::class);
+        $this->app->singleton(\App\Services\PerformanceMonitoringService::class);
 
         // Register SEO and analytics services
         $this->app->singleton(\App\Services\GameSeoService::class);
@@ -93,10 +94,6 @@ class AppServiceProvider extends ServiceProvider
         
         $this->app->bind(\LaraUtilX\Utilities\LoggingUtil::class, function ($app) {
             return new \LaraUtilX\Utilities\LoggingUtil();
-        });
-        
-        $this->app->bind(\App\Services\NotificationService::class, function ($app) {
-            return new \App\Services\NotificationService();
         });
 
         // Register Basset helper
