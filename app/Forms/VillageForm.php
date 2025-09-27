@@ -32,6 +32,7 @@ class VillageForm extends Formello
                 'label' => __('Village Name'),
                 'required' => true,
                 'maxlength' => 50,
+                'rules' => [new Username()],
             ],
             'player_id' => [
                 'label' => __('Player'),
