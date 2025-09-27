@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('villages', function (Blueprint $table) {
-            $table->string('reference_number')->nullable()->unique()->after('is_active');
+            $table->string('reference_number')->nullable()->unique()->after('crop_capacity');
         });
     }
 

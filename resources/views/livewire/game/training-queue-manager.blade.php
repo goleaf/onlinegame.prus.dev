@@ -205,8 +205,8 @@
                                     @if ($activeTab === 'active')
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <button wire:click="cancelTraining({{ $queue->id }})" 
-                                                    class="text-red-600 hover:text-red-900"
-                                                    onclick="return confirm('Are you sure you want to cancel this training? You will only get 50% of resources back.')">
+                                                    wire:confirm="Are you sure you want to cancel this training? You will only get 50% of resources back. This action cannot be undone."
+                                                    class="text-red-600 hover:text-red-900">
                                                 Cancel
                                             </button>
                                         </td>

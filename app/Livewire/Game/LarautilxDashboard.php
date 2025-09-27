@@ -33,6 +33,7 @@ class LarautilxDashboard extends Component
     {
         $this->loadDashboardData();
         $this->loadIntegrationSummary();
+        $this->initializeLarautilxRealTime();
     }
 
     public function loadDashboardData()
