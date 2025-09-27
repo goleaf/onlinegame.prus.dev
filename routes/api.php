@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\GameApiController;
+use App\Http\Controllers\Api\GameIntegrationController;
 use App\Http\Controllers\Api\PhoneApiController;
 use App\Http\Controllers\Api\WebSocketController;
 use App\Http\Controllers\Game\AIController;

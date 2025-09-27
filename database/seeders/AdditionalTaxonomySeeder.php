@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Aliziodev\LaravelTaxonomy\Facades\Taxonomy;
+use Aliziodev\LaravelTaxonomy\Models\Taxonomy;
 use Illuminate\Database\Seeder;
 
 class AdditionalTaxonomySeeder extends Seeder

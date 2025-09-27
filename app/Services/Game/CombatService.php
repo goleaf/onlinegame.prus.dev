@@ -24,10 +24,11 @@ class CombatService
      */
     public function executeBattle(Village $attackerVillage, Village $defenderVillage, array $attackerTroops, array $defenderTroops = null): array
     {
-        // Get defender troops if not provided
-        if ($defenderTroops === null) {
-            $defenderTroops = $this->getDefenderTroops($defenderVillage);
-        }
+        return PerformanceMonitoringService::monitorQueries(function () use ($attackerVillage, $defenderVillage, $attackerTroops, $defenderTroops) {
+            // Get defender troops if not provided
+            if ($defenderTroops === null) {
+                $defenderTroops = $this->getDefenderTroops($defenderVillage);
+            }
 
         // Calculate battle strength
         $attackerStrength = $this->calculateBattleStrength($attackerTroops, 'attack');
