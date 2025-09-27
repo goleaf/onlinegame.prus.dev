@@ -87,6 +87,7 @@ class WonderService
             ]);
             throw $e;
         }
+        }, 'WonderService::startConstruction');
     }
 
     /**
