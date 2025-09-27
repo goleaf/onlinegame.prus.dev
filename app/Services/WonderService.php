@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\LoggingUtil;
+use SmartCache\Facades\SmartCache;
 
 class WonderService
 {
