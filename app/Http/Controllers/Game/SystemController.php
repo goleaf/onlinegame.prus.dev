@@ -400,7 +400,7 @@ class SystemController extends Controller
     /**
      * Get system logs
      */
-    public function getSystemLogs(Request $request)
+    public function logs(Request $request)
     {
         try {
             $allowedParams = ['level', 'limit', 'since'];
