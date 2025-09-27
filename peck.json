@@ -156,7 +156,8 @@
             "iban",
             "ean",
             "hsv",
-            "ds"
+            "ds",
+            "deinitialize"
         ],
         "paths": [
             "vendor/",
