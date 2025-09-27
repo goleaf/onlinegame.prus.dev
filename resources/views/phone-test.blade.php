@@ -12,15 +12,21 @@
             <div class="max-w-4xl mx-auto">
                 <div class="flex justify-between items-center mb-8">
                     <h1 class="text-3xl font-bold">Laravel Phone Integration Test</h1>
-                    <div class="flex space-x-4">
-                        <a href="{{ route('profile') }}" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
-                            Profile Manager
+                    <div class="flex space-x-2 flex-wrap">
+                        <a href="{{ route('profile') }}" class="bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600 text-sm">
+                            Profile
                         </a>
-                        <a href="{{ route('phone-search') }}" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                            Phone Search
+                        <a href="{{ route('phone-search') }}" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 text-sm">
+                            Search
+                        </a>
+                        <a href="{{ route('phone-stats') }}" class="bg-purple-500 text-white px-3 py-2 rounded-md hover:bg-purple-600 text-sm">
+                            Stats
+                        </a>
+                        <a href="{{ route('phone-bulk-operations') }}" class="bg-orange-500 text-white px-3 py-2 rounded-md hover:bg-orange-600 text-sm">
+                            Bulk Ops
                         </a>
                         @auth
-                            <a href="{{ route('game.dashboard') }}" class="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600">
+                            <a href="{{ route('game.dashboard') }}" class="bg-gray-500 text-white px-3 py-2 rounded-md hover:bg-gray-600 text-sm">
                                 Dashboard
                             </a>
                         @endauth

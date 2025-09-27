@@ -524,8 +524,54 @@ class GameApiController extends Controller
             ], 404);
         }
 
+        // Create enhanced player stats using value objects
+        $playerStats = new PlayerStats(
+            points: $player->points,
+            rank: $this->calculatePlayerRank($player),
+            population: $player->villages->sum('population'),
+            villages: $player->villages->count(),
+            alliance_id: $player->alliance_id,
+            tribe: $player->tribe,
+            is_online: $player->is_online,
+            is_active: $player->is_active,
+            last_active_at: $player->last_active_at
+        );
+
+        // Get village data with value objects
+        $villageData = $player->villages->map(function ($village) {
+            $villageResources = $village->resources ? new VillageResources(
+                wood: $village->resources->wood ?? 0,
+                clay: $village->resources->clay ?? 0,
+                iron: $village->resources->iron ?? 0,
+                crop: $village->resources->crop ?? 0
+            ) : null;
+
+            $coordinates = new Coordinates(
+                x: $village->x_coordinate,
+                y: $village->y_coordinate,
+                latitude: $village->latitude,
+                longitude: $village->longitude,
+                elevation: $village->elevation,
+                geohash: $village->geohash
+            );
+
+            return [
+                'id' => $village->id,
+                'name' => $village->name,
+                'coordinates' => $coordinates,
+                'resources' => $villageResources,
+                'population' => $village->population,
+                'is_capital' => $village->is_capital,
+                'is_active' => $village->is_active,
+            ];
+        });
+
         return response()->json([
-            'player' => $player
+            'success' => true,
+            'player' => $player,
+            'player_stats' => $playerStats,
+            'villages' => $villageData,
+            'value_objects_integration' => true
         ]);
     }
 

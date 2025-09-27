@@ -17,11 +17,11 @@ class GameEventService
     protected LoggingUtil $loggingUtil;
     protected NotificationService $notificationService;
 
-    public function __construct(CachingUtil $cachingUtil, LoggingUtil $loggingUtil, NotificationService $notificationService)
+    public function __construct()
     {
-        $this->cachingUtil = $cachingUtil;
-        $this->loggingUtil = $loggingUtil;
-        $this->notificationService = $notificationService;
+        $this->cachingUtil = new CachingUtil(3600, []);
+        $this->loggingUtil = new LoggingUtil();
+        $this->notificationService = new NotificationService();
     }
 
     /**
