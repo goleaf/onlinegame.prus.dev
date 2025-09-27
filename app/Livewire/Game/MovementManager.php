@@ -112,11 +112,13 @@ class MovementManager extends Component
         }
 
         // Laradumps debugging
+        $startTime = microtime(true);
         ds('MovementManager mounted', [
             'village_id' => $this->village?->id,
             'village_name' => $this->village?->name,
             'player_id' => $this->village?->player_id,
-            'user_id' => Auth::id()
+            'user_id' => Auth::id(),
+            'mount_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
         ])->label('MovementManager Mount');
 
         if ($this->village) {

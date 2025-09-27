@@ -17,21 +17,22 @@ class Battle extends Model implements Auditable
         'attacker_id',
         'defender_id',
         'village_id',
-        'battle_type',
-        'result',
+        'attacker_troops',
+        'defender_troops',
         'attacker_losses',
         'defender_losses',
-        'resources_looted',
-        'battle_data',
+        'loot',
+        'result',
         'occurred_at',
         'reference_number',
     ];
 
     protected $casts = [
+        'attacker_troops' => 'array',
+        'defender_troops' => 'array',
         'attacker_losses' => 'array',
         'defender_losses' => 'array',
-        'resources_looted' => 'array',
-        'battle_data' => 'array',
+        'loot' => 'array',
         'occurred_at' => 'datetime',
     ];
 

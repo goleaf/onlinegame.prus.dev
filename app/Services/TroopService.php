@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Log;
 
 class TroopService
 {
+    protected $rabbitMQ;
+
+    public function __construct()
+    {
+        $this->rabbitMQ = new RabbitMQService();
+    }
+
     public function canTrain($village, $unitType, $quantity = 1)
     {
         // Check if player has enough resources
@@ -83,6 +90,18 @@ class TroopService
                 'costs' => $costs,
                 'status' => 'in_progress',
             ]);
+
+            // Publish training start event to RabbitMQ
+            $this->rabbitMQ->publishPlayerAction(
+                $village->player_id,
+                'training_started',
+                [
+                    'unit_name' => $unitType->name,
+                    'quantity' => $quantity,
+                    'village_id' => $village->id,
+                    'completion_time' => now()->addSeconds($trainingTime)->toISOString(),
+                ]
+            );
 
             return true;
         } catch (\Exception $e) {
