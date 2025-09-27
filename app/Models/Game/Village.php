@@ -7,7 +7,6 @@ use App\Traits\Commentable;
 use App\ValueObjects\Coordinates;
 use App\ValueObjects\VillageResources;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;

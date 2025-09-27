@@ -290,11 +290,6 @@ class Quest extends Model implements Auditable
         ]);
     }
 }
-    }
-
-    public function scopeByDifficultyFilter($query, $difficulty = null)
-    {
-        return $query->when($difficulty, function ($q) use ($difficulty) {
             return $q->where('difficulty', $difficulty);
         });
     }
