@@ -76,6 +76,26 @@ class TestRabbitMQ extends Command
         ]);
         $this->line('✓ Published player attack event');
 
+        // Test spy events
+        $this->rabbitMQ->publishPlayerAction(1, 'spy_caught', [
+            'target_village_id' => 2,
+            'target_village_name' => 'Enemy Village',
+            'trap_level' => 5,
+            'spy_defense' => 25
+        ]);
+        $this->line('✓ Published spy caught event');
+
+        $this->rabbitMQ->publishPlayerAction(1, 'spy_success', [
+            'target_village_id' => 3,
+            'target_village_name' => 'Target Village',
+            'spy_data' => [
+                'population' => 150,
+                'resources' => ['wood' => 2000, 'clay' => 1500],
+                'buildings' => ['barracks' => 3, 'wall' => 2]
+            ]
+        ]);
+        $this->line('✓ Published spy success event');
+
         // Test building completion
         $this->rabbitMQ->publishBuildingCompleted(1, 1, 'barracks');
         $this->line('✓ Published building completion event');
