@@ -201,6 +201,6 @@ class Task extends Model
      */
     public function validateTaskData(array $data)
     {
-        return $this->validateTaskData($data);
+        return parent::validateTaskData($data);
     }
 }

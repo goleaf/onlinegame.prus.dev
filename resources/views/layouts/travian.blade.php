@@ -321,6 +321,8 @@
                            class="{{ request()->routeIs('game.reports') ? 'active' : '' }}">📊 Reports</a></li>
                     <li><a href="{{ route('game.map') }}"
                            class="{{ request()->routeIs('game.map') ? 'active' : '' }}">🗺️ Map</a></li>
+                    <li><a href="{{ route('admin.updater') }}"
+                           class="{{ request()->routeIs('admin.updater') ? 'active' : '' }}">🔄 Updater</a></li>
                     <li><a href="{{ route('game.statistics') }}"
                            class="{{ request()->routeIs('game.statistics') ? 'active' : '' }}">📈 Statistics</a></li>
                     <li><a href="{{ route('game.battles') }}"

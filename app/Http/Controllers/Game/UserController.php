@@ -53,57 +53,105 @@ class UserController extends CrudController
         $query = User::withGamePlayers()
             ->with($this->relationships);
 
-        // Apply filters
+        // Build filters array for eloquent filtering
+        $filters = [];
+
+        // Apply search filter
+        if ($request->has('search')) {
+            $searchTerm = $request->get('search');
+            $filters[] = [
+                'type' => '$or',
+                'value' => [
+                    ['target' => 'name', 'type' => '$like', 'value' => $searchTerm],
+                    ['target' => 'email', 'type' => '$like', 'value' => $searchTerm],
+                    ['target' => 'phone', 'type' => '$like', 'value' => $searchTerm],
+                    ['target' => 'phone_normalized', 'type' => '$like', 'value' => preg_replace('/[^0-9+]/', '', $searchTerm)],
+                    ['target' => 'phone_e164', 'type' => '$like', 'value' => preg_replace('/[^0-9+]/', '', $searchTerm)],
+                    [
+                        'type' => '$has',
+                        'target' => 'player',
+                        'value' => [
+                            ['target' => 'name', 'type' => '$like', 'value' => $searchTerm]
+                        ]
+                    ]
+                ]
+            ];
+        }
+
+        // Apply relationship filters
         if ($request->has('world_id')) {
-            $query->byWorld($request->get('world_id'));
+            $filters[] = [
+                'type' => '$has',
+                'target' => 'player',
+                'value' => [
+                    ['target' => 'world_id', 'type' => '$eq', 'value' => $request->get('world_id')]
+                ]
+            ];
         }
 
         if ($request->has('tribe')) {
-            $query->byTribe($request->get('tribe'));
+            $filters[] = [
+                'type' => '$has',
+                'target' => 'player',
+                'value' => [
+                    ['target' => 'tribe', 'type' => '$eq', 'value' => $request->get('tribe')]
+                ]
+            ];
         }
 
         if ($request->has('alliance_id')) {
-            $query->byAlliance($request->get('alliance_id'));
+            $filters[] = [
+                'type' => '$has',
+                'target' => 'player',
+                'value' => [
+                    ['target' => 'alliance_id', 'type' => '$eq', 'value' => $request->get('alliance_id')]
+                ]
+            ];
         }
 
         if ($request->has('is_online')) {
             if ($request->get('is_online') === 'true') {
-                $query->onlineUsers();
+                $filters[] = [
+                    'type' => '$has',
+                    'target' => 'player',
+                    'value' => [
+                        ['target' => 'is_online', 'type' => '$eq', 'value' => true]
+                    ]
+                ];
             } else {
-                $query->whereDoesntHave('player', function ($q) {
-                    $q
-                        ->where('is_online', true)
-                        ->where('last_active_at', '>=', now()->subMinutes(15));
-                });
+                $filters[] = [
+                    'type' => '$has',
+                    'target' => 'player',
+                    'value' => [
+                        ['target' => 'is_online', 'type' => '$eq', 'value' => false]
+                    ]
+                ];
             }
         }
 
         if ($request->has('is_active')) {
             if ($request->get('is_active') === 'true') {
-                $query->activeGameUsers();
+                $filters[] = [
+                    'type' => '$has',
+                    'target' => 'player',
+                    'value' => [
+                        ['target' => 'is_active', 'type' => '$eq', 'value' => true]
+                    ]
+                ];
             } else {
-                $query->whereDoesntHave('player', function ($q) {
-                    $q->where('is_active', true);
-                });
+                $filters[] = [
+                    'type' => '$has',
+                    'target' => 'player',
+                    'value' => [
+                        ['target' => 'is_active', 'type' => '$eq', 'value' => false]
+                    ]
+                ];
             }
         }
 
-        // Apply search
-        if ($request->has('search')) {
-            $searchTerm = $request->get('search');
-            $cleanSearchTerm = preg_replace('/[^0-9+]/', '', $searchTerm);
-
-            $query->where(function ($q) use ($searchTerm, $cleanSearchTerm) {
-                $q
-                    ->where('name', 'like', "%{$searchTerm}%")
-                    ->orWhere('email', 'like', "%{$searchTerm}%")
-                    ->orWhere('phone', 'like', "%{$searchTerm}%")
-                    ->orWhere('phone_normalized', 'like', "%{$cleanSearchTerm}%")
-                    ->orWhere('phone_e164', 'like', "%{$cleanSearchTerm}%")
-                    ->orWhereHas('player', function ($playerQuery) use ($searchTerm) {
-                        $playerQuery->where('name', 'like', "%{$searchTerm}%");
-                    });
-            });
+        // Apply eloquent filtering
+        if (!empty($filters)) {
+            $query = $query->filter($filters);
         }
 
         // Apply sorting
