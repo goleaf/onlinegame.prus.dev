@@ -320,8 +320,8 @@ class User extends Authenticatable implements Auditable
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
-            Filter::field('name', ['$eq', '$contains']),
-            Filter::field('email', ['$eq', '$contains']),
+            Filter::field('name', ['$eq', '$like']),
+            Filter::field('email', ['$eq', '$like']),
             Filter::field('phone', ['$eq', '$contains']),
             Filter::field('phone_country', ['$eq']),
             Filter::field('phone_normalized', ['$eq', '$contains']),
