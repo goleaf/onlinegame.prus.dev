@@ -4,7 +4,6 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Traits\Commenter;
-// use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -24,7 +23,6 @@ class User extends Authenticatable implements Auditable
     use AuditableTrait;
     use Lift;
     use HasReference;
-    // use Filterable;
 
     // Laravel Lift typed properties
     public int $id;
