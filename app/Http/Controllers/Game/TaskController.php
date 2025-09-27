@@ -18,21 +18,18 @@ class TaskController extends CrudController
 
     protected Model $model;
 
-    protected function validationRules(): array
-    {
-        return [
-            'title' => ['required', 'string', 'max:255', new Username(), new Clean],
-            'description' => ['nullable', 'string', new Clean],
-            'type' => 'required|string|in:building,combat,resource,exploration,alliance',
-            'status' => 'required|string|in:available,active,completed,expired',
-            'progress' => 'integer|min:0|max:100',
-            'target' => 'required|integer|min:1',
-            'rewards' => 'nullable|json',
-            'deadline' => 'nullable|date|after:now',
-            'world_id' => 'required|exists:worlds,id',
-            'player_id' => 'required|exists:players,id',
-        ];
-    }
+    protected array $validationRules = [
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'type' => 'required|string|in:building,combat,resource,exploration,alliance',
+        'status' => 'required|string|in:available,active,completed,expired',
+        'progress' => 'integer|min:0|max:100',
+        'target' => 'required|integer|min:1',
+        'rewards' => 'nullable|json',
+        'deadline' => 'nullable|date|after:now',
+        'world_id' => 'required|exists:worlds,id',
+        'player_id' => 'required|exists:players,id',
+    ];
 
     protected array $searchableFields = ['title', 'description', 'type'];
     protected array $relationships = ['player', 'world'];

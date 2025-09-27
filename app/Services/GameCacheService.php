@@ -2,436 +2,443 @@
 
 namespace App\Services;
 
+use App\Models\Game\Player;
+use App\Models\Game\Village;
+use App\Models\Game\Alliance;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Log;
 
 class GameCacheService
 {
-    /**
-     * Cache keys for different game data types
-     */
-    const CACHE_KEYS = [
-        'player_data' => 'game:player:',
-        'village_data' => 'game:village:',
-        'alliance_data' => 'game:alliance:',
-        'map_data' => 'game:map:',
-        'battle_data' => 'game:battle:',
-        'resource_data' => 'game:resource:',
-        'statistics' => 'game:stats:',
-        'leaderboard' => 'game:leaderboard:',
-    ];
+    protected $defaultTtl = 3600; // 1 hour
+    protected $shortTtl = 300; // 5 minutes
+    protected $longTtl = 86400; // 24 hours
 
     /**
-     * Cache durations in seconds
+     * Cache player data
      */
-    const CACHE_DURATIONS = [
-        'player_data' => 300,  // 5 minutes
-        'village_data' => 60,  // 1 minute
-        'alliance_data' => 600,  // 10 minutes
-        'map_data' => 1800,  // 30 minutes
-        'battle_data' => 120,  // 2 minutes
-        'resource_data' => 30,  // 30 seconds
-        'statistics' => 3600,  // 1 hour
-        'leaderboard' => 1800,  // 30 minutes
-    ];
-
-    /**
-     * Get player data with caching
-     */
-    public static function getPlayerData(int $playerId, callable $callback = null)
+    public function cachePlayerData(Player $player): bool
     {
-        $cacheKey = self::CACHE_KEYS['player_data'] . $playerId;
-
-        return Cache::remember($cacheKey, self::CACHE_DURATIONS['player_data'], function () use ($playerId, $callback) {
-            if ($callback) {
-                return $callback($playerId);
-            }
-
-            return \App\Models\Game\Player::with(['villages', 'alliance'])
-                ->find($playerId);
-        });
-    }
-
-    /**
-     * Get village data with caching
-     */
-    public static function getVillageData(int $villageId, callable $callback = null)
-    {
-        $cacheKey = self::CACHE_KEYS['village_data'] . $villageId;
-
-        return Cache::remember($cacheKey, self::CACHE_DURATIONS['village_data'], function () use ($villageId, $callback) {
-            if ($callback) {
-                return $callback($villageId);
-            }
-
-            return \App\Models\Game\Village::with(['buildings', 'units', 'player'])
-                ->find($villageId);
-        });
-    }
-
-    /**
-     * Get alliance data with caching
-     */
-    public static function getAllianceData(int $allianceId, callable $callback = null)
-    {
-        $cacheKey = self::CACHE_KEYS['alliance_data'] . $allianceId;
-
-        return Cache::remember($cacheKey, self::CACHE_DURATIONS['alliance_data'], function () use ($allianceId, $callback) {
-            if ($callback) {
-                return $callback($allianceId);
-            }
-
-            return \App\Models\Game\Alliance::with(['members'])
-                ->find($allianceId);
-        });
-    }
-
-    /**
-     * Get map data with caching
-     */
-    public static function getMapData(float $lat, float $lon, int $radius = 10)
-    {
-        $cacheKey = self::CACHE_KEYS['map_data'] . round($lat, 2) . '_' . round($lon, 2) . '_' . $radius;
-
-        return Cache::remember($cacheKey, self::CACHE_DURATIONS['map_data'], function () use ($lat, $lon, $radius) {
-            return \App\Models\Game\Village::whereBetween('lat', [$lat - $radius, $lat + $radius])
-                ->whereBetween('lon', [$lon - $radius, $lon + $radius])
-                ->with(['player'])
-                ->get();
-        });
-    }
-
-    /**
-     * Get battle data with caching
-     */
-    public static function getBattleData(int $battleId, callable $callback = null)
-    {
-        $cacheKey = self::CACHE_KEYS['battle_data'] . $battleId;
-
-        return Cache::remember($cacheKey, self::CACHE_DURATIONS['battle_data'], function () use ($battleId, $callback) {
-            if ($callback) {
-                return $callback($battleId);
-            }
-
-            return \App\Models\Game\Battle::with(['attacker', 'defender', 'attackerVillage', 'defenderVillage'])
-                ->find($battleId);
-        });
-    }
-
-    /**
-     * Get resource data with caching
-     */
-    public static function getResourceData(int $villageId)
-    {
-        $cacheKey = self::CACHE_KEYS['resource_data'] . $villageId;
-
-        return Cache::remember($cacheKey, self::CACHE_DURATIONS['resource_data'], function () use ($villageId) {
-            $village = \App\Models\Game\Village::find($villageId);
-
-            if (!$village) {
-                return null;
-            }
-
-            return [
-                'wood' => $village->wood,
-                'clay' => $village->clay,
-                'iron' => $village->iron,
-                'crop' => $village->crop,
-                'storage_capacity' => $village->storage_capacity,
-                'production_rate' => $village->production_rate,
-                'last_updated' => $village->updated_at,
+        try {
+            $cacheKey = "player_data_{$player->id}";
+            $data = [
+                'player' => $player->toArray(),
+                'villages' => $player->villages()->with(['buildings', 'resources', 'troops'])->get()->toArray(),
+                'alliance' => $player->alliance ? $player->alliance->toArray() : null,
+                'cached_at' => now()->toISOString(),
             ];
-        });
-    }
 
-    /**
-     * Get game statistics with caching
-     */
-    public static function getGameStatistics(string $type = 'general')
-    {
-        $cacheKey = self::CACHE_KEYS['statistics'] . $type;
+            Cache::put($cacheKey, $data, $this->defaultTtl);
 
-        return Cache::remember($cacheKey, self::CACHE_DURATIONS['statistics'], function () use ($type) {
-            switch ($type) {
-                case 'players':
-                    return [
-                        'total_players' => \App\Models\Game\Player::count(),
-                        'active_players' => \App\Models\Game\Player::where('last_activity_at', '>=', now()->subDays(7))->count(),
-                        'new_players_today' => \App\Models\Game\Player::whereDate('created_at', today())->count(),
-                    ];
+            Log::info('Player data cached', [
+                'player_id' => $player->id,
+                'cache_key' => $cacheKey,
+            ]);
 
-                case 'villages':
-                    return [
-                        'total_villages' => \App\Models\Game\Village::count(),
-                        'active_villages' => \App\Models\Game\Village::where('updated_at', '>=', now()->subDays(1))->count(),
-                        'average_villages_per_player' => \App\Models\Game\Player::withCount('villages')->avg('villages_count'),
-                    ];
+            return true;
 
-                case 'alliances':
-                    return [
-                        'total_alliances' => \App\Models\Game\Alliance::count(),
-                        'active_alliances' => \App\Models\Game\Alliance::where('updated_at', '>=', now()->subDays(7))->count(),
-                        'average_members_per_alliance' => \App\Models\Game\Alliance::withCount('members')->avg('members_count'),
-                    ];
+        } catch (\Exception $e) {
+            Log::error('Failed to cache player data', [
+                'player_id' => $player->id,
+                'error' => $e->getMessage(),
+            ]);
 
-                case 'battles':
-                    return [
-                        'total_battles' => \App\Models\Game\Battle::count(),
-                        'battles_today' => \App\Models\Game\Battle::whereDate('created_at', today())->count(),
-                        'battles_this_week' => \App\Models\Game\Battle::where('created_at', '>=', now()->subWeek())->count(),
-                    ];
-
-                default:
-                    return [
-                        'players' => self::getGameStatistics('players'),
-                        'villages' => self::getGameStatistics('villages'),
-                        'alliances' => self::getGameStatistics('alliances'),
-                        'battles' => self::getGameStatistics('battles'),
-                    ];
-            }
-        });
-    }
-
-    /**
-     * Get leaderboard data with caching
-     */
-    public static function getLeaderboard(string $type = 'points', int $limit = 100)
-    {
-        $cacheKey = self::CACHE_KEYS['leaderboard'] . $type . '_' . $limit;
-
-        return Cache::remember($cacheKey, self::CACHE_DURATIONS['leaderboard'], function () use ($type, $limit) {
-            switch ($type) {
-                case 'points':
-                    return \App\Models\Game\Player::orderBy('points', 'desc')
-                        ->limit($limit)
-                        ->get(['id', 'name', 'points', 'rank']);
-
-                case 'villages':
-                    return \App\Models\Game\Player::withCount('villages')
-                        ->orderBy('villages_count', 'desc')
-                        ->limit($limit)
-                        ->get(['id', 'name', 'villages_count']);
-
-                case 'alliances':
-                    return \App\Models\Game\Alliance::withCount('members')
-                        ->orderBy('members_count', 'desc')
-                        ->limit($limit)
-                        ->get(['id', 'name', 'members_count']);
-
-                default:
-                    return [];
-            }
-        });
-    }
-
-    /**
-     * Invalidate player cache
-     */
-    public static function invalidatePlayerCache(int $playerId): void
-    {
-        $cacheKey = self::CACHE_KEYS['player_data'] . $playerId;
-        Cache::forget($cacheKey);
-
-        // Also invalidate related caches
-        self::invalidateVillageCachesForPlayer($playerId);
-        self::invalidateStatisticsCache();
-    }
-
-    /**
-     * Invalidate village cache
-     */
-    public static function invalidateVillageCache(int $villageId): void
-    {
-        $cacheKey = self::CACHE_KEYS['village_data'] . $villageId;
-        Cache::forget($cacheKey);
-
-        $resourceCacheKey = self::CACHE_KEYS['resource_data'] . $villageId;
-        Cache::forget($resourceCacheKey);
-
-        self::invalidateStatisticsCache();
-    }
-
-    /**
-     * Invalidate alliance cache
-     */
-    public static function invalidateAllianceCache(int $allianceId): void
-    {
-        $cacheKey = self::CACHE_KEYS['alliance_data'] . $allianceId;
-        Cache::forget($cacheKey);
-
-        self::invalidateStatisticsCache();
-    }
-
-    /**
-     * Invalidate battle cache
-     */
-    public static function invalidateBattleCache(int $battleId): void
-    {
-        $cacheKey = self::CACHE_KEYS['battle_data'] . $battleId;
-        Cache::forget($cacheKey);
-
-        self::invalidateStatisticsCache();
-    }
-
-    /**
-     * Invalidate village caches for a specific player
-     */
-    private static function invalidateVillageCachesForPlayer(int $playerId): void
-    {
-        $villages = \App\Models\Game\Village::where('player_id', $playerId)->pluck('id');
-
-        foreach ($villages as $villageId) {
-            self::invalidateVillageCache($villageId);
+            return false;
         }
     }
 
     /**
-     * Invalidate statistics cache
+     * Cache village data
      */
-    public static function invalidateStatisticsCache(): void
+    public function cacheVillageData(Village $village): bool
     {
-        $patterns = [
-            self::CACHE_KEYS['statistics'] . '*',
-            self::CACHE_KEYS['leaderboard'] . '*',
-        ];
+        try {
+            $cacheKey = "village_data_{$village->id}";
+            $data = [
+                'village' => $village->toArray(),
+                'buildings' => $village->buildings()->with('buildingType')->get()->toArray(),
+                'resources' => $village->resources()->get()->toArray(),
+                'troops' => $village->troops()->with('unitType')->get()->toArray(),
+                'cached_at' => now()->toISOString(),
+            ];
 
-        foreach ($patterns as $pattern) {
-            if (Cache::getStore() instanceof \Illuminate\Cache\RedisStore) {
-                Redis::del(Redis::keys($pattern));
-            } else {
-                // For other cache stores, we'll need to clear all stats
-                Cache::forget(self::CACHE_KEYS['statistics'] . 'general');
-                Cache::forget(self::CACHE_KEYS['statistics'] . 'players');
-                Cache::forget(self::CACHE_KEYS['statistics'] . 'villages');
-                Cache::forget(self::CACHE_KEYS['statistics'] . 'alliances');
-                Cache::forget(self::CACHE_KEYS['statistics'] . 'battles');
-            }
+            Cache::put($cacheKey, $data, $this->defaultTtl);
+
+            Log::info('Village data cached', [
+                'village_id' => $village->id,
+                'cache_key' => $cacheKey,
+            ]);
+
+            return true;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to cache village data', [
+                'village_id' => $village->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
         }
     }
 
     /**
-     * Warm up cache for frequently accessed data
+     * Cache alliance data
      */
-    public static function warmUpCache(): void
+    public function cacheAllianceData(Alliance $alliance): bool
     {
-        // Warm up top players
-        self::getLeaderboard('points', 50);
+        try {
+            $cacheKey = "alliance_data_{$alliance->id}";
+            $data = [
+                'alliance' => $alliance->toArray(),
+                'members' => $alliance->members()->with('user')->get()->toArray(),
+                'statistics' => $this->getAllianceStatistics($alliance),
+                'cached_at' => now()->toISOString(),
+            ];
 
-        // Warm up top alliances
-        self::getLeaderboard('alliances', 20);
+            Cache::put($cacheKey, $data, $this->defaultTtl);
 
-        // Warm up general statistics
-        self::getGameStatistics('general');
+            Log::info('Alliance data cached', [
+                'alliance_id' => $alliance->id,
+                'cache_key' => $cacheKey,
+            ]);
 
-        // Warm up active players
-        $activePlayers = \App\Models\Game\Player::where('last_activity_at', '>=', now()->subHours(1))
-            ->limit(100)
-            ->pluck('id');
+            return true;
 
-        foreach ($activePlayers as $playerId) {
-            self::getPlayerData($playerId);
+        } catch (\Exception $e) {
+            Log::error('Failed to cache alliance data', [
+                'alliance_id' => $alliance->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Get cached player data
+     */
+    public function getCachedPlayerData(int $playerId): ?array
+    {
+        try {
+            $cacheKey = "player_data_{$playerId}";
+            $data = Cache::get($cacheKey);
+
+            if ($data) {
+                Log::info('Player data retrieved from cache', [
+                    'player_id' => $playerId,
+                    'cache_key' => $cacheKey,
+                ]);
+            }
+
+            return $data;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to get cached player data', [
+                'player_id' => $playerId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Get cached village data
+     */
+    public function getCachedVillageData(int $villageId): ?array
+    {
+        try {
+            $cacheKey = "village_data_{$villageId}";
+            $data = Cache::get($cacheKey);
+
+            if ($data) {
+                Log::info('Village data retrieved from cache', [
+                    'village_id' => $villageId,
+                    'cache_key' => $cacheKey,
+                ]);
+            }
+
+            return $data;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to get cached village data', [
+                'village_id' => $villageId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Get cached alliance data
+     */
+    public function getCachedAllianceData(int $allianceId): ?array
+    {
+        try {
+            $cacheKey = "alliance_data_{$allianceId}";
+            $data = Cache::get($cacheKey);
+
+            if ($data) {
+                Log::info('Alliance data retrieved from cache', [
+                    'alliance_id' => $allianceId,
+                    'cache_key' => $cacheKey,
+                ]);
+            }
+
+            return $data;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to get cached alliance data', [
+                'alliance_id' => $allianceId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Clear player cache
+     */
+    public function clearPlayerCache(int $userId): bool
+    {
+        try {
+            $player = Player::where('user_id', $userId)->first();
+            if (!$player) {
+                return false;
+            }
+
+            $cacheKey = "player_data_{$player->id}";
+            Cache::forget($cacheKey);
+
+            Log::info('Player cache cleared', [
+                'user_id' => $userId,
+                'player_id' => $player->id,
+                'cache_key' => $cacheKey,
+            ]);
+
+            return true;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to clear player cache', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Clear village cache
+     */
+    public function clearVillageCache(int $villageId): bool
+    {
+        try {
+            $cacheKey = "village_data_{$villageId}";
+            Cache::forget($cacheKey);
+
+            Log::info('Village cache cleared', [
+                'village_id' => $villageId,
+                'cache_key' => $cacheKey,
+            ]);
+
+            return true;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to clear village cache', [
+                'village_id' => $villageId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Clear alliance cache
+     */
+    public function clearAllianceCache(int $allianceId): bool
+    {
+        try {
+            $cacheKey = "alliance_data_{$allianceId}";
+            Cache::forget($cacheKey);
+
+            Log::info('Alliance cache cleared', [
+                'alliance_id' => $allianceId,
+                'cache_key' => $cacheKey,
+            ]);
+
+            return true;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to clear alliance cache', [
+                'alliance_id' => $allianceId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Cache game statistics
+     */
+    public function cacheGameStatistics(array $statistics): bool
+    {
+        try {
+            $cacheKey = 'game_statistics';
+            $data = [
+                'statistics' => $statistics,
+                'cached_at' => now()->toISOString(),
+            ];
+
+            Cache::put($cacheKey, $data, $this->shortTtl);
+
+            Log::info('Game statistics cached', [
+                'cache_key' => $cacheKey,
+            ]);
+
+            return true;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to cache game statistics', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Get cached game statistics
+     */
+    public function getCachedGameStatistics(): ?array
+    {
+        try {
+            $cacheKey = 'game_statistics';
+            $data = Cache::get($cacheKey);
+
+            if ($data) {
+                Log::info('Game statistics retrieved from cache', [
+                    'cache_key' => $cacheKey,
+                ]);
+            }
+
+            return $data;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to get cached game statistics', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
         }
     }
 
     /**
      * Get cache statistics
      */
-    public static function getCacheStatistics(): array
-    {
-        $stats = [];
-
-        foreach (self::CACHE_KEYS as $type => $prefix) {
-            if (Cache::getStore() instanceof \Illuminate\Cache\RedisStore) {
-                $keys = Redis::keys($prefix . '*');
-                $stats[$type] = count($keys);
-            } else {
-                $stats[$type] = 'N/A (not Redis)';
-            }
-        }
-
-        return [
-            'cache_stats' => $stats,
-            'cache_store' => get_class(Cache::getStore()),
-            'redis_memory' => Cache::getStore() instanceof \Illuminate\Cache\RedisStore
-                ? Redis::info('memory')
-                : null,
-            'cache_hit_ratio' => self::getCacheHitRatio(),
-            'performance_metrics' => self::getPerformanceMetrics(),
-        ];
-    }
-
-    /**
-     * Get cache hit ratio
-     */
-    private static function getCacheHitRatio(): array
+    public function getCacheStats(): array
     {
         try {
-            if (Cache::getStore() instanceof \Illuminate\Cache\RedisStore) {
-                $info = Redis::info('stats');
-                $hits = $info['keyspace_hits'] ?? 0;
-                $misses = $info['keyspace_misses'] ?? 0;
-                $total = $hits + $misses;
-                
-                return [
-                    'hits' => $hits,
-                    'misses' => $misses,
-                    'total' => $total,
-                    'hit_ratio' => $total > 0 ? round(($hits / $total) * 100, 2) : 0,
-                ];
-            }
+            $stats = [
+                'cache_driver' => config('cache.default'),
+                'cache_prefix' => config('cache.prefix'),
+                'memory_usage' => memory_get_usage(true),
+                'memory_peak' => memory_get_peak_usage(true),
+                'cache_hits' => Cache::getStore()->getStats()['hits'] ?? 0,
+                'cache_misses' => Cache::getStore()->getStats()['misses'] ?? 0,
+            ];
+
+            return $stats;
+
         } catch (\Exception $e) {
-            // Fallback for non-Redis stores
+            Log::error('Failed to get cache statistics', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return [];
         }
-
-        return [
-            'hits' => 0,
-            'misses' => 0,
-            'total' => 0,
-            'hit_ratio' => 0,
-        ];
     }
 
     /**
-     * Get performance metrics
+     * Cleanup cache
      */
-    private static function getPerformanceMetrics(): array
+    public function cleanup(): array
     {
-        return [
-            'memory_usage' => memory_get_usage(true),
-            'peak_memory' => memory_get_peak_usage(true),
-            'execution_time' => microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'],
-            'cache_operations' => self::getCacheOperationCount(),
-        ];
-    }
+        try {
+            $cleaned = [
+                'player_cache_cleared' => 0,
+                'village_cache_cleared' => 0,
+                'alliance_cache_cleared' => 0,
+                'statistics_cache_cleared' => 0,
+            ];
 
-    /**
-     * Get cache operation count
-     */
-    private static function getCacheOperationCount(): array
-    {
-        static $operations = [
-            'reads' => 0,
-            'writes' => 0,
-            'deletes' => 0,
-        ];
-
-        return $operations;
-    }
-
-    /**
-     * Clear all game cache
-     */
-    public static function clearAllGameCache(): void
-    {
-        foreach (self::CACHE_KEYS as $type => $prefix) {
-            if (Cache::getStore() instanceof \Illuminate\Cache\RedisStore) {
-                $keys = Redis::keys($prefix . '*');
-                if (!empty($keys)) {
-                    Redis::del($keys);
+            // Clear old player caches
+            $playerKeys = Cache::getStore()->getStats()['keys'] ?? [];
+            foreach ($playerKeys as $key) {
+                if (str_starts_with($key, 'player_data_')) {
+                    Cache::forget($key);
+                    $cleaned['player_cache_cleared']++;
                 }
             }
-        }
 
-        \Log::info('All game cache cleared');
+            // Clear old village caches
+            foreach ($playerKeys as $key) {
+                if (str_starts_with($key, 'village_data_')) {
+                    Cache::forget($key);
+                    $cleaned['village_cache_cleared']++;
+                }
+            }
+
+            // Clear old alliance caches
+            foreach ($playerKeys as $key) {
+                if (str_starts_with($key, 'alliance_data_')) {
+                    Cache::forget($key);
+                    $cleaned['alliance_cache_cleared']++;
+                }
+            }
+
+            // Clear statistics cache
+            Cache::forget('game_statistics');
+            $cleaned['statistics_cache_cleared'] = 1;
+
+            Log::info('Cache cleanup completed', $cleaned);
+
+            return $cleaned;
+
+        } catch (\Exception $e) {
+            Log::error('Failed to cleanup cache', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return [];
+        }
+    }
+
+    /**
+     * Get alliance statistics
+     */
+    private function getAllianceStatistics(Alliance $alliance): array
+    {
+        try {
+            return [
+                'member_count' => $alliance->members()->count(),
+                'total_population' => $alliance->members()->sum('population'),
+                'total_points' => $alliance->members()->sum('points'),
+                'average_points' => $alliance->members()->avg('points'),
+                'created_at' => $alliance->created_at,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Failed to get alliance statistics', [
+                'alliance_id' => $alliance->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [];
+        }
     }
 }
