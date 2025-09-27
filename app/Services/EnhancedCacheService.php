@@ -21,7 +21,7 @@ class EnhancedCacheService
         $this->defaultTtl = 3600;  // 1 hour default
         $this->compressionOptions = [
             'serializer' => 'igbinary',
-            'compression' => 'lzf',
+            'compression' => function_exists('lzf_compress') ? 'lzf' : 'none',
         ];
     }
 

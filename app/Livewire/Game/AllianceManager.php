@@ -137,15 +137,19 @@ class AllianceManager extends Component
 
     public function selectAlliance($allianceId)
     {
-        $this->selectedAlliance = Alliance::with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status'])
-            ->selectRaw('
-                alliances.*,
-                (SELECT COUNT(*) FROM players p WHERE p.alliance_id = alliances.id) as member_count,
-                (SELECT SUM(points) FROM players p2 WHERE p2.alliance_id = alliances.id) as total_points,
-                (SELECT AVG(points) FROM players p3 WHERE p3.alliance_id = alliances.id) as avg_points,
-                (SELECT MAX(points) FROM players p4 WHERE p4.alliance_id = alliances.id) as max_points
-            ')
-            ->find($allianceId);
+        // Use SmartCache for selected alliance data with automatic optimization
+        $selectedAllianceCacheKey = "alliance_{$allianceId}_detailed";
+        $this->selectedAlliance = SmartCache::remember($selectedAllianceCacheKey, now()->addMinutes(5), function () use ($allianceId) {
+            return Alliance::with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status'])
+                ->selectRaw('
+                    alliances.*,
+                    (SELECT COUNT(*) FROM players p WHERE p.alliance_id = alliances.id) as member_count,
+                    (SELECT SUM(points) FROM players p2 WHERE p2.alliance_id = alliances.id) as total_points,
+                    (SELECT AVG(points) FROM players p3 WHERE p3.alliance_id = alliances.id) as avg_points,
+                    (SELECT MAX(points) FROM players p4 WHERE p4.alliance_id = alliances.id) as max_points
+                ')
+                ->find($allianceId);
+        });
         $this->showDetails = true;
         $this->addNotification('Alliance selected', 'info');
     }
