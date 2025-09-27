@@ -1143,4 +1143,93 @@ class AllianceManager extends Component
             'expires_at' => null,
         ];
     }
+
+    /**
+     * Initialize alliance real-time features
+     */
+    public function initializeAllianceRealTime()
+    {
+        try {
+            $player = Player::where('user_id', Auth::id())->first();
+            if ($player) {
+                // Initialize real-time features for the player
+                GameIntegrationService::initializeUserRealTime($player->user_id);
+                
+                $this->dispatch('alliance-initialized', [
+                    'message' => 'Alliance manager real-time features activated',
+                    'player_id' => $player->id,
+                    'alliance_id' => $player->alliance_id,
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to initialize alliance real-time features: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Join alliance with real-time integration
+     */
+    public function joinAllianceWithIntegration($allianceId)
+    {
+        try {
+            $this->joinAlliance($allianceId);
+
+            $player = Player::where('user_id', Auth::id())->first();
+            if ($player) {
+                // Send notification about alliance join
+                GameNotificationService::sendNotification(
+                    $player->user_id,
+                    'alliance_joined',
+                    [
+                        'player_id' => $player->id,
+                        'alliance_id' => $allianceId,
+                        'timestamp' => now()->toISOString(),
+                    ]
+                );
+
+                $this->dispatch('alliance-joined', [
+                    'message' => 'Alliance joined successfully with notifications',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to join alliance: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Post message with real-time integration
+     */
+    public function postMessageWithIntegration()
+    {
+        try {
+            $this->postMessage();
+
+            $player = Player::where('user_id', Auth::id())->first();
+            if ($player && $player->alliance_id) {
+                // Send notification about alliance message
+                GameNotificationService::sendNotification(
+                    $player->user_id,
+                    'alliance_message_posted',
+                    [
+                        'player_id' => $player->id,
+                        'alliance_id' => $player->alliance_id,
+                        'message_type' => $this->messageForm['message_type'],
+                        'timestamp' => now()->toISOString(),
+                    ]
+                );
+
+                $this->dispatch('message-posted', [
+                    'message' => 'Alliance message posted successfully with notifications',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', [
+                'message' => 'Failed to post alliance message: ' . $e->getMessage(),
+            ]);
+        }
+    }
 }
