@@ -140,6 +140,8 @@ class GameApiController extends Controller
      *   "success": false,
      *   "message": "Player not found"
      * }
+     * 
+     * @tag Village Management
      */
     public function createVillage(Request $request): JsonResponse
     {
@@ -221,6 +223,8 @@ class GameApiController extends Controller
      *   "success": false,
      *   "message": "Village not found"
      * }
+     * 
+     * @tag Village Management
      */
     public function upgradeBuilding(Request $request, int $id): JsonResponse
     {
@@ -306,6 +310,8 @@ class GameApiController extends Controller
      *   "success": false,
      *   "message": "Village not found"
      * }
+     * 
+     * @tag Village Management
      */
     public function getVillage(Request $request, int $id): JsonResponse
     {
@@ -360,6 +366,8 @@ class GameApiController extends Controller
      *   "success": false,
      *   "message": "Player not found"
      * }
+     * 
+     * @tag Player Management
      */
     public function getPlayerStats(Request $request): JsonResponse
     {

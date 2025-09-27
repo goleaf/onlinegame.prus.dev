@@ -29,6 +29,11 @@ Route::get('/profile', function () {
     return view('user-profile');
 })->middleware('auth');
 
+// Phone search route
+Route::get('/phone-search', function () {
+    return view('phone-search');
+})->middleware('auth');
+
 // Include auth routes
 require __DIR__ . '/auth.php';
 

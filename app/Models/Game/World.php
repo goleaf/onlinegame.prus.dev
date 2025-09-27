@@ -12,6 +12,15 @@ class World extends Model
 {
     use HasFactory;
     use HasNotables;
+    use Lift;
+
+    // Laravel Lift typed properties
+    public int $id;
+    public string $name;
+    public ?string $description;
+    public bool $is_active;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
 
     protected $fillable = [
         'name',
