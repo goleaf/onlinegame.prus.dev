@@ -32,6 +32,15 @@ class Hero extends Model
         'is_active' => 'boolean',
     ];
 
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+    protected $referenceTemplate = [
+        'format' => 'HERO-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+    protected $referencePrefix = 'HERO';
+
     public function player(): BelongsTo
     {
         return $this->belongsTo(Player::class);

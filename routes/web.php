@@ -95,3 +95,8 @@ Route::get('/game-simple', function () {
 
 // Laravel Decomposer route (commented out due to missing controller)
 // Route::get('decompose', '\Lubusin\Decomposer\Controllers\DecomposerController@index');
+
+// Admin routes
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/updater', App\Livewire\Admin\UpdaterComponent::class)->name('updater');
+});
