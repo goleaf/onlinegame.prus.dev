@@ -9,11 +9,15 @@ This index is automatically generated and lists all documentation files:
       * [Documentation: AnalyzeSlowQueries.php](app/Console/Commands/AnalyzeSlowQueries.md)
       * [Documentation: CacheEvictCommand.php](app/Console/Commands/CacheEvictCommand.md)
       * [Documentation: FormatCodeCommand.php](app/Console/Commands/FormatCodeCommand.md)
+      * [Documentation: GamePerformanceCommand.php](app/Console/Commands/GamePerformanceCommand.md)
       * [Documentation: IntrospectAnalyzeCommand.php](app/Console/Commands/IntrospectAnalyzeCommand.md)
       * [Documentation: Laravel129FeaturesCommand.php](app/Console/Commands/Laravel129FeaturesCommand.md)
+      * [Documentation: PopulateGameCommand.php](app/Console/Commands/PopulateGameCommand.md)
       * [Documentation: PopulateVillageGeographicData.php](app/Console/Commands/PopulateVillageGeographicData.md)
       * [Documentation: ProcessGameTick.php](app/Console/Commands/ProcessGameTick.md)
       * [Documentation: SetupMySQLPerformance.php](app/Console/Commands/SetupMySQLPerformance.md)
+      * [Documentation: StartRabbitMQConsumer.php](app/Console/Commands/StartRabbitMQConsumer.md)
+      * [Documentation: TestRabbitMQ.php](app/Console/Commands/TestRabbitMQ.md)
   * **Http/**
     * **Controllers/**
       * **Auth/**
