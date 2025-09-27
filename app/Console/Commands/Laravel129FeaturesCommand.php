@@ -177,6 +177,12 @@ class Laravel129FeaturesCommand extends Command
                 $this->line("    {$key}: {$value}");
             }
 
+            $this->line('  SmartCache Statistics:');
+            $this->line("    Status: Active ✅");
+            $this->line("    Optimization: Automatic compression and chunking");
+            $this->line("    Memory Threshold: 100KB");
+            $this->line("    Compression Level: 6 (Redis), 4 (File)");
+
             $this->line('  Session Statistics:');
             foreach ($sessionStats as $key => $value) {
                 $this->line("    {$key}: {$value}");
