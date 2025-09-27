@@ -241,13 +241,25 @@ class AllianceManager extends Component
         $selectedAllianceCacheKey = "alliance_{$allianceId}_detailed";
         $this->selectedAlliance = SmartCache::remember($selectedAllianceCacheKey, now()->addMinutes(5), function () use ($allianceId) {
             return Alliance::with(['members:id,name,alliance_id,points,created_at', 'invites:id,alliance_id,player_id,status', 'applications:id,alliance_id,player_id,status'])
-                ->selectRaw('
-                    alliances.*,
-                    (SELECT COUNT(*) FROM players p WHERE p.alliance_id = alliances.id) as member_count,
-                    (SELECT SUM(points) FROM players p2 WHERE p2.alliance_id = alliances.id) as total_points,
-                    (SELECT AVG(points) FROM players p3 WHERE p3.alliance_id = alliances.id) as avg_points,
-                    (SELECT MAX(points) FROM players p4 WHERE p4.alliance_id = alliances.id) as max_points
-                ')
+                ->select([
+                    'alliances.*',
+                    QE::select(QE::count(c('id')))
+                        ->from('players', 'p')
+                        ->whereColumn('p.alliance_id', c('alliances.id'))
+                        ->as('member_count'),
+                    QE::select(QE::sum(c('points')))
+                        ->from('players', 'p2')
+                        ->whereColumn('p2.alliance_id', c('alliances.id'))
+                        ->as('total_points'),
+                    QE::select(QE::avg(c('points')))
+                        ->from('players', 'p3')
+                        ->whereColumn('p3.alliance_id', c('alliances.id'))
+                        ->as('avg_points'),
+                    QE::select(QE::max(c('points')))
+                        ->from('players', 'p4')
+                        ->whereColumn('p4.alliance_id', c('alliances.id'))
+                        ->as('max_points')
+                ])
                 ->find($allianceId);
         });
         $this->showDetails = true;
@@ -1045,24 +1057,5 @@ class AllianceManager extends Component
         })->count();
 
         return $totalMembers > 0 ? round(($membersWithPhone / $totalMembers) * 100, 2) : 0;
-    }
-
-    public function getLogBorderColor($action)
-    {
-        $colors = [
-            'member_joined' => 'border-green-400',
-            'member_left' => 'border-yellow-400',
-            'member_kicked' => 'border-red-400',
-            'member_promoted' => 'border-blue-400',
-            'member_demoted' => 'border-orange-400',
-            'diplomacy_proposed' => 'border-purple-400',
-            'diplomacy_accepted' => 'border-green-400',
-            'diplomacy_declined' => 'border-red-400',
-            'war_declared' => 'border-red-600',
-            'war_ended' => 'border-gray-400',
-            'message_posted' => 'border-blue-400',
-        ];
-
-        return $colors[$action] ?? 'border-gray-300';
     }
 }
