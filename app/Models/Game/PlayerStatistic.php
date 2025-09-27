@@ -8,6 +8,8 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class PlayerStatistic extends Model
 {
+    use HasReference;
+
     protected $fillable = [
         'player_id',
         'world_id',

@@ -18,7 +18,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use SmartCache\Facades\SmartCache;
 
-class Player extends Model implements Auditable, IsFilterable
+class Player extends Model implements Auditable
 {
     use HasFactory;
     use HasNotables;
