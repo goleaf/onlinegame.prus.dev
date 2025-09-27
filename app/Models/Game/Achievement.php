@@ -13,6 +13,22 @@ class Achievement extends Model
 {
     use HasFactory, HasTaxonomy, HasReference, Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public string $name;
+    public string $key;
+    public ?string $description;
+    public ?string $category;
+    public int $points;
+    public ?array $requirements;
+    public ?array $rewards;
+    public ?string $icon;
+    public bool $is_hidden;
+    public bool $is_active;
+    public ?string $reference_number;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $table = 'achievements';
 
     protected $fillable = [

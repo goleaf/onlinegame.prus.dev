@@ -51,6 +51,7 @@ class ChatComponent extends Component
         $this->loadChannels();
         $this->loadChannel($channelId);
         $this->loadMessages();
+        $this->initializeChatRealTime();
     }
 
     public function loadPlayer()

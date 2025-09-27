@@ -14,9 +14,9 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class MarketOffer extends Model implements Auditable
+class MarketOffer extends Model implements Auditable, IsFilterable
 {
-    use HasFactory, HasReference, AuditableTrait;
+    use HasFactory, HasReference, AuditableTrait, Filterable;
 
     protected $fillable = [
         'village_id',
