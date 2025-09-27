@@ -10,6 +10,10 @@ use App\Services\GameCacheService;
 use App\Services\GameErrorHandler;
 use App\Services\GamePerformanceMonitor;
 use App\Services\GameIntegrationService;
+use App\Services\ValueObjectService;
+use App\ValueObjects\PlayerStats;
+use App\ValueObjects\VillageResources;
+use App\ValueObjects\Coordinates;
 use App\Traits\GameValidationTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -41,21 +45,13 @@ use JonPurvis\Squeaky\Rules\Clean;
  */
 class GameApiController extends Controller
 {
-    use GameValidationTrait;
     /**
      * Get authenticated user
      *
      * @authenticated
      *
      * @description Retrieve the currently authenticated user's information.
-     */
-    public function getAuthenticatedUser()
-    {
-        return response()->json([
-            'user' => auth()->user(),
-            'status' => 'success'
-        ]);
-    }
+     *
      * @response 200 {
      *   "id": 1,
      *   "name": "John Doe",
@@ -232,7 +228,7 @@ class GameApiController extends Controller
     public function createVillage(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255', new Username(), new Clean],
+            'name' => 'required|string|max:255',
             'x' => 'required|integer|min:0|max:999',
             'y' => 'required|integer|min:0|max:999',
         ]);
