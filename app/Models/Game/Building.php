@@ -16,6 +16,7 @@ use function sbamtr\LaravelQueryEnrich\c;
 class Building extends Model implements Auditable
 {
     use HasFactory;
+    use HasReference;
     use AuditableTrait;
     use Lift;
 

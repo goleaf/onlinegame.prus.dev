@@ -19,8 +19,8 @@ class TaskController extends CrudController
     protected Model $model;
 
     protected array $validationRules = [
-        'title' => 'required|string|max:255',
-        'description' => 'nullable|string',
+        'title' => ['required', 'string', 'max:255', new Username(), new Clean],
+        'description' => ['nullable', 'string', new Clean],
         'type' => 'required|string|in:building,combat,resource,exploration,alliance',
         'status' => 'required|string|in:available,active,completed,expired',
         'progress' => 'integer|min:0|max:100',
