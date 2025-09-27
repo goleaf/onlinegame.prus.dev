@@ -155,7 +155,8 @@
             "prefetch",
             "iban",
             "ean",
-            "hsv"
+            "hsv",
+            "ds"
         ],
         "paths": [
             "vendor/",

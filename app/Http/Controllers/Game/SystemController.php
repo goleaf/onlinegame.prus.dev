@@ -87,7 +87,7 @@ class SystemController extends Controller
     /**
      * Update system configuration
      */
-    public function updateSystemConfig(Request $request)
+    public function updateConfig(Request $request)
     {
         try {
             $validated = $request->validate([
