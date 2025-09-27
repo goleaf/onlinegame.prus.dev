@@ -13,10 +13,16 @@ class Achievement extends Model
     protected $table = 'achievements';
 
     protected $fillable = [
-        'player_id',
-        'achievement_id',
-        'unlocked_at',
-        'progress_data',
+        'name',
+        'key',
+        'description',
+        'category',
+        'points',
+        'requirements',
+        'rewards',
+        'icon',
+        'is_hidden',
+        'is_active',
     ];
 
     protected $casts = [
