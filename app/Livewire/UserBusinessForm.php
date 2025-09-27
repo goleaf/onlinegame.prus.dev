@@ -44,7 +44,7 @@ class UserBusinessForm extends Component
         'business_phone' => 'nullable|string|max:20',
         'business_email' => 'nullable|email|max:255',
         'business_website' => 'nullable|url|max:255',
-        'business_description' => ['nullable', 'string', 'max:1000', new Clean],
+        'business_description' => 'nullable|string|max:1000',
         'bank_iban' => 'nullable|string|max:34',
         'bank_bic' => 'nullable|string|max:11',
         'product_isbn' => 'nullable|string|max:17',

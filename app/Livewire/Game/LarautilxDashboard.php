@@ -3,6 +3,8 @@
 namespace App\Livewire\Game;
 
 use App\Services\AIService;
+use App\Services\GameIntegrationService;
+use App\Services\GameNotificationService;
 use App\Services\LarautilxIntegrationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;

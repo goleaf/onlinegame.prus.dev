@@ -27,12 +27,34 @@ class SmsNotificationService
      */
     public function sendSmsToUser(User $user, string $message, string $priority = 'normal'): bool
     {
+        $startTime = microtime(true);
+        
+        ds('SmsNotificationService: Sending SMS to user', [
+            'service' => 'SmsNotificationService',
+            'method' => 'sendSmsToUser',
+            'user_id' => $user->id,
+            'message_length' => strlen($message),
+            'priority' => $priority,
+            'sms_enabled' => $this->enabled,
+            'sms_time' => now()
+        ]);
+        
         if (!$this->canSendSms($user, $priority)) {
+            ds('SmsNotificationService: SMS sending blocked', [
+                'user_id' => $user->id,
+                'reason' => 'Can send SMS check failed',
+                'priority' => $priority
+            ]);
             return false;
         }
 
         $phoneNumber = $this->getUserPhoneNumber($user);
         if (!$phoneNumber) {
+            ds('SmsNotificationService: SMS skipped - no phone number', [
+                'user_id' => $user->id,
+                'priority' => $priority
+            ]);
+            
             Log::warning('SMS notification skipped - no phone number', [
                 'user_id' => $user->id,
                 'priority' => $priority
@@ -40,7 +62,18 @@ class SmsNotificationService
             return false;
         }
 
-        return $this->sendSms($phoneNumber, $message, $priority);
+        $smsResult = $this->sendSms($phoneNumber, $message, $priority);
+        
+        $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ds('SmsNotificationService: SMS sending completed', [
+            'user_id' => $user->id,
+            'phone_number' => $phoneNumber,
+            'success' => $smsResult,
+            'total_time_ms' => $totalTime
+        ]);
+
+        return $smsResult;
     }
 
     /**
