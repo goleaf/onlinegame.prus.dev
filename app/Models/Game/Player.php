@@ -17,11 +17,12 @@ use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Player extends Model implements Auditable
+class Player extends Model implements Auditable, IsFilterable
 {
     use HasFactory;
     use HasNotables;
     use AuditableTrait;
+    use Filterable;
 
     protected $fillable = [
         'user_id',
@@ -228,5 +229,28 @@ class Player extends Model implements Auditable
     public function battlesAsDefender()
     {
         return $this->hasMany(Battle::class, 'defender_id');
+    }
+
+    /**
+     * Define allowed filters for the Player model
+     */
+    public function allowedFilters(): AllowedFilterList
+    {
+        return Filter::only(
+            Filter::field('name', [FilterType::EQUAL, FilterType::CONTAINS]),
+            Filter::field('tribe', [FilterType::EQUAL]),
+            Filter::field('points', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('population', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('villages_count', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('is_active', [FilterType::EQUAL]),
+            Filter::field('is_online', [FilterType::EQUAL]),
+            Filter::field('world_id', [FilterType::EQUAL]),
+            Filter::field('alliance_id', [FilterType::EQUAL]),
+            Filter::field('last_login', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('last_active_at', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::relation('alliance', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('villages', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('user', [FilterType::HAS])->includeRelationFields()
+        );
     }
 }

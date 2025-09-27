@@ -2,9 +2,7 @@
 
 namespace App\ValueObjects;
 
-use Bag\Bag;
-
-readonly class ResourceAmounts extends Bag
+readonly class ResourceAmounts
 {
     public function __construct(
         public int $wood = 0,

@@ -103,4 +103,37 @@ class GameEventHandler
         // Add your game logic here
         // For example: update player resources, trigger production calculations, etc.
     }
+
+    /**
+     * Handle spy caught events
+     */
+    private function handleSpyCaught(array $data)
+    {
+        Log::info('Spy caught event processed', $data);
+
+        // Add your game logic here
+        // For example: update player reputation, send notifications, etc.
+    }
+
+    /**
+     * Handle spy success events
+     */
+    private function handleSpySuccess(array $data)
+    {
+        Log::info('Spy success event processed', $data);
+
+        // Add your game logic here
+        // For example: update intelligence data, send reports, etc.
+    }
+
+    /**
+     * Handle battle simulation events
+     */
+    private function handleBattleSimulation(array $data)
+    {
+        Log::info('Battle simulation event processed', $data);
+
+        // Add your game logic here
+        // For example: store simulation results, update analytics, etc.
+    }
 }

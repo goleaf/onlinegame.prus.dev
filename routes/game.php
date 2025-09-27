@@ -54,6 +54,11 @@ Route::middleware(['auth', 'game.auth'])->group(function () {
         return view('game.system-management');
     })->name('game.system');
 
+    // AI Management
+    Route::get('/game/ai', function () {
+        return view('game.ai-management');
+    })->name('game.ai');
+
     // Statistics
     Route::get('/game/statistics', [GameController::class, 'statistics'])->name('game.statistics');
 

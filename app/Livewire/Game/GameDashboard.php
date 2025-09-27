@@ -4,6 +4,7 @@ namespace App\Livewire\Game;
 
 use App\Models\Game\GameEvent;
 use App\Models\Game\Player;
+use App\Services\GameSeoService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -12,6 +13,8 @@ use Livewire\WithPagination;
 class GameDashboard extends Component
 {
     use WithPagination;
+
+    protected GameSeoService $seoService;
 
     public $player;
 
