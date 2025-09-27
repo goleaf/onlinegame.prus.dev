@@ -10,7 +10,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Notification extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory, HasTaxonomy, HasReference;
 
     protected $fillable = [
         'player_id',

@@ -45,6 +45,7 @@ class UserController extends CrudController
     {
         $this->model = $user;
         $this->rateLimiter = $rateLimiter;
+        $this->validationRules = $this->getValidationRules();
         parent::__construct($this->model);
     }
 

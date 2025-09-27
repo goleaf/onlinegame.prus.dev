@@ -129,6 +129,20 @@
         "spell-check": [
             "./vendor/bin/peck"
         ],
+        "analyse": [
+            "./vendor/bin/phpstan analyse"
+        ],
+        "phpstan": [
+            "./vendor/bin/phpstan analyse"
+        ],
+        "phpstan:baseline": [
+            "./vendor/bin/phpstan analyse --generate-baseline"
+        ],
+        "code-quality": [
+            "@peck:check",
+            "@phpstan",
+            "@pint --test"
+        ],
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"

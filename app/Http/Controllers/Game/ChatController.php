@@ -17,6 +17,8 @@ use JonPurvis\Squeaky\Rules\Clean;
 
 class ChatController extends Controller
 {
+    use GameValidationTrait;
+    
     protected $chatService;
 
     public function __construct()

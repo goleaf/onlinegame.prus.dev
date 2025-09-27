@@ -142,10 +142,11 @@ class MarketManager extends Component
             // Apply sorting
             $activeOffersQuery = $activeOffersQuery->orderBy($this->sortBy, $this->sortOrder);
 
-            $this->offers = $activeOffersQuery
-                ->where('status', 'active')
-                ->get()
-                ->toArray();
+            // Add status filter for active offers
+            $activeFilters[] = ['target' => 'status', 'type' => '$eq', 'value' => 'active'];
+            $activeOffersQuery = $activeOffersQuery->filter($activeFilters);
+
+            $this->offers = $activeOffersQuery->get()->toArray();
 
             // Clone base query for my offers using QueryOptimizationService
             $myOffersQuery = QueryOptimizationService::cloneQuery($baseQuery);
