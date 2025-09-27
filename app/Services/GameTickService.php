@@ -738,6 +738,13 @@ class GameTickService
                 'triggered_at' => now(),
                 'is_completed' => true,
             ]);
+
+            // Publish building completion to RabbitMQ
+            $this->rabbitMQ->publishBuildingCompleted(
+                $building->village_id,
+                $building->building_type_id,
+                $building->buildingType->name
+            );
         } catch (\Exception $e) {
             Log::error("Failed to complete building {$building->id}: " . $e->getMessage());
         }

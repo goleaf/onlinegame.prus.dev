@@ -164,16 +164,21 @@ class EnhancedSessionService
      */
     protected function decompressData(mixed $data): mixed
     {
-        if (function_exists('lzf_decompress') && function_exists('igbinary_unserialize')) {
+        if (function_exists('igbinary_unserialize')) {
             try {
                 $decoded = base64_decode($data);
-                $decompressed = lzf_decompress($decoded);
-                return igbinary_unserialize($decompressed);
+                
+                if (function_exists('lzf_decompress')) {
+                    $decompressed = lzf_decompress($decoded);
+                    return igbinary_unserialize($decompressed);
+                }
+                
+                return igbinary_unserialize($decoded);
             } catch (\Exception $e) {
                 return $data;
             }
         }
-
+        
         return $data;
     }
 

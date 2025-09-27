@@ -31,6 +31,8 @@ class BattleManager extends Component
 
     public function mount()
     {
+        $startTime = microtime(true);
+        
         $user = Auth::user();
         $player = $user->player;
 
@@ -51,10 +53,14 @@ class BattleManager extends Component
                 'user_id' => $user->id,
                 'player_id' => $player->id,
                 'village' => $this->village,
-                'available_troops_count' => $this->village?->troops?->count() ?? 0
+                'available_troops_count' => $this->village?->troops?->count() ?? 0,
+                'mount_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
             ])->label('BattleManager Mount');
 
             $this->loadBattleData();
+            
+            // Track component load time
+            $this->dispatch('fathom-track', name: 'component_load_time', value: round((microtime(true) - $startTime) * 1000));
         }
     }
 

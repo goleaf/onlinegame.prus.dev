@@ -261,8 +261,14 @@ class RealTimeUpdater extends Component
         $this->updates = array_slice($this->updates, -20);
     }
 
-    public function addError($message)
+    public function addError($name, $message = null)
     {
+        // Handle both old and new method signatures
+        if ($message === null) {
+            $message = $name;
+            $name = 'error';
+        }
+        
         $this->errors[] = [
             'id' => uniqid(),
             'message' => $message,
