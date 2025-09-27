@@ -92,7 +92,13 @@ class WorldMap extends Component
 
         try {
             $villages = Village::where('world_id', $this->world->id)
-                ->with(['player', 'alliance'])
+                ->with(['player:id,name,tribe,alliance_id', 'player.alliance:id,name,tag'])
+                ->selectRaw('
+                    villages.*,
+                    (SELECT COUNT(*) FROM buildings WHERE village_id = villages.id) as building_count,
+                    (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as troop_count,
+                    (SELECT SUM(wood + clay + iron + crop) FROM resources WHERE village_id = villages.id) as total_resources
+                ')
                 ->get();
 
             $this->mapData = $villages->map(function ($village) {
@@ -109,6 +115,9 @@ class WorldMap extends Component
                     'tribe' => $village->player->tribe,
                     'is_capital' => $village->is_capital,
                     'is_active' => $village->is_active,
+                    'building_count' => $village->building_count ?? 0,
+                    'troop_count' => $village->troop_count ?? 0,
+                    'total_resources' => $village->total_resources ?? 0,
                 ];
             })->toArray();
 
