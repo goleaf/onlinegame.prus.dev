@@ -1060,4 +1060,84 @@ class AllianceManager extends Component
 
         return $totalMembers > 0 ? round(($membersWithPhone / $totalMembers) * 100, 2) : 0;
     }
+
+    // Enhanced message posting with new model features
+    public function postMessage()
+    {
+        $player = Player::where('user_id', Auth::id())->first();
+        if (!$player->alliance) {
+            $this->addNotification('You are not in an alliance', 'error');
+            return;
+        }
+
+        if (empty($this->messageForm['subject']) || empty($this->messageForm['body'])) {
+            $this->addNotification('Subject and body are required', 'error');
+            return;
+        }
+
+        // Check permissions for certain message types
+        if (in_array($this->messageForm['message_type'], ['announcement', 'leadership']) && 
+            !in_array($player->alliance_rank, ['leader', 'co_leader'])) {
+            $this->addNotification('You do not have permission to post this type of message', 'error');
+            return;
+        }
+
+        try {
+            $message = AllianceMessage::createMessage(
+                $player->alliance_id,
+                $player->id,
+                $this->messageForm['subject'],
+                $this->messageForm['body'],
+                $this->messageForm['message_type'],
+                $this->messageForm['priority']
+            );
+
+            // Update additional fields
+            $message->update([
+                'is_pinned' => $this->messageForm['is_pinned'],
+                'is_announcement' => $this->messageForm['is_announcement'],
+                'expires_at' => $this->messageForm['expires_at'] ? now()->addDays($this->messageForm['expires_at']) : null,
+            ]);
+
+            // Log the action
+            AllianceLog::logAction(
+                $player->alliance_id,
+                $player->id,
+                AllianceLog::ACTION_MESSAGE_SENT,
+                "Posted message: {$this->messageForm['subject']}",
+                [
+                    'message_id' => $message->id,
+                    'message_type' => $this->messageForm['message_type'],
+                    'priority' => $this->messageForm['priority'],
+                    'is_pinned' => $this->messageForm['is_pinned'],
+                    'is_announcement' => $this->messageForm['is_announcement'],
+                ]
+            );
+
+            $this->loadAllianceMessages();
+            $this->resetMessageForm();
+            $this->addNotification('Message posted successfully', 'success');
+
+            $this->dispatch('messagePosted', [
+                'alliance_id' => $player->alliance_id,
+                'message_id' => $message->id,
+                'type' => $message->message_type,
+            ]);
+        } catch (\Exception $e) {
+            $this->addNotification('Failed to post message: ' . $e->getMessage(), 'error');
+        }
+    }
+
+    public function resetMessageForm()
+    {
+        $this->messageForm = [
+            'message_type' => 'general',
+            'subject' => '',
+            'body' => '',
+            'priority' => 'normal',
+            'is_pinned' => false,
+            'is_announcement' => false,
+            'expires_at' => null,
+        ];
+    }
 }

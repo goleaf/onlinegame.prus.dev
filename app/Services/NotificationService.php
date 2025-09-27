@@ -19,7 +19,7 @@ class NotificationService
 
     public function __construct()
     {
-        $this->cachingUtil = new CachingUtil();
+        $this->cachingUtil = new CachingUtil(3600, []);
         $this->loggingUtil = new LoggingUtil();
     }
 

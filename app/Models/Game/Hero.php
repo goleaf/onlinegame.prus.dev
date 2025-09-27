@@ -12,6 +12,23 @@ class Hero extends Model
 {
     use HasFactory, HasReference, Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public int $player_id;
+    public string $name;
+    public int $level;
+    public int $experience;
+    public int $attack_power;
+    public int $defense_power;
+    public int $health;
+    public int $max_health;
+    public ?array $special_abilities;
+    public ?array $equipment;
+    public bool $is_active;
+    public ?string $reference_number;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $fillable = [
         'player_id',
         'name',

@@ -127,6 +127,27 @@ class TaskManager extends Component
         }
     }
 
+    public function loadTaxonomies()
+    {
+        $this->taskCategories = Taxonomy::findByType('task_type')
+            ->map(function ($taxonomy) {
+                return [
+                    'id' => $taxonomy->id,
+                    'name' => $taxonomy->name,
+                    'slug' => $taxonomy->slug,
+                    'description' => $taxonomy->description,
+                    'meta' => $taxonomy->meta,
+                ];
+            })->toArray();
+
+        $this->taskTypes = [
+            'all' => 'All Tasks',
+            'active' => 'Active',
+            'completed' => 'Completed',
+            'available' => 'Available',
+        ];
+    }
+
     public function loadPlayerData()
     {
         try {
