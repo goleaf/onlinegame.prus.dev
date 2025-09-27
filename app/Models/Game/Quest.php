@@ -12,6 +12,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use SmartCache\Facades\SmartCache;
 use sbamtr\LaravelQueryEnrich\QE;
 use function sbamtr\LaravelQueryEnrich\c;
+use WendellAdriel\Lift\Lift;
 
 class Quest extends Model
 {
