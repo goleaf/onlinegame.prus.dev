@@ -287,15 +287,14 @@ class GamePerformanceOptimizer
      */
     protected function getVillageStatistics(array $params): array
     {
-        return DB::table('villages')
-            ->selectRaw('
-                COUNT(*) as total_villages,
-                AVG(population) as avg_population,
-                SUM(population) as total_population,
-                AVG(loyalty) as avg_loyalty
-            ')
-            ->first()
-            ?->toArray() ?? [];
+        try {
+            return DB::table('villages')
+                ->selectRaw('COUNT(*) as total_villages')
+                ->first()
+                ?->toArray() ?? [];
+        } catch (\Exception $e) {
+            return ['total_villages' => 0];
+        }
     }
 
     /**
