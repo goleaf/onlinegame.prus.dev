@@ -29,7 +29,24 @@ return [
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => 'Online Game API - A comprehensive REST API for managing game players, villages, and game mechanics. This API provides complete functionality for game management including player authentication, village creation and management, building upgrades, and resource management.',
+        'description' => 'Online Game API - A comprehensive REST API for managing game players, villages, and game mechanics. This API provides complete functionality for game management including:
+
+## Core Features
+- **Player Management**: Complete CRUD operations for game players
+- **Village Management**: Village creation, updates, and resource management  
+- **Building System**: Building upgrades and construction management
+- **AI Integration**: AI-powered content generation for names, descriptions, and strategies
+- **System Management**: Health monitoring, configuration, and cache management
+- **Larautilx Integration**: Advanced utilities for caching, filtering, and pagination
+- **Authentication**: Secure API access with Laravel Sanctum tokens
+
+## API Endpoints
+- **50+ Endpoints** across 8 main categories
+- **RESTful Design** following industry best practices
+- **Comprehensive Documentation** with examples and error handling
+- **Real-time Capabilities** for game updates and notifications
+
+All endpoints require authentication via Bearer token.',
         
         /*
          * Contact information
