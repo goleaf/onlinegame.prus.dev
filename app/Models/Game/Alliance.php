@@ -5,11 +5,14 @@ namespace App\Models\Game;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
-use NunoMaduro\Essentials\Concerns\StrictModel;
+use MohamedSaid\Notable\Traits\HasNotables;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Alliance extends Model
+class Alliance extends Model implements Auditable
 {
-    use StrictModel;
+    use HasNotables;
+    use AuditableTrait;
 
     protected $fillable = [
         'name',

@@ -19,6 +19,14 @@ class User extends Authenticatable implements Auditable
     use AuditableTrait;
 
     /**
+     * Attributes to exclude from the Audit.
+     */
+    protected $auditExclude = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>

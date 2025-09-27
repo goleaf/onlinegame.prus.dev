@@ -168,6 +168,7 @@ $playerStats = Player::where('id', $this->player->id)
 - **TroopManager**: Reduced from 6+ queries to 2-3 queries
 - **AllianceManager**: Reduced from 8+ queries to 3-4 queries
 - **TechnologyManager**: Reduced from 7+ queries to 3-4 queries
+- **ResourceManager**: Reduced from 5+ queries to 2-3 queries
 
 ### Memory Usage
 - Reduced memory footprint by eliminating redundant data loading
@@ -373,6 +374,15 @@ $technologies = Technology::withStats()
     ->active()
     ->byCategory($category)
     ->popular(10)
+    ->search($searchTerm)
+    ->get();
+
+// Get resources with stats
+$resources = Resource::byVillage($villageId)
+    ->withStats()
+    ->withVillageInfo()
+    ->byType($type)
+    ->topProduction(10)
     ->search($searchTerm)
     ->get();
 ```
