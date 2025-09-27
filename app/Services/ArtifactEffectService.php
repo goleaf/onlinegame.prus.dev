@@ -410,21 +410,4 @@ class ArtifactEffectService
         SmartCache::forget($cacheKey);
     }
 
-    /**
-     * Get cached artifact effects for a target
-     */
-    public function getCachedEffects($target)
-    {
-        $targetType = $this->getTargetType($target);
-        $targetId = $this->getTargetId($target);
-        $cacheKey = "artifact_effects_{$targetType}_{$targetId}";
-
-        return SmartCache::remember($cacheKey, now()->addMinutes(15), function () use ($target) {
-            return ArtifactEffect::where('target_type', $this->getTargetType($target))
-                ->where('target_id', $this->getTargetId($target))
-                ->where('is_active', true)
-                ->with('artifact')
-                ->get();
-        });
-    }
 }

@@ -47,6 +47,7 @@ class Player extends Model implements Auditable
         'points',
         'total_attack_points',
         'total_defense_points',
+        'reference_number',
         'created_at',
         'updated_at',
     ];
@@ -57,6 +58,17 @@ class Player extends Model implements Auditable
         'is_active' => 'boolean',
         'is_online' => 'boolean',
     ];
+
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+
+    protected $referenceTemplate = [
+        'format' => 'PLR-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+
+    protected $referencePrefix = 'PLR';
 
     /**
      * Get the player stats as a value object
