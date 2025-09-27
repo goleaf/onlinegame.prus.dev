@@ -274,10 +274,9 @@
                         <label class="block text-sm font-medium text-blue-700 mb-1">Subject</label>
                         <input type="text" wire:model="messageForm.subject" class="w-full border-blue-300 rounded-md shadow-sm" placeholder="Message subject">
                     </div>
-                    </div>
                     <div class="mt-4">
-                        <label class="block text-sm font-medium text-blue-700 mb-1">Content</label>
-                        <textarea wire:model="messageForm.content" rows="4" class="w-full border-blue-300 rounded-md shadow-sm" placeholder="Message content..."></textarea>
+                        <label class="block text-sm font-medium text-blue-700 mb-1">Body</label>
+                        <textarea wire:model="messageForm.body" rows="4" class="w-full border-blue-300 rounded-md shadow-sm" placeholder="Message body..."></textarea>
                     </div>
                     <div class="mt-4 flex items-center space-x-4">
                         <label class="flex items-center">
@@ -285,9 +284,13 @@
                             <span class="ml-2 text-sm text-blue-700">Pin Message</span>
                         </label>
                         <label class="flex items-center">
-                            <input type="checkbox" wire:model="messageForm.is_important" class="rounded border-blue-300 text-blue-600">
-                            <span class="ml-2 text-sm text-blue-700">Mark as Important</span>
+                            <input type="checkbox" wire:model="messageForm.is_announcement" class="rounded border-blue-300 text-blue-600">
+                            <span class="ml-2 text-sm text-blue-700">Mark as Announcement</span>
                         </label>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-blue-700 mb-1">Expires After (days, optional)</label>
+                        <input type="number" wire:model="messageForm.expires_at" class="w-full border-blue-300 rounded-md shadow-sm" placeholder="Leave empty for no expiration" min="1" max="365">
                     </div>
                     <div class="mt-4">
                         <button wire:click="postMessage" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">

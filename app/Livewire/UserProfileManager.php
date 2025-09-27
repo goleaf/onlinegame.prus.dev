@@ -3,6 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\User;
+use App\Services\GameIntegrationService;
+use App\Services\GameNotificationService;
 use Intervention\Validation\Rules\Username;
 use JonPurvis\Squeaky\Rules\Clean;
 use Livewire\Component;
