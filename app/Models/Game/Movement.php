@@ -23,6 +23,23 @@ class Movement extends Model implements Auditable
 {
     use HasFactory, HasReference, AuditableTrait, Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public int $player_id;
+    public int $from_village_id;
+    public int $to_village_id;
+    public string $type;
+    public ?array $troops;
+    public ?array $resources;
+    public \Carbon\Carbon $started_at;
+    public \Carbon\Carbon $arrives_at;
+    public ?\Carbon\Carbon $returned_at;
+    public string $status;
+    public ?array $metadata;
+    public ?string $reference_number;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $fillable = [
         'player_id',
         'from_village_id',

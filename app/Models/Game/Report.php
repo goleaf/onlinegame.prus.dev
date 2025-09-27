@@ -163,8 +163,8 @@ class Report extends Model implements Auditable
     public function allowedFilters(): AllowedFilterList
     {
         return Filter::only(
-            Filter::field('title', ['$eq', '$contains']),
-            Filter::field('content', ['$eq', '$contains']),
+            Filter::field('title', ['$eq', '$like']),
+            Filter::field('content', ['$eq', '$like']),
             Filter::field('type', ['$eq']),
             Filter::field('status', ['$eq']),
             Filter::field('is_read', ['$eq']),

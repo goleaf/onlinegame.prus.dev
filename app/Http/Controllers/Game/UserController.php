@@ -380,7 +380,7 @@ class UserController extends CrudController
     /**
      * Get feature toggles for user
      */
-    public function getUserFeatureToggles($userId)
+    public function featureToggles($userId)
     {
         $user = User::findOrFail($userId);
 
