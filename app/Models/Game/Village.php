@@ -23,10 +23,7 @@ use WendellAdriel\Lift\Lift;
 
 class Village extends Model implements Auditable
 {
-    use HasFactory, Commentable;
-    use HasNotables;
-    use AuditableTrait;
-    use Lift;
+    use HasFactory, Commentable, HasNotables, AuditableTrait, Lift;
 
     // Laravel Lift typed properties
     public int $id;
@@ -126,9 +123,6 @@ class Village extends Model implements Auditable
     }
 
     public function resources(): HasMany
-    {
-        return $this->hasMany(Resource::class);
-    }
 
     /**
      * Get the village resources as a value object
@@ -146,18 +140,6 @@ class Village extends Model implements Auditable
                     clay: $resource->clay,
                     iron: $resource->iron,
                     crop: $resource->crop
-                );
-            }
-        );
-    }
-                );
-            }
-        );
-    }
-                );
-            }
-        );
-    }
     {
         return $this->hasMany(Resource::class);
     }
