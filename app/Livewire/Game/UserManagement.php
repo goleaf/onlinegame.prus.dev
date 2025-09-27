@@ -69,37 +69,83 @@ class UserManagement extends Component
                          JOIN players p ON v.player_id = p.id WHERE p.user_id = users.id) as total_population
                     ');
 
-                // Apply conditional filters using QueryOptimizationService
-                $filters = [
-                    !empty($this->searchQuery) => function ($q) {
-                        return $q->where(function ($subQ) {
-                            $subQ
-                                ->where('name', 'like', '%' . $this->searchQuery . '%')
-                                ->orWhere('email', 'like', '%' . $this->searchQuery . '%')
-                                ->orWhereHas('player', function ($playerQuery) {
-                                    $playerQuery->where('name', 'like', '%' . $this->searchQuery . '%');
-                                });
-                        });
-                    },
-                    !empty($this->filterByWorld) => function ($q) {
-                        return $q->byWorld($this->filterByWorld);
-                    },
-                    !empty($this->filterByTribe) => function ($q) {
-                        return $q->byTribe($this->filterByTribe);
-                    },
-                    !empty($this->filterByAlliance) => function ($q) {
-                        return $q->byAlliance($this->filterByAlliance);
-                    },
-                    $this->showOnlyOnline => function ($q) {
-                        return $q->onlineUsers();
-                    },
-                    $this->showOnlyActive => function ($q) {
-                        return $q->activeGameUsers();
-                    }
-                ];
+                // Build eloquent filters array
+                $eloquentFilters = [];
 
-                $query = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters);
-                $query = QueryOptimizationService::applyConditionalOrdering($query, $this->sortBy, $this->sortOrder);
+                if (!empty($this->searchQuery)) {
+                    $eloquentFilters[] = [
+                        'type' => '$or',
+                        'value' => [
+                            ['target' => 'name', 'type' => '$like', 'value' => $this->searchQuery],
+                            ['target' => 'email', 'type' => '$like', 'value' => $this->searchQuery],
+                            [
+                                'type' => '$has',
+                                'target' => 'player',
+                                'value' => [
+                                    ['target' => 'name', 'type' => '$like', 'value' => $this->searchQuery]
+                                ]
+                            ]
+                        ]
+                    ];
+                }
+
+                if (!empty($this->filterByWorld)) {
+                    $eloquentFilters[] = [
+                        'type' => '$has',
+                        'target' => 'player',
+                        'value' => [
+                            ['target' => 'world_id', 'type' => '$eq', 'value' => $this->filterByWorld]
+                        ]
+                    ];
+                }
+
+                if (!empty($this->filterByTribe)) {
+                    $eloquentFilters[] = [
+                        'type' => '$has',
+                        'target' => 'player',
+                        'value' => [
+                            ['target' => 'tribe', 'type' => '$eq', 'value' => $this->filterByTribe]
+                        ]
+                    ];
+                }
+
+                if (!empty($this->filterByAlliance)) {
+                    $eloquentFilters[] = [
+                        'type' => '$has',
+                        'target' => 'player',
+                        'value' => [
+                            ['target' => 'alliance_id', 'type' => '$eq', 'value' => $this->filterByAlliance]
+                        ]
+                    ];
+                }
+
+                if ($this->showOnlyOnline) {
+                    $eloquentFilters[] = [
+                        'type' => '$has',
+                        'target' => 'player',
+                        'value' => [
+                            ['target' => 'is_online', 'type' => '$eq', 'value' => true]
+                        ]
+                    ];
+                }
+
+                if ($this->showOnlyActive) {
+                    $eloquentFilters[] = [
+                        'type' => '$has',
+                        'target' => 'player',
+                        'value' => [
+                            ['target' => 'is_active', 'type' => '$eq', 'value' => true]
+                        ]
+                    ];
+                }
+
+                // Apply eloquent filtering
+                if (!empty($eloquentFilters)) {
+                    $query = $query->filter($eloquentFilters);
+                }
+
+                // Apply sorting
+                $query = $query->orderBy($this->sortBy, $this->sortOrder);
 
                 $users = $query->get();
 

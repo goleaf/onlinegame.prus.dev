@@ -2,72 +2,68 @@
 
 namespace App\Models\Game;
 
+use App\Services\GameIntegrationService;
+use App\Services\GameNotificationService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use WendellAdriel\Lift\Lift;
 
 class Notification extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait;
+    use HasFactory, AuditableTrait, Lift;
 
     protected $fillable = [
-        'user_id',
+        'player_id',
         'title',
         'message',
         'type',
+        'priority',
+        'status',
         'data',
-        'is_read',
+        'icon',
+        'action_url',
         'read_at',
-        'reference_number',
+        'expires_at',
+        'is_persistent',
+        'is_auto_dismiss',
+        'auto_dismiss_seconds',
     ];
 
     protected $casts = [
         'data' => 'array',
-        'is_read' => 'boolean',
         'read_at' => 'datetime',
+        'expires_at' => 'datetime',
+        'is_persistent' => 'boolean',
+        'is_auto_dismiss' => 'boolean',
     ];
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
     protected $referenceStrategy = 'template';
-
     protected $referenceTemplate = [
         'format' => 'NOT-{YEAR}{MONTH}{SEQ}',
         'sequence_length' => 4,
     ];
-
     protected $referencePrefix = 'NOT';
 
-    // Notification types
-    const TYPE_INFO = 'info';
-    const TYPE_SUCCESS = 'success';
-    const TYPE_WARNING = 'warning';
-    const TYPE_ERROR = 'error';
-    const TYPE_SYSTEM = 'system';
-    const TYPE_BATTLE = 'battle';
-    const TYPE_MOVEMENT = 'movement';
-    const TYPE_RESOURCE = 'resource';
-    const TYPE_ALLIANCE = 'alliance';
-    const TYPE_QUEST = 'quest';
-    const TYPE_ACHIEVEMENT = 'achievement';
-
-    public function user(): BelongsTo
+    public function player(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(Player::class);
     }
 
     // Scopes
     public function scopeUnread($query)
     {
-        return $query->where('is_read', false);
+        return $query->where('status', 'unread');
     }
 
     public function scopeRead($query)
     {
-        return $query->where('is_read', true);
+        return $query->where('status', 'read');
     }
 
     public function scopeByType($query, $type)
@@ -75,122 +71,224 @@ class Notification extends Model implements Auditable
         return $query->where('type', $type);
     }
 
-    public function scopeByUser($query, $userId)
+    public function scopeByPriority($query, $priority)
     {
-        return $query->where('user_id', $userId);
+        return $query->where('priority', $priority);
     }
 
-    public function scopeRecent($query, $days = 7)
+    public function scopePersistent($query)
     {
-        return $query->where('created_at', '>=', now()->subDays($days));
+        return $query->where('is_persistent', true);
+    }
+
+    public function scopeExpired($query)
+    {
+        return $query->where('expires_at', '<', now());
+    }
+
+    public function scopeValid($query)
+    {
+        return $query->where('status', '!=', 'dismissed')
+                    ->where(function ($q) {
+                        $q->whereNull('expires_at')
+                          ->orWhere('expires_at', '>', now());
+                    });
     }
 
     // Helper methods
+    public function isUnread(): bool
+    {
+        return $this->status === 'unread';
+    }
+
+    public function isRead(): bool
+    {
+        return $this->status === 'read';
+    }
+
+    public function isExpired(): bool
+    {
+        return $this->expires_at !== null && $this->expires_at <= now();
+    }
+
     public function markAsRead(): bool
     {
-        return $this->update([
-            'is_read' => true,
+        if ($this->status === 'read') {
+            return false;
+        }
+
+        $this->update([
+            'status' => 'read',
             'read_at' => now(),
         ]);
+
+        return true;
     }
 
-    public function markAsUnread(): bool
+    public function dismiss(): bool
     {
-        return $this->update([
-            'is_read' => false,
-            'read_at' => null,
-        ]);
+        if ($this->status === 'dismissed') {
+            return false;
+        }
+
+        $this->update(['status' => 'dismissed']);
+        return true;
     }
 
-    public function getTypeColor(): string
+    public function getTypeDisplayNameAttribute(): string
     {
-        return match ($this->type) {
-            self::TYPE_SUCCESS => 'green',
-            self::TYPE_WARNING => 'yellow',
-            self::TYPE_ERROR => 'red',
-            self::TYPE_SYSTEM => 'blue',
-            self::TYPE_BATTLE => 'purple',
-            self::TYPE_MOVEMENT => 'indigo',
-            self::TYPE_RESOURCE => 'orange',
-            self::TYPE_ALLIANCE => 'pink',
-            self::TYPE_QUEST => 'teal',
-            self::TYPE_ACHIEVEMENT => 'gold',
-            default => 'gray',
+        return match($this->type) {
+            'info' => 'Information',
+            'warning' => 'Warning',
+            'success' => 'Success',
+            'error' => 'Error',
+            'achievement' => 'Achievement',
+            'battle' => 'Battle Report',
+            'trade' => 'Trade Update',
+            'diplomacy' => 'Diplomatic Message',
+            'artifact' => 'Artifact Discovery',
+            default => ucfirst($this->type)
         };
     }
 
-    public function getTypeIcon(): string
+    public function getPriorityDisplayNameAttribute(): string
     {
-        return match ($this->type) {
-            self::TYPE_SUCCESS => 'check-circle',
-            self::TYPE_WARNING => 'exclamation-triangle',
-            self::TYPE_ERROR => 'x-circle',
-            self::TYPE_SYSTEM => 'cog',
-            self::TYPE_BATTLE => 'sword',
-            self::TYPE_MOVEMENT => 'arrow-right',
-            self::TYPE_RESOURCE => 'cube',
-            self::TYPE_ALLIANCE => 'users',
-            self::TYPE_QUEST => 'book-open',
-            self::TYPE_ACHIEVEMENT => 'trophy',
-            default => 'bell',
+        return ucfirst($this->priority);
+    }
+
+    public function getStatusDisplayNameAttribute(): string
+    {
+        return match($this->status) {
+            'unread' => 'Unread',
+            'read' => 'Read',
+            'dismissed' => 'Dismissed',
+            default => ucfirst($this->status)
         };
     }
 
-    public function getFormattedCreatedAt(): string
+    public function getTypeColorAttribute(): string
     {
-        return $this->created_at->diffForHumans();
-    }
-
-    public function getFormattedReadAt(): ?string
-    {
-        return $this->read_at ? $this->read_at->diffForHumans() : null;
-    }
-
-    public function isRecent(): bool
-    {
-        return $this->created_at->isAfter(now()->subHours(24));
-    }
-
-    public function getPriority(): string
-    {
-        return match ($this->type) {
-            self::TYPE_ERROR, self::TYPE_BATTLE => 'high',
-            self::TYPE_WARNING, self::TYPE_SYSTEM => 'medium',
-            default => 'low',
+        return match($this->type) {
+            'info' => '#3B82F6',        // Blue
+            'warning' => '#F59E0B',     // Orange
+            'success' => '#10B981',     // Green
+            'error' => '#EF4444',       // Red
+            'achievement' => '#8B5CF6', // Purple
+            'battle' => '#DC2626',      // Dark Red
+            'trade' => '#059669',       // Emerald
+            'diplomacy' => '#7C3AED',   // Violet
+            'artifact' => '#F59E0B',    // Amber
+            default => '#6B7280'        // Gray
         };
     }
 
-    public function getDataValue(string $key, $default = null)
+    public function getPriorityColorAttribute(): string
     {
-        return $this->data[$key] ?? $default;
+        return match($this->priority) {
+            'low' => '#9CA3AF',      // Gray
+            'normal' => '#3B82F6',   // Blue
+            'high' => '#F59E0B',     // Orange
+            'urgent' => '#EF4444',   // Red
+            default => '#6B7280'
+        };
     }
 
-    public function setDataValue(string $key, $value): void
+    public function getTypeIconAttribute(): string
     {
-        $data = $this->data ?? [];
-        $data[$key] = $value;
-        $this->update(['data' => $data]);
+        return match($this->type) {
+            'info' => 'info-circle',
+            'warning' => 'exclamation-triangle',
+            'success' => 'check-circle',
+            'error' => 'times-circle',
+            'achievement' => 'trophy',
+            'battle' => 'sword',
+            'trade' => 'exchange-alt',
+            'diplomacy' => 'handshake',
+            'artifact' => 'gem',
+            default => 'bell'
+        };
     }
 
-    public function getShortMessage(int $length = 100): string
+    public function getRemainingTimeAttribute(): ?int
     {
-        return strlen($this->message) > $length 
-            ? substr($this->message, 0, $length) . '...'
-            : $this->message;
+        if (!$this->expires_at) {
+            return null;
+        }
+
+        return max(0, $this->expires_at->diffInMinutes(now()));
     }
 
-    public function getNotificationUrl(): ?string
+    public function getTimeRemainingFormattedAttribute(): ?string
     {
-        $data = $this->data ?? [];
+        $minutes = $this->remaining_time;
         
-        return match ($this->type) {
-            self::TYPE_BATTLE => $data['battle_id'] ? "/game/battle/{$data['battle_id']}" : null,
-            self::TYPE_MOVEMENT => $data['movement_id'] ? "/game/movement/{$data['movement_id']}" : null,
-            self::TYPE_RESOURCE => $data['village_id'] ? "/game/village/{$data['village_id']}" : null,
-            self::TYPE_ALLIANCE => $data['alliance_id'] ? "/game/alliance/{$data['alliance_id']}" : null,
-            self::TYPE_QUEST => $data['quest_id'] ? "/game/quest/{$data['quest_id']}" : null,
-            self::TYPE_ACHIEVEMENT => $data['achievement_id'] ? "/game/achievement/{$data['achievement_id']}" : null,
-            default => null,
-        };
+        if ($minutes === null) {
+            return 'Never expires';
+        }
+
+        if ($minutes < 60) {
+            return "{$minutes} minutes";
+        }
+
+        $hours = floor($minutes / 60);
+        $remainingMinutes = $minutes % 60;
+
+        if ($hours < 24) {
+            return $remainingMinutes > 0 ? "{$hours}h {$remainingMinutes}m" : "{$hours} hours";
+        }
+
+        $days = floor($hours / 24);
+        $remainingHours = $hours % 24;
+
+        return $remainingHours > 0 ? "{$days}d {$remainingHours}h" : "{$days} days";
+    }
+
+    /**
+     * Create notification with integration
+     */
+    public static function createWithIntegration(array $data): self
+    {
+        $notification = self::create($data);
+        
+        // Send real-time notification
+        GameNotificationService::sendNotification(
+            [$notification->player_id],
+            $notification->type,
+            [
+                'notification_id' => $notification->id,
+                'title' => $notification->title,
+                'message' => $notification->message,
+                'priority' => $notification->priority,
+                'data' => $notification->data,
+            ],
+            $notification->priority
+        );
+
+        return $notification;
+    }
+
+    /**
+     * Mark as read with integration
+     */
+    public function markAsReadWithIntegration(): void
+    {
+        $this->update([
+            'status' => 'read',
+            'read_at' => now(),
+        ]);
+
+        // Send read confirmation notification
+        GameNotificationService::markNotificationAsRead(
+            $this->player_id,
+            $this->id
+        );
+    }
+
+    /**
+     * Send system-wide notification with integration
+     */
+    public static function sendSystemNotificationWithIntegration(string $title, string $message, string $priority = 'normal'): void
+    {
+        GameIntegrationService::sendSystemAnnouncement($title, $message, $priority);
     }
 }
