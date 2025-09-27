@@ -34,6 +34,16 @@ Route::get('/phone-search', function () {
     return view('phone-search');
 })->middleware('auth');
 
+// Phone statistics dashboard
+Route::get('/phone-stats', function () {
+    return view('phone-stats');
+})->middleware('auth');
+
+// Phone bulk operations
+Route::get('/phone-bulk-operations', function () {
+    return view('phone-bulk-operations');
+})->middleware('auth');
+
 // Include auth routes
 require __DIR__ . '/auth.php';
 

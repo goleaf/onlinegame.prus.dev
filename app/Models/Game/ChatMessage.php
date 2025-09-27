@@ -2,11 +2,10 @@
 
 namespace App\Models\Game;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use SmartCache\Facades\SmartCache;
-use MohamedSaid\Referenceable\Traits\HasReference;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\HasReference;
 
 class ChatMessage extends Model
 {
@@ -27,15 +26,6 @@ class ChatMessage extends Model
         'is_deleted' => 'boolean',
         'deleted_at' => 'datetime',
     ];
-
-    // Referenceable configuration
-    protected $referenceColumn = 'reference_number';
-    protected $referenceStrategy = 'template';
-    protected $referenceTemplate = [
-        'format' => 'CHT-{YEAR}{MONTH}{SEQ}',
-        'sequence_length' => 4,
-    ];
-    protected $referencePrefix = 'CHT';
 
     // Channel types
     const CHANNEL_GLOBAL = 'global';
@@ -58,46 +48,18 @@ class ChatMessage extends Model
 
     public function channel(): BelongsTo
     {
-        return $this->belongsTo(ChatChannel::class, 'channel_id');
+        return $this->belongsTo(ChatChannel::class);
     }
 
     // Scopes
-    public function scopeForChannel($query, $channelId, $channelType = null)
+    public function scopeByChannel($query, $channelId)
     {
-        $query = $query->where('channel_id', $channelId);
-        
-        if ($channelType) {
-            $query->where('channel_type', $channelType);
-        }
-        
-        return $query;
+        return $query->where('channel_id', $channelId);
     }
 
-    public function scopeNotDeleted($query)
+    public function scopeByChannelType($query, $channelType)
     {
-        return $query->where('is_deleted', false);
-    }
-
-    public function scopeByType($query, $type)
-    {
-        return $query->where('message_type', $type);
-    }
-
-    public function scopeRecent($query, $limit = 50)
-    {
-        return $query->orderBy('created_at', 'desc')->limit($limit);
-    }
-
-    // Optimized query scopes using when() and selectRaw
-    public function scopeWithStats($query)
-    {
-        return $query->selectRaw('
-            chat_messages.*,
-            (SELECT COUNT(*) FROM chat_messages cm2 WHERE cm2.sender_id = chat_messages.sender_id) as sender_total_messages,
-            (SELECT COUNT(*) FROM chat_messages cm3 WHERE cm3.channel_id = chat_messages.channel_id AND cm3.channel_type = chat_messages.channel_type) as channel_total_messages,
-            (SELECT COUNT(*) FROM chat_messages cm4 WHERE cm4.sender_id = chat_messages.sender_id AND cm4.is_deleted = 0) as sender_active_messages,
-            (SELECT AVG(LENGTH(message)) FROM chat_messages cm5 WHERE cm5.sender_id = chat_messages.sender_id) as sender_avg_message_length
-        ');
+        return $query->where('channel_type', $channelType);
     }
 
     public function scopeBySender($query, $senderId)
@@ -105,21 +67,12 @@ class ChatMessage extends Model
         return $query->where('sender_id', $senderId);
     }
 
-    public function scopeByChannelType($query, $channelType = null)
+    public function scopeByMessageType($query, $messageType)
     {
-        return $query->when($channelType, function ($q) use ($channelType) {
-            return $q->where('channel_type', $channelType);
-        });
+        return $query->where('message_type', $messageType);
     }
 
-    public function scopeByMessageType($query, $messageType = null)
-    {
-        return $query->when($messageType, function ($q) use ($messageType) {
-            return $q->where('message_type', $messageType);
-        });
-    }
-
-    public function scopeActive($query)
+    public function scopeNotDeleted($query)
     {
         return $query->where('is_deleted', false);
     }
@@ -129,138 +82,169 @@ class ChatMessage extends Model
         return $query->where('is_deleted', true);
     }
 
-    public function scopeToday($query)
+    public function scopeGlobal($query)
     {
-        return $query->whereDate('created_at', today());
+        return $query->where('channel_type', self::CHANNEL_GLOBAL);
     }
 
-    public function scopeThisWeek($query)
+    public function scopeAlliance($query)
     {
-        return $query->where('created_at', '>=', now()->startOfWeek());
+        return $query->where('channel_type', self::CHANNEL_ALLIANCE);
     }
 
-    public function scopeThisMonth($query)
+    public function scopePrivate($query)
     {
-        return $query->where('created_at', '>=', now()->startOfMonth());
+        return $query->where('channel_type', self::CHANNEL_PRIVATE);
     }
 
-    public function scopeSearch($query, $searchTerm)
+    public function scopeTrade($query)
     {
-        return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where('message', 'like', '%' . $searchTerm . '%');
-        });
+        return $query->where('channel_type', self::CHANNEL_TRADE);
     }
 
-    public function scopeWithSenderInfo($query)
+    public function scopeDiplomacy($query)
     {
-        return $query->with([
-            'sender:id,name,alliance_id'
-        ]);
+        return $query->where('channel_type', self::CHANNEL_DIPLOMACY);
     }
 
-    // Methods
-    public function softDelete(): void
+    public function scopeRecent($query, $minutes = 60)
     {
-        $this->update([
-            'is_deleted' => true,
-            'deleted_at' => now(),
-        ]);
+        return $query->where('created_at', '>=', now()->subMinutes($minutes));
     }
 
+    // Helper methods
     public function isDeleted(): bool
     {
         return $this->is_deleted;
     }
 
-    public function canBeDeletedBy($playerId): bool
+    public function isGlobal(): bool
+    {
+        return $this->channel_type === self::CHANNEL_GLOBAL;
+    }
+
+    public function isAlliance(): bool
+    {
+        return $this->channel_type === self::CHANNEL_ALLIANCE;
+    }
+
+    public function isPrivate(): bool
+    {
+        return $this->channel_type === self::CHANNEL_PRIVATE;
+    }
+
+    public function isTrade(): bool
+    {
+        return $this->channel_type === self::CHANNEL_TRADE;
+    }
+
+    public function isDiplomacy(): bool
+    {
+        return $this->channel_type === self::CHANNEL_DIPLOMACY;
+    }
+
+    public function isText(): bool
+    {
+        return $this->message_type === self::TYPE_TEXT;
+    }
+
+    public function isSystem(): bool
+    {
+        return $this->message_type === self::TYPE_SYSTEM;
+    }
+
+    public function isAnnouncement(): bool
+    {
+        return $this->message_type === self::TYPE_ANNOUNCEMENT;
+    }
+
+    public function isEmote(): bool
+    {
+        return $this->message_type === self::TYPE_EMOTE;
+    }
+
+    public function isCommand(): bool
+    {
+        return $this->message_type === self::TYPE_COMMAND;
+    }
+
+    public function canBeDeletedBy(int $playerId): bool
     {
         return $this->sender_id === $playerId;
     }
 
+    public function getChannelTypeColor(): string
+    {
+        return match ($this->channel_type) {
+            self::CHANNEL_GLOBAL => 'blue',
+            self::CHANNEL_ALLIANCE => 'green',
+            self::CHANNEL_PRIVATE => 'purple',
+            self::CHANNEL_TRADE => 'yellow',
+            self::CHANNEL_DIPLOMACY => 'red',
+            default => 'gray',
+        };
+    }
+
+    public function getMessageTypeIcon(): string
+    {
+        return match ($this->message_type) {
+            self::TYPE_TEXT => 'comment',
+            self::TYPE_SYSTEM => 'cog',
+            self::TYPE_ANNOUNCEMENT => 'bullhorn',
+            self::TYPE_EMOTE => 'smile',
+            self::TYPE_COMMAND => 'terminal',
+            default => 'comment',
+        };
+    }
+
+    public function getFormattedCreatedAt(): string
+    {
+        return $this->created_at->diffForHumans();
+    }
+
     public function getFormattedMessage(): string
     {
-        if ($this->is_deleted) {
-            return '[Message deleted]';
+        if ($this->isEmote()) {
+            return "*{$this->sender->name} {$this->message}*";
         }
 
         return $this->message;
     }
 
-    public static function getChannelMessages($channelId, $channelType, $limit = 50, $offset = 0): array
+    public function softDelete(): bool
     {
-        return SmartCache::remember("chat_messages:{$channelType}:{$channelId}:{$limit}:{$offset}", 60, function () use ($channelId, $channelType, $limit, $offset) {
-            $messages = self::with(['sender'])
-                ->forChannel($channelId, $channelType)
-                ->notDeleted()
-                ->orderBy('created_at', 'desc')
-                ->offset($offset)
-                ->limit($limit)
-                ->get()
-                ->reverse()
-                ->values();
-
-            $total = self::forChannel($channelId, $channelType)
-                ->notDeleted()
-                ->count();
-
-            return [
-                'messages' => $messages,
-                'total' => $total,
-            ];
-        });
+        return $this->update([
+            'is_deleted' => true,
+            'deleted_at' => now(),
+        ]);
     }
 
-    public static function getGlobalMessages($limit = 50, $offset = 0): array
+    public function restore(): bool
     {
-        return self::getChannelMessages(0, self::CHANNEL_GLOBAL, $limit, $offset);
+        return $this->update([
+            'is_deleted' => false,
+            'deleted_at' => null,
+        ]);
     }
 
-    public static function getAllianceMessages($allianceId, $limit = 50, $offset = 0): array
+    public static function createMessage(int $senderId, ?int $channelId, string $channelType, string $message, string $messageType = self::TYPE_TEXT): self
     {
-        return self::getChannelMessages($allianceId, self::CHANNEL_ALLIANCE, $limit, $offset);
+        return self::create([
+            'sender_id' => $senderId,
+            'channel_id' => $channelId,
+            'channel_type' => $channelType,
+            'message' => $message,
+            'message_type' => $messageType,
+            'reference_number' => self::generateReferenceNumber(),
+        ]);
     }
 
-    public static function getPrivateMessages($playerId, $otherPlayerId, $limit = 50, $offset = 0): array
+    private static function generateReferenceNumber(): string
     {
-        $channelId = min($playerId, $otherPlayerId) . '_' . max($playerId, $otherPlayerId);
-        return self::getChannelMessages($channelId, self::CHANNEL_PRIVATE, $limit, $offset);
-    }
+        do {
+            $reference = 'CHAT-' . strtoupper(\Str::random(8));
+        } while (self::where('reference_number', $reference)->exists());
 
-    public static function cleanupOldMessages($days = 30): int
-    {
-        $cutoffDate = now()->subDays($days);
-        
-        return self::where('created_at', '<', $cutoffDate)
-            ->where('channel_type', self::CHANNEL_GLOBAL)
-            ->delete();
-    }
-
-    public static function getMessageStats(): array
-    {
-        return SmartCache::remember('chat_message_stats', 300, function () {
-            // Use single selectRaw query to get all statistics at once
-            $stats = self::selectRaw('
-                COUNT(*) as total_messages,
-                SUM(CASE WHEN channel_type = ? AND is_deleted = 0 THEN 1 ELSE 0 END) as global_messages,
-                SUM(CASE WHEN channel_type = ? AND is_deleted = 0 THEN 1 ELSE 0 END) as alliance_messages,
-                SUM(CASE WHEN channel_type = ? AND is_deleted = 0 THEN 1 ELSE 0 END) as private_messages,
-                SUM(CASE WHEN DATE(created_at) = CURDATE() AND is_deleted = 0 THEN 1 ELSE 0 END) as messages_today,
-                COUNT(DISTINCT CONCAT(channel_id, "_", channel_type)) as active_channels,
-                AVG(LENGTH(message)) as avg_message_length,
-                MAX(created_at) as last_message_time
-            ', [self::CHANNEL_GLOBAL, self::CHANNEL_ALLIANCE, self::CHANNEL_PRIVATE])
-            ->first();
-
-            return [
-                'total_messages' => $stats->total_messages ?? 0,
-                'global_messages' => $stats->global_messages ?? 0,
-                'alliance_messages' => $stats->alliance_messages ?? 0,
-                'private_messages' => $stats->private_messages ?? 0,
-                'messages_today' => $stats->messages_today ?? 0,
-                'active_channels' => $stats->active_channels ?? 0,
-                'avg_message_length' => round($stats->avg_message_length ?? 0, 2),
-                'last_message_time' => $stats->last_message_time,
-            ];
-        });
+        return $reference;
     }
 }
