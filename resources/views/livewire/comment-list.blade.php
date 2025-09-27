@@ -85,7 +85,7 @@
                                     @if($reply->user_id === auth()->id() || auth()->user()->can('delete-comments'))
                                         <button 
                                             wire:click="deleteComment({{ $reply->id }})"
-                                            wire:confirm="Are you sure you want to delete this reply?"
+                                            wire:confirm="Are you sure you want to delete this reply? This action cannot be undone."
                                             class="text-gray-400 hover:text-red-500 transition-colors ml-auto"
                                             title="Delete Reply"
                                         >

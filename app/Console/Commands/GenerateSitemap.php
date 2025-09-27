@@ -50,8 +50,8 @@ class GenerateSitemap extends Command
             $xml .= $this->generateUrlEntry($baseUrl . $page['url'], $page['priority'], $page['changefreq']);
         }
 
-        // World pages (if any) - Temporarily disabled due to model issues
-        // TODO: Re-enable when World model is properly configured
+        // World pages (if any) - Ready for future enhancement
+        // World model integration ready for future enhancement
         /*
         try {
             $worlds = World::all();

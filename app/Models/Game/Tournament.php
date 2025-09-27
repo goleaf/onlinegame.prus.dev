@@ -9,9 +9,9 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Tournament extends Model
+class Tournament extends Model implements Auditable
 {
-    use HasFactory;
+    use HasFactory, HasReference, AuditableTrait;
 
     protected $fillable = [
         'name',
