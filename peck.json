@@ -76,7 +76,17 @@
             "subquery",
             "subqueries",
             "commentable",
-            "commenter"
+            "commenter",
+            "basset",
+            "honeystone",
+            "eloquent",
+            "filtering",
+            "auditor",
+            "vcian",
+            "propaganistas",
+            "phone",
+            "sbamtr",
+            "enrich"
         ],
         "paths": [
             "vendor/",
