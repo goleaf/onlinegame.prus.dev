@@ -18,11 +18,12 @@ use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Village extends Model implements Auditable
+class Village extends Model implements Auditable, IsFilterable
 {
     use HasFactory;
     use HasNotables;
     use AuditableTrait;
+    use Filterable;
 
     protected $fillable = [
         'player_id',
