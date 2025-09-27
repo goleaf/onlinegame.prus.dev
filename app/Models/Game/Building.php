@@ -32,6 +32,7 @@ class Building extends Model implements Auditable
     public ?\Carbon\Carbon $upgrade_started_at;
     public ?\Carbon\Carbon $upgrade_completed_at;
     public ?array $metadata;
+    public ?string $reference_number;
     public \Carbon\Carbon $created_at;
     public \Carbon\Carbon $updated_at;
 

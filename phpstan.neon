@@ -1,0 +1,42 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/
+        - config/
+        - database/
+        - routes/
+        - tests/
+    
+    # Rule level (0-9, 9 is the strictest)
+    level: 5
+    
+    # Ignore specific directories and files
+    excludePaths:
+        - app/ValueObjects/*
+        - bootstrap/cache/*
+        - storage/*
+        - vendor/*
+        - node_modules/*
+        - public/*
+        - travian-source/*
+        
+    # Laravel-specific configurations
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    
+    # Ignore specific error patterns
+    ignoreErrors:
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::factory\(\)#'
+        - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9_]+#'
+        - '#Undefined variable: \$[a-zA-Z0-9_]+#'
+        - '#Property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9_]+ is never read, only written#'
+        - '#Method [a-zA-Z0-9\\_]+::[a-zA-Z0-9_]+\(\) should return [a-zA-Z0-9\\_]+ but returns [a-zA-Z0-9\\_]+#'
+        
+    # Additional Laravel-specific settings
+    reportUnmatchedIgnoredErrors: false
+    checkOctaneCompatibility: true
+    noUnnecessaryCollectionCall: true
+    checkModelProperties: true
+    checkPhpDocMissingReturn: true
