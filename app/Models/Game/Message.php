@@ -16,6 +16,24 @@ class Message extends Model implements Auditable
 {
     use HasFactory, HasReference, Commentable, AuditableTrait, Lift;
 
+    // Laravel Lift typed properties
+    public int $id;
+    public int $sender_id;
+    public ?int $recipient_id;
+    public ?int $alliance_id;
+    public string $subject;
+    public string $body;
+    public string $message_type;
+    public bool $is_read;
+    public bool $is_deleted_by_sender;
+    public bool $is_deleted_by_recipient;
+    public ?int $parent_message_id;
+    public string $priority;
+    public ?\Carbon\Carbon $expires_at;
+    public ?string $reference_number;
+    public \Carbon\Carbon $created_at;
+    public \Carbon\Carbon $updated_at;
+
     protected $fillable = [
         'sender_id',
         'recipient_id',
