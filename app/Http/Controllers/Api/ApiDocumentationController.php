@@ -49,33 +49,39 @@ class ApiDocumentationController extends Controller
      */
     public function getApiInfo(): JsonResponse
     {
-        return response()->json([
-            'name' => 'Online Game API',
-            'version' => '1.0.0',
-            'description' => 'A comprehensive REST API for managing game players, villages, and game mechanics',
-            'features' => [
-                'Player Management',
-                'Village Management',
-                'Building Upgrades',
-                'Resource Management',
-                'Authentication',
-                'Real-time Updates'
-            ],
-            'endpoints' => [
-                'total' => 6,
-                'authenticated' => 6,
-                'public' => 0
-            ],
-            'authentication' => [
-                'type' => 'Bearer Token',
-                'provider' => 'Laravel Sanctum'
-            ],
-            'documentation' => [
-                'ui_url' => '/docs/api',
-                'openapi_url' => '/docs/api.json',
-                'generated_by' => 'Scramble'
-            ]
-        ]);
+        $cacheKey = "api_info_" . now()->format('Y-m-d-H');
+        
+        $data = SmartCache::remember($cacheKey, now()->addMinutes(30), function () {
+            return [
+                'name' => 'Online Game API',
+                'version' => '1.0.0',
+                'description' => 'A comprehensive REST API for managing game players, villages, and game mechanics',
+                'features' => [
+                    'Player Management',
+                    'Village Management', 
+                    'Building Upgrades',
+                    'Resource Management',
+                    'Authentication',
+                    'Real-time Updates'
+                ],
+                'endpoints' => [
+                    'total' => 6,
+                    'authenticated' => 6,
+                    'public' => 0
+                ],
+                'authentication' => [
+                    'type' => 'Bearer Token',
+                    'provider' => 'Laravel Sanctum'
+                ],
+                'documentation' => [
+                    'ui_url' => '/docs/api',
+                    'openapi_url' => '/docs/api.json',
+                    'generated_by' => 'Scramble'
+                ]
+            ];
+        });
+        
+        return response()->json($data);
     }
 
     /**
