@@ -10,7 +10,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Achievement extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory, HasTaxonomy, HasReference;
 
     protected $table = 'achievements';
 

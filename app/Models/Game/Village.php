@@ -59,6 +59,7 @@ class Village extends Model implements Auditable
         'population',
         'is_capital',
         'is_active',
+        'reference_number',
         'created_at',
         'updated_at',
     ];
