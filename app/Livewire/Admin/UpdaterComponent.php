@@ -6,13 +6,13 @@ use App\Services\UpdaterService;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
-use Jantinnerezo\LivewireAlert\Concerns\SweetAlert2;
+use Jantinnerezo\LivewireAlert\Traits\LivewireAlert;
 
 #[Title('Application Updater')]
 #[Layout('layouts.app')]
 class UpdaterComponent extends Component
 {
-    use Jantinnerezo\LivewireAlert\Traits\LivewireAlert;
+    use LivewireAlert;
 
     public $currentVersion = '';
     public $latestVersion = '';
