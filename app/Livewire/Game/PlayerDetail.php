@@ -68,6 +68,4 @@ class PlayerDetail extends Component
     {
         return view('livewire.game.player-detail');
     }
-        return view('livewire.game.player-detail');
-    }
 }
