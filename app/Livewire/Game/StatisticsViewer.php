@@ -271,23 +271,29 @@ class StatisticsViewer extends Component
                     ->groupBy('player_id');
             }, 'alliance:id,name']);
 
-        // Use QueryOptimizationService for conditional filters
-        $filters = [
-            $this->searchQuery => function ($q) {
-                return $q->where('name', 'like', '%' . $this->searchQuery . '%');
-            },
-            $this->timeRange !== 'all' => function ($q) {
-                return $q->where('created_at', '>=', $this->getTimeRangeDate());
-            },
-            $this->statType === 'alliance' => function ($q) {
-                return $q->whereNotNull('alliance_id');
-            },
-            $this->statType === 'personal' => function ($q) {
-                return $q->where('id', $this->player->id);
-            },
-        ];
+        // Build eloquent filters array
+        $eloquentFilters = [];
 
-        $query = QueryOptimizationService::applyConditionalFilters($query, $filters);
+        if ($this->searchQuery) {
+            $eloquentFilters[] = ['target' => 'name', 'type' => '$like', 'value' => $this->searchQuery];
+        }
+
+        if ($this->timeRange !== 'all') {
+            $eloquentFilters[] = ['target' => 'created_at', 'type' => '$gte', 'value' => $this->getTimeRangeDate()];
+        }
+
+        if ($this->statType === 'alliance') {
+            $eloquentFilters[] = ['target' => 'alliance_id', 'type' => '$neq', 'value' => null];
+        }
+
+        if ($this->statType === 'personal') {
+            $eloquentFilters[] = ['target' => 'id', 'type' => '$eq', 'value' => $this->player->id];
+        }
+
+        // Apply eloquent filtering
+        if (!empty($eloquentFilters)) {
+            $query = $query->filter($eloquentFilters);
+        }
 
         $query
             ->selectRaw('
