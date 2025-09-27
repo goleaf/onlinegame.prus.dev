@@ -78,20 +78,24 @@ class BuildingManager extends Component
             return;
         }
 
-        $this->buildings = $this
-            ->village
-            ->buildings()
-            ->with(['buildingType:id,name,description,costs,production_bonus'])
-            ->selectRaw('
-                buildings.*,
-                (SELECT COUNT(*) FROM buildings b2 WHERE b2.village_id = buildings.village_id AND b2.is_active = 1) as total_buildings,
-                (SELECT AVG(level) FROM buildings b3 WHERE b3.village_id = buildings.village_id AND b3.is_active = 1) as avg_level,
-                (SELECT MAX(level) FROM buildings b4 WHERE b4.village_id = buildings.village_id AND b4.is_active = 1) as max_level
-            ')
-            ->where('is_active', true)
-            ->get()
-            ->keyBy('type')
-            ->toArray();
+        // Use SmartCache for building data with automatic optimization
+        $buildingsCacheKey = "village_{$this->village->id}_buildings_data";
+        $this->buildings = SmartCache::remember($buildingsCacheKey, now()->addMinutes(3), function () {
+            return $this
+                ->village
+                ->buildings()
+                ->with(['buildingType:id,name,description,costs,production_bonus'])
+                ->selectRaw('
+                    buildings.*,
+                    (SELECT COUNT(*) FROM buildings b2 WHERE b2.village_id = buildings.village_id AND b2.is_active = 1) as total_buildings,
+                    (SELECT AVG(level) FROM buildings b3 WHERE b3.village_id = buildings.village_id AND b3.is_active = 1) as avg_level,
+                    (SELECT MAX(level) FROM buildings b4 WHERE b4.village_id = buildings.village_id AND b4.is_active = 1) as max_level
+                ')
+                ->where('is_active', true)
+                ->get()
+                ->keyBy('type')
+                ->toArray();
+        });
     }
 
     public function loadAvailableBuildings()

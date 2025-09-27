@@ -344,6 +344,10 @@ class MovementManager extends Component
         $this->loadMovementData();
         $this->addNotification('Movement created successfully!', 'success');
         $this->dispatch('movementCreated', ['movementId' => $movement->id]);
+        
+        // Track movement creation
+        $totalTroops = array_sum($this->troopQuantities);
+        $this->dispatch('fathom-track', name: 'movement created', value: $totalTroops);
     }
 
     public function cancelMovement($movementId)

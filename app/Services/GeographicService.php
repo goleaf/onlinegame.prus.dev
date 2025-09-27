@@ -96,6 +96,30 @@ class GeographicService
     }
 
     /**
+     * Calculate bearing between two points
+     * 
+     * @param float $lat1
+     * @param float $lon1
+     * @param float $lat2
+     * @param float $lon2
+     * @return float
+     */
+    public function calculateBearing(float $lat1, float $lon1, float $lat2, float $lon2): float
+    {
+        $lat1Rad = deg2rad($lat1);
+        $lat2Rad = deg2rad($lat2);
+        $deltaLon = deg2rad($lon2 - $lon1);
+        
+        $y = sin($deltaLon) * cos($lat2Rad);
+        $x = cos($lat1Rad) * sin($lat2Rad) - sin($lat1Rad) * cos($lat2Rad) * cos($deltaLon);
+        
+        $bearing = atan2($y, $x);
+        $bearing = rad2deg($bearing);
+        
+        return ($bearing + 360) % 360; // Normalize to 0-360
+    }
+
+    /**
      * Generate a geohash for a coordinate
      *
      * @param float $lat

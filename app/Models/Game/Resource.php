@@ -4,10 +4,15 @@ namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use MohamedSaid\Notable\Traits\HasNotables;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Resource extends Model
+class Resource extends Model implements Auditable
 {
     use HasFactory;
+    use HasNotables;
+    use AuditableTrait;
 
     protected $fillable = [
         'village_id',
