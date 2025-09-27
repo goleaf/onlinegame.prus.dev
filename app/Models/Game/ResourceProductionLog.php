@@ -8,6 +8,8 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class ResourceProductionLog extends Model
 {
+    use HasReference;
+
     protected $fillable = [
         'village_id',
         'type',
@@ -15,6 +17,7 @@ class ResourceProductionLog extends Model
         'amount_consumed',
         'final_amount',
         'produced_at',
+        'reference_number',
     ];
 
     protected $casts = [

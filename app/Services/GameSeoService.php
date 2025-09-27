@@ -13,20 +13,23 @@ class GameSeoService
      */
     public function setGameIndexSeo(): void
     {
+        $config = config('seo');
+        
         seo()
-            ->title('Travian Online Game - Laravel Edition', 'Travian Game')
-            ->description('Play the legendary browser-based strategy MMO Travian built with Laravel 12 and Livewire 3. Build villages, manage resources, and conquer the ancient world in this faithful recreation of the classic Travian gameplay.')
+            ->title($config['default_title'], $config['site_name'])
+            ->description($config['default_description'])
+            ->keywords($config['default_keywords'])
             ->images([
-                asset('img/travian/game-logo.png'),
+                asset($config['default_image']),
                 asset('img/travian/village-preview.jpg'),
                 asset('img/travian/world-map.jpg')
             ])
-            ->twitterEnabled(true)
-            ->twitterSite('@TravianGame')
-            ->twitterCreator('@TravianGame')
-            ->twitterTitle('Travian Online Game - Laravel Edition')
-            ->twitterDescription('Play the legendary browser-based strategy MMO Travian. Build villages, manage resources, and conquer the ancient world.')
-            ->twitterImage(asset('img/travian/game-logo.png'));
+            ->twitterEnabled($config['twitter']['enabled'])
+            ->twitterSite($config['twitter']['site'])
+            ->twitterCreator($config['twitter']['creator'])
+            ->twitterTitle($config['default_title'])
+            ->twitterDescription($config['default_description'])
+            ->twitterImage(asset($config['default_image']));
     }
 
     /**

@@ -3,6 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use EloquentFiltering\Filterable;
+use EloquentFiltering\Contracts\IsFilterable;
+use EloquentFiltering\AllowedFilterList;
+use EloquentFiltering\Filter;
+use EloquentFiltering\FilterType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,13 +16,14 @@ use MohamedSaid\Notable\Traits\HasNotables;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class User extends Authenticatable implements Auditable
+class User extends Authenticatable implements Auditable, IsFilterable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
     use Notifiable;
     use HasNotables;
     use AuditableTrait;
+    use Filterable;
 
     /**
      * Attributes to exclude from the Audit.

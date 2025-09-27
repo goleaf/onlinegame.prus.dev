@@ -150,4 +150,25 @@ class Movement extends Model implements Auditable, IsFilterable
             'player:id,name',
         ]);
     }
+
+    /**
+     * Define allowed filters for the Movement model
+     */
+    public function allowedFilters(): AllowedFilterList
+    {
+        return Filter::only(
+            Filter::field('type', [FilterType::EQUAL]),
+            Filter::field('status', [FilterType::EQUAL]),
+            Filter::field('player_id', [FilterType::EQUAL]),
+            Filter::field('from_village_id', [FilterType::EQUAL]),
+            Filter::field('to_village_id', [FilterType::EQUAL]),
+            Filter::field('started_at', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('arrives_at', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('returned_at', [FilterType::EQUAL, FilterType::GREATER_THAN, FilterType::LESS_THAN]),
+            Filter::field('reference_number', [FilterType::EQUAL, FilterType::CONTAINS]),
+            Filter::relation('player', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('fromVillage', [FilterType::HAS])->includeRelationFields(),
+            Filter::relation('toVillage', [FilterType::HAS])->includeRelationFields()
+        );
+    }
 }
