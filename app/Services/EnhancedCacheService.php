@@ -31,9 +31,31 @@ class EnhancedCacheService
      */
     public function remember(string $key, int $ttl, callable $callback): mixed
     {
+        $startTime = microtime(true);
+        
+        ds('EnhancedCacheService: Cache remember operation', [
+            'service' => 'EnhancedCacheService',
+            'method' => 'remember',
+            'key' => $key,
+            'full_key' => $this->prefix . $key,
+            'ttl_seconds' => $ttl,
+            'cache_time' => now()
+        ]);
+        
         $fullKey = $this->prefix . $key;
 
-        return SmartCache::remember($fullKey, now()->addSeconds($ttl), $callback);
+        $result = SmartCache::remember($fullKey, now()->addSeconds($ttl), $callback);
+        
+        $operationTime = round((microtime(true) - $startTime) * 1000, 2);
+        
+        ds('EnhancedCacheService: Cache remember completed', [
+            'key' => $key,
+            'operation_time_ms' => $operationTime,
+            'result_type' => gettype($result),
+            'result_size' => is_string($result) ? strlen($result) : (is_array($result) ? count($result) : 'N/A')
+        ]);
+
+        return $result;
     }
 
     /**

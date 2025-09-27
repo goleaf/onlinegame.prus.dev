@@ -9,6 +9,8 @@ use App\Http\Controllers\Game\APIDocumentationController;
 use App\Http\Controllers\Game\ArtifactController;
 use App\Http\Controllers\Game\BattleController;
 use App\Http\Controllers\Game\QuestController;
+use App\Http\Controllers\Game\ReportController;
+use App\Http\Controllers\Game\NotificationController;
 use App\Http\Controllers\Game\LarautilxController;
 use App\Http\Controllers\Game\LarautilxDashboardController;
 use App\Http\Controllers\Game\MessageController;
@@ -215,6 +217,29 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::post('/{id}/start', [QuestController::class, 'start']);
         Route::post('/{id}/complete', [QuestController::class, 'complete']);
     });
+    
+    // Report System
+    Route::prefix('reports')->group(function () {
+        Route::get('/', [ReportController::class, 'index']);
+        Route::get('/statistics', [ReportController::class, 'statistics']);
+        Route::get('/unread-count', [ReportController::class, 'unreadCount']);
+        Route::post('/mark-all-read', [ReportController::class, 'markAllAsRead']);
+        Route::get('/{id}', [ReportController::class, 'show']);
+        Route::post('/{id}/mark-read', [ReportController::class, 'markAsRead']);
+        Route::delete('/{id}', [ReportController::class, 'destroy']);
+    });
+    
+    // Notification System
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::post('/', [NotificationController::class, 'store']);
+        Route::get('/statistics', [NotificationController::class, 'statistics']);
+        Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+        Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        Route::get('/{id}', [NotificationController::class, 'show']);
+        Route::post('/{id}/mark-read', [NotificationController::class, 'markAsRead']);
+        Route::delete('/{id}', [NotificationController::class, 'destroy']);
+    });
 });
 
 // WebSocket/Real-time API Routes
@@ -262,12 +287,6 @@ Route::prefix('public')->group(function () {
     });
 });
 
-
-// Phone API Routes
-Route::middleware('auth:sanctum')->prefix('phone')->group(function () {
-    Route::get('/', [PhoneApiController::class, 'getPhone']);
-    Route::post('/update', [PhoneApiController::class, 'updatePhone']);
-});
 
 // Game Integration Services
 Route::middleware('auth:sanctum')->prefix('game/integration')->group(function () {
