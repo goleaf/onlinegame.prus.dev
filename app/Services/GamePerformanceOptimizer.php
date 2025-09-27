@@ -86,17 +86,15 @@ class GamePerformanceOptimizer
     }
 
     /**
-     * Optimize database queries with enhanced caching
+     * Optimize database queries with SmartCache
      */
     public function optimizeQueries(string $queryType, array $params = []): mixed
     {
         $cacheKey = "optimized_query_{$queryType}_" . md5(serialize($params));
-        $tags = ["optimized_queries", $queryType];
 
-        return $this->cacheService->rememberWithTags(
+        return SmartCache::remember(
             $cacheKey,
-            $tags,
-            900, // 15 minutes
+            now()->addMinutes(15),
             function () use ($queryType, $params) {
                 return $this->executeOptimizedQuery($queryType, $params);
             }
