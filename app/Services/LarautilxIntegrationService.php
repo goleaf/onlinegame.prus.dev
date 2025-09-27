@@ -87,7 +87,7 @@ class LarautilxIntegrationService
     }
 
     /**
-     * Cache world-specific data
+     * Cache world-specific data using SmartCache
      *
      * @param int $worldId
      * @param string $key
@@ -97,8 +97,8 @@ class LarautilxIntegrationService
      */
     public function cacheWorldData(int $worldId, string $key, callable $callback, ?int $expiration = null)
     {
-        $tags = array_merge($this->defaultCacheTags, ['world', "world_{$worldId}"]);
-        return $this->cacheGameData("world_{$worldId}_{$key}", $callback, $expiration, $tags);
+        $expiration = $expiration ?? $this->defaultCacheExpiration;
+        return SmartCache::remember("world_{$worldId}_{$key}", now()->addSeconds($expiration), $callback);
     }
 
     /**
