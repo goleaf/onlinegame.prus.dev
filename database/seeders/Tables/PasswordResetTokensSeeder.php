@@ -23,6 +23,8 @@ class PasswordResetTokensSeeder extends Seeder
             
         ];
         
-        DB::table("password_reset_tokens")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("password_reset_tokens")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

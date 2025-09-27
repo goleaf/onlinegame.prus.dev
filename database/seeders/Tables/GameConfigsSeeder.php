@@ -337,6 +337,8 @@ class GameConfigsSeeder extends Seeder
             ]
         ];
         
-        DB::table("game_configs")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("game_configs")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

@@ -87,6 +87,8 @@ if ($player] {
             ]
         ];
         
-        DB::table("audits")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("audits")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

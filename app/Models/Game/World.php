@@ -11,7 +11,7 @@ use WendellAdriel\Lift\Lift;
 
 class World extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTaxonomy;
     use HasNotables;
     use Lift;
 

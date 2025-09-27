@@ -1683,6 +1683,8 @@ class TradeOffersSeeder extends Seeder
             ]
         ];
         
-        DB::table("trade_offers")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("trade_offers")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

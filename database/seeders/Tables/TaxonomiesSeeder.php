@@ -518,6 +518,8 @@ class TaxonomiesSeeder extends Seeder
             ]
         ];
         
-        DB::table("taxonomies")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("taxonomies")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

@@ -890,6 +890,8 @@ class PlayerQuestsSeeder extends Seeder
             ]
         ];
         
-        DB::table("player_quests")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("player_quests")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

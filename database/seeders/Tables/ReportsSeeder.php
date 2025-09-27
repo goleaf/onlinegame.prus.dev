@@ -42,6 +42,8 @@ class ReportsSeeder extends Seeder
             ]
         ];
         
-        DB::table("reports")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("reports")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

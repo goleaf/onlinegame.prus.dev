@@ -8142,6 +8142,8 @@ class MarketTradesSeeder extends Seeder
             ]
         ];
         
-        DB::table("market_trades")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("market_trades")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

@@ -7318,6 +7318,8 @@ class ResourcesSeeder extends Seeder
             ]
         ];
         
-        DB::table("resources")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("resources")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

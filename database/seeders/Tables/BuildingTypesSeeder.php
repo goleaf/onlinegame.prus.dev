@@ -292,6 +292,8 @@ class BuildingTypesSeeder extends Seeder
             ]
         ];
         
-        DB::table("building_types")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("building_types")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

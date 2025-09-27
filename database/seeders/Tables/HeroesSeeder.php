@@ -1059,6 +1059,8 @@ class HeroesSeeder extends Seeder
             ]
         ];
         
-        DB::table("heroes")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("heroes")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

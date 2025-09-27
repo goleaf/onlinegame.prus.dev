@@ -23,6 +23,8 @@ class TrainingQueuesSeeder extends Seeder
             
         ];
         
-        DB::table("training_queues")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("training_queues")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

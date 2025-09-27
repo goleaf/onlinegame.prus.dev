@@ -23,6 +23,8 @@ class PlayerStatisticsSeeder extends Seeder
             
         ];
         
-        DB::table("player_statistics")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("player_statistics")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

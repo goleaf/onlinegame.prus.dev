@@ -187,6 +187,8 @@ class AlliancesSeeder extends Seeder
             ]
         ];
         
-        DB::table("alliances")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("alliances")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

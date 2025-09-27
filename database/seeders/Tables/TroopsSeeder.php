@@ -23,6 +23,8 @@ class TroopsSeeder extends Seeder
             
         ];
         
-        DB::table("troops")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("troops")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

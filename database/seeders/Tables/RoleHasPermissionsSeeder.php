@@ -23,6 +23,8 @@ class RoleHasPermissionsSeeder extends Seeder
             
         ];
         
-        DB::table("role_has_permissions")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("role_has_permissions")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

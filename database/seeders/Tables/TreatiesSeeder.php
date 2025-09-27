@@ -98,6 +98,8 @@ class TreatiesSeeder extends Seeder
             ]
         ];
         
-        DB::table("treaties")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("treaties")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

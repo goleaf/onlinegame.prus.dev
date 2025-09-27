@@ -23,6 +23,8 @@ class TaggablesSeeder extends Seeder
             
         ];
         
-        DB::table("taggables")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("taggables")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

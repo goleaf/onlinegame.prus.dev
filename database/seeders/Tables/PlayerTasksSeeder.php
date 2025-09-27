@@ -23,6 +23,8 @@ class PlayerTasksSeeder extends Seeder
             
         ];
         
-        DB::table("player_tasks")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("player_tasks")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

@@ -85,6 +85,8 @@ class ModelReferenceCountersSeeder extends Seeder
             ]
         ];
         
-        DB::table("model_reference_counters")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("model_reference_counters")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

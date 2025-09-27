@@ -23,6 +23,8 @@ class SubscriptionsSeeder extends Seeder
             
         ];
         
-        DB::table("subscriptions")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("subscriptions")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

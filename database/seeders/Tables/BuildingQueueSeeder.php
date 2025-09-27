@@ -23,6 +23,8 @@ class BuildingQueueSeeder extends Seeder
             
         ];
         
-        DB::table("building_queue")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("building_queue")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

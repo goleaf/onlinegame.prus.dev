@@ -23,6 +23,8 @@ class PersonalAccessTokensSeeder extends Seeder
             
         ];
         
-        DB::table("personal_access_tokens")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("personal_access_tokens")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

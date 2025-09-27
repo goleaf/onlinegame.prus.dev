@@ -32,6 +32,8 @@ class AccessLogsSeeder extends Seeder
             ]
         ];
         
-        DB::table("access_logs")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("access_logs")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

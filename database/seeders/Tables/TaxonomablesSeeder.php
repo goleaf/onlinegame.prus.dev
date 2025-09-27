@@ -23,6 +23,8 @@ class TaxonomablesSeeder extends Seeder
             
         ];
         
-        DB::table("taxonomables")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("taxonomables")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

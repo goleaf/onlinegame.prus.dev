@@ -72,6 +72,8 @@ class NotablesSeeder extends Seeder
             ]
         ];
         
-        DB::table("notables")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("notables")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

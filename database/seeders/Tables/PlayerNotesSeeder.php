@@ -34,6 +34,8 @@ class PlayerNotesSeeder extends Seeder
             ]
         ];
         
-        DB::table("player_notes")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("player_notes")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

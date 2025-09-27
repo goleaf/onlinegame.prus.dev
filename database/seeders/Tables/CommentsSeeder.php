@@ -23,6 +23,8 @@ class CommentsSeeder extends Seeder
             
         ];
         
-        DB::table("comments")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("comments")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

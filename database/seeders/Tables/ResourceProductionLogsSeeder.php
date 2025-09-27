@@ -23,6 +23,8 @@ class ResourceProductionLogsSeeder extends Seeder
             
         ];
         
-        DB::table("resource_production_logs")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("resource_production_logs")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

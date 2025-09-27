@@ -130,6 +130,8 @@ class TechnologiesSeeder extends Seeder
             ]
         ];
         
-        DB::table("technologies")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("technologies")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

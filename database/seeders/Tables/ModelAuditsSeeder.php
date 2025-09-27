@@ -23,6 +23,8 @@ class ModelAuditsSeeder extends Seeder
             
         ];
         
-        DB::table("model_audits")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("model_audits")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

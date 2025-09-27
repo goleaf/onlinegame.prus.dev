@@ -23,6 +23,8 @@ class CacheLocksSeeder extends Seeder
             
         ];
         
-        DB::table("cache_locks")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("cache_locks")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

@@ -23,6 +23,8 @@ class TelescopeMonitoringSeeder extends Seeder
             
         ];
         
-        DB::table("telescope_monitoring")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("telescope_monitoring")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

@@ -23,6 +23,8 @@ class JobBatchesSeeder extends Seeder
             
         ];
         
-        DB::table("job_batches")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("job_batches")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

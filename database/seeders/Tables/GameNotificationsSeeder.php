@@ -23,6 +23,8 @@ class GameNotificationsSeeder extends Seeder
             
         ];
         
-        DB::table("game_notifications")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("game_notifications")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

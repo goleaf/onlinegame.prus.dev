@@ -41,6 +41,8 @@ use JonPurvis\Squeaky\Rules\Clean;
  */
 class GameApiController extends Controller
 {
+    use GameValidationTrait;
+{
     /**
      * Get authenticated user
      *
@@ -703,61 +705,5 @@ class GameApiController extends Controller
             'bearing' => round($bearing, 1),
             'travel_time_minutes' => $travelTime
         ]);
-    }
-
-    /**
-     * Initialize user real-time features
-     *
-     * @authenticated
-     */
-    public function initializeRealTime(Request $request): JsonResponse
-    {
-        try {
-            $user = $request->user();
-            GameIntegrationService::initializeUserRealTime($user->id);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Real-time features initialized successfully'
-            ]);
-
-        } catch (\Exception $e) {
-            GameErrorHandler::handleGameError($e, [
-                'action' => 'initialize_realtime',
-                'user_id' => $user->id ?? null,
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to initialize real-time features'
-            ], 500);
-        }
-    }
-
-    /**
-     * Get comprehensive game statistics with real-time data
-     *
-     * @authenticated
-     */
-    public function getGameStatisticsWithRealTime(): JsonResponse
-    {
-        try {
-            $stats = GameIntegrationService::getGameStatisticsWithRealTime();
-
-            return response()->json([
-                'success' => true,
-                'data' => $stats
-            ]);
-
-        } catch (\Exception $e) {
-            GameErrorHandler::handleGameError($e, [
-                'action' => 'get_game_statistics_realtime',
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve game statistics'
-            ], 500);
-        }
     }
 }

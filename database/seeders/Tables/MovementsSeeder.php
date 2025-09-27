@@ -56,6 +56,8 @@ class MovementsSeeder extends Seeder
             ]
         ];
         
-        DB::table("movements")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("movements")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

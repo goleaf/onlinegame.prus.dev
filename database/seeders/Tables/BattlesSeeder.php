@@ -38,6 +38,8 @@ class BattlesSeeder extends Seeder
             ]
         ];
         
-        DB::table("battles")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("battles")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

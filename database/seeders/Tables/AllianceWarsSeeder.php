@@ -23,6 +23,8 @@ class AllianceWarsSeeder extends Seeder
             
         ];
         
-        DB::table("alliance_wars")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("alliance_wars")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

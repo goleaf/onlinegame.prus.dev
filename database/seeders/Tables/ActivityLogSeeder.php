@@ -23,6 +23,8 @@ class ActivityLogSeeder extends Seeder
             
         ];
         
-        DB::table("activity_log")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("activity_log")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

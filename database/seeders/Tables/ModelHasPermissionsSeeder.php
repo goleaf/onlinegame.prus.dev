@@ -23,6 +23,8 @@ class ModelHasPermissionsSeeder extends Seeder
             
         ];
         
-        DB::table("model_has_permissions")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("model_has_permissions")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

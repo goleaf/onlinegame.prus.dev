@@ -32,6 +32,8 @@ class PlayerAchievementsSeeder extends Seeder
             ]
         ];
         
-        DB::table("player_achievements")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("player_achievements")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

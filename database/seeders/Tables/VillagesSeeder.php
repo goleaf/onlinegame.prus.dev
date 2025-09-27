@@ -4126,6 +4126,8 @@ class VillagesSeeder extends Seeder
             ]
         ];
         
-        DB::table("villages")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("villages")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

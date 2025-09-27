@@ -23,6 +23,8 @@ class ModelHasRolesSeeder extends Seeder
             
         ];
         
-        DB::table("model_has_roles")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("model_has_roles")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

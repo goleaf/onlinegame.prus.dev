@@ -1276,6 +1276,8 @@ class UsersSeeder extends Seeder
             ]
         ];
         
-        DB::table("users")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("users")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

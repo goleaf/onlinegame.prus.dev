@@ -23,6 +23,8 @@ class GameTasksSeeder extends Seeder
             
         ];
         
-        DB::table("game_tasks")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("game_tasks")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

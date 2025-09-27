@@ -37,6 +37,8 @@ class WorldsSeeder extends Seeder
             ]
         ];
         
-        DB::table("worlds")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("worlds")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

@@ -182,6 +182,8 @@ class SiegeWeaponsSeeder extends Seeder
             ]
         ];
         
-        DB::table("siege_weapons")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("siege_weapons")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

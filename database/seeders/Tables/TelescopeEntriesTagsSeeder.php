@@ -350,6 +350,8 @@ class TelescopeEntriesTagsSeeder extends Seeder
             ]
         ];
         
-        DB::table("telescope_entries_tags")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("telescope_entries_tags")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }

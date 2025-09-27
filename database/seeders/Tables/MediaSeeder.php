@@ -23,6 +23,8 @@ class MediaSeeder extends Seeder
             
         ];
         
-        DB::table("media")->insert($dataTables);
+        foreach ($dataTables as $data) {
+            DB::table("media")->updateOrInsert(['id' => $data['id']], $data);
+        }
     }
 }
