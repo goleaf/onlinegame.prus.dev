@@ -304,15 +304,27 @@ class TaskManager extends Component
 
         $this->quests = $query->get();
 
-        // Use single query with selectRaw to get all quest stats at once
+        // Use single query with Query Enrich to get all quest stats at once
         $questStats = PlayerQuest::where('player_id', $this->player->id)
-            ->selectRaw('
-                SUM(CASE WHEN status = "in_progress" THEN 1 ELSE 0 END) as active_count,
-                SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed_count,
-                SUM(CASE WHEN status = "available" THEN 1 ELSE 0 END) as available_count,
-                AVG(CASE WHEN status = "completed" THEN progress ELSE NULL END) as avg_progress,
-                MAX(updated_at) as last_updated
-            ')
+            ->select([
+                QE::sum(QE::case()
+                    ->when(QE::eq(c('status'), 'in_progress'), 1)
+                    ->else(0))
+                    ->as('active_count'),
+                QE::sum(QE::case()
+                    ->when(QE::eq(c('status'), 'completed'), 1)
+                    ->else(0))
+                    ->as('completed_count'),
+                QE::sum(QE::case()
+                    ->when(QE::eq(c('status'), 'available'), 1)
+                    ->else(0))
+                    ->as('available_count'),
+                QE::avg(QE::case()
+                    ->when(QE::eq(c('status'), 'completed'), c('progress'))
+                    ->else(null))
+                    ->as('avg_progress'),
+                QE::max(c('updated_at'))->as('last_updated')
+            ])
             ->first();
 
         // Get quests by status using optimized queries
