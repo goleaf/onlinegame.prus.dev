@@ -256,7 +256,6 @@ class GeographicService
         $distance = $this->calculateDistance($lat1, $lon1, $lat2, $lon2);
         return $this->calculateTravelTime($distance, $speedKmh);
     }
-    {
         if ($speedKmh <= 0) {
             return 0;
         }
