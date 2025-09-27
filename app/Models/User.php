@@ -57,12 +57,14 @@ class User extends Authenticatable implements Auditable
         // For example, disable auditing for certain user types or conditions
         
         // Disable auditing for system users or admin users
-        if (isset($this->email) && (str_contains($this->email, 'admin@') || str_contains($this->email, 'system@'))) {
+        $email = $this->getAttribute('email');
+        if ($email && (str_contains($email, 'admin@') || str_contains($email, 'system@'))) {
             return true;
         }
         
         // Disable auditing for users created before a certain date
-        if (isset($this->created_at) && $this->created_at->isBefore(now()->subYear())) {
+        $createdAt = $this->getAttribute('created_at');
+        if ($createdAt && $createdAt->isBefore(now()->subYear())) {
             return true;
         }
         

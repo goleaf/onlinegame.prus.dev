@@ -19,8 +19,11 @@ class UserSimpleTest extends TestCase
     /** @test */
     public function it_disables_auditing_for_admin_users()
     {
-        $adminUser = new User(['email' => 'admin@example.com']);
-        $regularUser = new User(['email' => 'user@example.com']);
+        $adminUser = new User();
+        $adminUser->setAttribute('email', 'admin@example.com');
+        
+        $regularUser = new User();
+        $regularUser->setAttribute('email', 'user@example.com');
 
         $this->assertTrue($adminUser->auditingDisabled());
         $this->assertFalse($regularUser->auditingDisabled());
@@ -29,8 +32,11 @@ class UserSimpleTest extends TestCase
     /** @test */
     public function it_disables_auditing_for_system_users()
     {
-        $systemUser = new User(['email' => 'system@example.com']);
-        $regularUser = new User(['email' => 'user@example.com']);
+        $systemUser = new User();
+        $systemUser->setAttribute('email', 'system@example.com');
+        
+        $regularUser = new User();
+        $regularUser->setAttribute('email', 'user@example.com');
 
         $this->assertTrue($systemUser->auditingDisabled());
         $this->assertFalse($regularUser->auditingDisabled());
@@ -39,8 +45,11 @@ class UserSimpleTest extends TestCase
     /** @test */
     public function it_disables_auditing_for_old_users()
     {
-        $oldUser = new User(['created_at' => now()->subYears(2)]);
-        $newUser = new User(['created_at' => now()->subMonths(6)]);
+        $oldUser = new User();
+        $oldUser->setAttribute('created_at', now()->subYears(2));
+        
+        $newUser = new User();
+        $newUser->setAttribute('created_at', now()->subMonths(6));
 
         $this->assertTrue($oldUser->auditingDisabled());
         $this->assertFalse($newUser->auditingDisabled());
@@ -49,10 +58,9 @@ class UserSimpleTest extends TestCase
     /** @test */
     public function it_enables_auditing_by_default()
     {
-        $regularUser = new User([
-            'email' => 'regular@example.com',
-            'created_at' => now()->subMonths(6),
-        ]);
+        $regularUser = new User();
+        $regularUser->setAttribute('email', 'regular@example.com');
+        $regularUser->setAttribute('created_at', now()->subMonths(6));
 
         $this->assertFalse($regularUser->auditingDisabled());
     }

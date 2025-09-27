@@ -1,1 +1,13 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
 
+parameters:
+    level: 6
+    paths:
+        - app/
+    ignoreErrors:
+        - '#Call to an undefined method#'
+    excludePaths:
+        - vendor/
+        - storage/
+        - bootstrap/cache/
