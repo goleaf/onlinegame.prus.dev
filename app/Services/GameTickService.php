@@ -238,7 +238,7 @@ class GameTickService
             $defenderLosses = $this->calculateTroopLosses($defendingTroops, $defenderLossRate);
 
             // Calculate loot (10-25% of defender's resources)
-            $resourcesLooted = $this->calculateResourceLoot($defendingTroops);
+            $resourcesLooted = $this->calculateResourceLoot($defenderVillage);
         } elseif ($defenderPower > $attackerPower) {
             $result = 'defender_wins';
             // Calculate losses (attacker loses 50-80%, defender loses 10-30%)
