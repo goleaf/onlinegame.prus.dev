@@ -62,7 +62,7 @@ class Laravel129FeaturesCommand extends Command
 
         foreach ($tests as $name => $test) {
             $this->line("Testing {$name}...");
-            
+
             try {
                 $result = $test();
                 if ($result) {
@@ -86,13 +86,13 @@ class Laravel129FeaturesCommand extends Command
     {
         try {
             $cacheService = app(EnhancedCacheService::class);
-            
+
             // Test basic caching
             $key = 'test-cache-' . time();
             $data = ['test' => 'data', 'timestamp' => time()];
-            
+
             $cached = $cacheService->remember($key, 60, fn() => $data);
-            
+
             return $cached === $data;
         } catch (\Exception $e) {
             return false;
@@ -103,14 +103,14 @@ class Laravel129FeaturesCommand extends Command
     {
         try {
             $sessionService = app(EnhancedSessionService::class);
-            
+
             // Test session operations
             $key = 'test-session-' . time();
             $data = ['test' => 'session-data'];
-            
+
             $sessionService->put($key, $data);
             $retrieved = $sessionService->get($key);
-            
+
             return $retrieved === $data;
         } catch (\Exception $e) {
             return false;
@@ -131,7 +131,7 @@ class Laravel129FeaturesCommand extends Command
     {
         $hasIgbinary = function_exists('igbinary_serialize');
         $hasLzf = function_exists('lzf_compress');
-        
+
         // igbinary is available, lzf is optional
         return $hasIgbinary;
     }
@@ -166,15 +166,15 @@ class Laravel129FeaturesCommand extends Command
         try {
             $cacheService = app(EnhancedCacheService::class);
             $sessionService = app(EnhancedSessionService::class);
-            
+
             $cacheStats = $cacheService->getStats();
             $sessionStats = $sessionService->getStats();
-            
+
             $this->line('  Cache Statistics:');
             foreach ($cacheStats as $key => $value) {
                 $this->line("    {$key}: {$value}");
             }
-            
+
             $this->line('  Session Statistics:');
             foreach ($sessionStats as $key => $value) {
                 $this->line("    {$key}: {$value}");

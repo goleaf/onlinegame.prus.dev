@@ -40,7 +40,7 @@ class PopulateGameCommand extends Command
         }
 
         $this->info('🌱 Starting enhanced seeding with Laragear Populate...');
-        
+
         try {
             Artisan::call('db:seed', [
                 '--class' => 'GameSuperSeeder',
@@ -49,10 +49,9 @@ class PopulateGameCommand extends Command
 
             $this->info('✅ Game population completed successfully!');
             $this->info('🎯 Your Travian game is now ready to play!');
-            
+
             // Show some statistics
             $this->showStatistics();
-            
         } catch (\Exception $e) {
             $this->error('❌ Error during population: ' . $e->getMessage());
             return 1;
@@ -85,7 +84,6 @@ class PopulateGameCommand extends Command
             foreach ($stats as $type => $count) {
                 $this->line("  {$type}: {$count}");
             }
-
         } catch (\Exception $e) {
             $this->warn('Could not retrieve statistics: ' . $e->getMessage());
         }

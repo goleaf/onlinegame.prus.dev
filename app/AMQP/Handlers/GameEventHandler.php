@@ -2,8 +2,8 @@
 
 namespace App\AMQP\Handlers;
 
-use Usmonaliyev\SimpleRabbit\MQ\Message;
 use Illuminate\Support\Facades\Log;
+use Usmonaliyev\SimpleRabbit\MQ\Message;
 
 class GameEventHandler
 {
@@ -14,7 +14,7 @@ class GameEventHandler
     {
         try {
             $data = $message->getBody();
-            
+
             Log::info('Game event received', [
                 'event_type' => $data['event_type'] ?? 'unknown',
                 'data' => $data
@@ -40,13 +40,12 @@ class GameEventHandler
 
             // Acknowledge the message
             $message->ack();
-            
         } catch (\Exception $e) {
             Log::error('Error processing game event', [
                 'error' => $e->getMessage(),
                 'data' => $message->getBody()
             ]);
-            
+
             // Reject the message and requeue it
             $message->nack(true);
         }
@@ -58,7 +57,7 @@ class GameEventHandler
     private function handlePlayerAction(array $data)
     {
         Log::info('Processing player action', $data);
-        
+
         // Add your game logic here
         // For example: update player stats, trigger notifications, etc.
     }
@@ -69,7 +68,7 @@ class GameEventHandler
     private function handleBuildingCompleted(array $data)
     {
         Log::info('Building completed', $data);
-        
+
         // Add your game logic here
         // For example: update village resources, unlock new buildings, etc.
     }
@@ -80,7 +79,7 @@ class GameEventHandler
     private function handleBattleResult(array $data)
     {
         Log::info('Battle result processed', $data);
-        
+
         // Add your game logic here
         // For example: update troop counts, calculate losses, send notifications, etc.
     }
@@ -91,7 +90,7 @@ class GameEventHandler
     private function handleResourceUpdate(array $data)
     {
         Log::info('Resource update processed', $data);
-        
+
         // Add your game logic here
         // For example: update player resources, trigger production calculations, etc.
     }

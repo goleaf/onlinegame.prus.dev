@@ -61,10 +61,10 @@ class AnalyzeSlowQueries extends Command
         $currentQuery = null;
 
         $lines = explode("\n", $content);
-        
+
         foreach ($lines as $line) {
             $line = trim($line);
-            
+
             if (empty($line)) {
                 continue;
             }
@@ -74,7 +74,7 @@ class AnalyzeSlowQueries extends Command
                 if ($currentQuery) {
                     $queries[] = $currentQuery;
                 }
-                
+
                 $currentQuery = [
                     'query_time' => (float) $matches[1],
                     'lock_time' => (float) $matches[2],
@@ -172,7 +172,7 @@ class AnalyzeSlowQueries extends Command
         $fingerprint = preg_replace('/\d+/', '?', $sql);
         $fingerprint = preg_replace('/[\'"][^\'"]*[\'"]/', '?', $fingerprint);
         $fingerprint = preg_replace('/\s+/', ' ', $fingerprint);
-        
+
         return trim($fingerprint);
     }
 
@@ -219,7 +219,7 @@ class AnalyzeSlowQueries extends Command
 
         $this->newLine();
         $this->info('Top slow queries:');
-        
+
         foreach (array_slice($queries, 0, 5) as $index => $query) {
             $this->line(($index + 1) . '. ' . substr($query['sql'], 0, 100) . '...');
             if (!empty($query['recommendations'])) {
@@ -237,12 +237,12 @@ class AnalyzeSlowQueries extends Command
     private function displayCsv(array $queries): void
     {
         $this->line('Query Time,Rows Examined,Rows Sent,SQL,Recommendations');
-        
+
         foreach ($queries as $query) {
             $recommendations = implode('; ', $query['recommendations']);
             $sql = str_replace(["\n", "\r"], ' ', $query['sql']);
             $sql = str_replace('"', '""', $sql);
-            
+
             $this->line(sprintf(
                 '%.3f,%d,%d,"%s","%s"',
                 $query['query_time'],

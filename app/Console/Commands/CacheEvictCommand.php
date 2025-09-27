@@ -86,7 +86,7 @@ class CacheEvictCommand extends Command
 
             $totalDuration = microtime(true) - $startTime;
             $this->newLine();
-            $this->info("✅ Cache eviction completed in " . round($totalDuration, 3) . " seconds");
+            $this->info('✅ Cache eviction completed in ' . round($totalDuration, 3) . ' seconds');
 
             // Show final statistics if requested
             if ($showStats) {
@@ -95,7 +95,6 @@ class CacheEvictCommand extends Command
             }
 
             return 0;
-
         } catch (\Exception $e) {
             $this->error('❌ Cache eviction failed: ' . $e->getMessage());
             return 1;
@@ -116,7 +115,7 @@ class CacheEvictCommand extends Command
             $this->line("   Items removed: {$result['items_removed']}");
             $this->line("   Size freed: {$result['size_freed']}");
             $this->line("   Duration: {$result['duration']}s");
-            
+
             if (isset($result['items_before']) && isset($result['items_after'])) {
                 $this->line("   Items before: {$result['items_before']}");
                 $this->line("   Items after: {$result['items_after']}");
@@ -159,7 +158,7 @@ class CacheEvictCommand extends Command
             $this->line("   Failed stores: {$failedStores}");
         }
         $this->line("   Total items removed: {$totalItemsRemoved}");
-        $this->line("   Total duration: " . round($totalDuration, 3) . "s");
+        $this->line('   Total duration: ' . round($totalDuration, 3) . 's');
     }
 
     /**

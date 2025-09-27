@@ -2,9 +2,9 @@
 
 namespace App\AMQP\Handlers;
 
-use Usmonaliyev\SimpleRabbit\MQ\Message;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Usmonaliyev\SimpleRabbit\MQ\Message;
 
 class NotificationHandler
 {
@@ -15,7 +15,7 @@ class NotificationHandler
     {
         try {
             $data = $message->getBody();
-            
+
             Log::info('Notification event received', [
                 'notification_type' => $data['notification_type'] ?? 'unknown',
                 'data' => $data
@@ -38,13 +38,12 @@ class NotificationHandler
 
             // Acknowledge the message
             $message->ack();
-            
         } catch (\Exception $e) {
             Log::error('Error processing notification', [
                 'error' => $e->getMessage(),
                 'data' => $message->getBody()
             ]);
-            
+
             // Reject the message and requeue it
             $message->nack(true);
         }
@@ -56,7 +55,7 @@ class NotificationHandler
     private function handleEmailNotification(array $data)
     {
         Log::info('Processing email notification', $data);
-        
+
         // Add your email logic here
         // For example: send welcome emails, battle reports, etc.
     }
@@ -67,7 +66,7 @@ class NotificationHandler
     private function handleInGameNotification(array $data)
     {
         Log::info('Processing in-game notification', $data);
-        
+
         // Add your in-game notification logic here
         // For example: store notifications in database, trigger real-time updates, etc.
     }
@@ -78,7 +77,7 @@ class NotificationHandler
     private function handlePushNotification(array $data)
     {
         Log::info('Processing push notification', $data);
-        
+
         // Add your push notification logic here
         // For example: send mobile push notifications, web push notifications, etc.
     }
