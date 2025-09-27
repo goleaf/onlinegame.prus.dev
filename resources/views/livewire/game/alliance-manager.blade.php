@@ -250,18 +250,30 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-blue-700 mb-1">Message Type</label>
-                            <select wire:model="messageForm.type" class="w-full border-blue-300 rounded-md shadow-sm">
+                            <select wire:model="messageForm.message_type" class="w-full border-blue-300 rounded-md shadow-sm">
                                 <option value="general">General</option>
                                 <option value="announcement">Announcement</option>
                                 <option value="war">War Related</option>
                                 <option value="diplomacy">Diplomacy</option>
-                                <option value="leadership">Leadership</option>
+                                <option value="trade">Trade</option>
+                                <option value="strategy">Strategy</option>
+                                <option value="social">Social</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-blue-700 mb-1">Title</label>
-                            <input type="text" wire:model="messageForm.title" class="w-full border-blue-300 rounded-md shadow-sm" placeholder="Message title">
+                            <label class="block text-sm font-medium text-blue-700 mb-1">Priority</label>
+                            <select wire:model="messageForm.priority" class="w-full border-blue-300 rounded-md shadow-sm">
+                                <option value="low">Low</option>
+                                <option value="normal">Normal</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
                         </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-blue-700 mb-1">Subject</label>
+                        <input type="text" wire:model="messageForm.subject" class="w-full border-blue-300 rounded-md shadow-sm" placeholder="Message subject">
+                    </div>
                     </div>
                     <div class="mt-4">
                         <label class="block text-sm font-medium text-blue-700 mb-1">Content</label>

@@ -124,6 +124,128 @@ class Quest extends Model implements Auditable
     // Enhanced query scopes using Query Enrich
     public function scopeWithPlayerStats($query, $playerId = null)
     {
+        return $query->withCount([
+            'players as completed_count' => function ($q) {
+                $q->where('status', 'completed');
+            },
+            'players as active_count' => function ($q) {
+                $q->where('status', 'active');
+            },
+        ])->when($playerId, function ($q) use ($playerId) {
+            $q->with(['players' => function ($q) use ($playerId) {
+                $q->where('player_id', $playerId);
+            }]);
+        });
+    }
+
+    public function scopeWithStats($query)
+    {
+        return $query->withCount([
+            'players as completed_count' => function ($q) {
+                $q->where('status', 'completed');
+            },
+            'players as active_count' => function ($q) {
+                $q->where('status', 'active');
+            },
+            'players as available_count' => function ($q) {
+                $q->where('status', 'available');
+            },
+        ]);
+    }
+
+    public function scopePopular($query, $limit = 10)
+    {
+        return $query->withCount('players')
+            ->orderByDesc('players_count')
+            ->limit($limit);
+    }
+
+    public function scopeRecent($query, $days = 30)
+    {
+        return $query->where('created_at', '>=', now()->subDays($days));
+    }
+
+    // Helper methods
+    public function getCompletionRateAttribute(): float
+    {
+        $total = $this->players_count ?? 0;
+        $completed = $this->completed_count ?? 0;
+        
+        return $total > 0 ? ($completed / $total) * 100 : 0;
+    }
+
+    public function getDifficultyColorAttribute(): string
+    {
+        return match($this->difficulty) {
+            'easy' => 'green',
+            'medium' => 'yellow',
+            'hard' => 'orange',
+            'expert' => 'red',
+            default => 'gray'
+        };
+    }
+
+    public function getCategoryIconAttribute(): string
+    {
+        return match($this->category) {
+            'tutorial' => 'book',
+            'building' => 'home',
+            'combat' => 'sword',
+            'resource' => 'treasure',
+            'alliance' => 'users',
+            'exploration' => 'map',
+            default => 'star'
+        };
+    }
+
+    public function isCompletedByPlayer(int $playerId): bool
+    {
+        return $this->players()
+            ->where('player_id', $playerId)
+            ->where('status', 'completed')
+            ->exists();
+    }
+
+    public function isActiveForPlayer(int $playerId): bool
+    {
+        return $this->players()
+            ->where('player_id', $playerId)
+            ->where('status', 'active')
+            ->exists();
+    }
+
+    public function canBeStartedByPlayer(int $playerId): bool
+    {
+        return !$this->isCompletedByPlayer($playerId) && 
+               !$this->isActiveForPlayer($playerId) &&
+               $this->is_active;
+    }
+
+    // Caching methods
+    public static function getCachedQuests(string $cacheKey, callable $callback)
+    {
+        return SmartCache::remember(
+            "quests_{$cacheKey}",
+            now()->addMinutes(30),
+            $callback
+        );
+    }
+
+    public function getCachedPlayerProgress(int $playerId)
+    {
+        return SmartCache::remember(
+            "quest_progress_{$this->id}_{$playerId}",
+            now()->addMinutes(15),
+            function () use ($playerId) {
+                return $this->players()
+                    ->where('player_id', $playerId)
+                    ->first();
+            }
+        );
+    }
+
+    public function scopeWithPlayerStats($query, $playerId = null)
+    {
         $selectColumns = [
             'quests.*',
             QE::select(QE::count(c('id')))

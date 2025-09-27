@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 use SmartCache\Facades\SmartCache;
 
-class Message extends Model
+class Message extends Model implements Auditable
 {
-    use HasFactory, HasReference, Commentable;
+    use HasFactory, HasReference, Commentable, AuditableTrait;
 
     protected $fillable = [
         'sender_id',
