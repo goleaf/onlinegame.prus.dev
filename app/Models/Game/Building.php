@@ -56,6 +56,17 @@ class Building extends Model implements Auditable
         'metadata' => 'array',
     ];
 
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+
+    protected $referenceTemplate = [
+        'format' => 'BLD-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+
+    protected $referencePrefix = 'BLD';
+
     public function village()
     {
         return $this->belongsTo(Village::class);
