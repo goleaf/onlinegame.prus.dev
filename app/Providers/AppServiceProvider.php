@@ -36,6 +36,61 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\EnhancedSessionService::class);
         $this->app->singleton(\App\Services\GamePerformanceOptimizer::class);
 
+        // Register core game services
+        $this->app->singleton(\App\Services\GameTickService::class);
+        $this->app->singleton(\App\Services\BattleSimulationService::class);
+        $this->app->singleton(\App\Services\DefenseCalculationService::class);
+        $this->app->singleton(\App\Services\AllianceWarfareService::class);
+        $this->app->singleton(\App\Services\ResourceProductionService::class);
+        $this->app->singleton(\App\Services\TroopService::class);
+        $this->app->singleton(\App\Services\BuildingService::class);
+        $this->app->singleton(\App\Services\ChatService::class);
+        $this->app->singleton(\App\Services\MessageService::class);
+        $this->app->singleton(\App\Services\RealTimeGameService::class);
+
+        // Register geographic and analysis services
+        $this->app->singleton(\App\Services\GeographicService::class);
+        $this->app->singleton(\App\Services\GeographicAnalysisService::class);
+
+        // Register cache and performance services
+        $this->app->singleton(\App\Services\GameCacheService::class);
+        $this->app->singleton(\App\Services\CacheEvictionService::class);
+        $this->app->singleton(\App\Services\QueryOptimizationService::class);
+        $this->app->singleton(\App\Services\SmartCacheGameOptimizer::class);
+
+        // Register SEO and analytics services
+        $this->app->singleton(\App\Services\GameSeoService::class);
+        $this->app->singleton(\App\Services\SeoCacheService::class);
+        $this->app->singleton(\App\Services\GameNotificationService::class);
+        $this->app->singleton(\App\Services\QueryEnrichService::class);
+        $this->app->singleton(\App\Services\GameQueryEnrichService::class);
+        $this->app->singleton(\App\Services\QueryEnrichAnalyticsService::class);
+
+        // Register AI and integration services
+        $this->app->singleton(\App\Services\AIService::class);
+        $this->app->singleton(\App\Services\LarautilxIntegrationService::class);
+        $this->app->singleton(\App\Services\GameIntegrationService::class);
+        $this->app->singleton(\App\Services\IntrospectService::class);
+
+        // Register RabbitMQ and messaging services
+        $this->app->singleton(\App\Services\RabbitMQService::class);
+
+        // Register security and value object services
+        $this->app->singleton(\App\Services\GameSecurityService::class);
+        $this->app->singleton(\App\Services\ValueObjectService::class);
+        $this->app->singleton(\App\Services\UpdaterService::class);
+
+        // Register artifact and specialized services
+        $this->app->singleton(\App\Services\ArtifactEffectService::class);
+
+        // Register LaraUtilX utilities with proper dependencies
+        $this->app->bind(\LaraUtilX\Utilities\CachingUtil::class, function ($app) {
+            return new \LaraUtilX\Utilities\CachingUtil(
+                config('lara-util-x.cache.default_expiration', 3600),
+                config('lara-util-x.cache.default_tags', ['game'])
+            );
+        });
+
         // Register Basset helper
         $this->app->singleton(\App\Helpers\BassetHelper::class);
     }

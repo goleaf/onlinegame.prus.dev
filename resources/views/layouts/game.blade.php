@@ -194,7 +194,7 @@
 
             Livewire.on('gameTickError', function(data) {
                 // Show error notification
-                console.error('Game tick error:', data.message);
+                // Game tick error: data.message
                 // You can add an error toast here
             });
 
