@@ -353,39 +353,6 @@ class LarautilxIntegrationService
         ];
     }
 
-    /**
-     * Get integration status
-     */
-    public function getIntegrationStatus()
-    {
-        return [
-            'status' => 'active',
-            'version' => '1.1',
-            'components' => [
-                'ApiResponseTrait' => trait_exists(\LaraUtilX\Traits\ApiResponseTrait::class),
-                'FilteringUtil' => class_exists(\LaraUtilX\Utilities\FilteringUtil::class),
-                'PaginationUtil' => class_exists(\LaraUtilX\Utilities\PaginationUtil::class),
-                'CachingUtil' => class_exists(\LaraUtilX\Utilities\CachingUtil::class),
-                'FileProcessingTrait' => trait_exists(\LaraUtilX\Traits\FileProcessingTrait::class),
-                'AccessLogMiddleware' => class_exists(\LaraUtilX\Http\Middleware\AccessLogMiddleware::class),
-                'CrudController' => class_exists(\LaraUtilX\Http\Controllers\CrudController::class),
-                'Auditable' => trait_exists(\LaraUtilX\Traits\Auditable::class),
-                'LoggingUtil' => class_exists(\LaraUtilX\Utilities\LoggingUtil::class),
-                'RateLimiterUtil' => class_exists(\LaraUtilX\Utilities\RateLimiterUtil::class),
-                'FeatureToggleUtil' => class_exists(\LaraUtilX\Utilities\FeatureToggleUtil::class),
-                'ConfigUtil' => class_exists(\LaraUtilX\Utilities\ConfigUtil::class),
-                'QueryParameterUtil' => class_exists(\LaraUtilX\Utilities\QueryParameterUtil::class),
-                'SchedulerUtil' => class_exists(\LaraUtilX\Utilities\SchedulerUtil::class),
-            ],
-            'active_features' => [
-                'advanced_caching' => config('feature-toggles.advanced_caching', false),
-                'enhanced_filtering' => config('feature-toggles.enhanced_filtering', false),
-                'standardized_responses' => config('feature-toggles.standardized_responses', false),
-                'request_logging' => config('feature-toggles.request_logging', false),
-                'rate_limiting' => config('feature-toggles.rate_limiting', false),
-            ],
-        ];
-    }
 
     /**
      * Clear all Larautilx caches
