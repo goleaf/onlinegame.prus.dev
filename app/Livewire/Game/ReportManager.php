@@ -7,6 +7,7 @@ use App\Models\Game\Report;
 use App\Models\Game\World;
 use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
+use SmartCache\Facades\SmartCache;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -127,58 +128,63 @@ class ReportManager extends Component
         $this->isLoading = true;
 
         try {
-            $query = Report::where('world_id', $this->world->id)
-                ->with(['attacker:id,name', 'defender:id,name', 'fromVillage:id,name', 'toVillage:id,name']);
+            // Use SmartCache for report data with automatic optimization
+            $cacheKey = "world_{$this->world->id}_reports_{$this->filterByType}_{$this->filterByStatus}_{$this->showOnlyMyReports}_{$this->showOnlyUnread}_{$this->showOnlyImportant}_{$this->sortBy}_{$this->sortOrder}";
+            
+            $this->reports = SmartCache::remember($cacheKey, now()->addMinutes(3), function () {
+                $query = Report::where('world_id', $this->world->id)
+                    ->with(['attacker:id,name', 'defender:id,name', 'fromVillage:id,name', 'toVillage:id,name']);
 
-            // Use QueryOptimizationService for conditional filters
-            $filters = [
-                $this->showOnlyMyReports => function ($q) {
-                    return $q->where(function ($subQ) {
-                        $subQ
-                            ->where('attacker_id', Auth::id())
-                            ->orWhere('defender_id', Auth::id());
-                    });
-                },
-                $this->filterByType => function ($q) {
-                    return $q->where('type', $this->filterByType);
-                },
-                $this->filterByStatus => function ($q) {
-                    return $q->where('status', $this->filterByStatus);
-                },
-                $this->filterByDate => function ($q) {
-                    return $this->applyDateFilter($q);
-                },
-                $this->showOnlyUnread => function ($q) {
-                    return $q->where('is_read', false);
-                },
-                $this->showOnlyImportant => function ($q) {
-                    return $q->where('is_important', true);
-                },
-                $this->searchQuery => function ($q) {
-                    return $q->where(function ($subQ) {
-                        $subQ
-                            ->where('title', 'like', '%' . $this->searchQuery . '%')
-                            ->orWhere('content', 'like', '%' . $this->searchQuery . '%')
-                            ->orWhereIn('attacker_id', function ($playerQ) {
-                                $playerQ
-                                    ->select('id')
-                                    ->from('players')
-                                    ->where('name', 'like', '%' . $this->searchQuery . '%');
-                            })
-                            ->orWhereIn('defender_id', function ($playerQ) {
-                                $playerQ
-                                    ->select('id')
-                                    ->from('players')
-                                    ->where('name', 'like', '%' . $this->searchQuery . '%');
-                            });
-                    });
-                },
-            ];
+                // Use QueryOptimizationService for conditional filters
+                $filters = [
+                    $this->showOnlyMyReports => function ($q) {
+                        return $q->where(function ($subQ) {
+                            $subQ
+                                ->where('attacker_id', Auth::id())
+                                ->orWhere('defender_id', Auth::id());
+                        });
+                    },
+                    $this->filterByType => function ($q) {
+                        return $q->where('type', $this->filterByType);
+                    },
+                    $this->filterByStatus => function ($q) {
+                        return $q->where('status', $this->filterByStatus);
+                    },
+                    $this->filterByDate => function ($q) {
+                        return $this->applyDateFilter($q);
+                    },
+                    $this->showOnlyUnread => function ($q) {
+                        return $q->where('is_read', false);
+                    },
+                    $this->showOnlyImportant => function ($q) {
+                        return $q->where('is_important', true);
+                    },
+                    $this->searchQuery => function ($q) {
+                        return $q->where(function ($subQ) {
+                            $subQ
+                                ->where('title', 'like', '%' . $this->searchQuery . '%')
+                                ->orWhere('content', 'like', '%' . $this->searchQuery . '%')
+                                ->orWhereIn('attacker_id', function ($playerQ) {
+                                    $playerQ
+                                        ->select('id')
+                                        ->from('players')
+                                        ->where('name', 'like', '%' . $this->searchQuery . '%');
+                                })
+                                ->orWhereIn('defender_id', function ($playerQ) {
+                                    $playerQ
+                                        ->select('id')
+                                        ->from('players')
+                                        ->where('name', 'like', '%' . $this->searchQuery . '%');
+                                });
+                        });
+                    },
+                ];
 
-            $query = QueryOptimizationService::applyConditionalFilters($query, $filters);
-            $query = QueryOptimizationService::applyConditionalOrdering($query, $this->sortBy, $this->sortOrder);
+                $query = QueryOptimizationService::applyConditionalFilters($query, $filters);
+                $query = QueryOptimizationService::applyConditionalOrdering($query, $this->sortBy, $this->sortOrder);
 
-            $this->reports = $query->get();
+                return $query->get();
+            });
         } catch (\Exception $e) {
             $this->addNotification('Error loading report data: ' . $e->getMessage(), 'error');
             $this->reports = collect();
@@ -431,20 +437,25 @@ class ReportManager extends Component
 
     public function calculateReportStats()
     {
-        // Use single query with selectRaw to get all stats at once
-        $stats = Report::where('world_id', $this->world->id)
-            ->where(function ($q) {
-                $q
-                    ->where('attacker_id', Auth::id())
-                    ->orWhere('defender_id', Auth::id());
-            })
-            ->selectRaw('
-                COUNT(*) as total_reports,
-                SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) as unread_reports,
-                SUM(CASE WHEN is_important = 1 THEN 1 ELSE 0 END) as important_reports,
-                SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) as today_reports
-            ')
-            ->first();
+        // Use SmartCache for report statistics with automatic optimization
+        $statsCacheKey = "world_{$this->world->id}_player_" . Auth::id() . "_report_stats";
+        
+        $stats = SmartCache::remember($statsCacheKey, now()->addMinutes(5), function () {
+            // Use single query with selectRaw to get all stats at once
+            return Report::where('world_id', $this->world->id)
+                ->where(function ($q) {
+                    $q
+                        ->where('attacker_id', Auth::id())
+                        ->orWhere('defender_id', Auth::id());
+                })
+                ->selectRaw('
+                    COUNT(*) as total_reports,
+                    SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) as unread_reports,
+                    SUM(CASE WHEN is_important = 1 THEN 1 ELSE 0 END) as important_reports,
+                    SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) as today_reports
+                ')
+                ->first();
+        });
 
         $this->reportStats = [
             'total_reports' => $stats->total_reports ?? 0,

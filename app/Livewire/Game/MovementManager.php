@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\FilteringUtil;
 use LaraUtilX\Utilities\PaginationUtil;
+use SmartCache\Facades\SmartCache;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -157,18 +158,23 @@ class MovementManager extends Component
         ])->label('MovementManager Load Movement Data');
 
         try {
-            // Use optimized scopes from Movement model
-            $query = Movement::byVillage($this->village->id)
-                ->withVillageInfo()
-                ->byType($this->filterByType)
-                ->byStatus($this->filterByStatus)
-                ->when($this->showOnlyMyMovements, function ($q) {
-                    return $q->byPlayer($this->village->player_id);
-                })
-                ->search($this->searchQuery)
-                ->orderBy($this->sortBy, $this->sortOrder);
+            // Use SmartCache for movement data with automatic optimization
+            $cacheKey = "village_{$this->village->id}_movements_{$this->filterByType}_{$this->filterByStatus}_{$this->showOnlyMyMovements}_{$this->sortBy}_{$this->sortOrder}";
+            
+            $this->movements = SmartCache::remember($cacheKey, now()->addMinutes(2), function () {
+                // Use optimized scopes from Movement model
+                $query = Movement::byVillage($this->village->id)
+                    ->withVillageInfo()
+                    ->byType($this->filterByType)
+                    ->byStatus($this->filterByStatus)
+                    ->when($this->showOnlyMyMovements, function ($q) {
+                        return $q->byPlayer($this->village->player_id);
+                    })
+                    ->search($this->searchQuery)
+                    ->orderBy($this->sortBy, $this->sortOrder);
 
-            $this->movements = $query->get();
+                return $query->get();
+            });
 
             // Apply additional filtering using FilteringUtil for complex filters
             if (!empty($this->searchQuery)) {
@@ -324,8 +330,12 @@ class MovementManager extends Component
 
         $movement->update(['troops' => $troopsData]);
 
+        // Generate reference number for the movement
+        $movement->generateReferenceNumber();
+
         ds('Movement created successfully', [
             'movement_id' => $movement->id,
+            'reference_number' => $movement->reference_number,
             'troops_data' => $troopsData,
             'arrives_at' => $this->arrivalTime
         ])->label('MovementManager Movement Created');

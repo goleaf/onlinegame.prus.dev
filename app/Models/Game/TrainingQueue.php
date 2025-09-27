@@ -9,7 +9,7 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class TrainingQueue extends Model
 {
-    use HasFactory;
+    use HasFactory, HasReference;
 
     protected $fillable = [
         'village_id',
@@ -19,6 +19,7 @@ class TrainingQueue extends Model
         'completed_at',
         'costs',
         'status',
+        'reference_number',
     ];
 
     protected $casts = [
@@ -26,6 +27,15 @@ class TrainingQueue extends Model
         'completed_at' => 'datetime',
         'costs' => 'array',
     ];
+
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+    protected $referenceTemplate = [
+        'format' => 'TRN-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+    protected $referencePrefix = 'TRN';
 
     public function village(): BelongsTo
     {

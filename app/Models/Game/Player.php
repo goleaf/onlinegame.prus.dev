@@ -6,10 +6,12 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use NunoMaduro\Essentials\Concerns\StrictModel;
 
 class Player extends Model
 {
     use HasFactory;
+    use StrictModel;
 
     protected $fillable = [
         'user_id',
@@ -31,8 +33,8 @@ class Player extends Model
     ];
 
     protected $casts = [
-        'last_login' => 'datetime',
-        'last_active_at' => 'datetime',
+        'last_login' => 'datetime_immutable',
+        'last_active_at' => 'datetime_immutable',
         'is_active' => 'boolean',
         'is_online' => 'boolean',
     ];

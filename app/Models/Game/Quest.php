@@ -2,13 +2,14 @@
 
 namespace App\Models\Game;
 
+use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 
 class Quest extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTaxonomy;
 
     protected $fillable = [
         'name',

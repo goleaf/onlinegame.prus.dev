@@ -27,14 +27,17 @@ Laradumps has been successfully integrated into the online game's Livewire compo
 
 **Example Usage:**
 ```php
-// View attack launch details
+// View attack launch details with geographic data
 ds('Launching attack', [
     'from_village' => $this->village->name,
     'to_village' => $this->selectedTarget->name,
-    'distance' => $distance,
+    'game_distance' => $distance,
+    'real_world_distance_km' => $realWorldDistance,
     'travel_time' => $travelTime,
     'attacking_troops' => $this->attackingTroops,
-    'total_attack_power' => array_sum(array_column($this->attackingTroops, 'attack'))
+    'total_attack_power' => array_sum(array_column($this->attackingTroops, 'attack')),
+    'from_coordinates' => "({$this->village->x_coordinate}|{$this->village->y_coordinate})",
+    'to_coordinates' => "({$this->selectedTarget->x_coordinate}|{$this->selectedTarget->y_coordinate})"
 ])->label('BattleManager Attack Launch');
 ```
 
@@ -110,15 +113,18 @@ ds('Processing game tick', [
 
 **Example Usage:**
 ```php
-// View movement creation details
+// View movement creation details with geographic data
 ds('Creating movement', [
     'from_village' => $this->village->name,
     'to_village' => $targetVillage->name,
     'movement_type' => $this->movementType,
-    'distance' => $distance,
+    'game_distance' => $distance,
+    'real_world_distance_km' => $realWorldDistance,
     'travel_time' => $this->travelTime,
     'selected_troops' => $this->selectedTroops,
-    'troop_quantities' => $this->troopQuantities
+    'troop_quantities' => $this->troopQuantities,
+    'from_coordinates' => "({$this->village->x_coordinate}|{$this->village->y_coordinate})",
+    'to_coordinates' => "({$targetVillage->x_coordinate}|{$targetVillage->y_coordinate})"
 ])->label('MovementManager Create Movement');
 ```
 
@@ -136,6 +142,14 @@ ds('Creating movement', [
 - **Task Data**: Status, progress, rewards
 - **Movement Data**: Types, status, travel times
 - **Resource Data**: Production rates, capacities
+
+### Geographic Data (New)
+- **Game Coordinates**: X/Y grid positions
+- **Real-World Coordinates**: Latitude/longitude mapping
+- **Distances**: Both game and real-world distances
+- **Geohash**: Geographic hash for location indexing
+- **Travel Times**: Calculated using geographic service
+- **Coordinate Conversion**: Game ↔ Real-world mapping
 
 ## Usage Instructions
 
@@ -198,6 +212,43 @@ The `laradumps.yaml` file includes:
 - Laradumps Documentation: [laradumps.dev](https://laradumps.dev)
 - Laravel Debugging: [Laravel Debugging Guide](https://laravel.com/docs/debugging)
 
+## Geographic Service Integration
+
+### New Features Added
+- **GeographicService**: Comprehensive geographic calculations
+- **Real-World Mapping**: Game coordinates to lat/lon conversion
+- **Distance Calculations**: Both game and real-world distances
+- **Travel Time**: More accurate travel time calculations
+- **Geohash Support**: Geographic indexing and searching
+- **Coordinate Conversion**: Multiple coordinate format support
+
+### Geographic Debug Data
+- **Game Coordinates**: X/Y grid positions (e.g., "(100|200)")
+- **Real-World Coordinates**: Latitude/longitude pairs
+- **Distances**: Game distance and real-world distance in km
+- **Geohash**: Geographic hash for location indexing
+- **Travel Times**: Calculated using speed and distance
+- **Bearing**: Direction from one point to another
+
+### Usage Examples
+```php
+// Get real-world coordinates
+$coords = $village->getRealWorldCoordinates();
+// Returns: ['lat' => 50.123, 'lon' => 8.456]
+
+// Calculate real-world distance
+$distance = $village1->realWorldDistanceTo($village2);
+// Returns: 15.7 (km)
+
+// Get geohash
+$geohash = $village->getGeohash();
+// Returns: "u1x0y0z0"
+
+// Calculate bearing
+$bearing = $village1->bearingTo($village2);
+// Returns: 45.5 (degrees)
+```
+
 ## Future Enhancements
 
 Potential improvements:
@@ -206,6 +257,8 @@ Potential improvements:
 - Add user action tracking
 - Create debug dashboards
 - Integrate with error reporting systems
+- **Geographic Features**: Map visualization, route planning, territory analysis
+- **Real-World Integration**: Weather data, time zones, seasonal effects
 
 ---
 

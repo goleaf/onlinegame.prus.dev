@@ -7,11 +7,13 @@ use App\Models\Game\PlayerAchievement;
 use App\Models\Game\PlayerQuest;
 use App\Models\Game\Task;
 use App\Models\Game\World;
+use App\Services\GeographicService;
 use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\FilteringUtil;
 use LaraUtilX\Utilities\PaginationUtil;
+use SmartCache\Facades\SmartCache;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -113,7 +115,14 @@ class TaskManager extends Component
             'world_id' => $this->world?->id,
             'world_name' => $this->world?->name,
             'user_id' => Auth::id(),
-            'player_id' => $player?->id
+            'player_id' => $player?->id,
+            'player_villages' => $player?->villages->map(function($village) {
+                return [
+                    'village_name' => $village->name,
+                    'coordinates' => "({$village->x_coordinate}|{$village->y_coordinate})",
+                    'real_world_coords' => $village->getRealWorldCoordinates()
+                ];
+            })->toArray() ?? []
         ])->label('TaskManager Mount');
 
         if ($this->world) {
@@ -181,16 +190,21 @@ class TaskManager extends Component
             'sort_order' => $this->sortOrder
         ])->label('TaskManager Load Task Data');
 
-        // Use optimized scopes from Task model
-        $query = Task::byWorld($this->world->id)
-            ->byPlayer($this->player->id)
-            ->withStats()
-            ->withPlayerInfo()
-            ->byStatusFilter($this->taskType)
-            ->search($this->searchQuery)
-            ->orderBy($this->sortBy, $this->sortOrder);
+        // Use SmartCache for task data with automatic optimization
+        $cacheKey = "world_{$this->world->id}_player_{$this->player->id}_tasks_{$this->taskType}_{$this->sortBy}_{$this->sortOrder}";
 
-        $this->tasks = $query->get();
+        $this->tasks = SmartCache::remember($cacheKey, now()->addMinutes(3), function () {
+            // Use optimized scopes from Task model
+            $query = Task::byWorld($this->world->id)
+                ->byPlayer($this->player->id)
+                ->withStats()
+                ->withPlayerInfo()
+                ->byStatusFilter($this->taskType)
+                ->search($this->searchQuery)
+                ->orderBy($this->sortBy, $this->sortOrder);
+
+            return $query->get();
+        });
 
         // Apply additional filtering using FilteringUtil for complex filters
         if (!empty($this->searchQuery)) {
@@ -202,26 +216,36 @@ class TaskManager extends Component
             );
         }
 
-        // Use single query with selectRaw to get all task stats at once
-        $taskStats = Task::where('world_id', $this->world->id)
-            ->where('player_id', $this->player->id)
-            ->selectRaw('
-                SUM(CASE WHEN status = "active" THEN 1 ELSE 0 END) as active_count,
-                SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed_count,
-                SUM(CASE WHEN status = "available" THEN 1 ELSE 0 END) as available_count,
-                AVG(CASE WHEN status = "completed" THEN progress ELSE NULL END) as avg_progress,
-                MAX(updated_at) as last_updated
-            ')
-            ->first();
+        // Use SmartCache for task statistics with automatic optimization
+        $statsCacheKey = "world_{$this->world->id}_player_{$this->player->id}_task_stats";
+        
+        $taskStats = SmartCache::remember($statsCacheKey, now()->addMinutes(5), function () {
+            // Use single query with selectRaw to get all task stats at once
+            return Task::where('world_id', $this->world->id)
+                ->where('player_id', $this->player->id)
+                ->selectRaw('
+                    SUM(CASE WHEN status = "active" THEN 1 ELSE 0 END) as active_count,
+                    SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed_count,
+                    SUM(CASE WHEN status = "available" THEN 1 ELSE 0 END) as available_count,
+                    AVG(CASE WHEN status = "completed" THEN progress ELSE NULL END) as avg_progress,
+                    MAX(updated_at) as last_updated
+                ')
+                ->first();
+        });
 
-        // Get tasks by status using optimized scopes
-        $this->activeTasks = Task::byWorld($this->world->id)
-            ->byPlayer($this->player->id)
-            ->active()
-            ->withStats()
-            ->get();
+        // Get tasks by status using SmartCache with optimized scopes
+        $activeTasksCacheKey = "world_{$this->world->id}_player_{$this->player->id}_active_tasks";
+        $this->activeTasks = SmartCache::remember($activeTasksCacheKey, now()->addMinutes(2), function () {
+            return Task::byWorld($this->world->id)
+                ->byPlayer($this->player->id)
+                ->active()
+                ->withStats()
+                ->get();
+        });
 
-        $this->completedTasks = Task::byWorld($this->world->id)
+        $completedTasksCacheKey = "world_{$this->world->id}_player_{$this->player->id}_completed_tasks";
+        $this->completedTasks = SmartCache::remember($completedTasksCacheKey, now()->addMinutes(5), function () {
+            return Task::byWorld($this->world->id)
             ->byPlayer($this->player->id)
             ->completed()
             ->withStats()

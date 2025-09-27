@@ -62,10 +62,17 @@ class TechnologyManager extends Component
     public function mount($villageId = null)
     {
         if ($villageId) {
-            $this->village = Village::with(['player', 'resources'])->findOrFail($villageId);
+            $this->village = Village::withStats()
+                ->with(['player:id,name,level,points', 'resources:id,village_id,wood,clay,iron,crop'])
+                ->findOrFail($villageId);
         } else {
-            $player = Player::where('user_id', Auth::id())->first();
-            $this->village = $player?->villages()->with(['player', 'resources'])->first();
+            $player = Player::where('user_id', Auth::id())
+                ->with(['villages' => function ($query) {
+                    $query->withStats()
+                        ->with(['resources:id,village_id,wood,clay,iron,crop']);
+                }])
+                ->first();
+            $this->village = $player?->villages->first();
         }
 
         if ($this->village) {
@@ -95,31 +102,47 @@ class TechnologyManager extends Component
         $this->isLoading = true;
 
         try {
-            // Load available technologies
+            // Load available technologies with optimized query
             $this->availableTechnologies = Technology::where('world_id', $this->village->world_id)
                 ->where('is_active', true)
                 ->where('min_level', '<=', $this->village->player->level ?? 1)
                 ->whereNotIn('id', $this->village->player->technologies()->pluck('technology_id'))
+                ->selectRaw('
+                    technologies.*,
+                    (SELECT COUNT(*) FROM player_technologies pt WHERE pt.technology_id = technologies.id) as total_researchers,
+                    (SELECT COUNT(*) FROM player_technologies pt2 WHERE pt2.technology_id = technologies.id AND pt2.status = "completed") as completed_count,
+                    (SELECT AVG(level) FROM player_technologies pt3 WHERE pt3.technology_id = technologies.id AND pt3.status = "completed") as avg_level
+                ')
                 ->get()
                 ->toArray();
 
-            // Load researched technologies
+            // Load researched technologies with optimized query
             $this->researchedTechnologies = $this
                 ->village
                 ->player
                 ->technologies()
                 ->where('status', 'completed')
-                ->with('technology')
+                ->with('technology:id,name,description,category,benefits')
+                ->selectRaw('
+                    player_technologies.*,
+                    (SELECT COUNT(*) FROM player_technologies pt2 WHERE pt2.player_id = player_technologies.player_id AND pt2.status = "completed") as total_researched,
+                    (SELECT AVG(level) FROM player_technologies pt3 WHERE pt3.player_id = player_technologies.player_id AND pt3.status = "completed") as avg_research_level
+                ')
                 ->get()
                 ->toArray();
 
-            // Load research queue
+            // Load research queue with optimized query
             $this->researchQueue = $this
                 ->village
                 ->player
                 ->technologies()
                 ->where('status', 'researching')
-                ->with('technology')
+                ->with('technology:id,name,description,category,research_time')
+                ->selectRaw('
+                    player_technologies.*,
+                    (SELECT COUNT(*) FROM player_technologies pt2 WHERE pt2.player_id = player_technologies.player_id AND pt2.status = "researching") as total_researching,
+                    (SELECT AVG(progress) FROM player_technologies pt3 WHERE pt3.player_id = player_technologies.player_id AND pt3.status = "researching") as avg_research_progress
+                ')
                 ->get()
                 ->toArray();
 
@@ -133,7 +156,13 @@ class TechnologyManager extends Component
 
     public function selectTechnology($technologyId)
     {
-        $this->selectedTechnology = Technology::find($technologyId);
+        $this->selectedTechnology = Technology::selectRaw('
+                technologies.*,
+                (SELECT COUNT(*) FROM player_technologies pt WHERE pt.technology_id = technologies.id) as total_researchers,
+                (SELECT COUNT(*) FROM player_technologies pt2 WHERE pt2.technology_id = technologies.id AND pt2.status = "completed") as completed_count,
+                (SELECT AVG(level) FROM player_technologies pt3 WHERE pt3.technology_id = technologies.id AND pt3.status = "completed") as avg_level
+            ')
+            ->find($technologyId);
         $this->selectedTechnologyId = $technologyId;
         $this->showDetails = true;
         $this->addNotification('Technology selected', 'info');

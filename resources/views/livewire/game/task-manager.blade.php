@@ -123,11 +123,18 @@
                                 <i class="fas fa-{{ $this->getTaskIcon($task->type ?? 'task') }} text-2xl text-green-400 mr-3"></i>
                                 <div>
                                     <h3 class="text-lg font-bold text-white">{{ $task->title }}</h3>
-                                    <span class="px-2 py-1 rounded text-xs font-medium
-                                        {{ $this->getTaskColor($task->status) === 'blue' ? 'bg-blue-600 text-blue-100' : 
-                                           ($this->getTaskColor($task->status) === 'green' ? 'bg-green-600 text-green-100' : 'bg-gray-600 text-gray-100') }}">
-                                        {{ ucfirst($task->status) }}
-                                    </span>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="px-2 py-1 rounded text-xs font-medium
+                                            {{ $this->getTaskColor($task->status) === 'blue' ? 'bg-blue-600 text-blue-100' : 
+                                               ($this->getTaskColor($task->status) === 'green' ? 'bg-green-600 text-green-100' : 'bg-gray-600 text-gray-100') }}">
+                                            {{ ucfirst($task->status) }}
+                                        </span>
+                                        @if($task->reference_number)
+                                            <span class="px-2 py-1 rounded text-xs font-medium bg-gray-600 text-gray-100">
+                                                {{ $task->reference_number }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -201,11 +208,18 @@
                                 <i class="fas fa-star text-2xl text-yellow-400 mr-3"></i>
                                 <div>
                                     <h3 class="text-lg font-bold text-white">{{ $quest->title }}</h3>
-                                    <span class="px-2 py-1 rounded text-xs font-medium
-                                        {{ $this->getTaskColor($quest->status) === 'blue' ? 'bg-blue-600 text-blue-100' : 
-                                           ($this->getTaskColor($quest->status) === 'green' ? 'bg-green-600 text-green-100' : 'bg-gray-600 text-gray-100') }}">
-                                        {{ ucfirst($quest->status) }}
-                                    </span>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="px-2 py-1 rounded text-xs font-medium
+                                            {{ $this->getTaskColor($quest->status) === 'blue' ? 'bg-blue-600 text-blue-100' : 
+                                               ($this->getTaskColor($quest->status) === 'green' ? 'bg-green-600 text-green-100' : 'bg-gray-600 text-gray-100') }}">
+                                            {{ ucfirst($quest->status) }}
+                                        </span>
+                                        @if($quest->reference_number)
+                                            <span class="px-2 py-1 rounded text-xs font-medium bg-gray-600 text-gray-100">
+                                                {{ $quest->reference_number }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>

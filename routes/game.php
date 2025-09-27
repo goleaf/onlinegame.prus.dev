@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Game\GameController;
+use App\Http\Controllers\Game\LarautilxController;
 use App\Http\Controllers\Game\PlayerController;
 use App\Http\Controllers\Game\SecureGameController;
 use App\Http\Controllers\Game\TaskController;
@@ -34,6 +35,11 @@ Route::middleware(['auth', 'game.auth'])->group(function () {
 
     // Map
     Route::get('/game/map', [GameController::class, 'map'])->name('game.map');
+    
+    // Advanced Map with Geographic Features
+    Route::get('/game/advanced-map', function () {
+        return view('game.advanced-map');
+    })->name('game.advanced-map');
 
     // Statistics
     Route::get('/game/statistics', [GameController::class, 'statistics'])->name('game.statistics');
@@ -106,6 +112,18 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::put('/tasks/{taskId}/progress', [TaskController::class, 'updateProgress'])->name('game.api.tasks.progress');
     Route::get('/tasks/player/{playerId}/stats', [TaskController::class, 'getPlayerTaskStats'])->name('game.api.tasks.player-stats');
     Route::get('/tasks/overdue', [TaskController::class, 'getOverdueTasks'])->name('game.api.tasks.overdue');
+
+    // Larautilx integration management
+    Route::get('/larautilx/status', [LarautilxController::class, 'getStatus'])->name('game.api.larautilx.status');
+    Route::get('/larautilx/cache/stats', [LarautilxController::class, 'getCacheStats'])->name('game.api.larautilx.cache.stats');
+    Route::post('/larautilx/cache/clear', [LarautilxController::class, 'clearCache'])->name('game.api.larautilx.cache.clear');
+    Route::post('/larautilx/cache/player/clear', [LarautilxController::class, 'clearPlayerCache'])->name('game.api.larautilx.cache.player.clear');
+    Route::post('/larautilx/cache/world/clear', [LarautilxController::class, 'clearWorldCache'])->name('game.api.larautilx.cache.world.clear');
+    Route::post('/larautilx/cache/village/clear', [LarautilxController::class, 'clearVillageCache'])->name('game.api.larautilx.cache.village.clear');
+    Route::post('/larautilx/test/filtering', [LarautilxController::class, 'testFiltering'])->name('game.api.larautilx.test.filtering');
+    Route::post('/larautilx/test/pagination', [LarautilxController::class, 'testPagination'])->name('game.api.larautilx.test.pagination');
+    Route::post('/larautilx/test/caching', [LarautilxController::class, 'testCaching'])->name('game.api.larautilx.test.caching');
+    Route::get('/larautilx/docs', [LarautilxController::class, 'getApiDocumentation'])->name('game.api.larautilx.docs');
 });
 
 // Error pages

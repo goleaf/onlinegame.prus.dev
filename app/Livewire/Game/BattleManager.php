@@ -166,6 +166,9 @@ class BattleManager extends Component
                 'status' => 'travelling',
             ]);
 
+            // Generate reference number for the movement
+            $movement->generateReferenceNumber();
+
             // Update troop counts
             foreach ($this->attackingTroops as $troop) {
                 $villageTroop = $this->village->troops->find($troop['troop_id']);
@@ -181,11 +184,13 @@ class BattleManager extends Component
 
             ds('Attack launched successfully', [
                 'movement_id' => $movement->id,
+                'reference_number' => $movement->reference_number,
                 'arrives_at' => $movement->arrives_at
             ])->label('BattleManager Attack Success');
 
             $this->dispatch('attackLaunched', [
                 'target' => $this->selectedTarget->name,
+                'reference_number' => $movement->reference_number,
                 'arrives_at' => $movement->arrives_at,
             ]);
         } catch (\Exception $e) {

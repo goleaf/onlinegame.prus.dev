@@ -155,7 +155,14 @@ class EnhancedGameDashboard extends Component
             'user_id' => Auth::id(),
             'player_id' => $this->player->id,
             'world_id' => $this->player->world_id,
-            'villages_count' => $this->player->villages->count() ?? 0
+            'villages_count' => $this->player->villages->count() ?? 0,
+            'player_coordinates' => $this->player->villages->map(function($village) {
+                return [
+                    'village_name' => $village->name,
+                    'coordinates' => "({$village->x_coordinate}|{$village->y_coordinate})",
+                    'real_world_coords' => $village->getRealWorldCoordinates()
+                ];
+            })->toArray()
         ])->label('EnhancedGameDashboard Mount');
 
         $this->loadGameData();
@@ -449,7 +456,10 @@ class EnhancedGameDashboard extends Component
             'village_id' => $villageId,
             'village_name' => $this->currentVillage?->name,
             'player_id' => $this->player->id,
-            'total_villages' => $this->villages->count()
+            'total_villages' => $this->villages->count(),
+            'village_coordinates' => $this->currentVillage ? "({$this->currentVillage->x_coordinate}|{$this->currentVillage->y_coordinate})" : null,
+            'real_world_coords' => $this->currentVillage?->getRealWorldCoordinates(),
+            'geohash' => $this->currentVillage?->getGeohash()
         ])->label('EnhancedGameDashboard Village Selection');
 
         if ($this->currentVillage) {

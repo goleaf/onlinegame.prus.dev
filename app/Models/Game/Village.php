@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use NunoMaduro\Essentials\Concerns\StrictModel;
 
 class Village extends Model
 {
     use HasFactory;
+    use StrictModel;
 
     protected $fillable = [
         'player_id',

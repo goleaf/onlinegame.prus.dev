@@ -167,6 +167,7 @@ $playerStats = Player::where('id', $this->player->id)
 - **RealTimeVillageManager**: Reduced from 7+ queries to 3-4 queries
 - **TroopManager**: Reduced from 6+ queries to 2-3 queries
 - **AllianceManager**: Reduced from 8+ queries to 3-4 queries
+- **TechnologyManager**: Reduced from 7+ queries to 3-4 queries
 
 ### Memory Usage
 - Reduced memory footprint by eliminating redundant data loading
@@ -197,20 +198,22 @@ $playerStats = Player::where('id', $this->player->id)
 14. `app/Livewire/Game/RealTimeVillageManager.php`
 15. `app/Livewire/Game/TroopManager.php`
 16. `app/Livewire/Game/AllianceManager.php`
-17. `app/Models/Game/Player.php`
-18. `app/Models/Game/Quest.php`
-19. `app/Models/Game/Movement.php`
-20. `app/Models/Game/GameEvent.php`
-21. `app/Models/Game/Task.php`
-22. `app/Models/Game/AchievementTemplate.php`
-23. `app/Models/Game/PlayerAchievement.php`
-24. `app/Models/Game/Battle.php`
-25. `app/Models/Game/Village.php`
-26. `app/Models/Game/Building.php`
-27. `app/Models/Game/Troop.php`
-28. `app/Models/Game/UnitType.php`
-29. `app/Models/Game/Alliance.php`
-30. `app/Models/Game/AllianceMember.php`
+17. `app/Livewire/Game/TechnologyManager.php`
+18. `app/Models/Game/Player.php`
+19. `app/Models/Game/Quest.php`
+20. `app/Models/Game/Movement.php`
+21. `app/Models/Game/GameEvent.php`
+22. `app/Models/Game/Task.php`
+23. `app/Models/Game/AchievementTemplate.php`
+24. `app/Models/Game/PlayerAchievement.php`
+25. `app/Models/Game/Battle.php`
+26. `app/Models/Game/Village.php`
+27. `app/Models/Game/Building.php`
+28. `app/Models/Game/Troop.php`
+29. `app/Models/Game/UnitType.php`
+30. `app/Models/Game/Alliance.php`
+31. `app/Models/Game/AllianceMember.php`
+32. `app/Models/Game/Technology.php`
 
 ### New Files
 1. `app/Services/QueryOptimizationService.php`
@@ -359,6 +362,15 @@ $members = AllianceMember::byAlliance($allianceId)
     ->withPlayerInfo()
     ->active()
     ->byRole($role)
+    ->search($searchTerm)
+    ->get();
+
+// Get technologies with stats
+$technologies = Technology::withStats()
+    ->withPlayerInfo()
+    ->active()
+    ->byCategory($category)
+    ->popular(10)
     ->search($searchTerm)
     ->get();
 ```

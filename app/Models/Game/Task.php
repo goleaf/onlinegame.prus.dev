@@ -5,10 +5,11 @@ namespace App\Models\Game;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory, HasReference;
 
     protected $table = 'player_tasks';
 
@@ -27,6 +28,7 @@ class Task extends Model
         'completed_at',
         'created_at',
         'updated_at',
+        'reference_number',
     ];
 
     protected $casts = [
@@ -35,6 +37,15 @@ class Task extends Model
         'started_at' => 'datetime',
         'completed_at' => 'datetime',
     ];
+
+    // Referenceable configuration
+    protected $referenceColumn = 'reference_number';
+    protected $referenceStrategy = 'template';
+    protected $referenceTemplate = [
+        'format' => 'TSK-{YEAR}{MONTH}{SEQ}',
+        'sequence_length' => 4,
+    ];
+    protected $referencePrefix = 'TSK';
 
     public function world(): BelongsTo
     {

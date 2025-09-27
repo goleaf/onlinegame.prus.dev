@@ -141,6 +141,9 @@
                                         <div class="d-flex w-100 justify-content-between">
                                             <h6 class="mb-1">
                                                 {{ ucfirst($movement->type) }} to ({{ $movement->to_village_id }})
+                                                @if($movement->reference_number)
+                                                    <span class="badge bg-secondary ms-2">{{ $movement->reference_number }}</span>
+                                                @endif
                                             </h6>
                                             <small>{{ $movement->arrives_at->diffForHumans() }}</small>
                                         </div>
@@ -183,6 +186,9 @@
                                         <div class="d-flex w-100 justify-content-between">
                                             <h6 class="mb-1">
                                                 {{ ucfirst($battle->result) }} at ({{ $battle->village_id }})
+                                                @if($battle->reference_number)
+                                                    <span class="badge bg-secondary ms-2">{{ $battle->reference_number }}</span>
+                                                @endif
                                             </h6>
                                             <small>{{ $battle->occurred_at->diffForHumans() }}</small>
                                         </div>
