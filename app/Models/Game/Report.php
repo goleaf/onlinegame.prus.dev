@@ -2,6 +2,7 @@
 
 namespace App\Models\Game;
 
+use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use App\Traits\Commentable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

@@ -124,6 +124,17 @@ class UserProfileManager extends Component
 
         $this->reset(['currentPassword', 'newPassword', 'newPasswordConfirmation', 'showPasswordForm']);
         session()->flash('message', 'Password updated successfully!');
+
+        // Send notification about password update
+        GameNotificationService::sendNotification(
+            $this->user->id,
+            'password_updated',
+            [
+                'user_id' => $this->user->id,
+                'timestamp' => now()->toISOString(),
+            ],
+            'high'
+        );
     }
 
     public function togglePasswordForm()
