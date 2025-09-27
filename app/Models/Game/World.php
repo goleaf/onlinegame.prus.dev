@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;
+use WendellAdriel\Lift\Lift;
 
 class World extends Model
 {
