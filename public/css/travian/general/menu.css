@@ -34,7 +34,7 @@
   z-index: 1;
 }
 .contentNavi .content.favorActive:after {
-  content: "";
+  content: '';
   display: block;
   top: 2px;
   right: 2px;
@@ -55,7 +55,8 @@
 }
 
 /* IE/Edge hack for a rendering issue of text-overflow ellipsis in RTL, affecting one tab in messages. please remove when refactoring the tabs! */
-.rtl.edge .contentNavi .content .tabItem, .rtl.ie .contentNavi .content .tabItem {
+.rtl.edge .contentNavi .content .tabItem,
+.rtl.ie .contentNavi .content .tabItem {
   max-width: 86%;
 }
 
@@ -96,7 +97,13 @@
   border: 1px solid transparent;
   border-bottom: none;
   border-radius: 2px;
-  background-image: linear-gradient(to bottom, #fffef8, #fdfdfd, #f3f3f3, #d2cdc2);
+  background-image: linear-gradient(
+    to bottom,
+    #fffef8,
+    #fdfdfd,
+    #f3f3f3,
+    #d2cdc2
+  );
 }
 .subNavi .normal .content a {
   color: #333333;
@@ -111,7 +118,13 @@
   cursor: pointer;
 }
 .subNavi .normal:hover:not(:active) .content {
-  background-image: linear-gradient(to bottom, #fffef8, #f8f8f8, #e6e6e6, #c8c3b8);
+  background-image: linear-gradient(
+    to bottom,
+    #fffef8,
+    #f8f8f8,
+    #e6e6e6,
+    #c8c3b8
+  );
 }
 .subNavi .normal:active .content {
   background-image: linear-gradient(to bottom, #e6e6e6, #c8c3b8);
@@ -123,7 +136,7 @@
   background-image: linear-gradient(to bottom, #7cb029, #598b0a);
 }
 .subNavi .active a {
-  color: #F2F2F2;
+  color: #f2f2f2;
   cursor: default;
   box-sizing: border-box;
 }
@@ -131,7 +144,14 @@
   padding: 8px 6px 0;
 }
 .subNavi .gold .content {
-  background-image: linear-gradient(to bottom, #fdf5cb, #f8eeb0 45%, #f0dc7c 50%, #e6ce64 85%, #caac50);
+  background-image: linear-gradient(
+    to bottom,
+    #fdf5cb,
+    #f8eeb0 45%,
+    #f0dc7c 50%,
+    #e6ce64 85%,
+    #caac50
+  );
   background-color: #f8eeb0;
 }
 .subNavi .gold:hover:not(:active) {
@@ -147,10 +167,11 @@
 }
 
 * html .subNavi .container:active .content {
-  background-color: #99C01A;
+  background-color: #99c01a;
 }
-* html .subNavi .container.normal .content, * html .subNavi .container:hover .content {
-  background-color: #FFFFFF;
+* html .subNavi .container.normal .content,
+* html .subNavi .container:hover .content {
+  background-color: #ffffff;
 }
 
 /* Tab Menu */
@@ -201,29 +222,32 @@
 .tabNavi .container .content {
   height: 20px;
 }
-.tabNavi .container.active .content, .tabNavi .container.active .background-start, .tabNavi .container.active .background-end {
+.tabNavi .container.active .content,
+.tabNavi .container.active .background-start,
+.tabNavi .container.active .background-end {
   height: 22px;
 }
 .tabNavi .container .content .tabItem {
-  color: #5E5E5E;
+  color: #5e5e5e;
   font-weight: normal;
   padding: 3px 12px 0;
   height: 17px;
 }
 
 * html .tabNavi .container.normal .content {
-  background-color: #DEDEDE;
+  background-color: #dedede;
 }
 * html .tabNavi .container.active .content {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .tabNavi .container.active .content .tabItem {
-  color: #F2F2F2;
+  color: #f2f2f2;
   height: 19px;
 }
 
-.subNavi .container .content.favorActive img.favorIcon, .tabNavi .container .content.favorActive img.favorIcon {
+.subNavi .container .content.favorActive img.favorIcon,
+.tabNavi .container .content.favorActive img.favorIcon {
   display: inline;
 }
 

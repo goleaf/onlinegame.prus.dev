@@ -17,15 +17,25 @@ class ReportManagerTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $world;
+
     protected $player;
+
     protected $village;
+
     protected $attacker;
+
     protected $defender;
+
     protected $attackerVillage;
+
     protected $defenderVillage;
+
     protected $report1;
+
     protected $report2;
+
     protected $report3;
 
     protected function setUp(): void

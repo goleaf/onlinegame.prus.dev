@@ -34,7 +34,7 @@ class PopulateGameCommand extends Command
         if ($this->option('fresh')) {
             $this->info('🔄 Running fresh migrations...');
             Artisan::call('migrate:fresh', [
-                '--force' => $this->option('force')
+                '--force' => $this->option('force'),
             ]);
             $this->info('✅ Migrations completed');
         }
@@ -44,7 +44,7 @@ class PopulateGameCommand extends Command
         try {
             Artisan::call('db:seed', [
                 '--class' => 'GameSuperSeeder',
-                '--force' => $this->option('force')
+                '--force' => $this->option('force'),
             ]);
 
             $this->info('✅ Game population completed successfully!');
@@ -53,7 +53,8 @@ class PopulateGameCommand extends Command
             // Show some statistics
             $this->showStatistics();
         } catch (\Exception $e) {
-            $this->error('❌ Error during population: ' . $e->getMessage());
+            $this->error('❌ Error during population: '.$e->getMessage());
+
             return 1;
         }
 
@@ -85,7 +86,7 @@ class PopulateGameCommand extends Command
                 $this->line("  {$type}: {$count}");
             }
         } catch (\Exception $e) {
-            $this->warn('Could not retrieve statistics: ' . $e->getMessage());
+            $this->warn('Could not retrieve statistics: '.$e->getMessage());
         }
     }
 }

@@ -20,3 +20,4 @@
 @if($enableServiceWorker)
     {!! App\Helpers\PerformanceHelper::getServiceWorkerScript() !!}
 @endif
+

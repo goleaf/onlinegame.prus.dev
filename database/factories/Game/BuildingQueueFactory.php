@@ -43,7 +43,7 @@ class BuildingQueueFactory extends Factory
      */
     public function completed(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_completed' => true,
             'status' => 'completed',
             'completed_at' => now()->subHour(),
@@ -55,7 +55,7 @@ class BuildingQueueFactory extends Factory
      */
     public function pending(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_completed' => false,
             'status' => 'pending',
             'started_at' => null,

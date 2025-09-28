@@ -2,19 +2,20 @@
 
 namespace App\Services;
 
+use App\Models\Game\Alliance;
 use App\Models\Game\GameEvent;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
-use App\Models\Game\Alliance;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class GameEventService
 {
     protected CachingUtil $cachingUtil;
+
     protected LoggingUtil $loggingUtil;
+
     protected NotificationService $notificationService;
 
     public function __construct()
@@ -213,8 +214,8 @@ class GameEventService
      */
     public function getPlayerEvents(Player $player, int $limit = 50, array $filters = []): array
     {
-        $cacheKey = "player_events_{$player->id}_{$limit}_" . md5(serialize($filters));
-        
+        $cacheKey = "player_events_{$player->id}_{$limit}_".md5(serialize($filters));
+
         return $this->cachingUtil->remember($cacheKey, 60, function () use ($player, $limit, $filters) {
             $query = GameEvent::where('player_id', $player->id);
 
@@ -267,7 +268,7 @@ class GameEventService
             ->where('id', $eventId)
             ->first();
 
-        if (!$event) {
+        if (! $event) {
             return false;
         }
 
@@ -297,7 +298,7 @@ class GameEventService
     public function getUnreadCount(Player $player): int
     {
         $cacheKey = "player_unread_events_{$player->id}";
-        
+
         return $this->cachingUtil->remember($cacheKey, 30, function () use ($player) {
             return GameEvent::where('player_id', $player->id)
                 ->where('is_read', false)
@@ -315,7 +316,7 @@ class GameEventService
 
         $this->loggingUtil->info('Cleaned up old game events', [
             'deleted_count' => $deleted,
-            'days_old' => $daysOld
+            'days_old' => $daysOld,
         ]);
 
         return $deleted;
@@ -327,7 +328,7 @@ class GameEventService
     public function getEventStats(): array
     {
         $cacheKey = 'game_event_stats';
-        
+
         return $this->cachingUtil->remember($cacheKey, 300, function () {
             return [
                 'total_events' => GameEvent::count(),
@@ -354,7 +355,7 @@ class GameEventService
         return match ($type) {
             'attack' => "Attacked {$village}. Result: {$result}. Casualties: {$casualties}",
             'defend' => "Defended {$village} from attack. Result: {$result}. Casualties: {$casualties}",
-            'raid' => "Raided {$village}. Loot: " . ($data['loot'] ?? 'None'),
+            'raid' => "Raided {$village}. Loot: ".($data['loot'] ?? 'None'),
             default => "Battle at {$village}"
         };
     }

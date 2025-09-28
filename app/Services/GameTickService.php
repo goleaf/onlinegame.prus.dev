@@ -11,14 +11,16 @@ use App\Models\Game\Report;
 use App\Models\Game\Resource;
 use App\Models\Game\TrainingQueue;
 use App\Models\Game\Village;
-use App\Services\DefenseCalculationService;
-use App\Services\RabbitMQService;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use LaraUtilX\Enums\LogLevel;
+use LaraUtilX\Utilities\CachingUtil;
 
 class GameTickService
 {
     protected $rabbitMQ;
+
     protected $defenseService;
 
     public function __construct()
@@ -30,12 +32,26 @@ class GameTickService
     public function processGameTick()
     {
         $startTime = microtime(true);
+        $cacheKey = 'game_tick_' . now()->format('Y-m-d-H-i');
 
-        ds('GameTickService: Starting game tick', [
+        // Check if tick is already processed (prevent duplicate processing)
+        if (CachingUtil::get($cacheKey) !== null) {
+            LoggingUtil::log(LogLevel::Info, 'Game tick already processed for this minute', [
+                'cache_key' => $cacheKey,
+                'service' => 'GameTickService',
+            ], 'game_tick');
+
+            return;
+        }
+
+        LoggingUtil::log(LogLevel::Info, 'Starting game tick', [
             'service' => 'GameTickService',
             'tick_time' => now(),
-            'memory_usage' => memory_get_usage(true)
-        ]);
+            'memory_usage' => memory_get_usage(true),
+        ], 'game_tick');
+
+        // Cache the tick start to prevent duplicate processing
+        CachingUtil::cache($cacheKey, true, now()->addMinute());
 
         DB::beginTransaction();
 
@@ -44,16 +60,17 @@ class GameTickService
             $resourceStart = microtime(true);
             $this->processResourceProduction();
             $resourceTime = round((microtime(true) - $resourceStart) * 1000, 2);
-            ds('GameTickService: Resource production completed', [
-                'processing_time_ms' => $resourceTime
-            ]);
+
+            LoggingUtil::log(LogLevel::Info, 'Resource production completed', [
+                'processing_time_ms' => $resourceTime,
+            ], 'game_tick');
 
             // Process building queues
             $buildingStart = microtime(true);
             $this->processBuildingQueues();
             $buildingTime = round((microtime(true) - $buildingStart) * 1000, 2);
             ds('GameTickService: Building queues completed', [
-                'processing_time_ms' => $buildingTime
+                'processing_time_ms' => $buildingTime,
             ]);
 
             // Process training queues
@@ -61,7 +78,7 @@ class GameTickService
             $this->processTrainingQueues();
             $trainingTime = round((microtime(true) - $trainingStart) * 1000, 2);
             ds('GameTickService: Training queues completed', [
-                'processing_time_ms' => $trainingTime
+                'processing_time_ms' => $trainingTime,
             ]);
 
             // Process movements (attacks, support, etc.)
@@ -69,7 +86,7 @@ class GameTickService
             $this->processMovements();
             $movementTime = round((microtime(true) - $movementStart) * 1000, 2);
             ds('GameTickService: Movements completed', [
-                'processing_time_ms' => $movementTime
+                'processing_time_ms' => $movementTime,
             ]);
 
             // Process game events
@@ -77,7 +94,7 @@ class GameTickService
             $this->processGameEvents();
             $eventTime = round((microtime(true) - $eventStart) * 1000, 2);
             ds('GameTickService: Game events completed', [
-                'processing_time_ms' => $eventTime
+                'processing_time_ms' => $eventTime,
             ]);
 
             // Update player statistics
@@ -85,7 +102,7 @@ class GameTickService
             $this->updatePlayerStatistics();
             $statsTime = round((microtime(true) - $statsStart) * 1000, 2);
             ds('GameTickService: Player statistics updated', [
-                'processing_time_ms' => $statsTime
+                'processing_time_ms' => $statsTime,
             ]);
 
             DB::commit();
@@ -94,19 +111,19 @@ class GameTickService
             ds('GameTickService: Game tick completed successfully', [
                 'total_processing_time_ms' => $totalTime,
                 'memory_usage_peak' => memory_get_peak_usage(true),
-                'memory_usage_current' => memory_get_usage(true)
+                'memory_usage_current' => memory_get_usage(true),
             ]);
 
             Log::info('Game tick processed successfully');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Game tick failed: ' . $e->getMessage());
+            Log::error('Game tick failed: '.$e->getMessage());
 
             ds('GameTickService: Game tick failed', [
                 'error' => $e->getMessage(),
                 'exception' => get_class($e),
                 'trace' => $e->getTraceAsString(),
-                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
             throw $e;
@@ -141,7 +158,7 @@ class GameTickService
 
                     // Publish resource update to RabbitMQ
                     $this->rabbitMQ->publishResourceUpdate($village->id, [
-                        $resource->type => $newAmount
+                        $resource->type => $newAmount,
                     ]);
                 }
             }
@@ -190,15 +207,19 @@ class GameTickService
             switch ($movement->type) {
                 case 'attack':
                     $this->processAttack($movement);
+
                     break;
                 case 'support':
                     $this->processSupport($movement);
+
                     break;
                 case 'spy':
                     $this->processSpy($movement);
+
                     break;
                 case 'trade':
                     $this->processTrade($movement);
+
                     break;
                 default:
                     Log::warning("Unknown movement type: {$movement->type}");
@@ -207,7 +228,7 @@ class GameTickService
             // Schedule return movement
             $this->scheduleReturnMovement($movement);
         } catch (\Exception $e) {
-            Log::error("Failed to process movement {$movement->id}: " . $e->getMessage());
+            Log::error("Failed to process movement {$movement->id}: ".$e->getMessage());
         }
     }
 
@@ -368,6 +389,7 @@ class GameTickService
                 'count' => max(0, floor($troop['count'] * $lossRate)),
             ];
         }
+
         return $losses;
     }
 
@@ -510,17 +532,17 @@ class GameTickService
         $content = "=== BATTLE REPORT ===\n\n";
         $content .= "Location: {$battle->village->name}\n";
         $content .= "Result: {$status}\n";
-        $content .= 'Date: ' . $battle->occurred_at->format('Y-m-d H:i:s') . "\n\n";
+        $content .= 'Date: '.$battle->occurred_at->format('Y-m-d H:i:s')."\n\n";
 
         // Battle Power Summary
         $content .= "=== BATTLE POWER ===\n";
-        $content .= 'Attacker Power: ' . number_format($battle->battle_data['battle_power']['attacker'], 0) . "\n";
-        $content .= 'Defender Power: ' . number_format($battle->battle_data['battle_power']['defender'], 0) . "\n";
+        $content .= 'Attacker Power: '.number_format($battle->battle_data['battle_power']['attacker'], 0)."\n";
+        $content .= 'Defender Power: '.number_format($battle->battle_data['battle_power']['defender'], 0)."\n";
 
         // Add defensive bonus information if available
         if (isset($battle->battle_data['defensive_bonus'])) {
             $bonus = $battle->battle_data['defensive_bonus'] * 100;
-            $content .= 'Defensive Bonus: +' . number_format($bonus, 1) . "%\n";
+            $content .= 'Defensive Bonus: +'.number_format($bonus, 1)."%\n";
         }
         $content .= "\n";
 
@@ -568,26 +590,26 @@ class GameTickService
             $totalLoot = 0;
             foreach ($battle->resources_looted as $resource => $amount) {
                 if ($amount > 0) {
-                    $content .= '- ' . ucfirst($resource) . ': ' . number_format($amount) . "\n";
+                    $content .= '- '.ucfirst($resource).': '.number_format($amount)."\n";
                     $totalLoot += $amount;
                 }
             }
             if ($totalLoot > 0) {
-                $content .= 'Total Loot: ' . number_format($totalLoot) . " resources\n";
+                $content .= 'Total Loot: '.number_format($totalLoot)." resources\n";
             } else {
                 $content .= "No resources looted\n";
             }
-        } elseif (!$isAttacker && $battle->resources_looted) {
+        } elseif (! $isAttacker && $battle->resources_looted) {
             $content .= "\n=== RESOURCES LOST ===\n";
             $totalLost = 0;
             foreach ($battle->resources_looted as $resource => $amount) {
                 if ($amount > 0) {
-                    $content .= '- ' . ucfirst($resource) . ': ' . number_format($amount) . " lost\n";
+                    $content .= '- '.ucfirst($resource).': '.number_format($amount)." lost\n";
                     $totalLost += $amount;
                 }
             }
             if ($totalLost > 0) {
-                $content .= 'Total Lost: ' . number_format($totalLost) . " resources\n";
+                $content .= 'Total Lost: '.number_format($totalLost)." resources\n";
             }
         }
 
@@ -619,7 +641,7 @@ class GameTickService
         return [
             'total' => $totalLosses,
             'breakdown' => $summary,
-            'formatted' => $totalLosses > 0 ? implode(', ', $summary) : 'No casualties'
+            'formatted' => $totalLosses > 0 ? implode(', ', $summary) : 'No casualties',
         ];
     }
 
@@ -630,7 +652,7 @@ class GameTickService
 
         foreach ($loot as $resource => $amount) {
             if ($amount > 0) {
-                $summary[] = ucfirst($resource) . ': ' . number_format($amount);
+                $summary[] = ucfirst($resource).': '.number_format($amount);
                 $totalLoot += $amount;
             }
         }
@@ -638,7 +660,7 @@ class GameTickService
         return [
             'total' => $totalLoot,
             'breakdown' => $summary,
-            'formatted' => $totalLoot > 0 ? implode(', ', $summary) : 'No loot'
+            'formatted' => $totalLoot > 0 ? implode(', ', $summary) : 'No loot',
         ];
     }
 
@@ -650,8 +672,8 @@ class GameTickService
         }
 
         return "Battle at {$battle->village->name}: {$result}. "
-            . "Attacker power: {$battle->battle_data['battle_power']['attacker']}, "
-            . "Defender power: {$battle->battle_data['battle_power']['defender']}";
+            ."Attacker power: {$battle->battle_data['battle_power']['attacker']}, "
+            ."Defender power: {$battle->battle_data['battle_power']['defender']}";
     }
 
     private function calculateDefensiveBonus($village)
@@ -688,7 +710,7 @@ class GameTickService
                     'spy_caught' => true,
                     'trap_level' => $targetVillage
                         ->buildings()
-                        ->whereHas('buildingType', function ($query) {
+                        ->whereHas('buildingType', function ($query): void {
                             $query->where('key', 'trap');
                         })
                         ->first()
@@ -707,7 +729,7 @@ class GameTickService
                     'target_village_name' => $targetVillage->name,
                     'trap_level' => $targetVillage
                         ->buildings()
-                        ->whereHas('buildingType', function ($query) {
+                        ->whereHas('buildingType', function ($query): void {
                             $query->where('key', 'trap');
                         })
                         ->first()
@@ -717,6 +739,7 @@ class GameTickService
             );
 
             Log::info("Spy caught at village {$targetVillage->name}");
+
             return;
         }
 
@@ -731,8 +754,8 @@ class GameTickService
             'status' => 'success',
             'title' => 'Spy Report',
             'content' => "Spy report from {$targetVillage->name}: "
-                . "Population: {$targetVillage->population}, "
-                . 'Resources: ' . $this->getVillageResourceSummary($targetVillage),
+                ."Population: {$targetVillage->population}, "
+                .'Resources: '.$this->getVillageResourceSummary($targetVillage),
             'battle_data' => [
                 'spy_caught' => false,
                 'spy_data' => $this->getSpyData($targetVillage),
@@ -829,6 +852,7 @@ class GameTickService
         foreach ($resources as $resource) {
             $summary[] = "{$resource->type}: {$resource->amount}";
         }
+
         return implode(', ', $summary);
     }
 
@@ -846,7 +870,7 @@ class GameTickService
     {
         // Game events are processed immediately when created
         // This method can be used for scheduled events in the future
-        return;
+
     }
 
     private function updatePlayerStatistics()
@@ -906,7 +930,7 @@ class GameTickService
                 $building->buildingType->name
             );
         } catch (\Exception $e) {
-            Log::error("Failed to complete building {$building->id}: " . $e->getMessage());
+            Log::error("Failed to complete building {$building->id}: ".$e->getMessage());
         }
     }
 
@@ -948,7 +972,7 @@ class GameTickService
                 'occurred_at' => now(),
             ]);
         } catch (\Exception $e) {
-            Log::error("Failed to complete training {$training->id}: " . $e->getMessage());
+            Log::error("Failed to complete training {$training->id}: ".$e->getMessage());
         }
     }
 
@@ -962,7 +986,7 @@ class GameTickService
                 $this->processEventRewards($event);
             }
         } catch (\Exception $e) {
-            Log::error("Failed to complete event {$event->id}: " . $e->getMessage());
+            Log::error("Failed to complete event {$event->id}: ".$e->getMessage());
         }
     }
 
@@ -1037,7 +1061,7 @@ class GameTickService
         foreach ($buildingTypes as $buildingType) {
             $building = $village
                 ->buildings()
-                ->whereHas('buildingType', function ($query) use ($buildingType) {
+                ->whereHas('buildingType', function ($query) use ($buildingType): void {
                     $query->where('key', $buildingType);
                 })
                 ->first();

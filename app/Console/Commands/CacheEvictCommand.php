@@ -33,8 +33,6 @@ class CacheEvictCommand extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param CacheEvictionService $cacheEvictionService
      */
     public function __construct(CacheEvictionService $cacheEvictionService)
     {
@@ -62,8 +60,9 @@ class CacheEvictCommand extends Command
         }
 
         // Confirm eviction unless forced
-        if (!$force && !$this->confirm('Do you want to proceed with cache eviction?')) {
+        if (! $force && ! $this->confirm('Do you want to proceed with cache eviction?')) {
             $this->info('Cache eviction cancelled.');
+
             return 0;
         }
 
@@ -86,7 +85,7 @@ class CacheEvictCommand extends Command
 
             $totalDuration = microtime(true) - $startTime;
             $this->newLine();
-            $this->info('✅ Cache eviction completed in ' . round($totalDuration, 3) . ' seconds');
+            $this->info('✅ Cache eviction completed in '.round($totalDuration, 3).' seconds');
 
             // Show final statistics if requested
             if ($showStats) {
@@ -96,17 +95,14 @@ class CacheEvictCommand extends Command
 
             return 0;
         } catch (\Exception $e) {
-            $this->error('❌ Cache eviction failed: ' . $e->getMessage());
+            $this->error('❌ Cache eviction failed: '.$e->getMessage());
+
             return 1;
         }
     }
 
     /**
      * Display results for a single store
-     *
-     * @param string $storeName
-     * @param array $result
-     * @return void
      */
     private function displayStoreResult(string $storeName, array $result): void
     {
@@ -127,9 +123,6 @@ class CacheEvictCommand extends Command
 
     /**
      * Display results for all stores
-     *
-     * @param array $results
-     * @return void
      */
     private function displayAllResults(array $results): void
     {
@@ -158,14 +151,11 @@ class CacheEvictCommand extends Command
             $this->line("   Failed stores: {$failedStores}");
         }
         $this->line("   Total items removed: {$totalItemsRemoved}");
-        $this->line('   Total duration: ' . round($totalDuration, 3) . 's');
+        $this->line('   Total duration: '.round($totalDuration, 3).'s');
     }
 
     /**
      * Show cache statistics
-     *
-     * @param string $title
-     * @return void
      */
     private function showCacheStats(string $title): void
     {
@@ -186,7 +176,7 @@ class CacheEvictCommand extends Command
                         'N/A',
                         'N/A',
                         'N/A',
-                        $storeStats['error']
+                        $storeStats['error'],
                     ];
                 } else {
                     $rows[] = [
@@ -195,14 +185,14 @@ class CacheEvictCommand extends Command
                         $storeStats['total_items'] ?? 'N/A',
                         $storeStats['expired_items'] ?? 'N/A',
                         $storeStats['active_items'] ?? 'N/A',
-                        $storeStats['total_size'] ?? 'N/A'
+                        $storeStats['total_size'] ?? 'N/A',
                     ];
                 }
             }
 
             $this->table($headers, $rows);
         } catch (\Exception $e) {
-            $this->error('Failed to retrieve cache statistics: ' . $e->getMessage());
+            $this->error('Failed to retrieve cache statistics: '.$e->getMessage());
         }
 
         $this->newLine();

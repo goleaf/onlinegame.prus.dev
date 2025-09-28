@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\Task;
 use App\Traits\GameValidationTrait;
+use App\Traits\ValidationHelperTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Intervention\Validation\Rules\Username;
-use JonPurvis\Squeaky\Rules\Clean;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
+use LaraUtilX\Utilities\FilteringUtil;
 
 class TaskController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use GameValidationTrait;
+    use ValidationHelperTrait;
 
     protected Model $model;
 
@@ -33,7 +33,9 @@ class TaskController extends CrudController
     ];
 
     protected array $searchableFields = ['title', 'description', 'type'];
+
     protected array $relationships = ['player', 'world'];
+
     protected int $perPage = 20;
 
     public function __construct()
@@ -80,9 +82,23 @@ class TaskController extends CrudController
             $query->dueSoon($hours);
         }
 
-        // Apply search
+        // Apply filters using FilteringUtil
+        $filters = [];
         if ($request->has('search')) {
-            $query->search($request->get('search'));
+            $filters[] = ['target' => 'title', 'type' => '$like', 'value' => '%'.$request->get('search').'%'];
+        }
+        if ($request->has('status')) {
+            $filters[] = ['target' => 'status', 'type' => '$eq', 'value' => $request->get('status')];
+        }
+        if ($request->has('type')) {
+            $filters[] = ['target' => 'type', 'type' => '$eq', 'value' => $request->get('type')];
+        }
+        if ($request->has('priority')) {
+            $filters[] = ['target' => 'priority', 'type' => '$eq', 'value' => $request->get('priority')];
+        }
+
+        if (! empty($filters)) {
+            $query = $query->filter($filters);
         }
 
         // Apply sorting
@@ -149,7 +165,7 @@ class TaskController extends CrudController
     {
         $task = Task::findOrFail($taskId);
 
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'progress' => 'required|integer|min:0|max:100',
         ]);
 
@@ -218,7 +234,7 @@ class TaskController extends CrudController
     {
         $rewards = is_array($task->rewards) ? $task->rewards : json_decode($task->rewards, true);
 
-        if (!is_array($rewards)) {
+        if (! is_array($rewards)) {
             return;
         }
 
@@ -228,6 +244,7 @@ class TaskController extends CrudController
             switch ($type) {
                 case 'points':
                     $player->increment('points', $amount);
+
                     break;
                 case 'resources':
                     if (is_array($amount)) {
@@ -241,6 +258,7 @@ class TaskController extends CrudController
                             }
                         }
                     }
+
                     break;
             }
         }

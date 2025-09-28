@@ -6,7 +6,6 @@ use App\Models\Game\Message;
 use App\Models\Game\Notification;
 use App\Models\Game\Player;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class MessageCommand extends Command
 {
@@ -39,31 +38,38 @@ class MessageCommand extends Command
     public function handle()
     {
         $action = $this->argument('action');
-        
+
         $this->info('📧 Messaging System Management');
         $this->info('=============================');
 
         switch ($action) {
             case 'send':
                 $this->sendMessage();
+
                 break;
             case 'read':
                 $this->readMessage();
+
                 break;
             case 'archive':
                 $this->archiveMessage();
+
                 break;
             case 'delete':
                 $this->deleteMessage();
+
                 break;
             case 'expire':
                 $this->expireMessages();
+
                 break;
             case 'stats':
                 $this->showMessageStats();
+
                 break;
             default:
                 $this->error("Unknown action: {$action}");
+
                 return 1;
         }
 
@@ -85,24 +91,26 @@ class MessageCommand extends Command
         $content = $this->option('content');
         $duration = (int) $this->option('duration');
 
-        if (!$recipientId) {
+        if (! $recipientId) {
             $this->error('Recipient ID is required');
+
             return;
         }
 
-        if (!$subject) {
+        if (! $subject) {
             $subject = $this->ask('Enter message subject');
         }
 
-        if (!$content) {
+        if (! $content) {
             $content = $this->ask('Enter message content');
         }
 
         $recipient = Player::find($recipientId);
         $sender = $senderId ? Player::find($senderId) : null;
 
-        if (!$recipient) {
+        if (! $recipient) {
             $this->error('Recipient not found');
+
             return;
         }
 
@@ -121,7 +129,7 @@ class MessageCommand extends Command
         // Create notification for the recipient
         $this->createNotification($recipient, $message);
 
-        $this->info("✅ Message sent successfully");
+        $this->info('✅ Message sent successfully');
         $this->line("  → To: {$recipient->name}");
         $this->line("  → Subject: {$message->subject}");
         $this->line("  → Type: {$message->type_display_name}");
@@ -133,7 +141,7 @@ class MessageCommand extends Command
      */
     protected function createNotification(Player $player, Message $message): void
     {
-        $notificationType = match($message->type) {
+        $notificationType = match ($message->type) {
             'system' => 'info',
             'alliance' => 'diplomacy',
             'public' => 'info',
@@ -141,7 +149,7 @@ class MessageCommand extends Command
             default => 'info'
         };
 
-        $icon = match($message->type) {
+        $icon = match ($message->type) {
             'private' => 'envelope',
             'system' => 'cog',
             'alliance' => 'users',
@@ -161,7 +169,7 @@ class MessageCommand extends Command
             'action_url' => "/messages/{$message->id}",
             'expires_at' => $message->expires_at,
             'is_persistent' => $message->is_important,
-            'is_auto_dismiss' => !$message->is_important,
+            'is_auto_dismiss' => ! $message->is_important,
             'auto_dismiss_seconds' => $message->is_important ? 30 : 5,
         ]);
     }
@@ -174,38 +182,40 @@ class MessageCommand extends Command
         $this->info('📖 Reading message...');
 
         $messageId = $this->ask('Enter message ID to read');
-        
-        if (!$messageId) {
+
+        if (! $messageId) {
             $this->error('Message ID is required');
+
             return;
         }
 
         $message = Message::with(['sender', 'recipient'])->find($messageId);
-        
-        if (!$message) {
+
+        if (! $message) {
             $this->error('Message not found');
+
             return;
         }
 
         // Mark as read
         $message->markAsRead();
 
-        $this->info("📧 Message Details");
-        $this->line("==================");
+        $this->info('📧 Message Details');
+        $this->line('==================');
         $this->line("Subject: {$message->subject}");
-        $this->line("From: " . ($message->sender ? $message->sender->name : 'System'));
+        $this->line('From: '.($message->sender ? $message->sender->name : 'System'));
         $this->line("To: {$message->recipient->name}");
         $this->line("Type: {$message->type_display_name}");
         $this->line("Priority: {$message->priority_display_name}");
         $this->line("Status: {$message->status_display_name}");
         $this->line("Sent: {$message->created_at->format('Y-m-d H:i:s')}");
-        
+
         if ($message->expires_at) {
             $this->line("Expires: {$message->expires_at->format('Y-m-d H:i:s')}");
         }
-        
-        $this->line("");
-        $this->line("Content:");
+
+        $this->line('');
+        $this->line('Content:');
         $this->line($message->content);
     }
 
@@ -217,16 +227,18 @@ class MessageCommand extends Command
         $this->info('📁 Archiving message...');
 
         $messageId = $this->ask('Enter message ID to archive');
-        
-        if (!$messageId) {
+
+        if (! $messageId) {
             $this->error('Message ID is required');
+
             return;
         }
 
         $message = Message::find($messageId);
-        
-        if (!$message) {
+
+        if (! $message) {
             $this->error('Message not found');
+
             return;
         }
 
@@ -245,21 +257,24 @@ class MessageCommand extends Command
         $this->info('🗑️ Deleting message...');
 
         $messageId = $this->ask('Enter message ID to delete');
-        
-        if (!$messageId) {
+
+        if (! $messageId) {
             $this->error('Message ID is required');
+
             return;
         }
 
         $message = Message::find($messageId);
-        
-        if (!$message) {
+
+        if (! $message) {
             $this->error('Message not found');
+
             return;
         }
 
-        if (!$this->option('force') && !$this->confirm('Are you sure you want to delete this message?')) {
+        if (! $this->option('force') && ! $this->confirm('Are you sure you want to delete this message?')) {
             $this->info('Message deletion cancelled');
+
             return;
         }
 
@@ -397,9 +412,10 @@ class MessageCommand extends Command
 
         // Get alliance members (assuming alliance_id column exists in players table)
         $players = Player::where('alliance_id', $allianceId)->get();
-        
+
         if ($players->isEmpty()) {
             $this->error('No players found in alliance');
+
             return;
         }
 

@@ -41,7 +41,7 @@ class PlayerFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => false,
         ]);
     }
@@ -51,7 +51,7 @@ class PlayerFactory extends Factory
      */
     public function online(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => true,
             'last_login' => now(),
         ]);
@@ -62,7 +62,7 @@ class PlayerFactory extends Factory
      */
     public function tribe(string $tribe): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'tribe' => $tribe,
         ]);
     }

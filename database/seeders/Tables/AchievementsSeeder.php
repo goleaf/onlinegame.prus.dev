@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,13 +17,11 @@ class AchievementsSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'name' => 'First Steps',
                 'key' => 'first_steps',
                 'description' => 'Complete your first quest.',
@@ -38,7 +37,7 @@ class AchievementsSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'name' => 'Builder',
                 'key' => 'builder',
                 'description' => 'Build your first building.',
@@ -54,7 +53,7 @@ class AchievementsSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'name' => 'Resource Collector',
                 'key' => 'resource_collector',
                 'description' => 'Collect 100,000 resources in total.',
@@ -70,7 +69,7 @@ class AchievementsSeeder extends Seeder
             ],
             [
                 'id' => 4,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'name' => 'Warrior',
                 'key' => 'warrior',
                 'description' => 'Win your first battle.',
@@ -86,7 +85,7 @@ class AchievementsSeeder extends Seeder
             ],
             [
                 'id' => 5,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'name' => 'Explorer',
                 'key' => 'explorer',
                 'description' => 'Explore 10 different villages.',
@@ -102,7 +101,7 @@ class AchievementsSeeder extends Seeder
             ],
             [
                 'id' => 6,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'name' => 'Trader',
                 'key' => 'trader',
                 'description' => 'Complete 5 successful trades.',
@@ -118,7 +117,7 @@ class AchievementsSeeder extends Seeder
             ],
             [
                 'id' => 7,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'name' => 'Alliance Member',
                 'key' => 'alliance_member',
                 'description' => 'Join an alliance.',
@@ -134,7 +133,7 @@ class AchievementsSeeder extends Seeder
             ],
             [
                 'id' => 8,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'name' => 'Master Builder',
                 'key' => 'master_builder',
                 'description' => 'Build 50 buildings.',
@@ -150,7 +149,7 @@ class AchievementsSeeder extends Seeder
             ],
             [
                 'id' => 9,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'name' => 'Legend',
                 'key' => 'legend',
                 'description' => 'Reach 1,000,000 points.',
@@ -166,24 +165,24 @@ class AchievementsSeeder extends Seeder
             ],
             [
                 'id' => 10,
-                'reference_number' => 'ACH-2025090001',
+
                 'name' => 'Test Achievement',
                 'key' => 'test_achievement',
                 'description' => 'Test achievement description',
                 'category' => 'building',
                 'points' => 100,
-                'requirements' => NULL,
-                'rewards' => NULL,
-                'icon' => NULL,
+                'requirements' => null,
+                'rewards' => null,
+                'icon' => null,
                 'is_hidden' => 0,
                 'is_active' => 1,
                 'created_at' => '2025-09-27 01:02:42',
                 'updated_at' => '2025-09-27 01:02:42',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("achievements")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('achievements')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

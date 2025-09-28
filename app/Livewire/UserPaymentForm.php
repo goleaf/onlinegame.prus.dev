@@ -4,24 +4,29 @@ namespace App\Livewire;
 
 use App\Models\User;
 use App\Traits\GameValidationTrait;
-use Illuminate\Support\Facades\Validator;
+use Intervention\Validation\Rules\Bic;
 use Intervention\Validation\Rules\CreditCard;
 use Intervention\Validation\Rules\Iban;
-use Intervention\Validation\Rules\Bic;
 use Livewire\Component;
-use JonPurvis\Squeaky\Rules\Clean;
 
 class UserPaymentForm extends Component
 {
     use GameValidationTrait;
 
     public $user;
+
     public $payment_method = '';
+
     public $credit_card_number = '';
+
     public $credit_card_expiry = '';
+
     public $credit_card_cvv = '';
+
     public $bank_account_iban = '';
+
     public $bank_bic = '';
+
     public $bank_name = '';
 
     protected $rules = [
@@ -34,10 +39,10 @@ class UserPaymentForm extends Component
         'bank_name' => 'nullable|string|max:255',
     ];
 
-    public function mount(User $user = null)
+    public function mount(?User $user = null)
     {
         $this->user = $user ?? auth()->user();
-        
+
         if ($this->user) {
             $this->payment_method = $this->user->payment_method ?? '';
             $this->credit_card_number = $this->user->credit_card_number ?? '';
@@ -52,19 +57,19 @@ class UserPaymentForm extends Component
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
-        
+
         // Add credit card validation when payment method is credit card
-        if ($propertyName === 'credit_card_number' && $this->payment_method === 'credit_card' && !empty($this->credit_card_number)) {
+        if ($propertyName === 'credit_card_number' && $this->payment_method === 'credit_card' && ! empty($this->credit_card_number)) {
             $this->rules['credit_card_number'][] = new CreditCard();
         }
-        
+
         // Add IBAN validation when payment method is bank transfer
-        if ($propertyName === 'bank_account_iban' && $this->payment_method === 'bank_transfer' && !empty($this->bank_account_iban)) {
+        if ($propertyName === 'bank_account_iban' && $this->payment_method === 'bank_transfer' && ! empty($this->bank_account_iban)) {
             $this->rules['bank_account_iban'][] = new Iban();
         }
-        
+
         // Add BIC validation when payment method is bank transfer
-        if ($propertyName === 'bank_bic' && $this->payment_method === 'bank_transfer' && !empty($this->bank_bic)) {
+        if ($propertyName === 'bank_bic' && $this->payment_method === 'bank_transfer' && ! empty($this->bank_bic)) {
             $this->rules['bank_bic'][] = new Bic();
         }
     }
@@ -72,17 +77,17 @@ class UserPaymentForm extends Component
     public function save()
     {
         $rules = $this->rules;
-        
+
         // Add validation based on payment method
         if ($this->payment_method === 'credit_card') {
-            if (!empty($this->credit_card_number)) {
+            if (! empty($this->credit_card_number)) {
                 $rules['credit_card_number'][] = new CreditCard();
             }
         } elseif ($this->payment_method === 'bank_transfer') {
-            if (!empty($this->bank_account_iban)) {
+            if (! empty($this->bank_account_iban)) {
                 $rules['bank_account_iban'][] = new Iban();
             }
-            if (!empty($this->bank_bic)) {
+            if (! empty($this->bank_bic)) {
                 $rules['bank_bic'][] = new Bic();
             }
         }

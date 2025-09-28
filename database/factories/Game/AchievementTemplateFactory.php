@@ -41,7 +41,7 @@ class AchievementTemplateFactory extends Factory
 
     public function building(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'building',
             'title' => 'Master Builder',
             'description' => 'Build and upgrade various structures to become a master builder.',
@@ -50,7 +50,7 @@ class AchievementTemplateFactory extends Factory
 
     public function troop(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'troop',
             'title' => 'Army Commander',
             'description' => 'Train and command a powerful army.',
@@ -59,7 +59,7 @@ class AchievementTemplateFactory extends Factory
 
     public function battle(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'battle',
             'title' => 'Warrior',
             'description' => 'Prove your worth in battle.',
@@ -68,7 +68,7 @@ class AchievementTemplateFactory extends Factory
 
     public function resource(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'resource',
             'title' => 'Resource Master',
             'description' => 'Master the art of resource management.',
@@ -77,7 +77,7 @@ class AchievementTemplateFactory extends Factory
 
     public function exploration(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'exploration',
             'title' => 'Explorer',
             'description' => 'Discover new lands and territories.',
@@ -86,7 +86,7 @@ class AchievementTemplateFactory extends Factory
 
     public function social(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'social',
             'title' => 'Diplomat',
             'description' => 'Build relationships and alliances.',

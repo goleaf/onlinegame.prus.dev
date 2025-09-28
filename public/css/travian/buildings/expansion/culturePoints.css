@@ -51,7 +51,8 @@
   width: auto;
 }
 
-#expansionCulturePoints .totalRow td, .totalRow th {
+#expansionCulturePoints .totalRow td,
+.totalRow th {
   font-weight: bold;
 }
 

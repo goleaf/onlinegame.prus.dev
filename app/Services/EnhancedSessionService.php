@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Session;
 class EnhancedSessionService
 {
     protected string $prefix;
+
     protected int $defaultLifetime;
+
     protected array $compressionOptions;
 
     public function __construct()
@@ -56,7 +58,7 @@ class EnhancedSessionService
         $this->put($key, $value);
 
         // Store tags for this session key
-        if (!empty($tags)) {
+        if (! empty($tags)) {
             $tagKey = "session_tags:{$key}";
             Session::put($tagKey, $tags);
         }
@@ -93,7 +95,7 @@ class EnhancedSessionService
     {
         try {
             $redis = Redis::connection('session');
-            $pattern = $this->prefix . '*';
+            $pattern = $this->prefix.'*';
             $keys = $redis->keys($pattern);
             $cleaned = 0;
 
@@ -170,6 +172,7 @@ class EnhancedSessionService
 
                 if (function_exists('lzf_decompress')) {
                     $decompressed = lzf_decompress($decoded);
+
                     return igbinary_unserialize($decompressed);
                 }
 
@@ -197,8 +200,9 @@ class EnhancedSessionService
     {
         try {
             $redis = Redis::connection('session');
-            $pattern = $this->prefix . '*';
+            $pattern = $this->prefix.'*';
             $keys = $redis->keys($pattern);
+
             return count($keys);
         } catch (\Exception $e) {
             return 0;
@@ -210,7 +214,7 @@ class EnhancedSessionService
      */
     protected function addSecurityHeaders(): void
     {
-        if (!headers_sent()) {
+        if (! headers_sent()) {
             header('X-Session-Security: Enhanced');
             header('X-Session-Compression: Enabled');
         }

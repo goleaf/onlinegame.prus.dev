@@ -3,543 +3,561 @@
 
 /* Base Travian Colors */
 :root {
-    --travian-blue: #1e3a8a;
-    --travian-green: #059669;
-    --travian-yellow: #d97706;
-    --travian-red: #dc2626;
-    --travian-purple: #7c3aed;
-    --travian-orange: #ea580c;
-    --travian-gray: #374151;
-    --travian-dark: #111827;
-    --travian-light: #f9fafb;
+  --travian-blue: #1e3a8a;
+  --travian-green: #059669;
+  --travian-yellow: #d97706;
+  --travian-red: #dc2626;
+  --travian-purple: #7c3aed;
+  --travian-orange: #ea580c;
+  --travian-gray: #374151;
+  --travian-dark: #111827;
+  --travian-light: #f9fafb;
 }
 
 /* Travian Game Container */
 .travian-game {
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
-    min-height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Game Header with Authentic Travian Styling */
 .game-header {
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-    border-bottom: 3px solid #3b82f6;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-bottom: 3px solid #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .game-header h1 {
-    background: linear-gradient(45deg, #ffffff, #e5e7eb);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(45deg, #ffffff, #e5e7eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Travian Resource Cards */
 .resource-card {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    border: 2px solid #f59e0b;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .resource-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .resource-icon {
-    width: 24px;
-    height: 24px;
-    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+  width: 24px;
+  height: 24px;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
 }
 
 /* Travian Building Grid */
 .building-grid {
-    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-    border: 2px solid #9ca3af;
-    border-radius: 12px;
-    padding: 20px;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border: 2px solid #9ca3af;
+  border-radius: 12px;
+  padding: 20px;
 }
 
 .building-slot {
-    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-    border: 2px solid #d1d5db;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .building-slot:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border-color: #3b82f6;
+  transform: scale(1.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: #3b82f6;
 }
 
 .building-slot.occupied {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    border-color: #3b82f6;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-color: #3b82f6;
 }
 
 .building-slot.empty {
-    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-    border-color: #d1d5db;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border-color: #d1d5db;
 }
 
 .building-level {
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-    color: white;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Travian Progress Bars */
 .progress-bar-travian {
-    background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
-    border-radius: 4px;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .progress-bar-resource {
-    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
-    border-radius: 4px;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .progress-bar-building {
-    background: linear-gradient(90deg, #059669 0%, #047857 100%);
-    border-radius: 4px;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(90deg, #059669 0%, #047857 100%);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Travian Buttons */
 .btn-travian {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    border: 2px solid #1e40af;
-    color: white;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: 2px solid #1e40af;
+  color: white;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .btn-travian:hover {
-    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
 }
 
 .btn-travian-success {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%);
-    border: 2px solid #065f46;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  border: 2px solid #065f46;
 }
 
 .btn-travian-warning {
-    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-    border: 2px solid #92400e;
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  border: 2px solid #92400e;
 }
 
 .btn-travian-danger {
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-    border: 2px solid #991b1b;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border: 2px solid #991b1b;
 }
 
 /* Travian Cards */
 .card-travian {
-    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .card-travian:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .card-travian-header {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    color: white;
-    border-radius: 10px 10px 0 0;
-    padding: 16px;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border-radius: 10px 10px 0 0;
+  padding: 16px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Travian Navigation */
 .nav-travian {
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-    border-bottom: 3px solid #3b82f6;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-bottom: 3px solid #3b82f6;
 }
 
 .nav-travian .nav-link {
-    color: #e5e7eb;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border-bottom: 3px solid transparent;
+  color: #e5e7eb;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
 }
 
 .nav-travian .nav-link:hover {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-travian .nav-link.active {
-    color: #ffffff;
-    border-bottom-color: #3b82f6;
-    background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-bottom-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Travian Stats Cards */
 .stats-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .stats-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .stats-card-villages {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-    border-color: #3b82f6;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-color: #3b82f6;
 }
 
 .stats-card-points {
-    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-    border-color: #059669;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border-color: #059669;
 }
 
 .stats-card-alliance {
-    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
-    border-color: #7c3aed;
+  background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+  border-color: #7c3aed;
 }
 
 .stats-card-status {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    border-color: #f59e0b;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-color: #f59e0b;
 }
 
 /* Travian Notifications */
 .notification-travian {
-    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    margin-bottom: 12px;
-    transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
 }
 
 .notification-travian:hover {
-    transform: translateX(4px);
-    box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
+  transform: translateX(4px);
+  box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15);
 }
 
 .notification-success {
-    border-left: 4px solid #059669;
-    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border-left: 4px solid #059669;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
 }
 
 .notification-error {
-    border-left: 4px solid #dc2626;
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border-left: 4px solid #dc2626;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
 }
 
 .notification-warning {
-    border-left: 4px solid #d97706;
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-left: 4px solid #d97706;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
 }
 
 .notification-info {
-    border-left: 4px solid #3b82f6;
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-left: 4px solid #3b82f6;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
 }
 
 /* Travian Animations */
 @keyframes travian-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 @keyframes travian-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 @keyframes travian-glow {
-    0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
-    50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+  }
 }
 
 .animate-travian-pulse {
-    animation: travian-pulse 2s infinite;
+  animation: travian-pulse 2s infinite;
 }
 
 .animate-travian-bounce {
-    animation: travian-bounce 1s infinite;
+  animation: travian-bounce 1s infinite;
 }
 
 .animate-travian-glow {
-    animation: travian-glow 2s infinite;
+  animation: travian-glow 2s infinite;
 }
 
 /* Travian Real-time Updates */
 .real-time-update {
-    transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
 
 .real-time-update.updating {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    animation: travian-pulse 1s infinite;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  animation: travian-pulse 1s infinite;
 }
 
 .real-time-update.completed {
-    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
 }
 
 /* Travian Task Manager */
 .task-manager {
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-    min-height: 100vh;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  min-height: 100vh;
 }
 
 .task-card {
-    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-    border: 2px solid #6b7280;
-    border-radius: 12px;
-    transition: all 0.3s ease;
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  border: 2px solid #6b7280;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
 .task-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.3);
-    border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.3);
+  border-color: #3b82f6;
 }
 
 .task-card.available {
-    border-color: #059669;
-    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+  border-color: #059669;
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
 }
 
 .task-card.active {
-    border-color: #3b82f6;
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
 }
 
 .task-card.completed {
-    border-color: #d97706;
-    background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
+  border-color: #d97706;
+  background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
 }
 
 /* Travian Quest Cards */
 .quest-card {
-    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-    border: 2px solid #6b7280;
-    border-radius: 12px;
-    transition: all 0.3s ease;
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  border: 2px solid #6b7280;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
 .quest-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.3);
-    border-color: #f59e0b;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.3);
+  border-color: #f59e0b;
 }
 
 .quest-card.available {
-    border-color: #f59e0b;
-    background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
 }
 
 .quest-card.in-progress {
-    border-color: #3b82f6;
-    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-color: #3b82f6;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
 }
 
 .quest-card.completed {
-    border-color: #059669;
-    background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+  border-color: #059669;
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
 }
 
 /* Travian Achievement Cards */
 .achievement-card {
-    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-    border: 2px solid #6b7280;
-    border-radius: 12px;
-    transition: all 0.3s ease;
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  border: 2px solid #6b7280;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
 .achievement-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.3);
-    border-color: #f59e0b;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.3);
+  border-color: #f59e0b;
 }
 
 .achievement-card.available {
-    border-color: #6b7280;
-    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  border-color: #6b7280;
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
 }
 
 .achievement-card.unlocked {
-    border-color: #f59e0b;
-    background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
-    animation: travian-glow 2s infinite;
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
+  animation: travian-glow 2s infinite;
 }
 
 /* Travian Progress Indicators */
 .progress-travian {
-    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-    border-radius: 8px;
-    height: 8px;
-    overflow: hidden;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  border-radius: 8px;
+  height: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .progress-travian-bar {
-    background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
-    height: 100%;
-    border-radius: 8px;
-    transition: width 0.5s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.5s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .progress-travian-bar.quest {
-    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
 }
 
 .progress-travian-bar.achievement {
-    background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
 }
 
 /* Travian Loading States */
 .loading-travian {
-    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    color: #e5e7eb;
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  color: #e5e7eb;
 }
 
 .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #6b7280;
-    border-top: 4px solid #3b82f6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 16px;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #6b7280;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Travian Responsive Design */
 @media (max-width: 768px) {
-    .building-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-    }
-    
-    .building-slot {
-        padding: 8px;
-    }
-    
-    .resource-card {
-        padding: 12px;
-    }
-    
-    .stats-card {
-        padding: 16px;
-    }
+  .building-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .building-slot {
+    padding: 8px;
+  }
+
+  .resource-card {
+    padding: 12px;
+  }
+
+  .stats-card {
+    padding: 16px;
+  }
 }
 
 @media (max-width: 480px) {
-    .building-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-    }
-    
-    .building-slot {
-        padding: 6px;
-    }
-    
-    .resource-card {
-        padding: 8px;
-    }
-    
-    .stats-card {
-        padding: 12px;
-    }
+  .building-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .building-slot {
+    padding: 6px;
+  }
+
+  .resource-card {
+    padding: 8px;
+  }
+
+  .stats-card {
+    padding: 12px;
+  }
 }
 
 /* Travian Dark Mode Support */
 @media (prefers-color-scheme: dark) {
-    .travian-game {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-    }
-    
-    .card-travian {
-        background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-        border-color: #4b5563;
-    }
-    
-    .stats-card {
-        background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-        border-color: #4b5563;
-    }
+  .travian-game {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  }
+
+  .card-travian {
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    border-color: #4b5563;
+  }
+
+  .stats-card {
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+    border-color: #4b5563;
+  }
 }
 
 /* Travian Accessibility */
 .travian-focus:focus {
-    outline: 3px solid #3b82f6;
-    outline-offset: 2px;
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
 }
 
 .travian-sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Travian Print Styles */
 @media print {
-    .travian-game {
-        background: white !important;
-        color: black !important;
-    }
-    
-    .game-header {
-        background: white !important;
-        color: black !important;
-    }
-    
-    .card-travian {
-        background: white !important;
-        border: 1px solid black !important;
-    }
-}
+  .travian-game {
+    background: white !important;
+    color: black !important;
+  }
 
+  .game-header {
+    background: white !important;
+    color: black !important;
+  }
+
+  .card-travian {
+    background: white !important;
+    border: 1px solid black !important;
+  }
+}

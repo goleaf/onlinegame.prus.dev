@@ -57,7 +57,7 @@ div.login table td input.text {
 }
 div.login .noJavaScript {
   line-height: 22px;
-  color: #D40000;
+  color: #d40000;
   padding: 10px;
 }
 div.login #login_form {
@@ -69,7 +69,7 @@ div.login .btn {
 }
 div.outerLoginBox div.pause {
   line-height: 22px;
-  color: #D40000;
+  color: #d40000;
   padding: 10px;
 }
 div.outerLoginBox div.innerLoginBox {
@@ -79,7 +79,7 @@ div.outerLoginBox div.innerLoginBox {
   margin-bottom: 10px;
 }
 div.outerLoginBox div.success {
-  color: #228B22;
+  color: #228b22;
 }
 div.outerLoginBox h2 {
   color: #393939;
@@ -238,12 +238,12 @@ div#worldStartInfo div.countdownContent span.date span.timezone {
   font-size: 12px;
 }
 div.greenBackground div.greenbox-top {
-  color: #228B22;
+  color: #228b22;
   font-weight: bold;
   background-color: #e5eecc;
 }
 div.greenBackground div.greenbox-content {
-  color: #228B22;
+  color: #228b22;
   font-weight: bold;
   background-color: #e5eecc;
   padding-left: 20px;
@@ -251,14 +251,14 @@ div.greenBackground div.greenbox-content {
   width: auto;
 }
 div.greenBackground div.greenbox-bottom {
-  color: #228B22;
+  color: #228b22;
   font-weight: bold;
   background-color: #e5eecc;
   margin-bottom: 15px;
 }
 
 body:not(.gecko) div.outerLoginBox input.text {
-  border-color: #99C01A;
+  border-color: #99c01a;
 }
 
 img.open {
@@ -417,7 +417,7 @@ h1.play {
 
 a.play {
   text-decoration: none;
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 a.play:hover {
   text-decoration: none;

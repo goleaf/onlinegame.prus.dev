@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,15 +17,13 @@ class PlayerTasksSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
-            
+
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("player_tasks")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('player_tasks')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

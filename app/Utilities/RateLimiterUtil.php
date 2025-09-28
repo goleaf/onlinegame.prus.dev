@@ -1,24 +1,20 @@
 <?php
 
-namespace LaraUtilX\Utilities;
+namespace App\Utilities;
 
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Contracts\Cache\Repository;
-use Illuminate\Http\Request;
 
 class RateLimiterUtil
 {
     /**
      * The rate limiter instance.
-     *
-     * @var \Illuminate\Cache\RateLimiter
      */
     protected RateLimiter $rateLimiter;
 
     /**
      * Create a new rate limiter utility instance.
      *
-     * @param  \Illuminate\Contracts\Cache\Repository  $cache
      * @return void
      */
     public function __construct(Repository $cache)
@@ -28,11 +24,6 @@ class RateLimiterUtil
 
     /**
      * Attempt to hit the given rate limiter.
-     *
-     * @param  string  $key
-     * @param  int  $maxAttempts
-     * @param  int  $decayMinutes
-     * @return bool
      */
     public function attempt(string $key, int $maxAttempts, int $decayMinutes): bool
     {
@@ -47,9 +38,6 @@ class RateLimiterUtil
 
     /**
      * Get the number of attempts for the given key.
-     *
-     * @param  string  $key
-     * @return int
      */
     public function attempts(string $key): int
     {
@@ -58,10 +46,6 @@ class RateLimiterUtil
 
     /**
      * Get the number of remaining attempts for the given key.
-     *
-     * @param  string  $key
-     * @param  int  $maxAttempts
-     * @return int
      */
     public function remaining(string $key, int $maxAttempts): int
     {
@@ -70,9 +54,6 @@ class RateLimiterUtil
 
     /**
      * Clear the hits and lockout timer for the given key.
-     *
-     * @param  string  $key
-     * @return void
      */
     public function clear(string $key): void
     {
@@ -81,9 +62,6 @@ class RateLimiterUtil
 
     /**
      * Get the number of seconds until the "key" is accessible again.
-     *
-     * @param  string  $key
-     * @return int
      */
     public function availableIn(string $key): int
     {
@@ -92,10 +70,6 @@ class RateLimiterUtil
 
     /**
      * Determine if the given key has been "accessed" too many times.
-     *
-     * @param  string  $key
-     * @param  int  $maxAttempts
-     * @return bool
      */
     public function tooManyAttempts(string $key, int $maxAttempts): bool
     {
@@ -104,10 +78,6 @@ class RateLimiterUtil
 
     /**
      * Increment the counter for a given key for a given decay time.
-     *
-     * @param  string  $key
-     * @param  int  $decaySeconds
-     * @return int
      */
     public function hit(string $key, int $decaySeconds = 60): int
     {
@@ -116,8 +86,6 @@ class RateLimiterUtil
 
     /**
      * Get the underlying rate limiter instance.
-     *
-     * @return \Illuminate\Cache\RateLimiter
      */
     public function getRateLimiter(): RateLimiter
     {

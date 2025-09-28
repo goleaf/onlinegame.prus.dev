@@ -122,10 +122,10 @@ class MessageCleanupCommand extends Command
     private function cleanupOrphanedMessages(bool $isDryRun): int
     {
         // Messages where both sender and recipient are deleted
-        $query = Message::whereHas('sender', function ($q) {
+        $query = Message::whereHas('sender', function ($q): void {
             $q->whereNull('deleted_at');
         }, '=', 0)
-            ->whereHas('recipient', function ($q) {
+            ->whereHas('recipient', function ($q): void {
                 $q->whereNull('deleted_at');
             }, '=', 0)
             ->where('message_type', '!=', Message::TYPE_SYSTEM);

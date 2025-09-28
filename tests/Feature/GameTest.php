@@ -21,8 +21,11 @@ class GameTest extends TestCase
     use WithFaker;
 
     protected $user;
+
     protected $player;
+
     protected $world;
+
     protected $village;
 
     protected function setUp(): void

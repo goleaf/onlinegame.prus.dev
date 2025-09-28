@@ -21,10 +21,15 @@ class GameDashboardTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $player;
+
     protected $village;
+
     protected $world;
+
     protected $buildingType;
+
     protected $building;
 
     protected function setUp(): void
@@ -84,8 +89,8 @@ class GameDashboardTest extends TestCase
             ->assertSee('Real-time ON')
             ->assertSee('Auto Refresh: ON')
             ->assertSee('Game Speed:')
-            ->assertSee('Resources - ' . $this->village->name)
-            ->assertSee('Buildings - ' . $this->village->name);
+            ->assertSee('Resources - '.$this->village->name)
+            ->assertSee('Buildings - '.$this->village->name);
     }
 
     public function test_loads_game_data_on_mount()
@@ -268,7 +273,7 @@ class GameDashboardTest extends TestCase
         $this->actingAs($this->user);
 
         // Mock the GameTickService
-        $this->mock(GameTickService::class, function ($mock) {
+        $this->mock(GameTickService::class, function ($mock): void {
             $mock->shouldReceive('processGameTick')->once();
         });
 
@@ -282,7 +287,7 @@ class GameDashboardTest extends TestCase
         $this->actingAs($this->user);
 
         // Mock GameTickService to throw exception
-        $this->mock(\App\Services\GameTickService::class, function ($mock) {
+        $this->mock(\App\Services\GameTickService::class, function ($mock): void {
             $mock->shouldReceive('processGameTick')->andThrow(new \Exception('Test error'));
         });
 
@@ -382,7 +387,7 @@ class GameDashboardTest extends TestCase
         $component = Livewire::test(GameDashboard::class);
 
         $component->assertSee($this->building->name ?? $this->buildingType->name);
-        $component->assertSee('Lv.' . $this->building->level);
+        $component->assertSee('Lv.'.$this->building->level);
     }
 
     public function test_displays_game_stats()

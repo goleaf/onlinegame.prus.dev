@@ -5,7 +5,6 @@ namespace App\Livewire\Game;
 use App\Models\Game\Artifact;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
-use App\Services\ArtifactEffectService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -16,22 +15,39 @@ class ArtifactManager extends Component
     use WithPagination;
 
     public $player;
+
     public $selectedVillage;
+
     public $artifacts = [];
+
     public $activeArtifacts = [];
+
     public $inactiveArtifacts = [];
+
     public $selectedArtifact = null;
+
     public $isLoading = false;
+
     public $notifications = [];
+
     public $showDetails = false;
+
     public $filterByType = null;
+
     public $filterByRarity = null;
+
     public $filterByStatus = null;
+
     public $sortBy = 'created_at';
+
     public $sortOrder = 'desc';
+
     public $searchQuery = '';
+
     public $realTimeUpdates = true;
+
     public $autoRefresh = true;
+
     public $refreshInterval = 30;
 
     protected $listeners = [
@@ -52,9 +68,10 @@ class ArtifactManager extends Component
     public function loadPlayer()
     {
         $this->player = Player::where('user_id', Auth::id())->first();
-        
-        if (!$this->player) {
+
+        if (! $this->player) {
             $this->addNotification('Player not found', 'error');
+
             return;
         }
     }
@@ -69,8 +86,9 @@ class ArtifactManager extends Component
             $this->selectedVillage = $this->player->villages()->first();
         }
 
-        if (!$this->selectedVillage) {
+        if (! $this->selectedVillage) {
             $this->addNotification('No village found', 'error');
+
             return;
         }
     }
@@ -98,9 +116,9 @@ class ArtifactManager extends Component
 
             // Apply search
             if ($this->searchQuery) {
-                $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->searchQuery . '%')
-                      ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
+                $query->where(function ($q): void {
+                    $q->where('name', 'like', '%'.$this->searchQuery.'%')
+                        ->orWhere('description', 'like', '%'.$this->searchQuery.'%');
                 });
             }
 
@@ -121,7 +139,7 @@ class ArtifactManager extends Component
                 ->toArray();
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to load artifacts: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to load artifacts: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -131,7 +149,7 @@ class ArtifactManager extends Component
     {
         $this->selectedArtifact = Artifact::with(['artifactEffects', 'village', 'owner'])
             ->find($artifactId);
-        
+
         $this->showDetails = true;
         $this->addNotification('Artifact selected', 'info');
     }
@@ -140,9 +158,10 @@ class ArtifactManager extends Component
     {
         try {
             $artifact = Artifact::find($artifactId);
-            
-            if (!$artifact) {
+
+            if (! $artifact) {
                 $this->addNotification('Artifact not found', 'error');
+
                 return;
             }
 
@@ -156,7 +175,7 @@ class ArtifactManager extends Component
             }
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to activate artifact: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to activate artifact: '.$e->getMessage(), 'error');
         }
     }
 
@@ -164,9 +183,10 @@ class ArtifactManager extends Component
     {
         try {
             $artifact = Artifact::find($artifactId);
-            
-            if (!$artifact) {
+
+            if (! $artifact) {
                 $this->addNotification('Artifact not found', 'error');
+
                 return;
             }
 
@@ -180,7 +200,7 @@ class ArtifactManager extends Component
             }
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to deactivate artifact: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to deactivate artifact: '.$e->getMessage(), 'error');
         }
     }
 
@@ -191,9 +211,10 @@ class ArtifactManager extends Component
             $newVillage = Village::where('id', $newVillageId)
                 ->where('player_id', $this->player->id)
                 ->first();
-            
-            if (!$artifact || !$newVillage) {
+
+            if (! $artifact || ! $newVillage) {
                 $this->addNotification('Artifact or village not found', 'error');
+
                 return;
             }
 
@@ -206,7 +227,7 @@ class ArtifactManager extends Component
             }
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to transfer artifact: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to transfer artifact: '.$e->getMessage(), 'error');
         }
     }
 
@@ -214,9 +235,10 @@ class ArtifactManager extends Component
     {
         try {
             $artifact = Artifact::find($artifactId);
-            
-            if (!$artifact) {
+
+            if (! $artifact) {
                 $this->addNotification('Artifact not found', 'error');
+
                 return;
             }
 
@@ -230,7 +252,7 @@ class ArtifactManager extends Component
             }
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to repair artifact: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to repair artifact: '.$e->getMessage(), 'error');
         }
     }
 
@@ -239,18 +261,18 @@ class ArtifactManager extends Component
         try {
             $artifact = Artifact::generateRandomArtifact();
             $artifact->discover($this->player, $this->selectedVillage);
-            
+
             $this->addNotification('New artifact discovered!', 'success');
             $this->loadArtifacts();
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to discover artifact: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to discover artifact: '.$e->getMessage(), 'error');
         }
     }
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function refreshArtifacts()

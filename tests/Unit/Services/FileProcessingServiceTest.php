@@ -131,7 +131,7 @@ class FileProcessingServiceTest extends TestCase
         // First upload a file
         $file = UploadedFile::fake()->image('test-image.jpg');
         $uploadResult = $this->service->uploadFile($file, 'uploads/test');
-        
+
         $filePath = $uploadResult['data']['path'];
 
         // Then delete it
@@ -160,7 +160,7 @@ class FileProcessingServiceTest extends TestCase
         // First upload a file
         $file = UploadedFile::fake()->image('test-image.jpg');
         $uploadResult = $this->service->uploadFile($file, 'uploads/test');
-        
+
         $filePath = $uploadResult['data']['path'];
 
         // Then get file info
@@ -316,12 +316,12 @@ class FileProcessingServiceTest extends TestCase
         $result = $this->service->uploadFile($file, 'uploads/test');
 
         $this->assertTrue($result['success']);
-        
+
         $fileData = $result['data'];
         $this->assertArrayHasKey('width', $fileData);
         $this->assertArrayHasKey('height', $fileData);
         $this->assertArrayHasKey('aspect_ratio', $fileData);
-        
+
         // Aspect ratio should be calculated correctly
         $expectedRatio = round(1920 / 1080, 2);
         $this->assertEquals($expectedRatio, $fileData['aspect_ratio']);
@@ -343,7 +343,7 @@ class FileProcessingServiceTest extends TestCase
         $result = $this->service->uploadFile($file, 'uploads/test', $options);
 
         $this->assertTrue($result['success']);
-        
+
         $fileData = $result['data'];
         $this->assertArrayHasKey('thumbnails', $fileData);
         $this->assertCount(2, $fileData['thumbnails']);
@@ -369,7 +369,7 @@ class FileProcessingServiceTest extends TestCase
         $result = $this->service->uploadFile($file, 'uploads/test', $options);
 
         $this->assertTrue($result['success']);
-        
+
         $fileData = $result['data'];
         // PDF files shouldn't have thumbnails, but shouldn't fail
         $this->assertArrayNotHasKey('thumbnails', $fileData);

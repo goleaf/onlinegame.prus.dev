@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,14 +17,12 @@ class AuditsSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
-                'user_type' => NULL,
-                'user_id' => NULL,
+                'user_type' => null,
+                'user_id' => null,
                 'event' => 'updated',
                 'auditable_type' => 'App\\Models\\User',
                 'auditable_id' => 1,
@@ -49,14 +48,14 @@ if ($user] {
 ',
                 'ip_address' => '127.0.0.1',
                 'user_agent' => 'Symfony',
-                'tags' => NULL,
+                'tags' => null,
                 'created_at' => '2025-09-27 00:39:35',
                 'updated_at' => '2025-09-27 00:39:35',
             ],
             [
                 'id' => 2,
-                'user_type' => NULL,
-                'user_id' => NULL,
+                'user_type' => null,
+                'user_id' => null,
                 'event' => 'updated',
                 'auditable_type' => 'App\\Models\\Game\\Player',
                 'auditable_id' => 1,
@@ -81,14 +80,14 @@ if ($player] {
 ',
                 'ip_address' => '127.0.0.1',
                 'user_agent' => 'Symfony',
-                'tags' => NULL,
+                'tags' => null,
                 'created_at' => '2025-09-27 00:39:53',
                 'updated_at' => '2025-09-27 00:39:53',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("audits")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('audits')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

@@ -4,9 +4,9 @@ namespace App\Console\Commands;
 
 use App\Services\Game\UnitTrainingService;
 use App\Services\GameCacheService;
-use App\Services\GamePerformanceMonitor;
 use App\Services\GameErrorHandler;
 use App\Services\GameNotificationService;
+use App\Services\GamePerformanceMonitor;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -18,15 +18,17 @@ use Illuminate\Support\Facades\Log;
 class GameOptimizationCommand extends Command
 {
     protected $signature = 'game:optimize {--force : Force optimization without confirmation}';
+
     protected $description = 'Run comprehensive game system optimization and maintenance';
 
     public function handle()
     {
         $this->info('🎮 Starting comprehensive game optimization...');
 
-        if (!$this->option('force')) {
-            if (!$this->confirm('This will optimize the entire game system. Continue?')) {
+        if (! $this->option('force')) {
+            if (! $this->confirm('This will optimize the entire game system. Continue?')) {
                 $this->info('Game optimization cancelled.');
+
                 return 0;
             }
         }
@@ -39,7 +41,7 @@ class GameOptimizationCommand extends Command
         $this->generateReports();
 
         $this->info('✅ Comprehensive game optimization completed!');
-        
+
         return 0;
     }
 
@@ -54,7 +56,7 @@ class GameOptimizationCommand extends Command
             // Process completed trainings
             $trainingService = app(UnitTrainingService::class);
             $result = $trainingService->processCompletedTrainings();
-            
+
             if ($result['success']) {
                 $this->info("  ✓ Processed {$result['processed']} completed trainings.");
                 if ($result['errors'] > 0) {
@@ -70,7 +72,7 @@ class GameOptimizationCommand extends Command
             $this->processGameEvents();
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Game systems optimization failed: " . $e->getMessage());
+            $this->warn('  ✗ Game systems optimization failed: '.$e->getMessage());
             GameErrorHandler::handleGameError($e, ['action' => 'game_systems_optimization']);
         }
     }
@@ -87,7 +89,7 @@ class GameOptimizationCommand extends Command
             $gameTables = [
                 'players', 'villages', 'alliances', 'battles', 'buildings',
                 'troops', 'resources', 'quests', 'achievements', 'training_queues',
-                'player_quests', 'player_achievements', 'game_events', 'game_notifications'
+                'player_quests', 'player_achievements', 'game_events', 'game_notifications',
             ];
 
             $optimizedCount = 0;
@@ -103,11 +105,11 @@ class GameOptimizationCommand extends Command
             $this->info("  ✓ Optimized {$optimizedCount} game tables.");
 
             // Update statistics
-            DB::statement("ANALYZE TABLE players, villages, alliances, battles");
-            $this->info("  ✓ Updated table statistics.");
+            DB::statement('ANALYZE TABLE players, villages, alliances, battles');
+            $this->info('  ✓ Updated table statistics.');
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Database optimization failed: " . $e->getMessage());
+            $this->warn('  ✗ Database optimization failed: '.$e->getMessage());
             GameErrorHandler::handleGameError($e, ['action' => 'database_optimization']);
         }
     }
@@ -122,18 +124,18 @@ class GameOptimizationCommand extends Command
         try {
             // Clear and warm up game cache
             GameCacheService::clearAllGameCache();
-            $this->info("  ✓ Game cache cleared.");
+            $this->info('  ✓ Game cache cleared.');
 
             // Warm up frequently accessed data
             GameCacheService::warmUpCache();
-            $this->info("  ✓ Cache warmed up.");
+            $this->info('  ✓ Cache warmed up.');
 
             // Get cache statistics
             $stats = GameCacheService::getCacheStatistics();
-            $this->info("  ✓ Cache statistics: " . json_encode($stats['cache_stats']));
+            $this->info('  ✓ Cache statistics: '.json_encode($stats['cache_stats']));
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Cache optimization failed: " . $e->getMessage());
+            $this->warn('  ✗ Cache optimization failed: '.$e->getMessage());
             GameErrorHandler::handleGameError($e, ['action' => 'cache_optimization']);
         }
     }
@@ -149,9 +151,9 @@ class GameOptimizationCommand extends Command
             // Generate performance report
             $monitor = new GamePerformanceMonitor();
             $report = $monitor->generatePerformanceReport();
-            
-            $this->info("  ✓ Performance report generated.");
-            
+
+            $this->info('  ✓ Performance report generated.');
+
             // Log performance metrics
             if (isset($report['summary']['memory'])) {
                 $memory = $report['summary']['memory'];
@@ -159,15 +161,15 @@ class GameOptimizationCommand extends Command
             }
 
             // Check for performance recommendations
-            if (isset($report['recommendations']) && !empty($report['recommendations'])) {
-                $this->warn("  ⚠ Performance recommendations:");
+            if (isset($report['recommendations']) && ! empty($report['recommendations'])) {
+                $this->warn('  ⚠ Performance recommendations:');
                 foreach ($report['recommendations'] as $recommendation) {
                     $this->warn("    - {$recommendation}");
                 }
             }
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Performance optimization failed: " . $e->getMessage());
+            $this->warn('  ✗ Performance optimization failed: '.$e->getMessage());
             GameErrorHandler::handleGameError($e, ['action' => 'performance_optimization']);
         }
     }
@@ -184,7 +186,7 @@ class GameOptimizationCommand extends Command
             $oldBattles = DB::table('battles')
                 ->where('created_at', '<', now()->subDays(30))
                 ->count();
-            
+
             if ($oldBattles > 0) {
                 DB::table('battles')
                     ->where('created_at', '<', now()->subDays(30))
@@ -196,7 +198,7 @@ class GameOptimizationCommand extends Command
             $oldEvents = DB::table('game_events')
                 ->where('created_at', '<', now()->subDays(7))
                 ->count();
-            
+
             if ($oldEvents > 0) {
                 DB::table('game_events')
                     ->where('created_at', '<', now()->subDays(7))
@@ -209,7 +211,7 @@ class GameOptimizationCommand extends Command
             $this->info("  ✓ Cleaned up {$cleaned} old notifications.");
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Data cleanup failed: " . $e->getMessage());
+            $this->warn('  ✗ Data cleanup failed: '.$e->getMessage());
             GameErrorHandler::handleGameError($e, ['action' => 'data_cleanup']);
         }
     }
@@ -224,15 +226,15 @@ class GameOptimizationCommand extends Command
         try {
             // Get game statistics
             $gameStats = GameCacheService::getGameStatistics('general');
-            $this->info("  ✓ Game statistics: " . json_encode($gameStats));
+            $this->info('  ✓ Game statistics: '.json_encode($gameStats));
 
             // Get error statistics
             $errorStats = GameErrorHandler::getErrorStatistics();
-            $this->info("  ✓ Error statistics: " . json_encode($errorStats));
+            $this->info('  ✓ Error statistics: '.json_encode($errorStats));
 
             // Get cache statistics
             $cacheStats = GameCacheService::getCacheStatistics();
-            $this->info("  ✓ Cache statistics: " . json_encode($cacheStats['cache_stats']));
+            $this->info('  ✓ Cache statistics: '.json_encode($cacheStats['cache_stats']));
 
             // Log optimization completion
             GameErrorHandler::logGameAction('game_optimization_completed', [
@@ -243,7 +245,7 @@ class GameOptimizationCommand extends Command
             ]);
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Report generation failed: " . $e->getMessage());
+            $this->warn('  ✗ Report generation failed: '.$e->getMessage());
             GameErrorHandler::handleGameError($e, ['action' => 'report_generation']);
         }
     }
@@ -285,7 +287,7 @@ class GameOptimizationCommand extends Command
             }
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Game events processing failed: " . $e->getMessage());
+            $this->warn('  ✗ Game events processing failed: '.$e->getMessage());
         }
     }
 }

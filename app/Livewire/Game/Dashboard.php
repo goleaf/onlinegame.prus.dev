@@ -5,7 +5,6 @@ namespace App\Livewire\Game;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
-use App\Services\PerformanceMonitoringService;
 use App\Services\GameIntegrationService;
 use App\Services\GameNotificationService;
 use App\Traits\PerformanceMonitoringTrait;
@@ -14,8 +13,11 @@ use Livewire\Component;
 class Dashboard extends Component
 {
     use PerformanceMonitoringTrait;
+
     public $player;
+
     public $villages;
+
     public $world;
 
     public $resources = [
@@ -32,10 +34,10 @@ class Dashboard extends Component
             $player = auth()->user();
             $villages = $player->villages()->with(['buildings'])->get() ?? collect();
             $world = World::select(['id', 'name', 'speed', 'start_date'])->first();
-            
+
             return compact('player', 'villages', 'world');
         }, 'mount');
-        
+
         $this->player = $data['player'];
         $this->villages = $data['villages'];
         $this->world = $data['world'];
@@ -49,7 +51,7 @@ class Dashboard extends Component
 
     public function createVillage()
     {
-        if ($this->villages->count() >= 1 && !$this->player->hasRole('premium')) {
+        if ($this->villages->count() >= 1 && ! $this->player->hasRole('premium')) {
             session()->flash('error', 'You need premium to create more villages!');
 
             // Track failed village creation
@@ -61,7 +63,7 @@ class Dashboard extends Component
         $village = Village::create([
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
-            'name' => 'Village ' . ($this->villages->count() + 1),
+            'name' => 'Village '.($this->villages->count() + 1),
             'x_coordinate' => rand(1, 100),
             'y_coordinate' => rand(1, 100),
             'population' => 2,
@@ -150,7 +152,7 @@ class Dashboard extends Component
             if ($this->player) {
                 // Initialize real-time features for the user
                 GameIntegrationService::initializeUserRealTime($this->player->id);
-                
+
                 $this->dispatch('dashboard-initialized', [
                     'message' => 'Game dashboard real-time features activated',
                     'player_id' => $this->player->id,
@@ -158,7 +160,7 @@ class Dashboard extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to initialize dashboard real-time features: ' . $e->getMessage(),
+                'message' => 'Failed to initialize dashboard real-time features: '.$e->getMessage(),
             ]);
         }
     }
@@ -189,7 +191,7 @@ class Dashboard extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to create village: ' . $e->getMessage(),
+                'message' => 'Failed to create village: '.$e->getMessage(),
             ]);
         }
     }

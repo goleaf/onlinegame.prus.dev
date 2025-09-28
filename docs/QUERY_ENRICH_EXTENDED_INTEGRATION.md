@@ -1,6 +1,7 @@
 # Query Enrich Extended Integration Summary
 
 ## Overview
+
 Successfully completed extended integration of Laravel Query Enrich across additional models and components of the Travian Online Game codebase, further enhancing query readability and performance.
 
 ## 🎯 **Extended Integrations Completed**
@@ -8,12 +9,14 @@ Successfully completed extended integration of Laravel Query Enrich across addit
 ### 1. **Additional Model Updates**
 
 #### Alliance Model (`app/Models/Game/Alliance.php`)
+
 - ✅ **Enhanced scopeWithStats()** - Replaced complex selectRaw with Query Enrich
 - ✅ **Alliance Statistics** - Member counts, points totals, averages, and maximums
 - ✅ **Village Aggregations** - Total villages and population across alliance members
 - ✅ **Query Enrich Imports** - Added proper imports for QE and c() functions
 
 **Before (Raw SQL):**
+
 ```php
 ->selectRaw('
     alliances.*,
@@ -24,6 +27,7 @@ Successfully completed extended integration of Laravel Query Enrich across addit
 ```
 
 **After (Query Enrich):**
+
 ```php
 ->select([
     'alliances.*',
@@ -47,12 +51,14 @@ Successfully completed extended integration of Laravel Query Enrich across addit
 ```
 
 #### Movement Model (`app/Models/Game/Movement.php`)
+
 - ✅ **Enhanced scopeWithStats()** - Comprehensive movement statistics
 - ✅ **Village Movement Counts** - Total movements from and to villages
 - ✅ **Travel Time Analysis** - Average travel times for different routes
 - ✅ **Query Enrich Imports** - Added proper imports
 
 **Before (Raw SQL):**
+
 ```php
 ->selectRaw('
     movements.*,
@@ -62,6 +68,7 @@ Successfully completed extended integration of Laravel Query Enrich across addit
 ```
 
 **After (Query Enrich):**
+
 ```php
 ->select([
     'movements.*',
@@ -82,12 +89,14 @@ Successfully completed extended integration of Laravel Query Enrich across addit
 ### 2. **Livewire Component Updates**
 
 #### AllianceManager (`app/Livewire/Game/AllianceManager.php`)
+
 - ✅ **Alliance Statistics** - Enhanced alliance queries with Query Enrich
 - ✅ **Member Analytics** - Comprehensive member statistics and aggregations
 - ✅ **Performance Metrics** - Points analysis and alliance rankings
 - ✅ **Query Enrich Imports** - Added proper imports
 
 **Key Updates:**
+
 - Alliance listing with comprehensive statistics
 - Alliance selection with detailed member analytics
 - Performance metrics for alliance comparison
@@ -95,15 +104,18 @@ Successfully completed extended integration of Laravel Query Enrich across addit
 ### 3. **New Service Created**
 
 #### QueryEnrichAnalyticsService (`app/Services/QueryEnrichAnalyticsService.php`)
+
 A comprehensive analytics service providing advanced reporting functionality:
 
 **World Analytics Methods:**
+
 - ✅ `getWorldAnalytics()` - Complete world statistics and distributions
 - ✅ `getTribeDistribution()` - Player distribution by tribe
 - ✅ `getAllianceStatistics()` - Alliance performance metrics
 - ✅ `getBattleStatistics()` - Comprehensive battle analytics
 
 **Player Performance Methods:**
+
 - ✅ `getPlayerPerformanceAnalytics()` - Complete player performance analysis
 - ✅ `getGrowthMetrics()` - Village and population growth tracking
 - ✅ `getBattlePerformance()` - Combat effectiveness analysis
@@ -111,6 +123,7 @@ A comprehensive analytics service providing advanced reporting functionality:
 - ✅ `getMovementActivity()` - Movement patterns and frequency
 
 **Advanced Analytics Methods:**
+
 - ✅ `getAllianceWarStatistics()` - Alliance vs alliance combat analysis
 - ✅ `getVillageEfficiencyMetrics()` - Village performance optimization
 - ✅ `getResourceMarketAnalysis()` - Market trends and pricing analysis
@@ -119,15 +132,18 @@ A comprehensive analytics service providing advanced reporting functionality:
 ### 4. **Integration Patterns Established**
 
 #### Consistent Query Patterns
+
 All integrations follow established patterns:
 
 1. **Import Structure:**
+
 ```php
 use sbamtr\LaravelQueryEnrich\QE;
 use function sbamtr\LaravelQueryEnrich\c;
 ```
 
 2. **Subquery with Complex Conditions:**
+
 ```php
 QE::select(QE::count(c('id')))
     ->from('table', 'alias')
@@ -139,6 +155,7 @@ QE::select(QE::count(c('id')))
 ```
 
 3. **Nested Subqueries:**
+
 ```php
 QE::select(QE::count(c('id')))
     ->from('villages', 'v')
@@ -153,12 +170,14 @@ QE::select(QE::count(c('id')))
 ### 5. **Performance Benefits Achieved**
 
 #### Query Optimization
+
 - **Complex Subqueries** - Efficient handling of nested relationships
 - **Conditional Aggregations** - Optimized CASE statements and conditional logic
 - **Multi-table Joins** - Efficient cross-table analytics
 - **Date-based Filtering** - Optimized time-based queries
 
 #### Analytics Capabilities
+
 - **Real-time Statistics** - Live performance metrics
 - **Historical Analysis** - Time-based trend analysis
 - **Comparative Analytics** - Alliance vs alliance comparisons
@@ -181,7 +200,7 @@ QE::select(QE::count(c('id')))
    - Enhanced alliance selection queries
    - Added Query Enrich imports
 
-4. **`app/Services/QueryEnrichAnalyticsService.php`** *(new)*
+4. **`app/Services/QueryEnrichAnalyticsService.php`** _(new)_
    - Comprehensive analytics service
    - Advanced reporting methods
    - World and player performance analytics
@@ -198,6 +217,7 @@ QE::select(QE::count(c('id')))
 ### 8. **Usage Examples**
 
 #### Using Enhanced Alliance Model
+
 ```php
 // Get alliances with comprehensive statistics
 $alliances = Alliance::withStats()->where('world_id', $worldId)->get();
@@ -212,6 +232,7 @@ $alliances = Alliance::withStats()->where('world_id', $worldId)->get();
 ```
 
 #### Using Enhanced Movement Model
+
 ```php
 // Get movements with comprehensive statistics
 $movements = Movement::withStats()->where('player_id', $playerId)->get();
@@ -224,6 +245,7 @@ $movements = Movement::withStats()->where('player_id', $playerId)->get();
 ```
 
 #### Using QueryEnrichAnalyticsService
+
 ```php
 use App\Services\QueryEnrichAnalyticsService;
 
@@ -243,12 +265,14 @@ $efficiencyMetrics = QueryEnrichAnalyticsService::getVillageEfficiencyMetrics($p
 ### 9. **Advanced Features Implemented**
 
 #### Complex Analytics
+
 - **Multi-dimensional Analysis** - Cross-table aggregations and relationships
 - **Time-based Filtering** - Historical data analysis with date ranges
 - **Conditional Logic** - Complex CASE statements for conditional aggregations
 - **Nested Subqueries** - Multi-level relationship queries
 
 #### Performance Optimizations
+
 - **Efficient Aggregations** - Optimized COUNT, SUM, AVG, MAX operations
 - **Smart Indexing** - Query patterns that leverage database indexes
 - **Caching Compatibility** - Query structures that work well with caching
@@ -265,12 +289,14 @@ $efficiencyMetrics = QueryEnrichAnalyticsService::getVillageEfficiencyMetrics($p
 ### 11. **Benefits Realized**
 
 #### For Developers
+
 - **Advanced Analytics** - Powerful tools for game analysis
 - **Consistent Patterns** - Standardized query building across services
 - **Better Debugging** - Clear query structure and intent
 - **Reduced Complexity** - Simplified complex query logic
 
 #### For Application
+
 - **Enhanced Analytics** - Comprehensive game statistics and reporting
 - **Better Performance** - Optimized query execution for analytics
 - **Improved Scalability** - Efficient handling of large datasets
@@ -283,6 +309,7 @@ The extended Query Enrich integration has successfully enhanced the Alliance and
 The established patterns continue to provide a solid foundation for further integration across the remaining parts of the codebase, ensuring consistent, maintainable, and performant database queries throughout the Travian Online Game application.
 
 ## 🏆 **Extended Integration Status**
+
 - ✅ **Alliance Model** - Complete Query Enrich integration
 - ✅ **Movement Model** - Complete Query Enrich integration
 - ✅ **AllianceManager Component** - Complete Query Enrich integration

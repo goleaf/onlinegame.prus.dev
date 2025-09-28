@@ -42,7 +42,7 @@ class GamePerformanceCommand extends Command
             'village_data',
             'troop_data',
             'building_data',
-            'resource_data'
+            'resource_data',
         ];
 
         $startTime = microtime(true);
@@ -64,7 +64,7 @@ class GamePerformanceCommand extends Command
 
         $executionTime = microtime(true) - $startTime;
         $this->newLine();
-        $this->info('Optimization completed in ' . round($executionTime * 1000, 2) . 'ms');
+        $this->info('Optimization completed in '.round($executionTime * 1000, 2).'ms');
 
         return 0;
     }
@@ -83,7 +83,7 @@ class GamePerformanceCommand extends Command
             $this->line("  Memory Used: {$cacheStats['memory_used']}");
             $this->line("  Keys Count: {$cacheStats['keys_count']}");
             $this->line("  Hit Rate: {$cacheStats['hit_rate']}%");
-            $this->line('  Compression: ' . ($cacheStats['compression_enabled'] ? 'Enabled' : 'Disabled'));
+            $this->line('  Compression: '.($cacheStats['compression_enabled'] ? 'Enabled' : 'Disabled'));
             $this->newLine();
 
             // Session Performance
@@ -93,7 +93,7 @@ class GamePerformanceCommand extends Command
             $this->line("  Memory Used: {$sessionStats['memory_used']}");
             $this->line("  Lifetime: {$sessionStats['lifetime']} minutes");
             $this->line("  Driver: {$sessionStats['driver']}");
-            $this->line('  Compression: ' . ($sessionStats['compression_enabled'] ? 'Enabled' : 'Disabled'));
+            $this->line('  Compression: '.($sessionStats['compression_enabled'] ? 'Enabled' : 'Disabled'));
             $this->newLine();
 
             // Memory Usage
@@ -111,15 +111,15 @@ class GamePerformanceCommand extends Command
             } else {
                 $this->line("  Total Queries: {$dbMetrics['total_queries']}");
                 $this->line("  Active Connections: {$dbMetrics['active_connections']}");
-                $this->line('  Execution Time: ' . round($dbMetrics['query_execution_time'], 2) . 'ms');
+                $this->line('  Execution Time: '.round($dbMetrics['query_execution_time'], 2).'ms');
             }
             $this->newLine();
 
             // Optimization Metrics
-            if (!empty($metrics['optimization_metrics'])) {
+            if (! empty($metrics['optimization_metrics'])) {
                 $this->info('⚡ Optimization Metrics:');
                 foreach ($metrics['optimization_metrics'] as $key => $value) {
-                    $this->line("  {$key}: " . round($value * 1000, 2) . 'ms');
+                    $this->line("  {$key}: ".round($value * 1000, 2).'ms');
                 }
                 $this->newLine();
             }
@@ -127,6 +127,7 @@ class GamePerformanceCommand extends Command
             $this->info("📅 Generated at: {$metrics['timestamp']}");
         } catch (\Exception $e) {
             $this->error("Failed to retrieve performance metrics: {$e->getMessage()}");
+
             return 1;
         }
 
@@ -143,9 +144,10 @@ class GamePerformanceCommand extends Command
 
             $this->info("✅ Cache cleanup: {$results['cache_cleaned']} operations completed");
             $this->info("✅ Session cleanup: {$results['sessions_cleaned']} sessions removed");
-            $this->info('⏱️ Execution time: ' . round($results['execution_time'] * 1000, 2) . 'ms');
+            $this->info('⏱️ Execution time: '.round($results['execution_time'] * 1000, 2).'ms');
         } catch (\Exception $e) {
             $this->error("Failed to cleanup expired data: {$e->getMessage()}");
+
             return 1;
         }
 
@@ -164,10 +166,11 @@ class GamePerformanceCommand extends Command
             $optimizer->warmUpGameCache($userIds);
             $executionTime = microtime(true) - $startTime;
 
-            $this->info('✅ Cache warmed up for ' . count($userIds) . ' users');
-            $this->info('⏱️ Execution time: ' . round($executionTime * 1000, 2) . 'ms');
+            $this->info('✅ Cache warmed up for '.count($userIds).' users');
+            $this->info('⏱️ Execution time: '.round($executionTime * 1000, 2).'ms');
         } catch (\Exception $e) {
             $this->error("Failed to warm up cache: {$e->getMessage()}");
+
             return 1;
         }
 

@@ -38,8 +38,8 @@ class SystemControllerTest extends TestCase
                         'villages',
                         'alliances',
                         'features',
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
@@ -65,7 +65,7 @@ class SystemControllerTest extends TestCase
                         'larautilx',
                     ],
                     'timestamp',
-                ]
+                ],
             ]);
     }
 
@@ -101,7 +101,7 @@ class SystemControllerTest extends TestCase
                         'total_requests_today',
                         'new_registrations_today',
                     ],
-                ]
+                ],
             ]);
     }
 
@@ -125,7 +125,7 @@ class SystemControllerTest extends TestCase
                         'running_tasks',
                         'due_tasks',
                     ],
-                ]
+                ],
             ]);
     }
 
@@ -137,7 +137,7 @@ class SystemControllerTest extends TestCase
         $response = $this
             ->actingAs($this->user)
             ->postJson('/game/api/system/clear-caches', [
-                'cache_types' => ['config', 'route']
+                'cache_types' => ['config', 'route'],
             ]);
 
         $response
@@ -146,7 +146,7 @@ class SystemControllerTest extends TestCase
                 'data' => [
                     'cleared_caches',
                     'timestamp',
-                ]
+                ],
             ]);
     }
 
@@ -170,7 +170,7 @@ class SystemControllerTest extends TestCase
                         'since',
                         'total_retrieved',
                     ],
-                ]
+                ],
             ]);
     }
 
@@ -194,7 +194,7 @@ class SystemControllerTest extends TestCase
                     'key',
                     'value',
                     'updated_at',
-                ]
+                ],
             ]);
     }
 
@@ -229,7 +229,7 @@ class SystemControllerTest extends TestCase
             ->assertJsonStructure([
                 'data' => [
                     'game',
-                ]
+                ],
             ]);
     }
 
@@ -247,7 +247,7 @@ class SystemControllerTest extends TestCase
             ->assertJsonStructure([
                 'data' => [
                     'specific_key',
-                ]
+                ],
             ]);
     }
 
@@ -265,7 +265,7 @@ class SystemControllerTest extends TestCase
             ->assertJsonStructure([
                 'data' => [
                     'app',
-                ]
+                ],
             ]);
     }
 }

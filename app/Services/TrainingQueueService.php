@@ -3,13 +3,10 @@
 namespace App\Services;
 
 use App\Models\Game\TrainingQueue;
-use App\Models\Game\Village;
 use App\Models\Game\UnitType;
-use App\Models\Game\Troop;
-use App\Models\Game\Resource;
-use App\Services\PerformanceMonitoringService;
-use Illuminate\Support\Facades\Log;
+use App\Models\Game\Village;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TrainingQueueService
 {
@@ -21,9 +18,9 @@ class TrainingQueueService
         return DB::transaction(function () use ($village, $unitType, $quantity) {
             // Calculate training costs
             $costs = $this->calculateTrainingCosts($unitType, $quantity);
-            
+
             // Check if village has enough resources
-            if (!$this->hasEnoughResources($village, $costs)) {
+            if (! $this->hasEnoughResources($village, $costs)) {
                 throw new \Exception('Insufficient resources for training');
             }
 
@@ -63,13 +60,13 @@ class TrainingQueueService
      */
     public function completeTraining(TrainingQueue $trainingQueue): void
     {
-        DB::transaction(function () use ($trainingQueue) {
+        DB::transaction(function () use ($trainingQueue): void {
             $village = $trainingQueue->village;
             $unitType = $trainingQueue->unitType;
 
             // Add troops to village
             $troop = $village->troops()->where('unit_type_id', $unitType->id)->first();
-            
+
             if ($troop) {
                 $troop->increment('quantity', $trainingQueue->count);
             } else {
@@ -99,7 +96,7 @@ class TrainingQueueService
      */
     public function cancelTraining(TrainingQueue $trainingQueue): void
     {
-        DB::transaction(function () use ($trainingQueue) {
+        DB::transaction(function () use ($trainingQueue): void {
             $village = $trainingQueue->village;
             $costs = $trainingQueue->costs;
 
@@ -175,22 +172,22 @@ class TrainingQueueService
     {
         // Base training time (in seconds)
         $baseTime = 60; // 1 minute per unit
-        
+
         // Building bonuses
         $barracks = $village->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'barracks');
             })
             ->first();
 
         $stable = $village->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'stable');
             })
             ->first();
 
         $workshop = $village->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'workshop');
             })
             ->first();
@@ -221,7 +218,7 @@ class TrainingQueueService
     {
         foreach ($costs as $resource => $cost) {
             $resourceModel = $village->resources()->where('type', $resource)->first();
-            if (!$resourceModel || $resourceModel->amount < $cost) {
+            if (! $resourceModel || $resourceModel->amount < $cost) {
                 return false;
             }
         }

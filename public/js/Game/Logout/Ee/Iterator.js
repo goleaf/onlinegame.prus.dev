@@ -5,25 +5,21 @@
  * @param {Object} parent optional
  * @returns {Ee.Iterator}
  */
-Ee.Iterator = function(options, parent)
-{
-	Ee.Base.call(this, options, parent);
+Ee.Iterator = function (options, parent) {
+  Ee.Base.call(this, options, parent);
 
-	this._iteratorData = {};
+  this._iteratorData = {};
 
-	return this;
+  return this;
 };
 
 // Prototype Property definition
-Ee.Iterator.prototype = Object.create(Ee.Base.prototype,
-{
-	length:
-	{
-		get: function()
-		{
-			return Object.keys(this._iteratorData).length;
-		}
-	}
+Ee.Iterator.prototype = Object.create(Ee.Base.prototype, {
+  length: {
+    get: function () {
+      return Object.keys(this._iteratorData).length;
+    },
+  },
 });
 
 /**
@@ -33,16 +29,14 @@ Ee.Iterator.prototype = Object.create(Ee.Base.prototype,
  * @param mixed id
  * @returns {Ee.Iterator}
  */
-Ee.Iterator.prototype.add = function(entry, id)
-{
-	if (this._iteratorData[id])
-	{
-		this.remove(id);
-	}
+Ee.Iterator.prototype.add = function (entry, id) {
+  if (this._iteratorData[id]) {
+    this.remove(id);
+  }
 
-	this._iteratorData[id] = entry;
+  this._iteratorData[id] = entry;
 
-	return this;
+  return this;
 };
 
 /**
@@ -50,18 +44,18 @@ Ee.Iterator.prototype.add = function(entry, id)
  *
  * @returns {Ee.Iterator}
  */
-Ee.Iterator.prototype.destroy = Ee.Iterator.prototype.destroy.wrap(function(proceed)
-{
-	for (var key in this._iteratorData)
-	{
-		this._iteratorData[key].destroy();
-		delete(this._iteratorData[key]);
-	}
+Ee.Iterator.prototype.destroy = Ee.Iterator.prototype.destroy.wrap(
+  function (proceed) {
+    for (var key in this._iteratorData) {
+      this._iteratorData[key].destroy();
+      delete this._iteratorData[key];
+    }
 
-	this.destroyProperty('_iteratorData', false);
+    this.destroyProperty('_iteratorData', false);
 
-	return proceed();
-});
+    return proceed();
+  }
+);
 
 /**
  * liefert den eintrag sofern vorhanden ansonsten NULL
@@ -69,14 +63,12 @@ Ee.Iterator.prototype.destroy = Ee.Iterator.prototype.destroy.wrap(function(proc
  * @param mixed id
  * @returns {Object}
  */
-Ee.Iterator.prototype.get = function(id)
-{
-	if (this._iteratorData[id])
-	{
-		return this._iteratorData[id];
-	}
+Ee.Iterator.prototype.get = function (id) {
+  if (this._iteratorData[id]) {
+    return this._iteratorData[id];
+  }
 
-	return null;
+  return null;
 };
 
 /**
@@ -85,16 +77,14 @@ Ee.Iterator.prototype.get = function(id)
  * @param {Function} callback [entry, iterator]
  * @returns {Ee.Iterator}
  */
-Ee.Iterator.prototype.each = function(callback)
-{
-	var self = this;
+Ee.Iterator.prototype.each = function (callback) {
+  var self = this;
 
-	Object.each(this._iteratorData, function(entry)
-	{
-		callback(entry, self);
-	});
+  Object.each(this._iteratorData, function (entry) {
+    callback(entry, self);
+  });
 
-	return this;
+  return this;
 };
 
 /**
@@ -103,14 +93,12 @@ Ee.Iterator.prototype.each = function(callback)
  * @param {Function} callback [entry, iterator]
  * @returns {Object}
  */
-Ee.Iterator.prototype.find = function(callback)
-{
-	var self = this;
+Ee.Iterator.prototype.find = function (callback) {
+  var self = this;
 
-	return Object.find(this._iteratorData, function(entry)
-	{
-		return callback(entry, self);
-	});
+  return Object.find(this._iteratorData, function (entry) {
+    return callback(entry, self);
+  });
 };
 
 /**
@@ -118,9 +106,8 @@ Ee.Iterator.prototype.find = function(callback)
  *
  * @returns {Array}
  */
-Ee.Iterator.prototype.keys = function()
-{
-	return Object.keys(this._iteratorData);
+Ee.Iterator.prototype.keys = function () {
+  return Object.keys(this._iteratorData);
 };
 
 /**
@@ -130,14 +117,16 @@ Ee.Iterator.prototype.keys = function()
  * @param mixed initialValue
  * @returns mixed
  */
-Ee.Iterator.prototype.reduce = function(callback, initialValue)
-{
-	var self = this;
+Ee.Iterator.prototype.reduce = function (callback, initialValue) {
+  var self = this;
 
-	return Object.reduce(this._iteratorData, function(previousValue, entry)
-	{
-		return callback(previousValue, entry, self);
-	}, initialValue);
+  return Object.reduce(
+    this._iteratorData,
+    function (previousValue, entry) {
+      return callback(previousValue, entry, self);
+    },
+    initialValue
+  );
 };
 
 /**
@@ -146,25 +135,21 @@ Ee.Iterator.prototype.reduce = function(callback, initialValue)
  * @params mixed ignoreId diesen einen eintrag ignorieren
  * @returns mixed
  */
-Ee.Iterator.prototype.random = function(ignoreId)
-{
-	var possibleEntries = this.keys();
+Ee.Iterator.prototype.random = function (ignoreId) {
+  var possibleEntries = this.keys();
 
-	if (typeof ignoreId !== 'undefined')
-	{
-		possibleEntries = possibleEntries.filter(function(id)
-		{
-			return !(id == ignoreId);
-		});
-	}
-	var key = possibleEntries.getRandom();
+  if (typeof ignoreId !== 'undefined') {
+    possibleEntries = possibleEntries.filter(function (id) {
+      return !(id == ignoreId);
+    });
+  }
+  var key = possibleEntries.getRandom();
 
-	if (key === null)
-	{
-		return null;
-	}
+  if (key === null) {
+    return null;
+  }
 
-	return this.get(possibleEntries.getRandom());
+  return this.get(possibleEntries.getRandom());
 };
 
 /**
@@ -173,12 +158,10 @@ Ee.Iterator.prototype.random = function(ignoreId)
  * @param mixed id
  * @returns {Ee.Iterator}
  */
-Ee.Iterator.prototype.remove = function(id)
-{
-	if (this._iteratorData[id])
-	{
-		delete this._iteratorData[id];
-	}
+Ee.Iterator.prototype.remove = function (id) {
+  if (this._iteratorData[id]) {
+    delete this._iteratorData[id];
+  }
 
-	return this;
+  return this;
 };

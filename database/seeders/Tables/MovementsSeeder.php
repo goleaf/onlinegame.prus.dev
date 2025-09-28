@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,48 +17,46 @@ class MovementsSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
-                'reference_number' => 'MOV-2025090001',
-                'player_id' => 1,
+
+                'player_id' => 7,
                 'from_village_id' => 1,
                 'to_village_id' => 2,
                 'type' => 'attack',
-                'troops' => NULL,
-                'resources' => NULL,
+                'troops' => null,
+                'resources' => null,
                 'started_at' => '2025-09-27 00:45:02',
                 'arrives_at' => '2025-09-27 01:15:03',
-                'returned_at' => NULL,
+                'returned_at' => null,
                 'status' => 'travelling',
-                'metadata' => NULL,
+                'metadata' => null,
                 'created_at' => '2025-09-27 00:45:03',
                 'updated_at' => '2025-09-27 00:45:03',
             ],
             [
                 'id' => 2,
-                'reference_number' => 'MOV-2025090002',
-                'player_id' => 1,
+
+                'player_id' => 7,
                 'from_village_id' => 1,
                 'to_village_id' => 2,
                 'type' => 'attack',
-                'troops' => NULL,
-                'resources' => NULL,
+                'troops' => null,
+                'resources' => null,
                 'started_at' => '2025-09-27 00:45:43',
                 'arrives_at' => '2025-09-27 01:15:43',
-                'returned_at' => NULL,
+                'returned_at' => null,
                 'status' => 'travelling',
-                'metadata' => NULL,
+                'metadata' => null,
                 'created_at' => '2025-09-27 00:45:43',
                 'updated_at' => '2025-09-27 00:45:43',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("movements")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('movements')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

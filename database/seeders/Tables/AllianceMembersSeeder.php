@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,15 +17,20 @@ class AllianceMembersSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
+
+        // Valid player IDs from PlayersSeeder
+        $validPlayerIds = [2, 48, 7];
+
+        // Limit the number of alliance members to match available players
+        $maxAllianceMembers = count($validPlayerIds);
 
         $dataTables = [
             [
                 'id' => 1,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
-                'player_id' => 1,
+                'player_id' => 2,
                 'rank' => 'leader',
                 'joined_at' => '2025-09-24 23:37:53',
                 'created_at' => '2025-09-25 23:37:53',
@@ -32,7 +38,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 2,
                 'rank' => 'elder',
@@ -42,7 +48,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 12,
                 'rank' => 'elder',
@@ -52,7 +58,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 4,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 14,
                 'rank' => 'member',
@@ -62,7 +68,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 5,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 16,
                 'rank' => 'member',
@@ -72,7 +78,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 6,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 21,
                 'rank' => 'member',
@@ -82,7 +88,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 7,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 22,
                 'rank' => 'member',
@@ -92,7 +98,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 8,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 24,
                 'rank' => 'member',
@@ -102,7 +108,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 9,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 25,
                 'rank' => 'member',
@@ -112,7 +118,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 10,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 28,
                 'rank' => 'member',
@@ -122,7 +128,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 11,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 36,
                 'rank' => 'member',
@@ -132,7 +138,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 12,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 39,
                 'rank' => 'member',
@@ -142,7 +148,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 13,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 1,
                 'player_id' => 45,
                 'rank' => 'member',
@@ -152,7 +158,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 14,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 2,
                 'player_id' => 29,
                 'rank' => 'member',
@@ -162,7 +168,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 15,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 2,
                 'player_id' => 31,
                 'rank' => 'member',
@@ -172,7 +178,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 16,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 3,
                 'player_id' => 6,
                 'rank' => 'elder',
@@ -182,7 +188,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 17,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 3,
                 'player_id' => 26,
                 'rank' => 'member',
@@ -192,7 +198,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 18,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 3,
                 'player_id' => 30,
                 'rank' => 'member',
@@ -202,7 +208,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 19,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 3,
                 'player_id' => 40,
                 'rank' => 'member',
@@ -212,7 +218,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 20,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 3,
                 'player_id' => 47,
                 'rank' => 'member',
@@ -222,7 +228,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 21,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 5,
                 'player_id' => 5,
                 'rank' => 'elder',
@@ -232,7 +238,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 22,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 5,
                 'player_id' => 11,
                 'rank' => 'elder',
@@ -242,7 +248,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 23,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 5,
                 'player_id' => 17,
                 'rank' => 'member',
@@ -252,7 +258,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 24,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 5,
                 'player_id' => 23,
                 'rank' => 'member',
@@ -262,7 +268,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 25,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 5,
                 'player_id' => 38,
                 'rank' => 'member',
@@ -272,7 +278,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 26,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 6,
                 'player_id' => 3,
                 'rank' => 'leader',
@@ -282,7 +288,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 27,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 6,
                 'player_id' => 8,
                 'rank' => 'member',
@@ -292,7 +298,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 28,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 6,
                 'player_id' => 15,
                 'rank' => 'member',
@@ -302,7 +308,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 29,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 7,
                 'player_id' => 13,
                 'rank' => 'elder',
@@ -312,7 +318,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 30,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 7,
                 'player_id' => 19,
                 'rank' => 'member',
@@ -322,7 +328,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 31,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 7,
                 'player_id' => 27,
                 'rank' => 'member',
@@ -332,7 +338,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 32,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 7,
                 'player_id' => 34,
                 'rank' => 'member',
@@ -342,7 +348,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 33,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 7,
                 'player_id' => 35,
                 'rank' => 'member',
@@ -352,7 +358,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 34,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 7,
                 'player_id' => 37,
                 'rank' => 'member',
@@ -362,7 +368,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 35,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 7,
                 'player_id' => 41,
                 'rank' => 'member',
@@ -372,7 +378,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 36,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 7,
                 'player_id' => 42,
                 'rank' => 'member',
@@ -382,7 +388,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 37,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 7,
                 'player_id' => 49,
                 'rank' => 'member',
@@ -392,7 +398,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 38,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 7,
                 'player_id' => 51,
                 'rank' => 'member',
@@ -402,7 +408,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 39,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 8,
                 'player_id' => 4,
                 'rank' => 'leader',
@@ -412,7 +418,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 40,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 8,
                 'player_id' => 7,
                 'rank' => 'elder',
@@ -422,7 +428,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 41,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 8,
                 'player_id' => 10,
                 'rank' => 'elder',
@@ -432,7 +438,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 42,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 8,
                 'player_id' => 32,
                 'rank' => 'member',
@@ -442,7 +448,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 43,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 8,
                 'player_id' => 46,
                 'rank' => 'member',
@@ -452,7 +458,7 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 44,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 9,
                 'player_id' => 18,
                 'rank' => 'leader',
@@ -462,18 +468,33 @@ class AllianceMembersSeeder extends Seeder
             ],
             [
                 'id' => 45,
-                'reference_number' => NULL,
+                'reference_number' => null,
                 'alliance_id' => 9,
                 'player_id' => 33,
                 'rank' => 'elder',
                 'joined_at' => '2025-09-01 23:37:54',
                 'created_at' => '2025-09-25 23:37:54',
                 'updated_at' => '2025-09-25 23:37:54',
-            ]
+            ],
         ];
-        
-        foreach ($dataTables as $data) {
-            DB::table("alliance_members")->updateOrInsert(['id' => $data['id']], $data);
+
+        // Only process the first few records to match available players
+        $dataTables = array_slice($dataTables, 0, $maxAllianceMembers);
+
+        $usedPlayerIds = [];
+        foreach ($dataTables as $index => $data) {
+            // Find a player ID that hasn't been used yet
+            $availablePlayerIds = array_diff($validPlayerIds, $usedPlayerIds);
+            if (empty($availablePlayerIds)) {
+                // If all players are used, cycle through them
+                $availablePlayerIds = $validPlayerIds;
+                $usedPlayerIds = [];
+            }
+
+            $data['player_id'] = $availablePlayerIds[array_rand($availablePlayerIds)];
+            $usedPlayerIds[] = $data['player_id'];
+
+            DB::table('alliance_members')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

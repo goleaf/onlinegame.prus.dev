@@ -31,9 +31,10 @@ class OptimizationCommand extends Command
     {
         $this->info('🚀 Starting comprehensive optimization...');
 
-        if (!$this->option('force')) {
-            if (!$this->confirm('This will optimize the entire application. Continue?')) {
+        if (! $this->option('force')) {
+            if (! $this->confirm('This will optimize the entire application. Continue?')) {
                 $this->info('Optimization cancelled.');
+
                 return 0;
             }
         }
@@ -45,7 +46,7 @@ class OptimizationCommand extends Command
         $this->optimizeSecurity();
 
         $this->info('✅ Comprehensive optimization completed!');
-        
+
         return 0;
     }
 
@@ -69,7 +70,7 @@ class OptimizationCommand extends Command
                 Artisan::call($command);
                 $this->info("  ✓ {$description} completed.");
             } catch (\Exception $e) {
-                $this->warn("  ✗ {$description} failed: " . $e->getMessage());
+                $this->warn("  ✗ {$description} failed: ".$e->getMessage());
             }
         }
     }
@@ -88,6 +89,7 @@ class OptimizationCommand extends Command
 
             foreach ($tables as $table) {
                 $tableName = array_values((array) $table)[0];
+
                 try {
                     DB::statement("OPTIMIZE TABLE `{$tableName}`");
                     $optimizedCount++;
@@ -98,7 +100,7 @@ class OptimizationCommand extends Command
 
             $this->info("  ✓ Optimized {$optimizedCount} database tables.");
         } catch (\Exception $e) {
-            $this->warn("  ✗ Database optimization failed: " . $e->getMessage());
+            $this->warn('  ✗ Database optimization failed: '.$e->getMessage());
         }
     }
 
@@ -112,16 +114,16 @@ class OptimizationCommand extends Command
         try {
             // Run Basset optimization
             Artisan::call('basset:optimize');
-            $this->info("  ✓ Basset assets optimized.");
+            $this->info('  ✓ Basset assets optimized.');
 
             // Clear and rebuild asset cache
             if (File::exists(public_path('mix-manifest.json'))) {
                 File::delete(public_path('mix-manifest.json'));
-                $this->info("  ✓ Asset manifest cleared.");
+                $this->info('  ✓ Asset manifest cleared.');
             }
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Asset optimization failed: " . $e->getMessage());
+            $this->warn('  ✗ Asset optimization failed: '.$e->getMessage());
         }
     }
 
@@ -135,23 +137,23 @@ class OptimizationCommand extends Command
         try {
             // Clear all caches
             Cache::flush();
-            $this->info("  ✓ Application cache cleared.");
+            $this->info('  ✓ Application cache cleared.');
 
             // Clear game-specific caches
             if (class_exists(\App\Services\GameCacheService::class)) {
                 \App\Services\GameCacheService::clearAllGameCache();
-                $this->info("  ✓ Game cache cleared.");
+                $this->info('  ✓ Game cache cleared.');
             }
 
             // Optimize OPcache if available
             if (function_exists('opcache_reset')) {
                 opcache_reset();
-                $this->info("  ✓ OPcache cleared.");
+                $this->info('  ✓ OPcache cleared.');
             }
 
             // Run garbage collection
             gc_collect_cycles();
-            $this->info("  ✓ Garbage collection completed.");
+            $this->info('  ✓ Garbage collection completed.');
 
             // Process completed trainings
             if (class_exists(\App\Services\Game\UnitTrainingService::class)) {
@@ -166,11 +168,11 @@ class OptimizationCommand extends Command
             if (class_exists(\App\Services\GamePerformanceMonitor::class)) {
                 $monitor = new \App\Services\GamePerformanceMonitor();
                 $report = $monitor->generatePerformanceReport();
-                $this->info("  ✓ Performance report generated.");
+                $this->info('  ✓ Performance report generated.');
             }
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Performance optimization failed: " . $e->getMessage());
+            $this->warn('  ✗ Performance optimization failed: '.$e->getMessage());
         }
     }
 
@@ -185,7 +187,7 @@ class OptimizationCommand extends Command
             // Generate application key if not set
             if (empty(config('app.key'))) {
                 Artisan::call('key:generate');
-                $this->info("  ✓ Application key generated.");
+                $this->info('  ✓ Application key generated.');
             }
 
             // Clear session data
@@ -197,11 +199,11 @@ class OptimizationCommand extends Command
                         File::delete($file);
                     }
                 }
-                $this->info("  ✓ Old session files cleared.");
+                $this->info('  ✓ Old session files cleared.');
             }
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Security optimization failed: " . $e->getMessage());
+            $this->warn('  ✗ Security optimization failed: '.$e->getMessage());
         }
     }
 }

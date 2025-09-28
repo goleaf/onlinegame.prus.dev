@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,9 +17,7 @@ class TreatiesSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
@@ -32,8 +31,8 @@ class TreatiesSeeder extends Seeder
                 'benefits' => '{"proposer":{"security":"Protection"}}',
                 'penalties' => '{"violation":{"reputation_loss":50}}',
                 'proposed_at' => '2025-09-27 04:32:48',
-                'accepted_at' => NULL,
-                'expires_at' => NULL,
+                'accepted_at' => null,
+                'expires_at' => null,
                 'duration_hours' => 24,
                 'is_public' => 0,
                 'created_at' => '2025-09-27 04:32:48',
@@ -52,7 +51,7 @@ class TreatiesSeeder extends Seeder
                 'penalties' => '{"violation":{"reputation_loss":100}}',
                 'proposed_at' => '2025-09-27 04:33:22',
                 'accepted_at' => '2025-09-27 04:33:22',
-                'expires_at' => NULL,
+                'expires_at' => null,
                 'duration_hours' => 48,
                 'is_public' => 1,
                 'created_at' => '2025-09-27 04:33:22',
@@ -71,7 +70,7 @@ class TreatiesSeeder extends Seeder
                 'penalties' => '{"violation":{"reputation_loss":30}}',
                 'proposed_at' => '2025-09-27 04:34:27',
                 'accepted_at' => '2025-09-27 04:34:27',
-                'expires_at' => NULL,
+                'expires_at' => null,
                 'duration_hours' => 72,
                 'is_public' => 0,
                 'created_at' => '2025-09-27 04:34:27',
@@ -90,16 +89,16 @@ class TreatiesSeeder extends Seeder
                 'penalties' => '{"violation":{"reputation_loss":150}}',
                 'proposed_at' => '2025-09-27 04:34:27',
                 'accepted_at' => '2025-09-27 04:34:27',
-                'expires_at' => NULL,
+                'expires_at' => null,
                 'duration_hours' => 168,
                 'is_public' => 1,
                 'created_at' => '2025-09-27 04:34:27',
                 'updated_at' => '2025-09-27 04:34:27',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("treaties")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('treaties')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

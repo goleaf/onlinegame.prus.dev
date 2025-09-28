@@ -2,22 +2,25 @@
 
 namespace App\Livewire\Game;
 
-use App\Models\Game\Player;
-use App\Models\Game\Village;
 use App\Models\Game\Battle;
 use App\Models\Game\Movement;
-use Livewire\Component;
-use Livewire\Attributes\Title;
+use App\Models\Game\Player;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 #[Title('Player Details')]
 #[Layout('layouts.app')]
 class PlayerDetail extends Component
 {
     public Player $player;
+
     public $villages = [];
+
     public $recentBattles = [];
+
     public $recentMovements = [];
+
     public $playerStats = [];
 
     public function mount(Player $player)

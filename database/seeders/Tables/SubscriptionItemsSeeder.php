@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,15 +17,13 @@ class SubscriptionItemsSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
-            
+
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("subscription_items")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('subscription_items')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

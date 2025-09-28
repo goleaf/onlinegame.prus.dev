@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Closure;
 
 /**
  * Enhanced Debug Middleware for Laravel 12.29.0+ features
@@ -18,7 +18,7 @@ class EnhancedDebugMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $startTime = microtime(true);
-        
+
         ds('EnhancedDebugMiddleware: Request processing started', [
             'middleware' => 'EnhancedDebugMiddleware',
             'url' => $request->fullUrl(),
@@ -26,9 +26,9 @@ class EnhancedDebugMiddleware
             'user_id' => auth()->id(),
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'request_time' => now()
+            'request_time' => now(),
         ]);
-        
+
         $response = $next($request);
 
         // Only apply enhanced debug features in development
@@ -37,13 +37,13 @@ class EnhancedDebugMiddleware
         }
 
         $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-        
+
         ds('EnhancedDebugMiddleware: Request processing completed', [
             'total_time_ms' => $totalTime,
             'status_code' => $response->getStatusCode(),
             'response_size' => strlen($response->getContent()),
             'memory_usage' => memory_get_usage(true),
-            'debug_enabled' => app()->environment('local', 'development') && config('app.debug')
+            'debug_enabled' => app()->environment('local', 'development') && config('app.debug'),
         ]);
 
         return $response;
@@ -103,7 +103,7 @@ class EnhancedDebugMiddleware
         $endTime = microtime(true);
         $executionTime = round(($endTime - $startTime) * 1000, 2);
 
-        $response->headers->set('X-Debug-Execution-Time', $executionTime . 'ms');
+        $response->headers->set('X-Debug-Execution-Time', $executionTime.'ms');
         $response->headers->set('X-Debug-Memory-Usage', $this->formatBytes(memory_get_usage(true)));
         $response->headers->set('X-Debug-Peak-Memory', $this->formatBytes(memory_get_peak_usage(true)));
 
@@ -123,7 +123,7 @@ class EnhancedDebugMiddleware
             $events = app('events');
             $queryCount = 0;
 
-            $events->listen('Illuminate\Database\Events\QueryExecuted', function () use (&$queryCount) {
+            $events->listen('Illuminate\Database\Events\QueryExecuted', function () use (&$queryCount): void {
                 $queryCount++;
             });
 
@@ -145,6 +145,6 @@ class EnhancedDebugMiddleware
 
         $bytes /= pow(1024, $pow);
 
-        return round($bytes, 2) . ' ' . $units[$pow];
+        return round($bytes, 2).' '.$units[$pow];
     }
 }

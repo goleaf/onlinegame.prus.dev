@@ -2,13 +2,8 @@
 
 namespace App\Livewire\Game;
 
-use App\Services\LarautilxIntegrationService;
-use Illuminate\Support\Facades\Auth;
+use App\Utilities\LoggingUtil;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\ConfigUtil;
-use LaraUtilX\Utilities\LoggingUtil;
-use LaraUtilX\Utilities\QueryParameterUtil;
-use LaraUtilX\Utilities\SchedulerUtil;
 use Livewire\Component;
 
 class SystemManagement extends Component
@@ -16,15 +11,25 @@ class SystemManagement extends Component
     use ApiResponseTrait;
 
     public $systemConfig = [];
+
     public $scheduledTasks = [];
+
     public $systemHealth = [];
+
     public $systemMetrics = [];
+
     public $systemLogs = [];
+
     public $isLoading = false;
+
     public $activeTab = 'health';
+
     public $logLevel = 'info';
+
     public $logLimit = 100;
+
     public $cacheTypes = ['config', 'route', 'view', 'application'];
+
     public $selectedCacheTypes = [];
 
     protected $listeners = [
@@ -57,7 +62,7 @@ class SystemManagement extends Component
                 'error' => $e->getMessage(),
             ], 'system_management');
 
-            $this->addNotification('Error loading system configuration: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading system configuration: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -78,7 +83,7 @@ class SystemManagement extends Component
                 'error' => $e->getMessage(),
             ], 'system_management');
 
-            $this->addNotification('Error loading scheduled tasks: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading scheduled tasks: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -99,7 +104,7 @@ class SystemManagement extends Component
                 'error' => $e->getMessage(),
             ], 'system_management');
 
-            $this->addNotification('Error loading system health: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading system health: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -120,7 +125,7 @@ class SystemManagement extends Component
                 'error' => $e->getMessage(),
             ], 'system_management');
 
-            $this->addNotification('Error loading system metrics: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading system metrics: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -145,7 +150,7 @@ class SystemManagement extends Component
                 'error' => $e->getMessage(),
             ], 'system_management');
 
-            $this->addNotification('Error loading system logs: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading system logs: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -171,7 +176,7 @@ class SystemManagement extends Component
                 'value' => $value,
             ], 'system_management');
 
-            $this->addNotification('Error updating system configuration: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error updating system configuration: '.$e->getMessage(), 'error');
         }
     }
 
@@ -192,7 +197,7 @@ class SystemManagement extends Component
                 'cache_types' => $this->selectedCacheTypes,
             ], 'system_management');
 
-            $this->addNotification('Error clearing system caches: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error clearing system caches: '.$e->getMessage(), 'error');
         }
     }
 
@@ -209,18 +214,23 @@ class SystemManagement extends Component
         switch ($tab) {
             case 'config':
                 $this->loadSystemConfig();
+
                 break;
             case 'tasks':
                 $this->loadScheduledTasks();
+
                 break;
             case 'health':
                 $this->loadSystemHealth();
+
                 break;
             case 'metrics':
                 $this->loadSystemMetrics();
+
                 break;
             case 'logs':
                 $this->loadSystemLogs();
+
                 break;
         }
     }
@@ -258,7 +268,7 @@ class SystemManagement extends Component
     {
         $this->dispatch('notification', [
             'message' => $message,
-            'type' => $type
+            'type' => $type,
         ]);
     }
 
@@ -266,7 +276,7 @@ class SystemManagement extends Component
     {
         try {
             $response = \Http::withHeaders([
-                'Authorization' => 'Bearer ' . auth()->user()->createToken('system-management')->plainTextToken,
+                'Authorization' => 'Bearer '.auth()->user()->createToken('system-management')->plainTextToken,
                 'Accept' => 'application/json',
             ])->$method(url($url), $data);
 
@@ -274,7 +284,7 @@ class SystemManagement extends Component
                 return $response->json();
             }
 
-            throw new \Exception('API request failed: ' . $response->body());
+            throw new \Exception('API request failed: '.$response->body());
         } catch (\Exception $e) {
             LoggingUtil::error('API request failed', [
                 'method' => $method,

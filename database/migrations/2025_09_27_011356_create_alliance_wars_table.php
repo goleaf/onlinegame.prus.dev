@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -22,7 +21,7 @@ return new class extends Migration
             $table->integer('war_score')->default(0);
             $table->text('war_data')->nullable(); // JSON data for war statistics
             $table->timestamps();
-            
+
             $table->index(['attacker_alliance_id', 'status']);
             $table->index(['defender_alliance_id', 'status']);
             $table->index('status');

@@ -14,7 +14,8 @@
 /* ------------------- Player ------------------- */
 /* ---------------------------------------------- */
 /* newbie dove */
-div.player img.tn, div.player img.tnd {
+div.player img.tn,
+div.player img.tnd {
   width: 65px;
   height: 45px;
 }
@@ -539,7 +540,8 @@ div.player table td.flags img {
 }
 
 .flag_es-ES,
-.flag_es, .flag_net {
+.flag_es,
+.flag_net {
   background-position: -1072px 0;
 }
 
@@ -585,7 +587,8 @@ div.player table td.flags img {
   background-position: -1232px 0;
 }
 
-.flag_uk, .flag_gb {
+.flag_uk,
+.flag_gb {
   background-position: -1248px 0;
 }
 
@@ -1151,7 +1154,8 @@ div.player table td.flags img {
 }
 
 .flag_th-TH,
-.flag_asia, .flag_th {
+.flag_asia,
+.flag_th {
   background-position: -3424px 0;
 }
 

@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Game;
 
 use App\Models\Game\MarketOffer;
 use App\Models\Game\Player;
-use App\Models\Game\Village;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,10 +14,8 @@ use Illuminate\Support\Facades\DB;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Traits\FileProcessingTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
 
 /**
@@ -38,10 +37,15 @@ class MarketController extends CrudController
     use ValidationHelperTrait;
 
     protected Model $model;
+
     protected RateLimiterUtil $rateLimiter;
+
     protected array $validationRules = [];
+
     protected array $searchableFields = ['offer_type', 'resource_type', 'description'];
+
     protected array $relationships = ['player'];
+
     protected int $perPage = 15;
 
     protected function getValidationRules(): array
@@ -100,12 +104,12 @@ class MarketController extends CrudController
     {
         try {
             // Rate limiting for market offers
-            $rateLimitKey = 'market_offers_' . ($request->ip() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 100, 1)) {
+            $rateLimitKey = 'market_offers_'.($request->ip() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 100, 1)) {
                 return $this->errorResponse('Too many requests. Please try again later.', 429);
             }
 
-            $cacheKey = 'market_offers_' . md5(serialize($request->all()));
+            $cacheKey = 'market_offers_'.md5(serialize($request->all()));
 
             $offers = CachingUtil::remember($cacheKey, now()->addMinutes(5), function () use ($request) {
                 $query = MarketOffer::with($this->relationships)
@@ -130,17 +134,17 @@ class MarketController extends CrudController
                     $filters[] = ['target' => 'exchange_rate', 'type' => '$lte', 'value' => $request->input('max_rate')];
                 }
 
-                if (!empty($filters)) {
+                if (! empty($filters)) {
                     $query = $query->filter($filters);
                 }
 
                 // Apply search if provided
                 if ($request->has('search')) {
                     $searchTerm = $request->get('search');
-                    $query->where(function ($q) use ($searchTerm) {
+                    $query->where(function ($q) use ($searchTerm): void {
                         $q
                             ->where('description', 'like', "%{$searchTerm}%")
-                            ->orWhereHas('player', function ($playerQuery) use ($searchTerm) {
+                            ->orWhereHas('player', function ($playerQuery) use ($searchTerm): void {
                                 $playerQuery->where('name', 'like', "%{$searchTerm}%");
                             });
                     });
@@ -154,6 +158,7 @@ class MarketController extends CrudController
             // Add player names to the response
             $offers->getCollection()->transform(function ($offer) {
                 $offer->player_name = $offer->player->name ?? 'Unknown';
+
                 return $offer;
             });
 
@@ -167,7 +172,7 @@ class MarketController extends CrudController
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving market offers', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ], 'market_system');
 
             return $this->errorResponse('Failed to retrieve market offers.', 500);
@@ -197,7 +202,6 @@ class MarketController extends CrudController
      *   "created_at": "2023-01-01T12:00:00.000000Z",
      *   "updated_at": "2023-01-01T12:00:00.000000Z"
      * }
-     *
      * @response 404 {
      *   "message": "Market offer not found"
      * }
@@ -262,7 +266,7 @@ class MarketController extends CrudController
         try {
             $playerId = Auth::user()->player->id;
 
-            $cacheKey = "player_offers_{$playerId}_" . md5(serialize($request->all()));
+            $cacheKey = "player_offers_{$playerId}_".md5(serialize($request->all()));
 
             $offers = CachingUtil::remember($cacheKey, now()->addMinutes(2), function () use ($request, $playerId) {
                 $query = MarketOffer::where('player_id', $playerId);
@@ -319,7 +323,6 @@ class MarketController extends CrudController
      *     "status": "active"
      *   }
      * }
-     *
      * @response 422 {
      *   "message": "The given data was invalid.",
      *   "errors": {
@@ -334,12 +337,12 @@ class MarketController extends CrudController
     {
         try {
             // Rate limiting for creating offers
-            $rateLimitKey = 'create_market_offer_' . (auth()->id() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
+            $rateLimitKey = 'create_market_offer_'.(auth()->id() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
                 return $this->errorResponse('Too many requests. Please try again later.', 429);
             }
 
-            $validated = $this->validateRequest($request, $this->validationRules);
+            $validated = $this->validateRequestData($request, $this->validationRules);
 
             $playerId = Auth::user()->player->id;
             $player = Player::findOrFail($playerId);
@@ -375,7 +378,7 @@ class MarketController extends CrudController
                 ]);
 
                 // Clear related caches
-                CachingUtil::forget('market_offers_' . md5(serialize($request->all())));
+                CachingUtil::forget('market_offers_'.md5(serialize($request->all())));
                 CachingUtil::forget("player_offers_{$playerId}");
 
                 DB::commit();
@@ -391,6 +394,7 @@ class MarketController extends CrudController
                 return $this->successResponse($offer, 'Market offer created successfully.', 201);
             } catch (\Exception $e) {
                 DB::rollBack();
+
                 throw $e;
             }
         } catch (\Exception $e) {
@@ -412,6 +416,7 @@ class MarketController extends CrudController
      * @description Accept a market offer and complete the trade.
      *
      * @urlParam id int required The ID of the market offer to accept. Example: 1
+     *
      * @bodyParam accept_amount int required The amount to accept (cannot exceed offer amount). Example: 500
      *
      * @response 200 {
@@ -424,7 +429,6 @@ class MarketController extends CrudController
      *     "cost": 500
      *   }
      * }
-     *
      * @response 400 {
      *   "success": false,
      *   "message": "Cannot accept your own offer or insufficient resources"
@@ -436,12 +440,12 @@ class MarketController extends CrudController
     {
         try {
             // Rate limiting for accepting offers
-            $rateLimitKey = 'accept_offer_' . (auth()->id() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 5, 1)) {
+            $rateLimitKey = 'accept_offer_'.(auth()->id() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 5, 1)) {
                 return $this->errorResponse('Too many requests. Please try again later.', 429);
             }
 
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'accept_amount' => 'required|integer|min:1',
             ]);
 
@@ -477,6 +481,7 @@ class MarketController extends CrudController
                     $paymentResource = $this->getPaymentResource($offer->resource_type);
                     if ($player->{$paymentResource} < $receivedAmount) {
                         DB::rollBack();
+
                         return $this->errorResponse('Insufficient resources to complete trade', 400);
                     }
 
@@ -489,6 +494,7 @@ class MarketController extends CrudController
                     // Check if player has enough resources to sell
                     if ($player->{$offer->resource_type} < $acceptAmount) {
                         DB::rollBack();
+
                         return $this->errorResponse('Insufficient resources to complete trade', 400);
                     }
 
@@ -509,7 +515,7 @@ class MarketController extends CrudController
 
                 // Clear related caches
                 CachingUtil::forget("market_offer_{$id}");
-                CachingUtil::forget('market_offers_' . md5(serialize($request->all())));
+                CachingUtil::forget('market_offers_'.md5(serialize($request->all())));
                 CachingUtil::forget("player_offers_{$playerId}");
                 CachingUtil::forget("player_offers_{$offer->player_id}");
 
@@ -531,6 +537,7 @@ class MarketController extends CrudController
                 ], 'Trade completed successfully.');
             } catch (\Exception $e) {
                 DB::rollBack();
+
                 throw $e;
             }
         } catch (\Exception $e) {
@@ -558,7 +565,6 @@ class MarketController extends CrudController
      *   "success": true,
      *   "message": "Market offer cancelled successfully"
      * }
-     *
      * @response 400 {
      *   "success": false,
      *   "message": "Cannot cancel this offer"
@@ -604,6 +610,7 @@ class MarketController extends CrudController
                 return $this->successResponse(null, 'Market offer cancelled successfully.');
             } catch (\Exception $e) {
                 DB::rollBack();
+
                 throw $e;
             }
         } catch (\Exception $e) {

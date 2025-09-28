@@ -2,11 +2,10 @@
 
 namespace App\Services\Game;
 
-use App\Models\Game\Message;
-use App\Models\Game\Player;
 use App\Models\Game\Alliance;
 use App\Models\Game\Battle;
-use Illuminate\Support\Facades\DB;
+use App\Models\Game\Message;
+use App\Models\Game\Player;
 use SmartCache\Facades\SmartCache;
 
 class MessagingService
@@ -18,7 +17,7 @@ class MessagingService
     {
         // Validate message
         $validation = $this->validateMessage($sender, $recipient, $subject, $body);
-        if (!$validation['valid']) {
+        if (! $validation['valid']) {
             return $validation;
         }
 
@@ -172,7 +171,7 @@ class MessagingService
      */
     public function deleteMessage(Message $message, Player $player): array
     {
-        if (!$message->canBeDeleted($player->id)) {
+        if (! $message->canBeDeleted($player->id)) {
             return [
                 'success' => false,
                 'message' => 'Unauthorized to delete this message',
@@ -295,11 +294,11 @@ class MessagingService
 
         return SmartCache::remember($cacheKey, 300, function () use ($player1, $player2, $limit) {
             return Message::with(['sender', 'recipient'])
-                ->where(function ($query) use ($player1, $player2) {
+                ->where(function ($query) use ($player1, $player2): void {
                     $query->where('sender_id', $player1->id)
                         ->where('recipient_id', $player2->id);
                 })
-                ->orWhere(function ($query) use ($player1, $player2) {
+                ->orWhere(function ($query) use ($player1, $player2): void {
                     $query->where('sender_id', $player2->id)
                         ->where('recipient_id', $player1->id);
                 })

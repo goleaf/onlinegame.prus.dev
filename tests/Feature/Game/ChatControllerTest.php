@@ -9,17 +9,20 @@ use App\Models\Game\World;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
 use Tests\TestCase;
 
 class ChatControllerTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     protected User $user;
+
     protected Player $player;
+
     protected World $world;
+
     protected ChatChannel $channel;
 
     protected function setUp(): void
@@ -41,7 +44,7 @@ class ChatControllerTest extends TestCase
         ]);
 
         // Mock rate limiter
-        $this->mock(RateLimiterUtil::class, function ($mock) {
+        $this->mock(RateLimiterUtil::class, function ($mock): void {
             $mock->shouldReceive('attempt')->andReturn(true);
         });
     }
@@ -74,8 +77,8 @@ class ChatControllerTest extends TestCase
                         'message',
                         'message_type',
                         'created_at',
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
@@ -112,8 +115,8 @@ class ChatControllerTest extends TestCase
                         'message',
                         'message_type',
                         'created_at',
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
@@ -146,7 +149,7 @@ class ChatControllerTest extends TestCase
                     'message',
                     'message_type',
                     'created_at',
-                ]
+                ],
             ]);
 
         $this->assertDatabaseHas('chat_messages', [
@@ -202,7 +205,7 @@ class ChatControllerTest extends TestCase
                     'message',
                     'message_type',
                     'created_at',
-                ]
+                ],
             ]);
 
         $this->assertDatabaseHas('chat_messages', [
@@ -242,7 +245,7 @@ class ChatControllerTest extends TestCase
                     'message',
                     'message_type',
                     'created_at',
-                ]
+                ],
             ]);
 
         $this->assertDatabaseHas('chat_messages', [
@@ -311,7 +314,7 @@ class ChatControllerTest extends TestCase
                     'message',
                     'message_type',
                     'created_at',
-                ]
+                ],
             ]);
 
         $this->assertDatabaseHas('chat_messages', [
@@ -366,7 +369,7 @@ class ChatControllerTest extends TestCase
                     'message',
                     'message_type',
                     'created_at',
-                ]
+                ],
             ]);
 
         $this->assertDatabaseHas('chat_messages', [
@@ -402,7 +405,7 @@ class ChatControllerTest extends TestCase
                     'message',
                     'message_type',
                     'created_at',
-                ]
+                ],
             ]);
 
         $this->assertDatabaseHas('chat_messages', [
@@ -465,8 +468,8 @@ class ChatControllerTest extends TestCase
                         'channel_type',
                         'world_id',
                         'is_active',
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
@@ -494,7 +497,7 @@ class ChatControllerTest extends TestCase
                     'total_messages',
                     'active_users',
                     'last_message_at',
-                ]
+                ],
             ]);
     }
 
@@ -538,8 +541,8 @@ class ChatControllerTest extends TestCase
                         'message',
                         'channel_type',
                         'created_at',
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
@@ -595,7 +598,7 @@ class ChatControllerTest extends TestCase
                     'messages_by_channel',
                     'active_users',
                     'recent_activity',
-                ]
+                ],
             ]);
     }
 
@@ -605,7 +608,7 @@ class ChatControllerTest extends TestCase
     public function it_respects_rate_limiting()
     {
         // Mock rate limiter to return false
-        $this->mock(RateLimiterUtil::class, function ($mock) {
+        $this->mock(RateLimiterUtil::class, function ($mock): void {
             $mock->shouldReceive('attempt')->andReturn(false);
         });
 

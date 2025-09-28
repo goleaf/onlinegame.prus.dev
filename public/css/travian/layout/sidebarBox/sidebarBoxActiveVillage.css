@@ -36,13 +36,13 @@
   font-size: 12px;
 }
 #sidebarBoxActiveVillage .sidebarBoxInnerBox .content .loyalty.low {
-  color: #D40000;
+  color: #d40000;
 }
 #sidebarBoxActiveVillage .sidebarBoxInnerBox .content .loyalty.medium {
   color: #666666;
 }
 #sidebarBoxActiveVillage .sidebarBoxInnerBox .content .loyalty.high {
-  color: #228B22;
+  color: #228b22;
 }
 #sidebarBoxActiveVillage .sidebarBoxInnerBox .footer {
   height: 30px;
@@ -56,5 +56,5 @@
 }
 
 .colorBlind #sidebarBoxActiveVillage .sidebarBoxInnerBox .content .loyalty.low {
-  color: #0022AF;
+  color: #0022af;
 }

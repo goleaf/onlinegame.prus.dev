@@ -1,9 +1,13 @@
 <?php
 
-namespace LaraUtilX;
+namespace App\Providers;
 
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\ServiceProvider;
 use LaraUtilX\Http\Middleware\AccessLogMiddleware;
+use LaraUtilX\LLMProviders\Contracts\LLMProviderInterface;
+use LaraUtilX\LLMProviders\Gemini\GeminiProvider;
+use LaraUtilX\LLMProviders\OpenAI\OpenAIProvider;
 use LaraUtilX\Models\AccessLog;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Traits\FileProcessingTrait;
@@ -11,14 +15,11 @@ use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\ConfigUtil;
 use LaraUtilX\Utilities\FeatureToggleUtil;
 use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\LoggingUtil;
+use LaraUtilX\Utilities\LoggingUtil as VendorLoggingUtil;
 use LaraUtilX\Utilities\PaginationUtil;
 use LaraUtilX\Utilities\QueryParameterUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
 use LaraUtilX\Utilities\SchedulerUtil;
-use LaraUtilX\LLMProviders\OpenAI\OpenAIProvider;
-use LaraUtilX\LLMProviders\Contracts\LLMProviderInterface;
-use LaraUtilX\LLMProviders\Gemini\GeminiProvider;
 
 class LaraUtilXServiceProvider extends ServiceProvider
 {
@@ -57,36 +58,36 @@ class LaraUtilXServiceProvider extends ServiceProvider
     {
         // Publish Service Provider
         $this->publishes([
-            __DIR__ . '/LaraUtilXServiceProvider.php' => app_path('Providers/LaraUtilXServiceProvider.php'),
+            __DIR__.'/LaraUtilXServiceProvider.php' => app_path('Providers/LaraUtilXServiceProvider.php'),
         ], 'lara-util-x');
 
         // Load migrations
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         // Publish configs
         $this->publishes([
-            __DIR__ . '/../config/lara-util-x.php' => config_path('lara-util-x.php'),
+            __DIR__.'/../config/lara-util-x.php' => config_path('lara-util-x.php'),
         ], 'lara-util-x-config');
 
         $this->publishes([
-            __DIR__ . '/../config/feature-toggles.php' => config_path('feature-toggles.php'),
+            __DIR__.'/../config/feature-toggles.php' => config_path('feature-toggles.php'),
         ], 'lara-util-x-feature-toggles');
 
-        $this->mergeConfigFrom(__DIR__ . '/../config/lara-util-x.php', 'lara-util-x');
+        $this->mergeConfigFrom(__DIR__.'/../config/lara-util-x.php', 'lara-util-x');
 
         // Publish migrations
         $this->publishes([
-            __DIR__ . '/../database/migrations' => database_path('migrations'),
+            __DIR__.'/../database/migrations' => database_path('migrations'),
         ], 'lara-util-x-migrations');
 
         // Publish models
         $this->publishes([
-            __DIR__ . '\Models' => app_path('Models'),
+            __DIR__.'\Models' => app_path('Models'),
         ], 'lara-util-x-models');
 
         // Publish traits
         $this->publishes([
-            __DIR__ . '/Traits/ApiResponseTrait.php' => app_path('Traits/ApiResponseTrait.php'),
+            __DIR__.'/Traits/ApiResponseTrait.php' => app_path('Traits/ApiResponseTrait.php'),
         ], 'lara-util-x-api-response-trait');
 
         $this->loadClass(ApiResponseTrait::class);
@@ -111,21 +112,20 @@ class LaraUtilXServiceProvider extends ServiceProvider
             PaginationUtil::class,
             FilteringUtil::class,
             FeatureToggleUtil::class,
-            LoggingUtil::class
         ];
 
         $this->loadUtilityClasses($classes);
         $this->loadCachingUtility();
 
+        // Override LoggingUtil with our fixed local version
+        $this->app->bind(VendorLoggingUtil::class, LoggingUtil::class);
+
         // Register middleware
         $this->app['router']->aliasMiddleware('access.log', AccessLogMiddleware::class);
     }
 
-
     /**
      * Dynamically load the given class.
-     *
-     * @param string $class
      */
     private function loadClass(string $class)
     {
@@ -136,8 +136,6 @@ class LaraUtilXServiceProvider extends ServiceProvider
 
     /**
      * Dynamically load the given utility classes.
-     *
-     * @param array $classes
      */
     private function loadUtilityClasses(array $classes)
     {
@@ -177,7 +175,7 @@ class LaraUtilXServiceProvider extends ServiceProvider
     private function publishUtility(string $utility, string $name)
     {
         $this->publishes([
-            __DIR__ . '/Utilities/' . $utility . '.php' => app_path('Utilities/' . $utility . '.php'),
-        ], 'lara-util-x-' . $name);
+            __DIR__.'/Utilities/'.$utility.'.php' => app_path('Utilities/'.$utility.'.php'),
+        ], 'lara-util-x-'.$name);
     }
 }

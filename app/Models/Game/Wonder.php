@@ -4,13 +4,14 @@ namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Wonder extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'name',
@@ -42,6 +43,7 @@ class Wonder extends Model
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -106,7 +108,7 @@ class Wonder extends Model
 
     public function scopeInProgress($query)
     {
-        return $query->whereHas('constructions', function ($q) {
+        return $query->whereHas('constructions', function ($q): void {
             $q->inProgress();
         });
     }
@@ -119,7 +121,7 @@ class Wonder extends Model
 
     public function canUpgrade(): bool
     {
-        return !$this->isMaxLevel() && !$this->hasConstructionInProgress();
+        return ! $this->isMaxLevel() && ! $this->hasConstructionInProgress();
     }
 
     public function hasConstructionInProgress(): bool
@@ -148,6 +150,7 @@ class Wonder extends Model
     public function getConstructionTime(int $level): int
     {
         $baseTime = $this->getBaseTime($level);
+
         return (int) ($baseTime * $this->construction_time_multiplier);
     }
 
@@ -188,11 +191,12 @@ class Wonder extends Model
 
     public function getConstructionProgress(): float
     {
-        if (!$this->hasConstructionInProgress()) {
+        if (! $this->hasConstructionInProgress()) {
             return 0;
         }
 
         $construction = $this->getCurrentConstruction();
+
         return $construction->getProgressPercentage();
     }
 

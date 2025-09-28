@@ -37,7 +37,8 @@ div.options table#links td.link input.text {
   width: 240px;
 }
 
-div.options table.timeSettings tbody th, div.options table#languageSettings tbody th {
+div.options table.timeSettings tbody th,
+div.options table#languageSettings tbody th {
   width: 20%;
 }
 
@@ -46,11 +47,13 @@ div.options table.timeSettings tbody th.timeFormat {
   padding-top: 11px;
 }
 
-div.options table#entriesPerPage input.messageReport, div.options table#entriesPerPage input.troopMovementsPerPage {
+div.options table#entriesPerPage input.messageReport,
+div.options table#entriesPerPage input.troopMovementsPerPage {
   width: 25px;
 }
 
-div.options table.timeSettings select, div.options table#languageSettings select {
+div.options table.timeSettings select,
+div.options table#languageSettings select {
   width: 185px;
 }
 
@@ -97,10 +100,10 @@ div.options table#change_mail tbody th {
 }
 
 div.options table#change_mail th.process {
-  color: #FF0000;
+  color: #ff0000;
 }
 .colorBlind div.options table#change_mail th.process {
-  color: #0022AF;
+  color: #0022af;
 }
 
 div.options div.text p.maxSitters {
@@ -129,7 +132,7 @@ div.options .sitters2 div.boxes-contents {
 div.options .sitters div.boxes-contents span,
 div.options .sitters2 div.boxes-contents span {
   white-space: nowrap;
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
 div.options table.sitters2 {
@@ -182,7 +185,7 @@ div.options table#del_acc td.count {
 }
 
 div.options table#del_acc td.count span {
-  color: #FF8000;
+  color: #ff8000;
 }
 
 div.options table#del_acc input.radio {
@@ -196,7 +199,7 @@ div.options table#gpack td {
 }
 
 div.options table#gpack td span.alert {
-  color: #FF0000;
+  color: #ff0000;
   font-weight: bold;
 }
 
@@ -220,7 +223,7 @@ div.options table#gpack td div.example {
 }
 
 div.options table#gpack td div.example span.path {
-  color: #FF8000;
+  color: #ff8000;
 }
 
 div.options table#download thead td {
@@ -258,7 +261,7 @@ div.options table#other td.noOptions {
 
 div.options span.pleaseSaveYourChanges {
   float: right;
-  color: #F88C1F;
+  color: #f88c1f;
 }
 
 div.options span.pleaseSaveYourChanges.hidden {

@@ -7,48 +7,72 @@ use App\Models\Game\Player;
 use App\Models\Game\Report;
 use App\Models\Game\Troop;
 use App\Models\Game\World;
-use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
-use sbamtr\LaravelQueryEnrich\QE;
-use SmartCache\Facades\SmartCache;
 
 use function sbamtr\LaravelQueryEnrich\c;
+
+use sbamtr\LaravelQueryEnrich\QE;
+use SmartCache\Facades\SmartCache;
 
 class StatisticsViewer extends Component
 {
     use WithPagination;
 
     public $world;
+
     public $player;
+
     public $isLoading = false;
+
     public $notifications = [];
+
     // Statistics data
     public $playerStats = [];
+
     public $rankingStats = [];
+
     public $battleStats = [];
+
     public $resourceStats = [];
+
     public $buildingStats = [];
+
     public $troopStats = [];
+
     public $achievementStats = [];
+
     public $recentActivity = [];
+
     public $performanceMetrics = [];
+
     // View modes and filters
     public $viewMode = 'overview';  // overview, rankings, battles, resources, buildings, troops, achievements
+
     public $timeRange = 'all';  // today, week, month, all
+
     public $statType = 'all';  // all, personal, alliance, world
+
     public $sortBy = 'rank';
+
     public $sortOrder = 'asc';
+
     public $searchQuery = '';
+
     // Real-time features
     public $realTimeUpdates = true;
+
     public $autoRefresh = true;
+
     public $refreshInterval = 30;  // seconds
+
     public $lastUpdate = null;
+
     // Pagination
     public $perPage = 20;
+
     public $currentPage = 1;
 
     // Statistics categories
@@ -108,7 +132,7 @@ class StatisticsViewer extends Component
     {
         try {
             // Use SmartCache for player data with automatic optimization
-            $cacheKey = "world_{$this->world->id}_player_" . Auth::id() . '_data';
+            $cacheKey = "world_{$this->world->id}_player_".Auth::id().'_data';
 
             $this->player = SmartCache::remember($cacheKey, now()->addMinutes(10), function () {
                 return Player::where('user_id', Auth::id())
@@ -117,13 +141,13 @@ class StatisticsViewer extends Component
                     ->first();
             });
 
-            if (!$this->player) {
+            if (! $this->player) {
                 $this->addNotification('Player not found in this world', 'error');
 
                 return;
             }
         } catch (\Exception $e) {
-            $this->addNotification('Error loading player data: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading player data: '.$e->getMessage(), 'error');
         }
     }
 
@@ -165,7 +189,7 @@ class StatisticsViewer extends Component
 
             $this->lastUpdate = now();
         } catch (\Exception $e) {
-            $this->addNotification('Error loading statistics: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading statistics: '.$e->getMessage(), 'error');
         }
 
         $this->isLoading = false;
@@ -175,7 +199,7 @@ class StatisticsViewer extends Component
     {
         // Use Query Enrich to get all stats in one query
         $playerStats = Player::where('id', $this->player->id)
-            ->with(['villages' => function ($query) {
+            ->with(['villages' => function ($query): void {
                 $query
                     ->select([
                         'player_id',
@@ -188,7 +212,7 @@ class StatisticsViewer extends Component
                         QE::sum(c('wood_production'))->as('wood_prod'),
                         QE::sum(c('clay_production'))->as('clay_prod'),
                         QE::sum(c('iron_production'))->as('iron_prod'),
-                        QE::sum(c('crop_production'))->as('crop_prod')
+                        QE::sum(c('crop_production'))->as('crop_prod'),
                     ])
                     ->groupBy('player_id');
             }])
@@ -207,7 +231,7 @@ class StatisticsViewer extends Component
 
         // Optimize battle stats with single query using subqueries
         $battleStats = Report::where('world_id', $this->world->id)
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q
                     ->where('attacker_id', $this->player->id)
                     ->orWhere('defender_id', $this->player->id);
@@ -265,7 +289,7 @@ class StatisticsViewer extends Component
     private function loadRankingStats()
     {
         $query = Player::where('world_id', $this->world->id)
-            ->with(['villages' => function ($q) {
+            ->with(['villages' => function ($q): void {
                 $q
                     ->selectRaw('player_id, COUNT(*) as village_count, SUM(population) as total_population')
                     ->groupBy('player_id');
@@ -291,7 +315,7 @@ class StatisticsViewer extends Component
         }
 
         // Apply eloquent filtering
-        if (!empty($eloquentFilters)) {
+        if (! empty($eloquentFilters)) {
             $query = $query->filter($eloquentFilters);
         }
 
@@ -528,21 +552,21 @@ class StatisticsViewer extends Component
     {
         $this->viewMode = $mode;
         $this->loadStatistics();
-        $this->addNotification('Switched to ' . ($this->statCategories[$mode] ?? $mode) . ' view', 'info');
+        $this->addNotification('Switched to '.($this->statCategories[$mode] ?? $mode).' view', 'info');
     }
 
     public function setTimeRange($range)
     {
         $this->timeRange = $range;
         $this->loadStatistics();
-        $this->addNotification('Time range set to ' . ($this->timeRanges[$range] ?? $range), 'info');
+        $this->addNotification('Time range set to '.($this->timeRanges[$range] ?? $range), 'info');
     }
 
     public function setStatType($type)
     {
         $this->statType = $type;
         $this->loadStatistics();
-        $this->addNotification('Statistics type set to ' . ($this->statTypes[$type] ?? $type), 'info');
+        $this->addNotification('Statistics type set to '.($this->statTypes[$type] ?? $type), 'info');
     }
 
     public function sortStatistics($sortBy)
@@ -585,7 +609,7 @@ class StatisticsViewer extends Component
     // Real-time features
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -594,7 +618,7 @@ class StatisticsViewer extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -706,9 +730,9 @@ class StatisticsViewer extends Component
     public function formatNumber($number)
     {
         if ($number >= 1000000) {
-            return round($number / 1000000, 1) . 'M';
+            return round($number / 1000000, 1).'M';
         } elseif ($number >= 1000) {
-            return round($number / 1000, 1) . 'K';
+            return round($number / 1000, 1).'K';
         }
 
         return number_format($number);

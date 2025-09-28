@@ -44,7 +44,7 @@ class TaskFactory extends Factory
 
     public function active(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'active',
             'started_at' => $this->faker->dateTimeBetween('-1 day', 'now'),
             'completed_at' => null,
@@ -53,7 +53,7 @@ class TaskFactory extends Factory
 
     public function completed(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'completed',
             'started_at' => $this->faker->dateTimeBetween('-2 days', '-1 day'),
             'completed_at' => $this->faker->dateTimeBetween('-1 day', 'now'),
@@ -62,7 +62,7 @@ class TaskFactory extends Factory
 
     public function available(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'available',
             'started_at' => null,
             'completed_at' => null,
@@ -71,43 +71,43 @@ class TaskFactory extends Factory
 
     public function expired(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'deadline' => $this->faker->dateTimeBetween('-1 day', '-1 hour'),
         ]);
     }
 
     public function building(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'building',
-            'title' => 'Build ' . $this->faker->randomElement(['Warehouse', 'Granary', 'Barracks', 'Stable']) . ' Level ' . $this->faker->numberBetween(1, 20),
+            'title' => 'Build '.$this->faker->randomElement(['Warehouse', 'Granary', 'Barracks', 'Stable']).' Level '.$this->faker->numberBetween(1, 20),
             'description' => 'Construct and upgrade a building to the specified level.',
         ]);
     }
 
     public function troop(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'troop',
-            'title' => 'Train ' . $this->faker->randomElement(['Legionnaires', 'Praetorians', 'Imperians']) . ' x' . $this->faker->numberBetween(10, 100),
+            'title' => 'Train '.$this->faker->randomElement(['Legionnaires', 'Praetorians', 'Imperians']).' x'.$this->faker->numberBetween(10, 100),
             'description' => 'Train the specified number of troops.',
         ]);
     }
 
     public function resource(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'resource',
-            'title' => 'Collect ' . $this->faker->randomElement(['Wood', 'Clay', 'Iron', 'Crop']) . ' x' . $this->faker->numberBetween(1000, 10000),
+            'title' => 'Collect '.$this->faker->randomElement(['Wood', 'Clay', 'Iron', 'Crop']).' x'.$this->faker->numberBetween(1000, 10000),
             'description' => 'Gather the specified amount of resources.',
         ]);
     }
 
     public function battle(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'battle',
-            'title' => 'Win ' . $this->faker->numberBetween(1, 5) . ' Battles',
+            'title' => 'Win '.$this->faker->numberBetween(1, 5).' Battles',
             'description' => 'Successfully win the specified number of battles.',
         ]);
     }

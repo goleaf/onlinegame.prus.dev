@@ -14,6 +14,7 @@ class GameEventListener implements ShouldQueue
     use InteractsWithQueue;
 
     protected GameNotificationService $notificationService;
+
     protected RealTimeGameService $realTimeService;
 
     public function __construct(

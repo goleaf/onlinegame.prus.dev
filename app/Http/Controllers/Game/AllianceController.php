@@ -2,25 +2,23 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\Alliance;
 use App\Models\Game\AllianceDiplomacy;
 use App\Models\Game\AllianceMember;
 use App\Models\Game\AllianceWar;
 use App\Models\Game\Player;
 use App\Traits\GameValidationTrait;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
 
 /**
@@ -37,9 +35,12 @@ use LaraUtilX\Utilities\RateLimiterUtil;
  */
 class AllianceController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use GameValidationTrait;
+    use ValidationHelperTrait;
 
     protected Model $model;
+
     protected RateLimiterUtil $rateLimiter;
 
     protected array $validationRules = [
@@ -52,7 +53,9 @@ class AllianceController extends CrudController
     ];
 
     protected array $searchableFields = ['name', 'tag', 'description'];
+
     protected array $relationships = ['leader', 'world', 'members', 'wars', 'diplomacy'];
+
     protected int $perPage = 15;
 
     public function __construct(RateLimiterUtil $rateLimiter)
@@ -103,7 +106,7 @@ class AllianceController extends CrudController
     public function index(Request $request): JsonResponse
     {
         try {
-            $cacheKey = 'alliances_' . md5(serialize($request->all()));
+            $cacheKey = 'alliances_'.md5(serialize($request->all()));
 
             $alliances = CachingUtil::remember($cacheKey, now()->addMinutes(10), function () use ($request) {
                 $query = Alliance::with(['leader']);
@@ -118,7 +121,7 @@ class AllianceController extends CrudController
                         'value' => [
                             ['target' => 'name', 'type' => '$like', 'value' => $search],
                             ['target' => 'tag', 'type' => '$like', 'value' => $search],
-                        ]
+                        ],
                     ];
                 }
 
@@ -134,7 +137,7 @@ class AllianceController extends CrudController
                     $filters[] = ['target' => 'members_count', 'type' => '$lte', 'value' => $request->input('max_members')];
                 }
 
-                if (!empty($filters)) {
+                if (! empty($filters)) {
                     $query = $query->filter($filters);
                 }
 
@@ -162,7 +165,7 @@ class AllianceController extends CrudController
                 'user_id' => auth()->id(),
             ], 'alliance_system');
 
-            return $this->errorResponse('Failed to retrieve alliances: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve alliances: '.$e->getMessage(), 500);
         }
     }
 
@@ -199,7 +202,6 @@ class AllianceController extends CrudController
      *   "created_at": "2023-01-01T00:00:00.000000Z",
      *   "updated_at": "2023-01-01T00:00:00.000000Z"
      * }
-     *
      * @response 404 {
      *   "message": "Alliance not found"
      * }
@@ -258,7 +260,6 @@ class AllianceController extends CrudController
      *     "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     *
      * @response 422 {
      *   "message": "The given data was invalid.",
      *   "errors": {
@@ -273,12 +274,12 @@ class AllianceController extends CrudController
     {
         try {
             // Rate limiting for creating alliances
-            $rateLimitKey = 'create_alliance_' . (auth()->id() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 1, 1)) {
+            $rateLimitKey = 'create_alliance_'.(auth()->id() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 1, 1)) {
                 return $this->errorResponse('Too many alliance creation attempts. Please try again later.', 429);
             }
 
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'name' => 'required|string|max:255|unique:alliances,name',
                 'tag' => 'required|string|max:10|unique:alliances,tag',
                 'description' => 'nullable|string|max:1000',
@@ -314,7 +315,7 @@ class AllianceController extends CrudController
             $player->update(['alliance_id' => $alliance->id]);
 
             // Clear related caches
-            CachingUtil::forget('alliances_' . md5(serialize($request->all())));
+            CachingUtil::forget('alliances_'.md5(serialize($request->all())));
 
             DB::commit();
 
@@ -332,7 +333,7 @@ class AllianceController extends CrudController
                 'user_id' => auth()->id(),
             ], 'alliance_system');
 
-            return $this->errorResponse('Failed to create alliance: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to create alliance: '.$e->getMessage(), 500);
         }
     }
 
@@ -349,7 +350,6 @@ class AllianceController extends CrudController
      *   "success": true,
      *   "message": "Successfully joined the alliance"
      * }
-     *
      * @response 400 {
      *   "success": false,
      *   "message": "Player is already in an alliance"
@@ -390,7 +390,7 @@ class AllianceController extends CrudController
 
             // Clear related caches
             CachingUtil::forget("alliance_{$id}");
-            CachingUtil::forget('alliances_' . md5(serialize([])));
+            CachingUtil::forget('alliances_'.md5(serialize([])));
 
             DB::commit();
 
@@ -410,7 +410,7 @@ class AllianceController extends CrudController
                 'alliance_id' => $id,
             ], 'alliance_system');
 
-            return $this->errorResponse('Failed to join alliance: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to join alliance: '.$e->getMessage(), 500);
         }
     }
 
@@ -425,7 +425,6 @@ class AllianceController extends CrudController
      *   "success": true,
      *   "message": "Successfully left the alliance"
      * }
-     *
      * @response 400 {
      *   "success": false,
      *   "message": "Player is not in an alliance"
@@ -438,7 +437,7 @@ class AllianceController extends CrudController
         try {
             $player = Auth::user()->player;
 
-            if (!$player->alliance_id) {
+            if (! $player->alliance_id) {
                 return $this->errorResponse('Player is not in an alliance', 400);
             }
 
@@ -468,7 +467,7 @@ class AllianceController extends CrudController
 
             // Clear related caches
             CachingUtil::forget("alliance_{$alliance->id}");
-            CachingUtil::forget('alliances_' . md5(serialize([])));
+            CachingUtil::forget('alliances_'.md5(serialize([])));
 
             DB::commit();
 
@@ -487,7 +486,7 @@ class AllianceController extends CrudController
                 'user_id' => auth()->id(),
             ], 'alliance_system');
 
-            return $this->errorResponse('Failed to leave alliance: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to leave alliance: '.$e->getMessage(), 500);
         }
     }
 
@@ -547,7 +546,7 @@ class AllianceController extends CrudController
                 'alliance_id' => $id,
             ], 'alliance_system');
 
-            return $this->errorResponse('Failed to retrieve alliance members: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve alliance members: '.$e->getMessage(), 500);
         }
     }
 
@@ -589,7 +588,7 @@ class AllianceController extends CrudController
 
             $wars = CachingUtil::remember($cacheKey, now()->addMinutes(15), function () use ($id) {
                 return AllianceWar::with(['attackerAlliance', 'defenderAlliance'])
-                    ->where(function ($query) use ($id) {
+                    ->where(function ($query) use ($id): void {
                         $query
                             ->where('attacker_alliance_id', $id)
                             ->orWhere('defender_alliance_id', $id);
@@ -612,7 +611,7 @@ class AllianceController extends CrudController
                 'alliance_id' => $id,
             ], 'alliance_system');
 
-            return $this->errorResponse('Failed to retrieve alliance wars: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve alliance wars: '.$e->getMessage(), 500);
         }
     }
 
@@ -670,7 +669,7 @@ class AllianceController extends CrudController
                 'alliance_id' => $id,
             ], 'alliance_system');
 
-            return $this->errorResponse('Failed to retrieve alliance diplomacy: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve alliance diplomacy: '.$e->getMessage(), 500);
         }
     }
 
@@ -682,6 +681,7 @@ class AllianceController extends CrudController
      * @description Update alliance information. Only leaders can update.
      *
      * @urlParam id int required The ID of the alliance. Example: 1
+     *
      * @bodyParam name string The new name of the alliance. Example: "Knights of the Round Table"
      * @bodyParam description string The new description. Example: "Honor and chivalry above all"
      *
@@ -695,7 +695,6 @@ class AllianceController extends CrudController
      *     "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     *
      * @response 403 {
      *   "success": false,
      *   "message": "Only alliance leader can update alliance"
@@ -714,8 +713,8 @@ class AllianceController extends CrudController
                 return $this->errorResponse('Only alliance leader can update alliance', 403);
             }
 
-            $validated = $this->validateRequest($request, [
-                'name' => 'sometimes|string|max:255|unique:alliances,name,' . $id,
+            $validated = $this->validateRequestData($request, [
+                'name' => 'sometimes|string|max:255|unique:alliances,name,'.$id,
                 'description' => 'nullable|string|max:1000',
             ]);
 
@@ -723,7 +722,7 @@ class AllianceController extends CrudController
 
             // Clear related caches
             CachingUtil::forget("alliance_{$id}");
-            CachingUtil::forget('alliances_' . md5(serialize([])));
+            CachingUtil::forget('alliances_'.md5(serialize([])));
 
             LoggingUtil::info('Alliance updated', [
                 'user_id' => auth()->id(),
@@ -741,7 +740,7 @@ class AllianceController extends CrudController
                 'alliance_id' => $id,
             ], 'alliance_system');
 
-            return $this->errorResponse('Failed to update alliance: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to update alliance: '.$e->getMessage(), 500);
         }
     }
 
@@ -758,7 +757,6 @@ class AllianceController extends CrudController
      *   "success": true,
      *   "message": "Alliance disbanded successfully"
      * }
-     *
      * @response 403 {
      *   "success": false,
      *   "message": "Only alliance leader can disband alliance"
@@ -793,7 +791,7 @@ class AllianceController extends CrudController
             CachingUtil::forget("alliance_members_{$id}");
             CachingUtil::forget("alliance_wars_{$id}");
             CachingUtil::forget("alliance_diplomacy_{$id}");
-            CachingUtil::forget('alliances_' . md5(serialize([])));
+            CachingUtil::forget('alliances_'.md5(serialize([])));
 
             DB::commit();
 
@@ -813,7 +811,7 @@ class AllianceController extends CrudController
                 'alliance_id' => $id,
             ], 'alliance_system');
 
-            return $this->errorResponse('Failed to disband alliance: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to disband alliance: '.$e->getMessage(), 500);
         }
     }
 }

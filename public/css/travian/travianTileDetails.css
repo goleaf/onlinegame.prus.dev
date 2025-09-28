@@ -194,7 +194,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f1.png');
 }
 .buildingsV3 #tileDetails.village-1 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -245,7 +245,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f2.png');
 }
 .buildingsV3 #tileDetails.village-2 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -296,7 +296,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f3.png');
 }
 .buildingsV3 #tileDetails.village-3 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -347,7 +347,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f4.png');
 }
 .buildingsV3 #tileDetails.village-4 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -398,7 +398,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f5.png');
 }
 .buildingsV3 #tileDetails.village-5 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -449,7 +449,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f6.png');
 }
 .buildingsV3 #tileDetails.village-6 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -500,7 +500,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f7.png');
 }
 .buildingsV3 #tileDetails.village-7 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -551,7 +551,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f8.png');
 }
 .buildingsV3 #tileDetails.village-8 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -602,7 +602,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f9.png');
 }
 .buildingsV3 #tileDetails.village-9 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -653,7 +653,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f10.png');
 }
 .buildingsV3 #tileDetails.village-10 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -704,7 +704,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f11.png');
 }
 .buildingsV3 #tileDetails.village-11 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -755,7 +755,7 @@
   background-image: url('../img_ltr/layout/background2019/resourceFields/detail/village/f12.png');
 }
 .buildingsV3 #tileDetails.village-12 .detailImage:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -878,7 +878,8 @@
   background-image: url('../img_ltr/g/detail/landscape/vulcano-ltr.jpg');
 }
 
-#tileDetails.landscape-desert_w .detailImage, #tileDetails.landscape-desert .detailImage {
+#tileDetails.landscape-desert_w .detailImage,
+#tileDetails.landscape-desert .detailImage {
   background-image: url('../img_ltr/g/detail/landscape/desert_w-ltr.jpg');
 }
 
@@ -978,13 +979,13 @@
   font-weight: normal;
   margin-left: 3px;
 }
-.rtl #tileDetails h1 span.mainVillage, .rtl
-.positionDetails h1 span.mainVillage {
+.rtl #tileDetails h1 span.mainVillage,
+.rtl .positionDetails h1 span.mainVillage {
   font-size: 12px;
 }
 
 .dialog #tileDetails h1 span.mainVillage {
-  color: #C0C0C0;
+  color: #c0c0c0;
 }
 
 #tileDetails .detailImage {

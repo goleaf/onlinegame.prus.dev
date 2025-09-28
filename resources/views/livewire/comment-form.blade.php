@@ -25,7 +25,7 @@
             @if($parentId)
                 <button 
                     type="button"
-                    wire:click="$dispatch('cancel-reply')"
+                    wire:click.prevent="$dispatch('cancel-reply')"
                     class="px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
                 >
                     Cancel

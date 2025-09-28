@@ -5,41 +5,55 @@ namespace App\Models\Game;
 use App\Services\GeographicService;
 use App\Traits\Commentable;
 use App\ValueObjects\Coordinates;
-use App\ValueObjects\VillageResources;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Model;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
 use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use MohamedSaid\Notable\Traits\HasNotables;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class Village extends Model implements Auditable
 {
-    use HasFactory, Commentable, HasNotables, AuditableTrait, Lift;
+    use AuditableTrait;
+    use Commentable;
+    use HasFactory;
+    use HasNotables;
 
     // Laravel Lift typed properties
     public int $id;
+
     public int $player_id;
+
     public int $world_id;
+
     public string $name;
+
     public ?int $x_coordinate;
+
     public ?int $y_coordinate;
+
     public ?float $latitude;
+
     public ?float $longitude;
+
     public ?string $geohash;
+
     public ?float $elevation;
+
     public ?array $geographic_metadata;
+
     public int $population;
+
     public bool $is_capital;
+
     public bool $is_active;
+
     public \Carbon\CarbonImmutable $created_at;
+
     public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
@@ -72,6 +86,7 @@ class Village extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -87,7 +102,7 @@ class Village extends Model implements Auditable
     protected function coordinates(): Attribute
     {
         return Attribute::make(
-            get: fn() => new Coordinates(
+            get: fn () => new Coordinates(
                 x: $this->x_coordinate,
                 y: $this->y_coordinate,
                 latitude: $this->latitude,
@@ -95,7 +110,7 @@ class Village extends Model implements Auditable
                 elevation: $this->elevation,
                 geohash: $this->geohash
             ),
-            set: fn(Coordinates $coordinates) => [
+            set: fn (Coordinates $coordinates) => [
                 'x_coordinate' => $coordinates->x,
                 'y_coordinate' => $coordinates->y,
                 'latitude' => $coordinates->latitude,
@@ -134,9 +149,10 @@ class Village extends Model implements Auditable
         return Attribute::make(
             get: function () {
                 $resource = $this->resources()->first();
-                if (!$resource) {
+                if (! $resource) {
                     return new \App\ValueObjects\VillageResources(0, 0, 0, 0);
                 }
+
                 return new \App\ValueObjects\VillageResources(
                     wood: $resource->wood,
                     clay: $resource->clay,
@@ -194,8 +210,6 @@ class Village extends Model implements Auditable
 
     /**
      * Get real-world coordinates for this village
-     *
-     * @return array
      */
     public function getRealWorldCoordinates(): array
     {
@@ -203,18 +217,17 @@ class Village extends Model implements Auditable
         if ($this->latitude && $this->longitude) {
             return [
                 'lat' => (float) $this->latitude,
-                'lon' => (float) $this->longitude
+                'lon' => (float) $this->longitude,
             ];
         }
 
         $geoService = app(GeographicService::class);
+
         return $geoService->gameToRealWorld($this->x_coordinate, $this->y_coordinate);
     }
 
     /**
      * Update geographic data for this village
-     *
-     * @return void
      */
     public function updateGeographicData(): void
     {
@@ -230,13 +243,11 @@ class Village extends Model implements Auditable
 
     /**
      * Calculate distance to another village
-     *
-     * @param Village $village
-     * @return float
      */
     public function distanceTo(Village $village): float
     {
         $geoService = app(GeographicService::class);
+
         return $geoService->calculateGameDistance(
             $this->x_coordinate,
             $this->y_coordinate,
@@ -247,9 +258,6 @@ class Village extends Model implements Auditable
 
     /**
      * Calculate real-world distance to another village
-     *
-     * @param Village $village
-     * @return float
      */
     public function realWorldDistanceTo(Village $village): float
     {
@@ -267,9 +275,6 @@ class Village extends Model implements Auditable
 
     /**
      * Get geohash for this village
-     *
-     * @param int $precision
-     * @return string
      */
     public function getGeohash(int $precision = 8): string
     {
@@ -281,9 +286,6 @@ class Village extends Model implements Auditable
 
     /**
      * Get bearing to another village
-     *
-     * @param Village $village
-     * @return float
      */
     public function bearingTo(Village $village): float
     {
@@ -364,14 +366,14 @@ class Village extends Model implements Auditable
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where(function ($subQ) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm): void {
                 $subQ
-                    ->where('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhereIn('player_id', function ($playerQ) use ($searchTerm) {
+                    ->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhereIn('player_id', function ($playerQ) use ($searchTerm): void {
                         $playerQ
                             ->select('id')
                             ->from('players')
-                            ->where('name', 'like', '%' . $searchTerm . '%');
+                            ->where('name', 'like', '%'.$searchTerm.'%');
                     });
             });
         });
@@ -381,33 +383,27 @@ class Village extends Model implements Auditable
     {
         return $query->with([
             'player:id,name,points,alliance_id',
-            'world:id,name'
+            'world:id,name',
         ]);
     }
 
     /**
      * Scope to find villages within a radius of given coordinates
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param int $centerX
-     * @param int $centerY
-     * @param float $radius
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeWithinRadius($query, int $centerX, int $centerY, float $radius)
     {
         return $query->whereRaw('SQRT(POW(x_coordinate - ?, 2) + POW(y_coordinate - ?, 2)) <= ?', [
-            $centerX, $centerY, $radius
+            $centerX, $centerY, $radius,
         ]);
     }
 
     /**
      * Scope to find villages within a real-world radius
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param float $centerLat
-     * @param float $centerLon
-     * @param float $radiusKm
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeWithinRealWorldRadius($query, float $centerLat, float $centerLon, float $radiusKm)
@@ -424,15 +420,13 @@ class Village extends Model implements Auditable
     /**
      * Scope to order villages by distance from a point
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param int $centerX
-     * @param int $centerY
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeOrderByDistance($query, int $centerX, int $centerY)
     {
         return $query->orderByRaw('SQRT(POW(x_coordinate - ?, 2) + POW(y_coordinate - ?, 2))', [
-            $centerX, $centerY
+            $centerX, $centerY,
         ]);
     }
 

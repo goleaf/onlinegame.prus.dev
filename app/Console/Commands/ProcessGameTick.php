@@ -48,7 +48,7 @@ class ProcessGameTick extends Command
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $this->error('Game tick processing failed: ' . $e->getMessage());
+            $this->error('Game tick processing failed: '.$e->getMessage());
 
             return Command::FAILURE;
         }

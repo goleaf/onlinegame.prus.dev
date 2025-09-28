@@ -2,8 +2,8 @@
 
 namespace App\Models\Game;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AllianceDiplomacy extends Model
 {
@@ -57,7 +57,7 @@ class AllianceDiplomacy extends Model
 
     public function scopeByAlliance($query, $allianceId)
     {
-        return $query->where(function ($q) use ($allianceId) {
+        return $query->where(function ($q) use ($allianceId): void {
             $q
                 ->where('alliance_id', $allianceId)
                 ->orWhere('target_alliance_id', $allianceId);
@@ -95,7 +95,7 @@ class AllianceDiplomacy extends Model
     public function canRespond($allianceId): bool
     {
         return $this->isPending() &&
-            !$this->isExpired() &&
+            ! $this->isExpired() &&
             $this->target_alliance_id === $allianceId;
     }
 

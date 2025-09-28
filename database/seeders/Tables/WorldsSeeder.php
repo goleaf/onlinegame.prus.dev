@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,9 +17,7 @@ class WorldsSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --tables=worlds --limit=1
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
@@ -34,11 +33,11 @@ class WorldsSeeder extends Seeder
                 'end_date' => '2026-03-25 23:37:46',
                 'created_at' => '2025-09-25 23:37:46',
                 'updated_at' => '2025-09-25 23:37:46',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("worlds")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('worlds')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

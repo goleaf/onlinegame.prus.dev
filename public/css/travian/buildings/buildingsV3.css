@@ -1568,10 +1568,20 @@
   cursor: pointer;
   pointer-events: auto;
 }
-.buildingsV3 .buildingSlot svg.buildingShape .clickShape:hover + .hoverShape path {
+.buildingsV3
+  .buildingSlot
+  svg.buildingShape
+  .clickShape:hover
+  + .hoverShape
+  path {
   fill: rgba(255, 255, 255, 0.2);
 }
-.buildingsV3 .buildingSlot svg.buildingShape .clickShape:active + .hoverShape path {
+.buildingsV3
+  .buildingSlot
+  svg.buildingShape
+  .clickShape:active
+  + .hoverShape
+  path {
   fill: rgba(255, 255, 255, 0.35);
   -webkit-tap-highlight-color: transparent;
 }

@@ -16,7 +16,7 @@
   color: #777777;
 }
 .alliance .diplomacy .tableWrapper {
-  border: 1px solid #C0C0C0;
+  border: 1px solid #c0c0c0;
   margin: 10px;
   padding: 10px;
 }
@@ -28,7 +28,7 @@
   line-height: 25px;
   vertical-align: middle;
   padding: 0 3px 10px;
-  border-bottom: 1px solid #C0C0C0;
+  border-bottom: 1px solid #c0c0c0;
 }
 .alliance .diplomacy .confederacyOffer tbody tr:first-child td {
   padding: 10px 9px 3px;
@@ -64,7 +64,7 @@
 .alliance .diplomacy .confederacyActive .member {
   line-height: 30px;
   white-space: nowrap;
-  border-right: 1px solid #C0C0C0;
+  border-right: 1px solid #c0c0c0;
 }
 .alliance .diplomacy .confederacyActive .member button.kick {
   margin-left: 5px;
@@ -82,7 +82,7 @@
   padding-bottom: 0;
 }
 .alliance .diplomacy .confederacyActive tr:not(:last-child) .member {
-  border-bottom: 1px solid #C0C0C0;
+  border-bottom: 1px solid #c0c0c0;
 }
 .alliance .diplomacy .confederacyActive .empty {
   color: #777777;

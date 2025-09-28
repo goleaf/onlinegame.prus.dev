@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,15 +17,13 @@ class TelescopeMonitoringSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
-            
+
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("telescope_monitoring")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('telescope_monitoring')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

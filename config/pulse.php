@@ -1,8 +1,11 @@
 <?php
 
 use Laravel\Pulse\Http\Middleware\Authorize;
-use Laravel\Pulse\Pulse;
 use Laravel\Pulse\Recorders;
+
+$defaultVendorCacheKeys = class_exists(\Laravel\Pulse\Pulse::class)
+    ? \Laravel\Pulse\Pulse::defaultVendorCacheKeys()
+    : [];
 
 return [
 
@@ -141,7 +144,7 @@ return [
             'enabled' => env('PULSE_CACHE_INTERACTIONS_ENABLED', true),
             'sample_rate' => env('PULSE_CACHE_INTERACTIONS_SAMPLE_RATE', 1),
             'ignore' => [
-                ...Pulse::defaultVendorCacheKeys(),
+                ...$defaultVendorCacheKeys,
             ],
             'groups' => [
                 '/^job-exceptions:.*/' => 'job-exceptions:*',

@@ -3,13 +3,14 @@
 namespace App\Models\Game;
 
 use App\Traits\Commentable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class PlayerNote extends Model
 {
-    use HasReference, Commentable;
+    use Commentable;
+    use HasReference;
 
     protected $fillable = [
         'player_id',
@@ -29,6 +30,7 @@ class PlayerNote extends Model
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [

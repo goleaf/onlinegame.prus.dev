@@ -25,7 +25,9 @@ class GameAnalyticsCommand extends Command
     protected $description = 'Generate game analytics, cleanup old data, and manage game statistics';
 
     protected GameAnalyticsService $analyticsService;
+
     protected GameEventService $eventService;
+
     protected NotificationService $notificationService;
 
     public function __construct()
@@ -51,12 +53,13 @@ class GameAnalyticsCommand extends Command
                 default => $this->showHelp(),
             };
         } catch (\Exception $e) {
-            $this->error('Error executing command: ' . $e->getMessage());
+            $this->error('Error executing command: '.$e->getMessage());
             Log::error('GameAnalyticsCommand error', [
                 'action' => $action,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return 1;
         }
     }
@@ -86,6 +89,7 @@ class GameAnalyticsCommand extends Command
         }
 
         $this->info('Analytics generation completed successfully!');
+
         return 0;
     }
 
@@ -205,7 +209,7 @@ class GameAnalyticsCommand extends Command
         $this->info('🤝 Alliance Analytics:');
         $this->line("  Total Alliances: {$allianceStats['total_alliances']}");
         $this->line("  Active Alliances: {$allianceStats['active_alliances']}");
-        $this->line("  Average Members: " . number_format($allianceStats['average_members_per_alliance'], 2));
+        $this->line('  Average Members: '.number_format($allianceStats['average_members_per_alliance'], 2));
         $this->line("  Largest Alliance: {$allianceStats['largest_alliance']} members");
         $this->line('');
 
@@ -213,16 +217,16 @@ class GameAnalyticsCommand extends Command
         $villageStats = $analytics['village_analytics'];
         $this->info('🏘️ Village Analytics:');
         $this->line("  Total Villages: {$villageStats['total_villages']}");
-        $this->line("  Average Population: " . number_format($villageStats['average_population'], 2));
+        $this->line('  Average Population: '.number_format($villageStats['average_population'], 2));
         $this->line("  Villages with Defense: {$villageStats['villages_with_defense']}");
         $this->line('');
 
         // Performance Metrics
         $performance = $analytics['performance_metrics'];
         $this->info('⚡ Performance Metrics:');
-        $this->line("  Memory Usage: " . $this->formatBytes($performance['memory_usage']['current']));
-        $this->line("  Peak Memory: " . $this->formatBytes($performance['memory_usage']['peak']));
-        $this->line("  Response Time: " . number_format($performance['response_time'] * 1000, 2) . "ms");
+        $this->line('  Memory Usage: '.$this->formatBytes($performance['memory_usage']['current']));
+        $this->line('  Peak Memory: '.$this->formatBytes($performance['memory_usage']['peak']));
+        $this->line('  Response Time: '.number_format($performance['response_time'] * 1000, 2).'ms');
         $this->line('');
     }
 
@@ -237,6 +241,6 @@ class GameAnalyticsCommand extends Command
             $bytes /= 1024;
         }
 
-        return round($bytes, $precision) . ' ' . $units[$i];
+        return round($bytes, $precision).' '.$units[$i];
     }
 }

@@ -2,15 +2,16 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 #[Title('Phone Statistics Dashboard')]
 #[Layout('layouts.app')]
 class PhoneStatsDashboard extends Component
 {
     public $phoneStats = [];
+
     public $isLoading = false;
 
     public function mount()
@@ -21,7 +22,7 @@ class PhoneStatsDashboard extends Component
     public function loadPhoneStats()
     {
         $this->isLoading = true;
-        
+
         try {
             $this->phoneStats = [
                 'total_phones' => \App\Models\User::whereNotNull('phone')->count(),
@@ -33,7 +34,7 @@ class PhoneStatsDashboard extends Component
                 'verification_rate' => $this->getVerificationRate(),
             ];
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to load phone statistics: ' . $e->getMessage());
+            session()->flash('error', 'Failed to load phone statistics: '.$e->getMessage());
         } finally {
             $this->isLoading = false;
         }
@@ -43,11 +44,11 @@ class PhoneStatsDashboard extends Component
     {
         $total = \App\Models\User::whereNotNull('phone')->count();
         $verified = \App\Models\User::whereNotNull('phone_verified_at')->count();
-        
+
         if ($total === 0) {
             return 0;
         }
-        
+
         return round(($verified / $total) * 100, 1);
     }
 

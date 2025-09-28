@@ -39,14 +39,16 @@
 #regionContainer #neighboringRegions tbody tr td {
   transition-duration: 150ms;
 }
-#regionContainer #neighboringRegions tbody tr td:nth-child(1), #regionContainer #neighboringRegions tbody tr td:nth-child(4) {
+#regionContainer #neighboringRegions tbody tr td:nth-child(1),
+#regionContainer #neighboringRegions tbody tr td:nth-child(4) {
   text-align: center;
 }
-#regionContainer #neighboringRegions tbody tr td:nth-child(2), #regionContainer #neighboringRegions tbody tr td:nth-child(3) {
+#regionContainer #neighboringRegions tbody tr td:nth-child(2),
+#regionContainer #neighboringRegions tbody tr td:nth-child(3) {
   text-align: right;
 }
 #regionContainer #neighboringRegions tbody tr.highlight td {
-  background-color: #E7F0CA;
+  background-color: #e7f0ca;
 }
 #regionContainer svg.regionsInEurope {
   position: absolute;
@@ -63,14 +65,14 @@
 }
 #regionContainer svg.regionsInEurope g.active {
   fill: #991915;
-  stroke: #F8C000;
+  stroke: #f8c000;
 }
 #regionContainer svg.regionsInEurope g:hover {
-  stroke: #F2F2F2;
+  stroke: #f2f2f2;
 }
 #regionContainer svg.regionsInEurope g.highlight {
-  stroke: #F2F2F2;
-  filter: url("#regionBrightness");
+  stroke: #f2f2f2;
+  filter: url('#regionBrightness');
 }
 #regionContainer svg.regionsInEurope g.copyFront {
   pointer-events: none;
@@ -144,12 +146,12 @@
 }
 
 #regionContainer #regionDetailContent table tr.none td {
-  background-color: #EFEFEF;
+  background-color: #efefef;
 }
 
 #regionContainer #regionDetailContent table tr.allyNotInTop td,
 #regionContainer #regionDetailContent table tr.allyNotInTop td a {
-  color: #C0C0C0;
+  color: #c0c0c0;
 }
 
 #regionContainer #regionMapContainer {
@@ -185,12 +187,12 @@
   text-align: center;
   display: table-cell;
   vertical-align: middle;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 0px 0 0 0;
 }
 
 .victoryArtefactGatherBlock #regionPieChartAgenda table {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .victoryArtefactGatherBlock #regionPieChartAgenda table tbody td {
@@ -214,7 +216,7 @@
 .progressBarContainer .progressBar {
   background-color: #ffffff;
   height: 8px;
-  border: 1px solid #C6C6C6;
+  border: 1px solid #c6c6c6;
   padding: 1px;
   margin: 1px;
 }

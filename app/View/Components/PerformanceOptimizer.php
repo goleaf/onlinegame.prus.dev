@@ -2,15 +2,17 @@
 
 namespace App\View\Components;
 
-use App\Helpers\PerformanceHelper;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
 class PerformanceOptimizer extends Component
 {
     public bool $enablePreconnect;
+
     public bool $enableDnsPrefetch;
+
     public bool $enablePerformanceMonitoring;
+
     public bool $enableServiceWorker;
 
     /**

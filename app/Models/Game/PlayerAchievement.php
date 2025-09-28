@@ -3,13 +3,14 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class PlayerAchievement extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory;
+    use HasReference;
 
     protected $table = 'player_achievements';
 
@@ -28,6 +29,7 @@ class PlayerAchievement extends Model
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -99,7 +101,7 @@ class PlayerAchievement extends Model
     public function scopeByCategory($query, $category = null)
     {
         return $query->when($category, function ($q) use ($category) {
-            return $q->whereHas('achievement', function ($achievementQ) use ($category) {
+            return $q->whereHas('achievement', function ($achievementQ) use ($category): void {
                 $achievementQ->where('category', $category);
             });
         });
@@ -113,10 +115,10 @@ class PlayerAchievement extends Model
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->whereHas('achievement', function ($achievementQ) use ($searchTerm) {
+            return $q->whereHas('achievement', function ($achievementQ) use ($searchTerm): void {
                 $achievementQ
-                    ->where('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%');
+                    ->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('description', 'like', '%'.$searchTerm.'%');
             });
         });
     }

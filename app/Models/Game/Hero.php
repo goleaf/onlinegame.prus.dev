@@ -3,31 +3,47 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class Hero extends Model implements Auditable
 {
-    use HasFactory, HasReference, Lift, AuditableTrait;
+    use AuditableTrait;
+    use HasFactory;
+    use HasReference;
 
     // Laravel Lift typed properties
     public int $id;
+
     public int $player_id;
+
     public string $name;
+
     public int $level;
+
     public int $experience;
+
     public int $attack_power;
+
     public int $defense_power;
+
     public int $health;
+
     public int $max_health;
+
     public ?array $special_abilities;
+
     public ?array $equipment;
+
     public bool $is_active;
+
     public ?string $reference_number;
+
     public \Carbon\CarbonImmutable $created_at;
+
     public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
@@ -53,6 +69,7 @@ class Hero extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -145,7 +162,7 @@ class Hero extends Model implements Auditable
     public function addAbility(string $ability): void
     {
         $abilities = $this->special_abilities ?? [];
-        if (!in_array($ability, $abilities)) {
+        if (! in_array($ability, $abilities)) {
             $abilities[] = $ability;
             $this->special_abilities = $abilities;
             $this->save();
@@ -158,7 +175,7 @@ class Hero extends Model implements Auditable
     public function removeAbility(string $ability): void
     {
         $abilities = $this->special_abilities ?? [];
-        $this->special_abilities = array_values(array_filter($abilities, fn($a) => $a !== $ability));
+        $this->special_abilities = array_values(array_filter($abilities, fn ($a) => $a !== $ability));
         $this->save();
     }
 
@@ -192,7 +209,7 @@ class Hero extends Model implements Auditable
         $equipment = $this->equipment ?? [];
         $bonus = 0;
 
-        foreach ($equipment as $item => $stats) {
+        foreach ($equipment as $stats) {
             $bonus += $stats[$stat] ?? 0;
         }
 
@@ -236,11 +253,11 @@ class Hero extends Model implements Auditable
      */
     public function getStatusAttribute(): string
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return 'inactive';
         }
 
-        if (!$this->isAlive()) {
+        if (! $this->isAlive()) {
             return 'dead';
         }
 

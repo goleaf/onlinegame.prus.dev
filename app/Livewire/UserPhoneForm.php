@@ -12,7 +12,9 @@ class UserPhoneForm extends Component
     use WithFileUploads;
 
     public $user;
+
     public $phone = '';
+
     public $phone_country = 'US';
 
     protected $rules = [
@@ -20,7 +22,7 @@ class UserPhoneForm extends Component
         'phone_country' => ['required_with:phone', 'string', 'size:2'],
     ];
 
-    public function mount(User $user = null)
+    public function mount(?User $user = null)
     {
         $this->user = $user ?? new User();
 
@@ -34,8 +36,8 @@ class UserPhoneForm extends Component
     {
         $this->validateOnly($propertyName);
 
-        if ($propertyName === 'phone' && !empty($this->phone)) {
-            $this->rules['phone'][] = (new Phone)->country($this->phone_country);
+        if ($propertyName === 'phone' && ! empty($this->phone)) {
+            $this->rules['phone'][] = (new Phone())->country($this->phone_country);
         }
     }
 
@@ -43,8 +45,8 @@ class UserPhoneForm extends Component
     {
         $rules = $this->rules;
 
-        if (!empty($this->phone)) {
-            $rules['phone'][] = (new Phone)->country($this->phone_country);
+        if (! empty($this->phone)) {
+            $rules['phone'][] = (new Phone())->country($this->phone_country);
         }
 
         $this->validate($rules);
@@ -60,7 +62,7 @@ class UserPhoneForm extends Component
 
     public function formatPhone()
     {
-        if (!empty($this->phone) && !empty($this->phone_country)) {
+        if (! empty($this->phone) && ! empty($this->phone_country)) {
             try {
                 $phoneNumber = phone($this->phone, $this->phone_country);
                 $this->phone = $phoneNumber->formatInternational();

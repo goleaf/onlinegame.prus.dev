@@ -34,9 +34,10 @@ class AnalyzeSlowQueries extends Command
         $limit = (int) $this->option('limit');
         $format = $this->option('format');
 
-        if (!File::exists($logFile)) {
+        if (! File::exists($logFile)) {
             $this->error("Slow query log file not found: {$logFile}");
             $this->info('Make sure slow query log is enabled and the file exists.');
+
             return 1;
         }
 
@@ -91,8 +92,8 @@ class AnalyzeSlowQueries extends Command
                 }
             }
             // This is the SQL query
-            elseif ($currentQuery && !str_starts_with($line, '#')) {
-                $currentQuery['sql'] .= $line . ' ';
+            elseif ($currentQuery && ! str_starts_with($line, '#')) {
+                $currentQuery['sql'] .= $line.' ';
             }
         }
 
@@ -110,7 +111,7 @@ class AnalyzeSlowQueries extends Command
     private function analyzeQueries(array $queries, int $limit): array
     {
         // Sort by query time (slowest first)
-        usort($queries, fn($a, $b) => $b['query_time'] <=> $a['query_time']);
+        usort($queries, fn ($a, $b) => $b['query_time'] <=> $a['query_time']);
 
         $analyzed = array_slice($queries, 0, $limit);
 
@@ -132,7 +133,7 @@ class AnalyzeSlowQueries extends Command
 
         // Check for missing indexes
         if ($query['rows_examined'] > $query['rows_sent'] * 10) {
-            $recommendations[] = 'Consider adding indexes - examining ' . $query['rows_examined'] . ' rows but only returning ' . $query['rows_sent'];
+            $recommendations[] = 'Consider adding indexes - examining '.$query['rows_examined'].' rows but only returning '.$query['rows_sent'];
         }
 
         // Check for SELECT *
@@ -141,7 +142,7 @@ class AnalyzeSlowQueries extends Command
         }
 
         // Check for ORDER BY without LIMIT
-        if (preg_match('/order by.*(?!limit)/i', $sql) && !str_contains($sql, 'limit')) {
+        if (preg_match('/order by.*(?!limit)/i', $sql) && ! str_contains($sql, 'limit')) {
             $recommendations[] = 'Consider adding LIMIT to ORDER BY queries';
         }
 
@@ -183,15 +184,18 @@ class AnalyzeSlowQueries extends Command
     {
         if (empty($queries)) {
             $this->info('No slow queries found in the log file.');
+
             return;
         }
 
         switch ($format) {
             case 'json':
                 $this->line(json_encode($queries, JSON_PRETTY_PRINT));
+
                 break;
             case 'csv':
                 $this->displayCsv($queries);
+
                 break;
             default:
                 $this->displayTable($queries);
@@ -211,7 +215,7 @@ class AnalyzeSlowQueries extends Command
                 number_format($query['query_time'], 3),
                 number_format($query['rows_examined']),
                 number_format($query['rows_sent']),
-                implode('; ', $query['recommendations']) ?: 'None'
+                implode('; ', $query['recommendations']) ?: 'None',
             ];
         }
 
@@ -221,8 +225,8 @@ class AnalyzeSlowQueries extends Command
         $this->info('Top slow queries:');
 
         foreach (array_slice($queries, 0, 5) as $index => $query) {
-            $this->line(($index + 1) . '. ' . substr($query['sql'], 0, 100) . '...');
-            if (!empty($query['recommendations'])) {
+            $this->line(($index + 1).'. '.substr($query['sql'], 0, 100).'...');
+            if (! empty($query['recommendations'])) {
                 foreach ($query['recommendations'] as $recommendation) {
                     $this->line("   • {$recommendation}");
                 }

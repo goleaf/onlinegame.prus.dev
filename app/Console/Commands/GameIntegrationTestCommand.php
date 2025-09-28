@@ -2,14 +2,13 @@
 
 namespace App\Console\Commands;
 
-use App\Services\GameIntegrationService;
-use App\Services\GameNotificationService;
-use App\Services\RealTimeGameService;
 use App\Services\GameCacheService;
 use App\Services\GameErrorHandler;
+use App\Services\GameIntegrationService;
+use App\Services\GameNotificationService;
 use App\Services\GamePerformanceMonitor;
+use App\Services\RealTimeGameService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class GameIntegrationTestCommand extends Command
 {
@@ -73,14 +72,14 @@ class GameIntegrationTestCommand extends Command
     private function testGameIntegrationService(int $userId, bool $verbose): array
     {
         $this->info('🔧 Testing GameIntegrationService...');
-        
+
         try {
             // Test user initialization
             GameIntegrationService::initializeUserRealTime($userId);
-            
+
             // Test game statistics
             $stats = GameIntegrationService::getGameStatisticsWithRealTime();
-            
+
             // Test system announcement
             GameIntegrationService::sendSystemAnnouncement(
                 'Integration Test',
@@ -89,15 +88,16 @@ class GameIntegrationTestCommand extends Command
             );
 
             if ($verbose) {
-                $this->line("✅ User initialization: Success");
-                $this->line("✅ Game statistics: " . count($stats) . " items");
-                $this->line("✅ System announcement: Success");
+                $this->line('✅ User initialization: Success');
+                $this->line('✅ Game statistics: '.count($stats).' items');
+                $this->line('✅ System announcement: Success');
             }
 
             return ['status' => 'success', 'details' => 'All GameIntegrationService methods working'];
-            
+
         } catch (\Exception $e) {
-            $this->error("❌ GameIntegrationService test failed: " . $e->getMessage());
+            $this->error('❌ GameIntegrationService test failed: '.$e->getMessage());
+
             return ['status' => 'error', 'details' => $e->getMessage()];
         }
     }
@@ -108,7 +108,7 @@ class GameIntegrationTestCommand extends Command
     private function testGameNotificationService(int $userId, bool $verbose): array
     {
         $this->info('🔔 Testing GameNotificationService...');
-        
+
         try {
             // Test user notification
             GameNotificationService::sendNotification(
@@ -132,15 +132,16 @@ class GameIntegrationTestCommand extends Command
             $notifications = GameNotificationService::getUserNotifications($userId);
 
             if ($verbose) {
-                $this->line("✅ User notification: Success");
-                $this->line("✅ System announcement: Success");
-                $this->line("✅ Notifications retrieval: " . count($notifications) . " notifications");
+                $this->line('✅ User notification: Success');
+                $this->line('✅ System announcement: Success');
+                $this->line('✅ Notifications retrieval: '.count($notifications).' notifications');
             }
 
             return ['status' => 'success', 'details' => 'All GameNotificationService methods working'];
-            
+
         } catch (\Exception $e) {
-            $this->error("❌ GameNotificationService test failed: " . $e->getMessage());
+            $this->error('❌ GameNotificationService test failed: '.$e->getMessage());
+
             return ['status' => 'error', 'details' => $e->getMessage()];
         }
     }
@@ -151,11 +152,11 @@ class GameIntegrationTestCommand extends Command
     private function testRealTimeGameService(int $userId, bool $verbose): array
     {
         $this->info('⚡ Testing RealTimeGameService...');
-        
+
         try {
             // Test user online marking
             RealTimeGameService::markUserOnline($userId);
-            
+
             // Test sending update
             RealTimeGameService::sendUpdate($userId, 'integration_test', [
                 'message' => 'Integration test update',
@@ -166,15 +167,16 @@ class GameIntegrationTestCommand extends Command
             $stats = RealTimeGameService::getRealTimeStats();
 
             if ($verbose) {
-                $this->line("✅ User online marking: Success");
-                $this->line("✅ Update sending: Success");
-                $this->line("✅ Real-time stats: " . count($stats) . " items");
+                $this->line('✅ User online marking: Success');
+                $this->line('✅ Update sending: Success');
+                $this->line('✅ Real-time stats: '.count($stats).' items');
             }
 
             return ['status' => 'success', 'details' => 'All RealTimeGameService methods working'];
-            
+
         } catch (\Exception $e) {
-            $this->error("❌ RealTimeGameService test failed: " . $e->getMessage());
+            $this->error('❌ RealTimeGameService test failed: '.$e->getMessage());
+
             return ['status' => 'error', 'details' => $e->getMessage()];
         }
     }
@@ -185,30 +187,31 @@ class GameIntegrationTestCommand extends Command
     private function testGameCacheService(bool $verbose): array
     {
         $this->info('💾 Testing GameCacheService...');
-        
+
         try {
             // Test cache operations
             $cacheService = app(GameCacheService::class);
-            
+
             // Test setting cache
             $cacheService->setGameData('integration_test', ['test' => 'data'], 60);
-            
+
             // Test getting cache
             $cachedData = $cacheService->getGameData('integration_test');
-            
+
             // Test cache statistics
             $stats = $cacheService->getCacheStats();
 
             if ($verbose) {
-                $this->line("✅ Cache setting: Success");
-                $this->line("✅ Cache getting: " . ($cachedData ? 'Success' : 'Failed'));
-                $this->line("✅ Cache stats: " . count($stats) . " items");
+                $this->line('✅ Cache setting: Success');
+                $this->line('✅ Cache getting: '.($cachedData ? 'Success' : 'Failed'));
+                $this->line('✅ Cache stats: '.count($stats).' items');
             }
 
             return ['status' => 'success', 'details' => 'All GameCacheService methods working'];
-            
+
         } catch (\Exception $e) {
-            $this->error("❌ GameCacheService test failed: " . $e->getMessage());
+            $this->error('❌ GameCacheService test failed: '.$e->getMessage());
+
             return ['status' => 'error', 'details' => $e->getMessage()];
         }
     }
@@ -219,10 +222,10 @@ class GameIntegrationTestCommand extends Command
     private function testGameErrorHandler(bool $verbose): array
     {
         $this->info('🛠️ Testing GameErrorHandler...');
-        
+
         try {
             $errorHandler = app(GameErrorHandler::class);
-            
+
             // Test error logging
             $errorHandler->logGameAction('integration_test', [
                 'test' => 'integration_test',
@@ -237,14 +240,15 @@ class GameIntegrationTestCommand extends Command
             ]);
 
             if ($verbose) {
-                $this->line("✅ Error logging: Success");
-                $this->line("✅ Error handling: Success");
+                $this->line('✅ Error logging: Success');
+                $this->line('✅ Error handling: Success');
             }
 
             return ['status' => 'success', 'details' => 'All GameErrorHandler methods working'];
-            
+
         } catch (\Exception $e) {
-            $this->error("❌ GameErrorHandler test failed: " . $e->getMessage());
+            $this->error('❌ GameErrorHandler test failed: '.$e->getMessage());
+
             return ['status' => 'error', 'details' => $e->getMessage()];
         }
     }
@@ -255,27 +259,28 @@ class GameIntegrationTestCommand extends Command
     private function testGamePerformanceMonitor(bool $verbose): array
     {
         $this->info('📊 Testing GamePerformanceMonitor...');
-        
+
         try {
             $monitor = app(GamePerformanceMonitor::class);
-            
+
             // Test performance monitoring
             $monitor->startOperation('integration_test');
             usleep(10000); // 10ms delay
             $monitor->endOperation('integration_test');
-            
+
             // Test getting performance stats
             $stats = $monitor->getPerformanceStats();
 
             if ($verbose) {
-                $this->line("✅ Performance monitoring: Success");
-                $this->line("✅ Performance stats: " . count($stats) . " items");
+                $this->line('✅ Performance monitoring: Success');
+                $this->line('✅ Performance stats: '.count($stats).' items');
             }
 
             return ['status' => 'success', 'details' => 'All GamePerformanceMonitor methods working'];
-            
+
         } catch (\Exception $e) {
-            $this->error("❌ GamePerformanceMonitor test failed: " . $e->getMessage());
+            $this->error('❌ GamePerformanceMonitor test failed: '.$e->getMessage());
+
             return ['status' => 'error', 'details' => $e->getMessage()];
         }
     }
@@ -286,11 +291,11 @@ class GameIntegrationTestCommand extends Command
     private function testIntegrationCoordination(int $userId, bool $verbose): array
     {
         $this->info('🔄 Testing Integration Coordination...');
-        
+
         try {
             // Test coordinated initialization
             GameIntegrationService::initializeUserRealTime($userId);
-            
+
             // Test coordinated notifications
             GameNotificationService::sendNotification(
                 [$userId],
@@ -308,15 +313,16 @@ class GameIntegrationTestCommand extends Command
             ]);
 
             if ($verbose) {
-                $this->line("✅ Coordinated initialization: Success");
-                $this->line("✅ Coordinated notifications: Success");
-                $this->line("✅ Coordinated real-time updates: Success");
+                $this->line('✅ Coordinated initialization: Success');
+                $this->line('✅ Coordinated notifications: Success');
+                $this->line('✅ Coordinated real-time updates: Success');
             }
 
             return ['status' => 'success', 'details' => 'All integration coordination working'];
-            
+
         } catch (\Exception $e) {
-            $this->error("❌ Integration coordination test failed: " . $e->getMessage());
+            $this->error('❌ Integration coordination test failed: '.$e->getMessage());
+
             return ['status' => 'error', 'details' => $e->getMessage()];
         }
     }
@@ -334,8 +340,8 @@ class GameIntegrationTestCommand extends Command
 
         foreach ($results as $test => $result) {
             $status = $result['status'] === 'success' ? '✅' : '❌';
-            $this->line("{$status} " . ucwords(str_replace('_', ' ', $test)) . ": {$result['details']}");
-            
+            $this->line("{$status} ".ucwords(str_replace('_', ' ', $test)).": {$result['details']}");
+
             if ($result['status'] === 'success') {
                 $passed++;
             } else {
@@ -345,7 +351,7 @@ class GameIntegrationTestCommand extends Command
 
         $this->newLine();
         $this->info("📊 Summary: {$passed} passed, {$failed} failed");
-        
+
         if ($failed === 0) {
             $this->info('🎉 All integration tests passed!');
         } else {
@@ -363,7 +369,7 @@ class GameIntegrationTestCommand extends Command
                 return 1; // Exit code 1 for failure
             }
         }
-        
+
         return 0; // Exit code 0 for success
     }
 }

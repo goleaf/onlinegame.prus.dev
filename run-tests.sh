@@ -13,7 +13,7 @@ export DB_DATABASE=:memory:
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-composer install --no-dev --optimize-autoloader
+composer install --optimize-autoloader
 
 # Run database migrations
 echo "🗄️ Running database migrations..."
@@ -37,8 +37,18 @@ php artisan test
 
 # Generate code coverage report
 echo "📊 Generating code coverage report..."
-composer test-coverage
+if composer run-script --list 2>/dev/null | grep -Eq '^\s*test-coverage\b'; then
+  composer test-coverage
+  coverage_generated=1
+else
+  echo "⚠️ Skipping coverage generation; composer script 'test-coverage' is not defined."
+  coverage_generated=0
+fi
 
 echo "✅ All tests completed!"
-echo "📈 Code coverage report generated in storage/app/coverage/"
+if [ "$coverage_generated" -eq 1 ]; then
+  echo "📈 Code coverage report generated in storage/app/coverage/"
+else
+  echo "ℹ️ Code coverage report not generated."
+fi
 echo "🎮 Travian Online Game is ready to play!"

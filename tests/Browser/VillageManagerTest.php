@@ -16,8 +16,11 @@ class VillageManagerTest extends DuskTestCase
     use DatabaseMigrations;
 
     protected $user;
+
     protected $player;
+
     protected $world;
+
     protected $village;
 
     protected function setUp(): void
@@ -69,7 +72,7 @@ class VillageManagerTest extends DuskTestCase
 
     public function test_village_manager_loads()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village/1')
@@ -82,7 +85,7 @@ class VillageManagerTest extends DuskTestCase
 
     public function test_building_grid_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village/1')
@@ -96,7 +99,7 @@ class VillageManagerTest extends DuskTestCase
 
     public function test_building_click_opens_modal()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village/1')
@@ -110,7 +113,7 @@ class VillageManagerTest extends DuskTestCase
 
     public function test_empty_slot_click_opens_build_modal()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village/1')
@@ -123,7 +126,7 @@ class VillageManagerTest extends DuskTestCase
 
     public function test_building_upgrade_calculation()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village/1')
@@ -139,7 +142,7 @@ class VillageManagerTest extends DuskTestCase
 
     public function test_building_queue_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village/1')

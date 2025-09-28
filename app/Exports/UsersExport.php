@@ -2,20 +2,19 @@
 
 namespace App\Exports;
 
-use App\Models\User;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithColumnWidths;
-use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class UsersExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithColumnWidths, WithEvents
+class UsersExport implements FromCollection, WithColumnWidths, WithEvents, WithHeadings, WithMapping, WithStyles
 {
     protected $users;
 
@@ -44,14 +43,14 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, WithStyl
             'Villages',
             'Status',
             'Last Active',
-            'Created At'
+            'Created At',
         ];
     }
 
     public function map($user): array
     {
         $player = $user->player;
-        
+
         return [
             $user->id,
             $user->name,
@@ -65,7 +64,7 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, WithStyl
             $player ? $player->villages->count() : '0',
             $this->getUserStatus($user, $player),
             $player ? $player->last_active_at?->format('Y-m-d H:i:s') : 'N/A',
-            $user->created_at->format('Y-m-d H:i:s')
+            $user->created_at->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -95,83 +94,83 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping, WithStyl
             1 => [
                 'font' => [
                     'bold' => true,
-                    'color' => ['rgb' => 'FFFFFF']
+                    'color' => ['rgb' => 'FFFFFF'],
                 ],
                 'fill' => [
                     'fillType' => Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '366092']
+                    'startColor' => ['rgb' => '366092'],
                 ],
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    'vertical' => Alignment::VERTICAL_CENTER
-                ]
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
             ],
             // Data rows
             'A:M' => [
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => Border::BORDER_THIN,
-                        'color' => ['rgb' => 'CCCCCC']
-                    ]
+                        'color' => ['rgb' => 'CCCCCC'],
+                    ],
                 ],
                 'alignment' => [
-                    'vertical' => Alignment::VERTICAL_CENTER
-                ]
-            ]
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+            ],
         ];
     }
 
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event) {
+            AfterSheet::class => function (AfterSheet $event): void {
                 $sheet = $event->sheet->getDelegate();
-                
+
                 // Auto-filter
                 $sheet->setAutoFilter('A1:M1');
-                
+
                 // Freeze first row
                 $sheet->freezePane('A2');
-                
+
                 // Add summary row
                 $lastRow = $sheet->getHighestRow();
                 $summaryRow = $lastRow + 2;
-                
+
                 $sheet->setCellValue("A{$summaryRow}", 'Total Users:');
                 $sheet->setCellValue("B{$summaryRow}", $this->users->count());
-                
-                $activeUsers = $this->users->filter(function($user) {
+
+                $activeUsers = $this->users->filter(function ($user) {
                     return $user->player && $user->player->is_active;
                 })->count();
-                
-                $sheet->setCellValue("A" . ($summaryRow + 1), 'Active Players:');
-                $sheet->setCellValue("B" . ($summaryRow + 1), $activeUsers);
-                
-                $sheet->getStyle("A{$summaryRow}:B" . ($summaryRow + 1))->applyFromArray([
+
+                $sheet->setCellValue('A'.($summaryRow + 1), 'Active Players:');
+                $sheet->setCellValue('B'.($summaryRow + 1), $activeUsers);
+
+                $sheet->getStyle("A{$summaryRow}:B".($summaryRow + 1))->applyFromArray([
                     'font' => ['bold' => true],
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => 'E7E6E6']
-                    ]
+                        'startColor' => ['rgb' => 'E7E6E6'],
+                    ],
                 ]);
-            }
+            },
         ];
     }
 
     private function getUserStatus($user, $player)
     {
-        if (!$player) {
+        if (! $player) {
             return 'No Player';
         }
-        
-        if (!$player->is_active) {
+
+        if (! $player->is_active) {
             return 'Inactive';
         }
-        
+
         if ($player->is_online) {
             return 'Online';
         }
-        
+
         return 'Offline';
     }
 }

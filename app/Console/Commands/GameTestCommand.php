@@ -15,6 +15,7 @@ use SmartCache\Facades\SmartCache;
 class GameTestCommand extends Command
 {
     protected $signature = 'game:test {test} {--player=} {--village=} {--alliance=} {--verbose}';
+
     protected $description = 'Run comprehensive game tests and diagnostics';
 
     public function handle()
@@ -23,44 +24,55 @@ class GameTestCommand extends Command
         $verbose = $this->option('verbose');
 
         $this->info('=== Game Testing Suite ===');
-        $this->info('Running test: ' . $test);
+        $this->info('Running test: '.$test);
 
         switch ($test) {
             case 'all':
                 $this->runAllTests($verbose);
+
                 break;
             case 'cache':
                 $this->testCacheSystem($verbose);
+
                 break;
             case 'performance':
                 $this->testPerformanceMonitoring($verbose);
+
                 break;
             case 'notifications':
                 $this->testNotificationSystem($verbose);
+
                 break;
             case 'utilities':
                 $this->testGameUtilities($verbose);
+
                 break;
             case 'api':
                 $this->testApiEndpoints($verbose);
+
                 break;
             case 'security':
                 $this->testSecurityFeatures($verbose);
+
                 break;
             case 'database':
                 $this->testDatabaseOperations($verbose);
+
                 break;
             case 'integration':
                 $this->testIntegration($verbose);
+
                 break;
             case 'error-handling':
                 $this->testErrorHandling($verbose);
+
                 break;
             case 'optimization':
                 $this->testOptimization($verbose);
+
                 break;
             default:
-                $this->error('Unknown test: ' . $test);
+                $this->error('Unknown test: '.$test);
                 $this->showHelp();
         }
     }
@@ -86,13 +98,14 @@ class GameTestCommand extends Command
 
         foreach ($tests as $test => $name) {
             $this->line("Testing {$name}...");
+
             try {
-                $this->{'test' . ucfirst($test)}($verbose);
+                $this->{'test'.ucfirst($test)}($verbose);
                 $results[$test] = 'PASS';
                 $this->info("✓ {$name} - PASSED");
             } catch (\Exception $e) {
-                $results[$test] = 'FAIL: ' . $e->getMessage();
-                $this->error("✗ {$name} - FAILED: " . $e->getMessage());
+                $results[$test] = 'FAIL: '.$e->getMessage();
+                $this->error("✗ {$name} - FAILED: ".$e->getMessage());
             }
         }
 
@@ -103,7 +116,7 @@ class GameTestCommand extends Command
             $this->line("{$status} {$test}: {$result}");
         }
 
-        $passed = count(array_filter($results, fn($r) => str_starts_with($r, 'PASS')));
+        $passed = count(array_filter($results, fn ($r) => str_starts_with($r, 'PASS')));
         $total = count($results);
 
         $this->newLine();
@@ -118,8 +131,9 @@ class GameTestCommand extends Command
 
     private function testCacheSystem(bool $verbose = false)
     {
-        if ($verbose)
+        if ($verbose) {
             $this->line('Testing cache system...');
+        }
 
         // Test SmartCache storage
         $testData = ['test' => 'data', 'timestamp' => now()->toISOString()];
@@ -137,7 +151,7 @@ class GameTestCommand extends Command
         $playerData = GameCacheService::getPlayerData($playerId);
 
         if ($verbose) {
-            $this->line('Player data cached: ' . ($playerData ? 'Yes' : 'No'));
+            $this->line('Player data cached: '.($playerData ? 'Yes' : 'No'));
         }
 
         // Test cache statistics
@@ -147,7 +161,7 @@ class GameTestCommand extends Command
         }
 
         if ($verbose) {
-            $this->line('Cache statistics: ' . json_encode($stats));
+            $this->line('Cache statistics: '.json_encode($stats));
         }
 
         SmartCache::forget($cacheKey);
@@ -156,8 +170,9 @@ class GameTestCommand extends Command
 
     private function testPerformanceMonitoring(bool $verbose = false)
     {
-        if ($verbose)
+        if ($verbose) {
             $this->line('Testing performance monitoring...');
+        }
 
         $startTime = microtime(true);
 
@@ -173,7 +188,7 @@ class GameTestCommand extends Command
         }
 
         if ($verbose) {
-            $this->line('Memory stats: ' . json_encode($memoryStats));
+            $this->line('Memory stats: '.json_encode($memoryStats));
         }
 
         // Test performance statistics
@@ -183,7 +198,7 @@ class GameTestCommand extends Command
         }
 
         if ($verbose) {
-            $this->line('Performance stats: ' . json_encode($perfStats));
+            $this->line('Performance stats: '.json_encode($perfStats));
         }
 
         $this->info('Performance monitoring test completed successfully');
@@ -191,8 +206,9 @@ class GameTestCommand extends Command
 
     private function testNotificationSystem(bool $verbose = false)
     {
-        if ($verbose)
+        if ($verbose) {
             $this->line('Testing notification system...');
+        }
 
         $testUserId = $this->option('player') ?: 1;
 
@@ -206,12 +222,12 @@ class GameTestCommand extends Command
 
         // Test retrieving notifications
         $notifications = GameNotificationService::getUserNotifications($testUserId, 10);
-        if (!is_array($notifications)) {
+        if (! is_array($notifications)) {
             throw new \Exception('Failed to retrieve notifications');
         }
 
         if ($verbose) {
-            $this->line('Notifications retrieved: ' . count($notifications));
+            $this->line('Notifications retrieved: '.count($notifications));
         }
 
         // Test notification statistics
@@ -221,7 +237,7 @@ class GameTestCommand extends Command
         }
 
         if ($verbose) {
-            $this->line('Notification stats: ' . json_encode($stats));
+            $this->line('Notification stats: '.json_encode($stats));
         }
 
         $this->info('Notification system test completed successfully');
@@ -229,8 +245,9 @@ class GameTestCommand extends Command
 
     private function testGameUtilities(bool $verbose = false)
     {
-        if ($verbose)
+        if ($verbose) {
             $this->line('Testing game utilities...');
+        }
 
         // Test number formatting
         $formatted = GameUtility::formatNumber(1500000);
@@ -265,7 +282,7 @@ class GameTestCommand extends Command
 
         // Test random event generation
         $event = GameUtility::generateRandomEvent();
-        if (empty($event) || !isset($event['type'])) {
+        if (empty($event) || ! isset($event['type'])) {
             throw new \Exception('Random event generation failed');
         }
 
@@ -275,7 +292,7 @@ class GameTestCommand extends Command
             $this->line("Distance: {$distance} km");
             $this->line("Travel time: {$travelTime} seconds");
             $this->line("Formatted duration: {$formattedDuration}");
-            $this->line('Random event: ' . json_encode($event));
+            $this->line('Random event: '.json_encode($event));
         }
 
         $this->info('Game utilities test completed successfully');
@@ -283,8 +300,9 @@ class GameTestCommand extends Command
 
     private function testApiEndpoints(bool $verbose = false)
     {
-        if ($verbose)
+        if ($verbose) {
             $this->line('Testing API endpoints...');
+        }
 
         // Test API route registration
         $routes = app('router')->getRoutes();
@@ -297,7 +315,7 @@ class GameTestCommand extends Command
         }
 
         if ($verbose) {
-            $this->line('API routes found: ' . $apiRoutes->count());
+            $this->line('API routes found: '.$apiRoutes->count());
             foreach ($apiRoutes->take(5) as $route) {
                 $this->line("- {$route->methods()[0]} {$route->uri()}");
             }
@@ -308,12 +326,13 @@ class GameTestCommand extends Command
 
     private function testSecurityFeatures(bool $verbose = false)
     {
-        if ($verbose)
+        if ($verbose) {
             $this->line('Testing security features...');
+        }
 
         // Test security middleware exists
         $middleware = app('router')->getMiddleware();
-        if (!isset($middleware['game.security'])) {
+        if (! isset($middleware['game.security'])) {
             throw new \Exception('Game security middleware not registered');
         }
 
@@ -327,12 +346,12 @@ class GameTestCommand extends Command
         try {
             GameErrorHandler::logGameAction('test_security_action', ['test' => true]);
         } catch (\Exception $e) {
-            throw new \Exception('Security logging failed: ' . $e->getMessage());
+            throw new \Exception('Security logging failed: '.$e->getMessage());
         }
 
         if ($verbose) {
             $this->line('Security middleware: Registered');
-            $this->line('Rate limits configured: ' . count($rateLimits));
+            $this->line('Rate limits configured: '.count($rateLimits));
         }
 
         $this->info('Security features test completed successfully');
@@ -340,14 +359,15 @@ class GameTestCommand extends Command
 
     private function testDatabaseOperations(bool $verbose = false)
     {
-        if ($verbose)
+        if ($verbose) {
             $this->line('Testing database operations...');
+        }
 
         // Test database connection
         try {
             DB::connection()->getPdo();
         } catch (\Exception $e) {
-            throw new \Exception('Database connection failed: ' . $e->getMessage());
+            throw new \Exception('Database connection failed: '.$e->getMessage());
         }
 
         // Test basic queries
@@ -379,8 +399,9 @@ class GameTestCommand extends Command
 
     private function testIntegration(bool $verbose = false)
     {
-        if ($verbose)
+        if ($verbose) {
             $this->line('Testing comprehensive integration system...');
+        }
 
         $testUserId = $this->option('player') ?: 1;
         $testResults = [];
@@ -397,25 +418,29 @@ class GameTestCommand extends Command
                 'RealTimeGameService' => app(\App\Services\RealTimeGameService::class),
             ];
             $testResults['service_providers'] = count($services);
-            if ($verbose) $this->line('✓ Service providers: ' . count($services) . ' services loaded');
+            if ($verbose) {
+                $this->line('✓ Service providers: '.count($services).' services loaded');
+            }
         } catch (\Exception $e) {
-            throw new \Exception('Service provider integration failed: ' . $e->getMessage());
+            throw new \Exception('Service provider integration failed: '.$e->getMessage());
         }
 
         // 2. Test cache integration
         try {
-            $cacheKey = 'integration_test_' . $testUserId;
+            $cacheKey = 'integration_test_'.$testUserId;
             $testData = ['test' => true, 'timestamp' => now()];
             SmartCache::put($cacheKey, $testData, 60);
             $retrievedData = SmartCache::get($cacheKey);
 
-            if (!$retrievedData || $retrievedData['test'] !== true) {
+            if (! $retrievedData || $retrievedData['test'] !== true) {
                 throw new \Exception('Cache integration failed');
             }
             $testResults['cache'] = 'passed';
-            if ($verbose) $this->line('✓ Cache integration: passed');
+            if ($verbose) {
+                $this->line('✓ Cache integration: passed');
+            }
         } catch (\Exception $e) {
-            throw new \Exception('Cache integration failed: ' . $e->getMessage());
+            throw new \Exception('Cache integration failed: '.$e->getMessage());
         }
 
         // 3. Test performance monitoring integration
@@ -425,9 +450,11 @@ class GameTestCommand extends Command
                 throw new \Exception('Performance monitoring integration failed');
             }
             $testResults['performance_monitoring'] = 'passed';
-            if ($verbose) $this->line('✓ Performance monitoring: passed');
+            if ($verbose) {
+                $this->line('✓ Performance monitoring: passed');
+            }
         } catch (\Exception $e) {
-            throw new \Exception('Performance monitoring integration failed: ' . $e->getMessage());
+            throw new \Exception('Performance monitoring integration failed: '.$e->getMessage());
         }
 
         // 4. Test notification system integration
@@ -439,9 +466,11 @@ class GameTestCommand extends Command
                 'normal'
             );
             $testResults['notifications'] = 'passed';
-            if ($verbose) $this->line('✓ Notification system: passed');
+            if ($verbose) {
+                $this->line('✓ Notification system: passed');
+            }
         } catch (\Exception $e) {
-            throw new \Exception('Notification system integration failed: ' . $e->getMessage());
+            throw new \Exception('Notification system integration failed: '.$e->getMessage());
         }
 
         // 5. Test event system integration
@@ -449,9 +478,11 @@ class GameTestCommand extends Command
             $eventListener = app(\App\Listeners\GameEventListener::class);
             $gameEvent = new \App\Events\GameEvent($testUserId, 'integration_test', ['test' => true]);
             $testResults['event_system'] = 'passed';
-            if ($verbose) $this->line('✓ Event system: passed');
+            if ($verbose) {
+                $this->line('✓ Event system: passed');
+            }
         } catch (\Exception $e) {
-            throw new \Exception('Event system integration failed: ' . $e->getMessage());
+            throw new \Exception('Event system integration failed: '.$e->getMessage());
         }
 
         // 6. Test middleware integration
@@ -464,9 +495,11 @@ class GameTestCommand extends Command
                 'enhanced.debug' => \App\Http\Middleware\EnhancedDebugMiddleware::class,
             ];
             $testResults['middleware'] = count($middleware);
-            if ($verbose) $this->line('✓ Middleware: ' . count($middleware) . ' middleware registered');
+            if ($verbose) {
+                $this->line('✓ Middleware: '.count($middleware).' middleware registered');
+            }
         } catch (\Exception $e) {
-            throw new \Exception('Middleware integration failed: ' . $e->getMessage());
+            throw new \Exception('Middleware integration failed: '.$e->getMessage());
         }
 
         // 7. Test API integration
@@ -480,9 +513,11 @@ class GameTestCommand extends Command
                 'game.api.larautilx.status',
             ];
             $testResults['api_routes'] = count($apiRoutes);
-            if ($verbose) $this->line('✓ API routes: ' . count($apiRoutes) . ' routes available');
+            if ($verbose) {
+                $this->line('✓ API routes: '.count($apiRoutes).' routes available');
+            }
         } catch (\Exception $e) {
-            throw new \Exception('API integration failed: ' . $e->getMessage());
+            throw new \Exception('API integration failed: '.$e->getMessage());
         }
 
         // 8. Test error handling integration
@@ -493,42 +528,49 @@ class GameTestCommand extends Command
                 'test_results' => $testResults,
             ]);
             $testResults['error_handling'] = 'passed';
-            if ($verbose) $this->line('✓ Error handling: passed');
+            if ($verbose) {
+                $this->line('✓ Error handling: passed');
+            }
         } catch (\Exception $e) {
-            throw new \Exception('Error handling integration failed: ' . $e->getMessage());
+            throw new \Exception('Error handling integration failed: '.$e->getMessage());
         }
 
         // 9. Test real-time integration
         try {
             $realTimeService = app(\App\Services\RealTimeGameService::class);
             $testResults['real_time'] = 'passed';
-            if ($verbose) $this->line('✓ Real-time service: passed');
+            if ($verbose) {
+                $this->line('✓ Real-time service: passed');
+            }
         } catch (\Exception $e) {
-            throw new \Exception('Real-time integration failed: ' . $e->getMessage());
+            throw new \Exception('Real-time integration failed: '.$e->getMessage());
         }
 
         // 10. Test geographic integration
         try {
             $geoService = app(\App\Services\GeographicService::class);
             $testResults['geographic'] = 'passed';
-            if ($verbose) $this->line('✓ Geographic service: passed');
+            if ($verbose) {
+                $this->line('✓ Geographic service: passed');
+            }
         } catch (\Exception $e) {
-            throw new \Exception('Geographic integration failed: ' . $e->getMessage());
+            throw new \Exception('Geographic integration failed: '.$e->getMessage());
         }
 
         if ($verbose) {
             $this->line('Integration test workflow completed');
-            $this->line('Test results: ' . json_encode($testResults, JSON_PRETTY_PRINT));
+            $this->line('Test results: '.json_encode($testResults, JSON_PRETTY_PRINT));
         }
 
         $this->info('Comprehensive integration test completed successfully');
-        $this->info('Total integration points tested: ' . count($testResults));
+        $this->info('Total integration points tested: '.count($testResults));
     }
 
     private function testErrorHandling(bool $verbose = false)
     {
-        if ($verbose)
+        if ($verbose) {
             $this->line('Testing error handling system...');
+        }
 
         $testUserId = $this->option('player') ?: 1;
 
@@ -539,7 +581,7 @@ class GameTestCommand extends Command
                 'user_id' => $testUserId,
             ]);
         } catch (\Exception $e) {
-            throw new \Exception('Error logging failed: ' . $e->getMessage());
+            throw new \Exception('Error logging failed: '.$e->getMessage());
         }
 
         // Test error statistics
@@ -550,13 +592,13 @@ class GameTestCommand extends Command
 
         // Test error trends
         $errorTrends = GameErrorHandler::getErrorTrends(7);
-        if (!is_array($errorTrends)) {
+        if (! is_array($errorTrends)) {
             throw new \Exception('Error trends failed');
         }
 
         if ($verbose) {
-            $this->line('Error statistics: ' . json_encode($errorStats));
-            $this->line('Error trends: ' . json_encode($errorTrends));
+            $this->line('Error statistics: '.json_encode($errorStats));
+            $this->line('Error trends: '.json_encode($errorTrends));
         }
 
         $this->info('Error handling system test completed successfully');
@@ -564,14 +606,15 @@ class GameTestCommand extends Command
 
     private function testOptimization(bool $verbose = false)
     {
-        if ($verbose)
+        if ($verbose) {
             $this->line('Testing performance optimization...');
+        }
 
         $testUserId = $this->option('player') ?: 1;
 
         // Test performance optimizer
         $optimizer = app(\App\Services\GamePerformanceOptimizer::class);
-        
+
         // Test game data optimization
         $optimizedData = $optimizer->optimizeGameData($testUserId, ['user_stats', 'village_data']);
         if (empty($optimizedData)) {
@@ -589,14 +632,14 @@ class GameTestCommand extends Command
 
         // Test cleanup
         $cleanupResults = $optimizer->cleanupExpiredData();
-        if (!isset($cleanupResults['execution_time'])) {
+        if (! isset($cleanupResults['execution_time'])) {
             throw new \Exception('Cleanup operation failed');
         }
 
         if ($verbose) {
-            $this->line('Optimized data: ' . json_encode($optimizedData));
-            $this->line('Performance metrics: ' . json_encode($metrics));
-            $this->line('Cleanup results: ' . json_encode($cleanupResults));
+            $this->line('Optimized data: '.json_encode($optimizedData));
+            $this->line('Performance metrics: '.json_encode($metrics));
+            $this->line('Cleanup results: '.json_encode($cleanupResults));
         }
 
         $this->info('Performance optimization test completed successfully');

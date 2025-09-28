@@ -13,8 +13,12 @@
 /*** RESOURCES ** */
 body.buildingsV3 {
   background-attachment: scroll;
-  background-position: left top, right top;
-  background-size: 50% 2000px, 50% 2000px;
+  background-position:
+    left top,
+    right top;
+  background-size:
+    50% 2000px,
+    50% 2000px;
   min-width: 1290px;
   overflow-y: scroll;
   /* RTL fixes */
@@ -28,10 +32,14 @@ body.buildingsV3 div#background {
 }
 body.buildingsV3.perspectiveResources {
   background-color: #67772e;
-  background-image: linear-gradient(-4.9deg, #67772e 1856px, #abc7df 1892px, #aac8e2), linear-gradient(4.9deg, #67772e 1875px, #abc7df 1911px, #aac8e2);
+  background-image:
+    linear-gradient(-4.9deg, #67772e 1856px, #abc7df 1892px, #aac8e2),
+    linear-gradient(4.9deg, #67772e 1875px, #abc7df 1911px, #aac8e2);
 }
 body.buildingsV3.perspectiveResources.rtl {
-  background-image: linear-gradient(-4.9deg, #67772e 1875px, #abc7df 1911px, #aac8e2), linear-gradient(4.9deg, #67772e 1856px, #abc7df 1892px, #aac8e2);
+  background-image:
+    linear-gradient(-4.9deg, #67772e 1875px, #abc7df 1911px, #aac8e2),
+    linear-gradient(4.9deg, #67772e 1856px, #abc7df 1892px, #aac8e2);
 }
 body.buildingsV3.perspectiveResources div#background {
   background-image: url('../../img_ltr/layout/background2019/bgResources.jpg');
@@ -76,7 +84,7 @@ body.buildingsV3.perspectiveResources div.village1 #village_map.f12 {
   background-image: url('../../img_ltr/layout/background2019/resourceFields/f12.png');
 }
 body.buildingsV3.perspectiveResources div.village1 #village_map:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -101,10 +109,14 @@ body.buildingsV3.perspectiveResources div.village1 #village_map.vid7:after {
 }
 body.buildingsV3.perspectiveBuildings {
   background-color: #54643a;
-  background-image: linear-gradient(-8.9deg, #54643a 2112px, #b6c9d8 2168px, #aac8e2), linear-gradient(8.9deg, #54643a 2084px, #b6c9d8 2102px, #aac8e2);
+  background-image:
+    linear-gradient(-8.9deg, #54643a 2112px, #b6c9d8 2168px, #aac8e2),
+    linear-gradient(8.9deg, #54643a 2084px, #b6c9d8 2102px, #aac8e2);
 }
 body.buildingsV3.perspectiveBuildings.rtl {
-  background-image: linear-gradient(-8.9deg, #54643a 2084px, #b6c9d8 2102px, #aac8e2), linear-gradient(8.9deg, #54643a 2112px, #b6c9d8 2168px, #aac8e2);
+  background-image:
+    linear-gradient(-8.9deg, #54643a 2084px, #b6c9d8 2102px, #aac8e2),
+    linear-gradient(8.9deg, #54643a 2112px, #b6c9d8 2168px, #aac8e2);
 }
 body.buildingsV3.perspectiveBuildings div#background {
   background-image: url('../../img_ltr/layout/background2019/bgBuildings.jpg');

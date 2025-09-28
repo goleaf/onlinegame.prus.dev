@@ -1,6 +1,6 @@
 <?php
 
-namespace LaraUtilX\Utilities;
+namespace App\Utilities;
 
 use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Event;
@@ -18,7 +18,7 @@ class SchedulerUtil
     {
         $schedule = app(Schedule::class);
 
-        Log::info('Scheduled Events: ' . print_r($schedule->events(), true));
+        Log::info('Scheduled Events: '.print_r($schedule->events(), true));
 
         return collect($schedule->events())->map(function (Event $event) {
             return [
@@ -36,7 +36,6 @@ class SchedulerUtil
     /**
      * Check if any scheduled tasks are overdue.
      *
-     * @param  Event  $event
      * @return bool
      */
     private function isDue(Event $event)
@@ -56,7 +55,7 @@ class SchedulerUtil
         $schedule = app(Schedule::class);
 
         return collect($schedule->events())->filter(function (Event $event) {
-            return $this->isDue($event) && !$event->isRunning();
+            return $this->isDue($event) && ! $event->isRunning();
         })->isNotEmpty();
     }
 }

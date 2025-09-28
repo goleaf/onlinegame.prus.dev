@@ -78,16 +78,22 @@ readonly class BattleResult
     {
         $totalLosses = $this->getTotalLosses();
 
-        if ($totalLosses >= 10000)
+        if ($totalLosses >= 10000) {
             return 'devastating';
-        if ($totalLosses >= 5000)
+        }
+        if ($totalLosses >= 5000) {
             return 'major';
-        if ($totalLosses >= 1000)
+        }
+        if ($totalLosses >= 1000) {
             return 'significant';
-        if ($totalLosses >= 100)
+        }
+        if ($totalLosses >= 100) {
             return 'moderate';
-        if ($totalLosses >= 10)
+        }
+        if ($totalLosses >= 10) {
             return 'minor';
+        }
+
         return 'minimal';
     }
 
@@ -104,7 +110,7 @@ readonly class BattleResult
      */
     public function getIntensity(): float
     {
-        if (!$this->duration || $this->duration === 0) {
+        if (! $this->duration || $this->duration === 0) {
             return $this->getTotalLosses();
         }
 

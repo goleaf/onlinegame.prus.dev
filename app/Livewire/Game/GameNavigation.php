@@ -3,16 +3,19 @@
 namespace App\Livewire\Game;
 
 use App\Models\Game\Player;
-use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class GameNavigation extends Component
 {
     public $player;
+
     public $currentVillage;
+
     public $villages = [];
+
     public $gameStats = [];
+
     public $notifications = [];
 
     protected $listeners = ['refreshNavigation', 'villageChanged', 'statsUpdated'];
@@ -26,7 +29,7 @@ class GameNavigation extends Component
     {
         $user = Auth::user();
         $this->player = Player::where('user_id', $user->id)
-            ->with(['villages' => function ($query) {
+            ->with(['villages' => function ($query): void {
                 $query->selectRaw('
                     villages.*,
                     (SELECT COUNT(*) FROM buildings WHERE village_id = villages.id) as building_count,

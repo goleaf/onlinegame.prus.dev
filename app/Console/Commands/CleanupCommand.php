@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 class CleanupCommand extends Command
@@ -30,9 +30,10 @@ class CleanupCommand extends Command
     {
         $this->info('🧹 Starting comprehensive cleanup...');
 
-        if (!$this->option('force')) {
-            if (!$this->confirm('This will clean up temporary files and caches. Continue?')) {
+        if (! $this->option('force')) {
+            if (! $this->confirm('This will clean up temporary files and caches. Continue?')) {
                 $this->info('Cleanup cancelled.');
+
                 return 0;
             }
         }
@@ -44,7 +45,7 @@ class CleanupCommand extends Command
         $this->optimizeApplication();
 
         $this->info('✅ Cleanup completed successfully!');
-        
+
         return 0;
     }
 
@@ -90,7 +91,7 @@ class CleanupCommand extends Command
             Cache::flush();
             $this->info('Application cache cleared.');
         } catch (\Exception $e) {
-            $this->warn('Could not clear application cache: ' . $e->getMessage());
+            $this->warn('Could not clear application cache: '.$e->getMessage());
         }
 
         // Clear specific caches
@@ -121,7 +122,7 @@ class CleanupCommand extends Command
 
         $logPath = storage_path('logs');
         if (File::exists($logPath)) {
-            $logFiles = File::glob($logPath . '/*.log');
+            $logFiles = File::glob($logPath.'/*.log');
             $deletedCount = 0;
 
             foreach ($logFiles as $logFile) {
@@ -184,7 +185,7 @@ class CleanupCommand extends Command
                 $this->call($command);
                 $this->info("✓ {$command} completed.");
             } catch (\Exception $e) {
-                $this->warn("✗ {$command} failed: " . $e->getMessage());
+                $this->warn("✗ {$command} failed: ".$e->getMessage());
             }
         }
     }

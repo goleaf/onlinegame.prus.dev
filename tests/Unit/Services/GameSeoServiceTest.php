@@ -10,13 +10,15 @@ use App\Services\SeoBreadcrumbService;
 use App\Services\SeoCacheService;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class GameSeoServiceTest extends TestCase
 {
     protected GameSeoService $gameSeoService;
+
     protected SeoCacheService $mockCacheService;
+
     protected SeoBreadcrumbService $mockBreadcrumbService;
 
     protected function setUp(): void
@@ -40,20 +42,20 @@ class GameSeoServiceTest extends TestCase
             'twitter' => [
                 'enabled' => true,
                 'site' => '@travian',
-                'creator' => '@travian'
+                'creator' => '@travian',
             ],
             'json_ld' => [
                 'enabled' => true,
                 'organization' => [
                     'name' => 'Travian Games',
-                    'url' => 'https://travian.com'
+                    'url' => 'https://travian.com',
                 ],
                 'website' => [
                     '@context' => 'https://schema.org',
                     '@type' => 'WebSite',
                     'name' => 'Travian Online Game',
-                    'url' => 'https://travian.com'
-                ]
+                    'url' => 'https://travian.com',
+                ],
             ],
             'robots' => [
                 'index' => true,
@@ -61,8 +63,8 @@ class GameSeoServiceTest extends TestCase
                 'archive' => true,
                 'snippet' => true,
                 'imageindex' => true,
-                'nocache' => false
-            ]
+                'nocache' => false,
+            ],
         ]);
     }
 
@@ -187,7 +189,7 @@ class GameSeoServiceTest extends TestCase
             ->andReturn([
                 ['name' => 'Home', 'url' => 'http://localhost/'],
                 ['name' => 'Game', 'url' => 'http://localhost/game'],
-                ['name' => "Test Player's Dashboard", 'url' => 'http://localhost/game/dashboard']
+                ['name' => "Test Player's Dashboard", 'url' => 'http://localhost/game/dashboard'],
             ]);
         $this
             ->mockBreadcrumbService
@@ -286,7 +288,7 @@ class GameSeoServiceTest extends TestCase
                 ['name' => 'Home', 'url' => 'http://localhost/'],
                 ['name' => 'Game', 'url' => 'http://localhost/game'],
                 ['name' => "Test Player's Dashboard", 'url' => 'http://localhost/game/dashboard'],
-                ['name' => 'Test Village', 'url' => 'http://localhost/game/village/1']
+                ['name' => 'Test Village', 'url' => 'http://localhost/game/village/1'],
             ]);
         $this
             ->mockBreadcrumbService
@@ -657,12 +659,12 @@ class GameSeoServiceTest extends TestCase
         $result = $method->invoke($this->gameSeoService, [
             'img/travian/existing1.jpg',
             'img/travian/nonexistent.jpg',
-            'img/travian/existing2.jpg'
+            'img/travian/existing2.jpg',
         ]);
 
         $this->assertEquals([
             'http://localhost/img/travian/existing1.jpg',
-            'http://localhost/img/travian/existing2.jpg'
+            'http://localhost/img/travian/existing2.jpg',
         ], $result);
     }
 
@@ -690,11 +692,11 @@ class GameSeoServiceTest extends TestCase
 
         $result = $method->invoke($this->gameSeoService, [
             'img/travian/nonexistent1.jpg',
-            'img/travian/nonexistent2.jpg'
+            'img/travian/nonexistent2.jpg',
         ]);
 
         $this->assertEquals([
-            'http://localhost/img/travian/placeholder.svg'
+            'http://localhost/img/travian/placeholder.svg',
         ], $result);
     }
 
@@ -768,7 +770,7 @@ class GameSeoServiceTest extends TestCase
             'archive' => false,
             'snippet' => true,
             'imageindex' => false,
-            'nocache' => true
+            'nocache' => true,
         ];
 
         // Mock seo() helper
@@ -790,7 +792,7 @@ class GameSeoServiceTest extends TestCase
     {
         $customRobots = [
             'index' => false,
-            'follow' => false
+            'follow' => false,
         ];
 
         // Mock seo() helper

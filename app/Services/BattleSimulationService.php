@@ -2,13 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Game\UnitType;
 use App\Models\Game\Village;
-use App\Services\DefenseCalculationService;
 use App\ValueObjects\BattleResult;
-use App\ValueObjects\TroopCounts;
 use App\ValueObjects\ResourceAmounts;
-use Illuminate\Support\Facades\Log;
+use App\ValueObjects\TroopCounts;
 
 class BattleSimulationService
 {
@@ -32,7 +29,7 @@ class BattleSimulationService
             'defender_troops' => $defendingTroops,
             'defender_village_id' => $defenderVillage->id,
             'iterations' => $iterations,
-            'simulation_time' => now()
+            'simulation_time' => now(),
         ]);
 
         $results = [
@@ -63,12 +60,15 @@ class BattleSimulationService
             switch ($battleResult['result']) {
                 case 'attacker_wins':
                     $results['attacker_wins']++;
+
                     break;
                 case 'defender_wins':
                     $results['defender_wins']++;
+
                     break;
                 case 'draw':
                     $results['draws']++;
+
                     break;
             }
 
@@ -86,14 +86,14 @@ class BattleSimulationService
 
             // Accumulate losses for averaging
             foreach ($battleResult['attacker_losses'] as $loss) {
-                if (!isset($results['attacker_avg_losses'][$loss['unit_type']])) {
+                if (! isset($results['attacker_avg_losses'][$loss['unit_type']])) {
                     $results['attacker_avg_losses'][$loss['unit_type']] = 0;
                 }
                 $results['attacker_avg_losses'][$loss['unit_type']] += $loss['count'];
             }
 
             foreach ($battleResult['defender_losses'] as $loss) {
-                if (!isset($results['defender_avg_losses'][$loss['unit_type']])) {
+                if (! isset($results['defender_avg_losses'][$loss['unit_type']])) {
                     $results['defender_avg_losses'][$loss['unit_type']] = 0;
                 }
                 $results['defender_avg_losses'][$loss['unit_type']] += $loss['count'];
@@ -102,7 +102,7 @@ class BattleSimulationService
             // Accumulate resources looted
             if ($battleResult['resources_looted']) {
                 foreach ($battleResult['resources_looted'] as $resource => $amount) {
-                    if (!isset($results['avg_resources_looted'][$resource])) {
+                    if (! isset($results['avg_resources_looted'][$resource])) {
                         $results['avg_resources_looted'][$resource] = 0;
                     }
                     $results['avg_resources_looted'][$resource] += $amount;
@@ -139,7 +139,7 @@ class BattleSimulationService
             'attacker_win_rate' => $results['attacker_win_rate'],
             'defender_win_rate' => $results['defender_win_rate'],
             'draw_rate' => $results['draw_rate'],
-            'defensive_bonus' => $results['defensive_bonus']
+            'defensive_bonus' => $results['defensive_bonus'],
         ]);
 
         return $results;
@@ -251,6 +251,7 @@ class BattleSimulationService
                 'count' => max(0, floor($troop['count'] * $lossRate)),
             ];
         }
+
         return $losses;
     }
 
@@ -367,7 +368,7 @@ class BattleSimulationService
                 }
             }
 
-            if (!empty($combination)) {
+            if (! empty($combination)) {
                 $combinations[] = $combination;
             }
         }
@@ -412,7 +413,7 @@ class BattleSimulationService
             foreach ($battles as $battle) {
                 if ($battle->resources_looted) {
                     foreach ($battle->resources_looted as $resource => $amount) {
-                        if (!isset($totalResourcesLost[$resource])) {
+                        if (! isset($totalResourcesLost[$resource])) {
                             $totalResourcesLost[$resource] = 0;
                         }
                         $totalResourcesLost[$resource] += $amount;
@@ -456,7 +457,7 @@ class BattleSimulationService
         }
 
         // Resource protection recommendations
-        if (!empty($analysis['resource_losses'])) {
+        if (! empty($analysis['resource_losses'])) {
             $totalLost = array_sum($analysis['resource_losses']);
             if ($totalLost > 10000) {
                 $recommendations[] = [
@@ -497,33 +498,43 @@ class BattleSimulationService
             switch ($unitType) {
                 case 'legionnaires':
                     $troopData['legionnaires'] = $count;
+
                     break;
                 case 'praetorians':
                     $troopData['praetorians'] = $count;
+
                     break;
                 case 'imperians':
                     $troopData['imperians'] = $count;
+
                     break;
                 case 'equites_legati':
                     $troopData['equites_legati'] = $count;
+
                     break;
                 case 'equites_imperatoris':
                     $troopData['equites_imperatoris'] = $count;
+
                     break;
                 case 'equites_caesaris':
                     $troopData['equites_caesaris'] = $count;
+
                     break;
                 case 'battering_rams':
                     $troopData['battering_rams'] = $count;
+
                     break;
                 case 'fire_catapults':
                     $troopData['fire_catapults'] = $count;
+
                     break;
                 case 'senators':
                     $troopData['senators'] = $count;
+
                     break;
                 case 'settlers':
                     $troopData['settlers'] = $count;
+
                     break;
             }
         }

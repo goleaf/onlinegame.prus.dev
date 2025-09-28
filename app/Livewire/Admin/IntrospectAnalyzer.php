@@ -3,7 +3,6 @@
 namespace App\Livewire\Admin;
 
 use App\Services\IntrospectService;
-use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -12,32 +11,55 @@ class IntrospectAnalyzer extends Component
     use WithPagination;
 
     public $isLoading = false;
+
     public $analysisResults = [];
+
     public $selectedTab = 'models';
+
     public $showDetails = false;
+
     public $selectedModel = null;
+
     public $selectedRoute = null;
+
     public $selectedView = null;
+
     public $selectedClass = null;
+
     // Analysis options
     public $includeModels = true;
+
     public $includeRoutes = true;
+
     public $includeViews = true;
+
     public $includeClasses = true;
+
     public $includeSchemas = true;
+
     public $includeDependencies = true;
+
     public $includePerformance = true;
+
     // Filter options
     public $searchQuery = '';
+
     public $filterByType = 'all';
+
     public $sortBy = 'name';
+
     public $sortOrder = 'asc';
+
     // Performance metrics
     public $performanceMetrics = [];
+
     public $complexityThreshold = 50;
+
     // Real-time features
     public $autoRefresh = false;
+
     public $refreshInterval = 30;
+
     public $lastUpdate = null;
 
     protected $listeners = [
@@ -55,7 +77,7 @@ class IntrospectAnalyzer extends Component
             'mount_time' => now(),
             'user_id' => auth()->id(),
             'admin_panel' => true,
-            'selected_tab' => $this->selectedTab
+            'selected_tab' => $this->selectedTab,
         ]);
 
         $this->loadAnalysis();
@@ -64,7 +86,7 @@ class IntrospectAnalyzer extends Component
         ds('IntrospectAnalyzer mount completed', [
             'mount_time_ms' => $mountTime,
             'analysis_results_count' => count($this->analysisResults),
-            'is_loading' => $this->isLoading
+            'is_loading' => $this->isLoading,
         ]);
     }
 
@@ -80,7 +102,7 @@ class IntrospectAnalyzer extends Component
             'include_classes' => $this->includeClasses,
             'include_schemas' => $this->includeSchemas,
             'include_dependencies' => $this->includeDependencies,
-            'include_performance' => $this->includePerformance
+            'include_performance' => $this->includePerformance,
         ]);
 
         try {
@@ -94,7 +116,7 @@ class IntrospectAnalyzer extends Component
                 $modelTime = round((microtime(true) - $modelStart) * 1000, 2);
                 ds('Models analysis completed', [
                     'models_count' => count($this->analysisResults['models']),
-                    'analysis_time_ms' => $modelTime
+                    'analysis_time_ms' => $modelTime,
                 ]);
             }
 
@@ -104,7 +126,7 @@ class IntrospectAnalyzer extends Component
                 $routeTime = round((microtime(true) - $routeStart) * 1000, 2);
                 ds('Routes analysis completed', [
                     'routes_count' => count($this->analysisResults['routes']),
-                    'analysis_time_ms' => $routeTime
+                    'analysis_time_ms' => $routeTime,
                 ]);
             }
 
@@ -114,7 +136,7 @@ class IntrospectAnalyzer extends Component
                 $viewTime = round((microtime(true) - $viewStart) * 1000, 2);
                 ds('Views analysis completed', [
                     'views_count' => count($this->analysisResults['views']),
-                    'analysis_time_ms' => $viewTime
+                    'analysis_time_ms' => $viewTime,
                 ]);
             }
 
@@ -124,21 +146,21 @@ class IntrospectAnalyzer extends Component
                 $classTime = round((microtime(true) - $classStart) * 1000, 2);
                 ds('Classes analysis completed', [
                     'classes_count' => count($this->analysisResults['classes']),
-                    'analysis_time_ms' => $classTime
+                    'analysis_time_ms' => $classTime,
                 ]);
             }
 
             if ($this->includeSchemas) {
                 $this->analysisResults['schemas'] = $introspectService->getModelSchemas();
                 ds('Schemas analysis completed', [
-                    'schemas_count' => count($this->analysisResults['schemas'])
+                    'schemas_count' => count($this->analysisResults['schemas']),
                 ]);
             }
 
             if ($this->includeDependencies) {
                 $this->analysisResults['dependencies'] = $introspectService->getModelDependencies();
                 ds('Dependencies analysis completed', [
-                    'dependencies_count' => count($this->analysisResults['dependencies'])
+                    'dependencies_count' => count($this->analysisResults['dependencies']),
                 ]);
             }
 
@@ -146,7 +168,7 @@ class IntrospectAnalyzer extends Component
                 $this->analysisResults['performance'] = $introspectService->getModelPerformanceMetrics();
                 $this->performanceMetrics = $this->analysisResults['performance'];
                 ds('Performance analysis completed', [
-                    'performance_metrics_count' => count($this->analysisResults['performance'])
+                    'performance_metrics_count' => count($this->analysisResults['performance']),
                 ]);
             }
 
@@ -157,18 +179,18 @@ class IntrospectAnalyzer extends Component
             ds('Analysis completed successfully', [
                 'total_analysis_time_ms' => $totalTime,
                 'total_results_count' => count($this->analysisResults),
-                'last_update' => $this->lastUpdate
+                'last_update' => $this->lastUpdate,
             ]);
 
             session()->flash('message', 'Analysis completed successfully!');
         } catch (\Exception $e) {
             $this->isLoading = false;
-            session()->flash('error', 'Analysis failed: ' . $e->getMessage());
+            session()->flash('error', 'Analysis failed: '.$e->getMessage());
 
             ds('Analysis failed', [
                 'error' => $e->getMessage(),
                 'exception' => get_class($e),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
         }
     }
@@ -213,11 +235,11 @@ class IntrospectAnalyzer extends Component
 
     public function exportAnalysis()
     {
-        $filename = 'introspect-analysis-' . now()->format('Y-m-d-H-i-s') . '.json';
+        $filename = 'introspect-analysis-'.now()->format('Y-m-d-H-i-s').'.json';
         $content = json_encode($this->analysisResults, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         return response()->streamDownload(
-            function () use ($content) {
+            function () use ($content): void {
                 echo $content;
             },
             $filename,
@@ -246,7 +268,7 @@ class IntrospectAnalyzer extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
 
         if ($this->autoRefresh) {
             $this->dispatch('start-polling', interval: $this->refreshInterval * 1000);
@@ -257,7 +279,7 @@ class IntrospectAnalyzer extends Component
 
     public function getFilteredModels()
     {
-        if (!isset($this->analysisResults['models'])) {
+        if (! isset($this->analysisResults['models'])) {
             return [];
         }
 
@@ -273,7 +295,7 @@ class IntrospectAnalyzer extends Component
             $models = array_filter($models, function ($model) {
                 return $this->filterByType === 'game'
                     ? str_contains($model['class'], 'Game')
-                    : !str_contains($model['class'], 'Game');
+                    : ! str_contains($model['class'], 'Game');
             });
         }
 
@@ -282,7 +304,7 @@ class IntrospectAnalyzer extends Component
 
     public function getFilteredRoutes()
     {
-        if (!isset($this->analysisResults['routes'])) {
+        if (! isset($this->analysisResults['routes'])) {
             return [];
         }
 
@@ -303,7 +325,7 @@ class IntrospectAnalyzer extends Component
 
     public function getFilteredViews()
     {
-        if (!isset($this->analysisResults['views'])) {
+        if (! isset($this->analysisResults['views'])) {
             return [];
         }
 
@@ -324,7 +346,7 @@ class IntrospectAnalyzer extends Component
 
     public function getFilteredClasses()
     {
-        if (!isset($this->analysisResults['classes'])) {
+        if (! isset($this->analysisResults['classes'])) {
             return [];
         }
 
@@ -345,23 +367,31 @@ class IntrospectAnalyzer extends Component
 
     public function getComplexityColor($complexity)
     {
-        if ($complexity <= 20)
+        if ($complexity <= 20) {
             return 'green';
-        if ($complexity <= 50)
+        }
+        if ($complexity <= 50) {
             return 'yellow';
-        if ($complexity <= 100)
+        }
+        if ($complexity <= 100) {
             return 'orange';
+        }
+
         return 'red';
     }
 
     public function getComplexityLabel($complexity)
     {
-        if ($complexity <= 20)
+        if ($complexity <= 20) {
             return 'Low';
-        if ($complexity <= 50)
+        }
+        if ($complexity <= 50) {
             return 'Medium';
-        if ($complexity <= 100)
+        }
+        if ($complexity <= 100) {
             return 'High';
+        }
+
         return 'Very High';
     }
 

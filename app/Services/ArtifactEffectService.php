@@ -6,12 +6,11 @@ use App\Models\Game\Artifact;
 use App\Models\Game\ArtifactEffect;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
-use App\Services\QueryOptimizationService;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use SmartCache\Facades\SmartCache;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
+use SmartCache\Facades\SmartCache;
 
 /**
  * Artifact Effect Service
@@ -20,6 +19,7 @@ use LaraUtilX\Utilities\LoggingUtil;
 class ArtifactEffectService
 {
     protected CachingUtil $cachingUtil;
+
     protected LoggingUtil $loggingUtil;
 
     public function __construct()
@@ -27,6 +27,7 @@ class ArtifactEffectService
         $this->cachingUtil = new CachingUtil(1800, ['artifact_effects']);
         $this->loggingUtil = new LoggingUtil();
     }
+
     /**
      * Apply artifact effects to a target
      */
@@ -44,8 +45,9 @@ class ArtifactEffectService
             DB::rollBack();
             Log::error('Failed to apply artifact effects', [
                 'artifact_id' => $artifact->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -67,8 +69,9 @@ class ArtifactEffectService
             DB::rollBack();
             Log::error('Failed to remove artifact effects', [
                 'artifact_id' => $artifact->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -101,33 +104,43 @@ class ArtifactEffectService
         switch ($effect->effect_type) {
             case 'resource_bonus':
                 $this->applyResourceBonus($effect, $target);
+
                 break;
             case 'combat_bonus':
                 $this->applyCombatBonus($effect, $target);
+
                 break;
             case 'building_bonus':
                 $this->applyBuildingBonus($effect, $target);
+
                 break;
             case 'troop_bonus':
                 $this->applyTroopBonus($effect, $target);
+
                 break;
             case 'defense_bonus':
                 $this->applyDefenseBonus($effect, $target);
+
                 break;
             case 'attack_bonus':
                 $this->applyAttackBonus($effect, $target);
+
                 break;
             case 'speed_bonus':
                 $this->applySpeedBonus($effect, $target);
+
                 break;
             case 'production_bonus':
                 $this->applyProductionBonus($effect, $target);
+
                 break;
             case 'trade_bonus':
                 $this->applyTradeBonus($effect, $target);
+
                 break;
             case 'diplomacy_bonus':
                 $this->applyDiplomacyBonus($effect, $target);
+
                 break;
         }
     }
@@ -141,7 +154,7 @@ class ArtifactEffectService
             // Apply resource production bonus to village
             $bonus = $effect->magnitude / 100; // Convert percentage
             $target->update([
-                'resource_production_bonus' => $target->resource_production_bonus + $bonus
+                'resource_production_bonus' => $target->resource_production_bonus + $bonus,
             ]);
         }
     }
@@ -155,7 +168,7 @@ class ArtifactEffectService
             // Apply combat bonus to village
             $bonus = $effect->magnitude;
             $target->update([
-                'combat_bonus' => $target->combat_bonus + $bonus
+                'combat_bonus' => $target->combat_bonus + $bonus,
             ]);
         }
     }
@@ -169,7 +182,7 @@ class ArtifactEffectService
             // Apply building speed bonus to village
             $bonus = $effect->magnitude / 100; // Convert percentage
             $target->update([
-                'building_speed_bonus' => $target->building_speed_bonus + $bonus
+                'building_speed_bonus' => $target->building_speed_bonus + $bonus,
             ]);
         }
     }
@@ -183,7 +196,7 @@ class ArtifactEffectService
             // Apply troop training bonus to village
             $bonus = $effect->magnitude / 100; // Convert percentage
             $target->update([
-                'troop_training_bonus' => $target->troop_training_bonus + $bonus
+                'troop_training_bonus' => $target->troop_training_bonus + $bonus,
             ]);
         }
     }
@@ -197,7 +210,7 @@ class ArtifactEffectService
             // Apply defense bonus to village
             $bonus = $effect->magnitude;
             $target->update([
-                'defense_bonus' => $target->defense_bonus + $bonus
+                'defense_bonus' => $target->defense_bonus + $bonus,
             ]);
         }
     }
@@ -211,7 +224,7 @@ class ArtifactEffectService
             // Apply attack bonus to village
             $bonus = $effect->magnitude;
             $target->update([
-                'attack_bonus' => $target->attack_bonus + $bonus
+                'attack_bonus' => $target->attack_bonus + $bonus,
             ]);
         }
     }
@@ -225,7 +238,7 @@ class ArtifactEffectService
             // Apply movement speed bonus to village
             $bonus = $effect->magnitude / 100; // Convert percentage
             $target->update([
-                'movement_speed_bonus' => $target->movement_speed_bonus + $bonus
+                'movement_speed_bonus' => $target->movement_speed_bonus + $bonus,
             ]);
         }
     }
@@ -239,7 +252,7 @@ class ArtifactEffectService
             // Apply production bonus to village
             $bonus = $effect->magnitude / 100; // Convert percentage
             $target->update([
-                'production_bonus' => $target->production_bonus + $bonus
+                'production_bonus' => $target->production_bonus + $bonus,
             ]);
         }
     }
@@ -253,7 +266,7 @@ class ArtifactEffectService
             // Apply trade bonus to village
             $bonus = $effect->magnitude / 100; // Convert percentage
             $target->update([
-                'trade_bonus' => $target->trade_bonus + $bonus
+                'trade_bonus' => $target->trade_bonus + $bonus,
             ]);
         }
     }
@@ -267,7 +280,7 @@ class ArtifactEffectService
             // Apply diplomacy bonus to player
             $bonus = $effect->magnitude;
             $target->update([
-                'diplomacy_bonus' => $target->diplomacy_bonus + $bonus
+                'diplomacy_bonus' => $target->diplomacy_bonus + $bonus,
             ]);
         }
     }
@@ -277,7 +290,7 @@ class ArtifactEffectService
      */
     protected function getTargetType($target): string
     {
-        return match(true) {
+        return match (true) {
             $target instanceof Player => 'player',
             $target instanceof Village => 'village',
             default => 'server'
@@ -289,7 +302,7 @@ class ArtifactEffectService
      */
     protected function getTargetId($target): ?int
     {
-        return match(true) {
+        return match (true) {
             $target instanceof Player => $target->id,
             $target instanceof Village => $target->id,
             default => null
@@ -305,14 +318,14 @@ class ArtifactEffectService
         $targetId = $this->getTargetId($target);
 
         $baseQuery = ArtifactEffect::query();
-        
+
         $filters = [
             true => function ($q) {
                 return $q->valid();
             },
             $targetType => function ($q) use ($targetType) {
                 return $q->byTarget($targetType, $this->getTargetId($target));
-            }
+            },
         ];
 
         return QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
@@ -373,7 +386,7 @@ class ArtifactEffectService
                 SUM(CASE WHEN duration_type = "permanent" THEN 1 ELSE 0 END) as permanent_effects,
                 SUM(CASE WHEN duration_type != "permanent" THEN 1 ELSE 0 END) as temporary_effects
             ')
-            ->first();
+                ->first();
 
             return [
                 'total_effects' => $stats->total_effects ?? 0,
@@ -419,5 +432,4 @@ class ArtifactEffectService
 
         SmartCache::forget($cacheKey);
     }
-
 }

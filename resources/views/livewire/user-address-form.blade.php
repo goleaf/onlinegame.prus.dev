@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Address Information</h2>
         @if (!$isEditing)
-            <button wire:click="toggleEdit" 
+            <button wire:click.prevent="toggleEdit" 
                     class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
                 Edit Address
             </button>

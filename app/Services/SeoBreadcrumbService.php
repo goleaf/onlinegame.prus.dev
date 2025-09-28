@@ -16,7 +16,7 @@ class SeoBreadcrumbService
         $structuredData = [
             '@context' => 'https://schema.org',
             '@type' => 'BreadcrumbList',
-            'itemListElement' => []
+            'itemListElement' => [],
         ];
 
         foreach ($breadcrumbs as $index => $breadcrumb) {
@@ -24,7 +24,7 @@ class SeoBreadcrumbService
                 '@type' => 'ListItem',
                 'position' => $index + 1,
                 'name' => $breadcrumb['name'],
-                'item' => $breadcrumb['url'] ?? null
+                'item' => $breadcrumb['url'] ?? null,
             ];
         }
 
@@ -39,7 +39,7 @@ class SeoBreadcrumbService
         return [
             ['name' => 'Home', 'url' => url('/')],
             ['name' => 'Game', 'url' => url('/game')],
-            ['name' => $player->name . "'s Dashboard", 'url' => url('/game/dashboard')]
+            ['name' => $player->name."'s Dashboard", 'url' => url('/game/dashboard')],
         ];
     }
 
@@ -51,8 +51,8 @@ class SeoBreadcrumbService
         return [
             ['name' => 'Home', 'url' => url('/')],
             ['name' => 'Game', 'url' => url('/game')],
-            ['name' => $player->name . "'s Dashboard", 'url' => url('/game/dashboard')],
-            ['name' => $village->name, 'url' => url('/game/village/' . $village->id)]
+            ['name' => $player->name."'s Dashboard", 'url' => url('/game/dashboard')],
+            ['name' => $village->name, 'url' => url('/game/village/'.$village->id)],
         ];
     }
 
@@ -64,7 +64,7 @@ class SeoBreadcrumbService
         return [
             ['name' => 'Home', 'url' => url('/')],
             ['name' => 'Game', 'url' => url('/game')],
-            ['name' => 'World Map - ' . $world->name, 'url' => url('/game/map')]
+            ['name' => 'World Map - '.$world->name, 'url' => url('/game/map')],
         ];
     }
 
@@ -76,7 +76,7 @@ class SeoBreadcrumbService
         return [
             ['name' => 'Home', 'url' => url('/')],
             ['name' => 'Game', 'url' => url('/game')],
-            ['name' => 'Features', 'url' => url('/game/features')]
+            ['name' => 'Features', 'url' => url('/game/features')],
         ];
     }
 

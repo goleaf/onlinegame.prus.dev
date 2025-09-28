@@ -3,28 +3,39 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
-use OwenIt\Auditing\Contracts\Auditable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use sbamtr\LaravelQueryEnrich\QE;
+use OwenIt\Auditing\Contracts\Auditable;
 
 use function sbamtr\LaravelQueryEnrich\c;
 
+use sbamtr\LaravelQueryEnrich\QE;
+
 class Troop extends Model implements Auditable
 {
-    use HasFactory, Lift, AuditableTrait;
+    use AuditableTrait;
+    use HasFactory;
 
     // Laravel Lift typed properties
     public int $id;
+
     public int $village_id;
+
     public int $unit_type_id;
+
     public int $count;
+
     public int $in_village;
+
     public int $in_attack;
+
     public int $in_defense;
+
     public int $in_support;
+
     public \Carbon\CarbonImmutable $created_at;
+
     public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
@@ -74,7 +85,7 @@ class Troop extends Model implements Auditable
                 ->from('troops', 't6')
                 ->whereColumn('t6.unit_type_id', c('troops.unit_type_id'))
                 ->where('t6.quantity', '>', 0)
-                ->as('avg_quantity_of_type')
+                ->as('avg_quantity_of_type'),
         ]);
     }
 
@@ -132,10 +143,10 @@ class Troop extends Model implements Auditable
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->whereHas('unitType', function ($typeQ) use ($searchTerm) {
+            return $q->whereHas('unitType', function ($typeQ) use ($searchTerm): void {
                 $typeQ
-                    ->where('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%');
+                    ->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('description', 'like', '%'.$searchTerm.'%');
             });
         });
     }
@@ -144,7 +155,7 @@ class Troop extends Model implements Auditable
     {
         return $query->with([
             'unitType:id,name,attack_power,defense_power,speed,cost',
-            'village:id,name,player_id'
+            'village:id,name,player_id',
         ]);
     }
 }

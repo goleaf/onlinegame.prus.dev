@@ -3,12 +3,10 @@
 namespace App\Livewire\Game;
 
 use App\Models\User;
-use App\Services\LarautilxIntegrationService;
-use App\Services\QueryOptimizationService;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\PaginationUtil;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -16,24 +14,41 @@ use SmartCache\Facades\SmartCache;
 
 class UserManagement extends Component
 {
-    use WithPagination, ApiResponseTrait;
+    use ApiResponseTrait;
+    use WithPagination;
 
     public $users = [];
+
     public $selectedUser = null;
+
     public $searchQuery = '';
+
     public $filterByWorld = '';
+
     public $filterByTribe = '';
+
     public $filterByAlliance = '';
+
     public $filterByStatus = '';
+
     public $showOnlyOnline = false;
+
     public $showOnlyActive = false;
+
     public $sortBy = 'created_at';
+
     public $sortOrder = 'desc';
+
     public $perPage = 20;
+
     public $isLoading = false;
+
     public $statistics = [];
+
     public $selectedUserIds = [];
+
     public $bulkAction = '';
+
     public $showBulkActions = false;
 
     protected $listeners = [
@@ -72,7 +87,7 @@ class UserManagement extends Component
                 // Build eloquent filters array
                 $eloquentFilters = [];
 
-                if (!empty($this->searchQuery)) {
+                if (! empty($this->searchQuery)) {
                     $eloquentFilters[] = [
                         'type' => '$or',
                         'value' => [
@@ -82,40 +97,40 @@ class UserManagement extends Component
                                 'type' => '$has',
                                 'target' => 'player',
                                 'value' => [
-                                    ['target' => 'name', 'type' => '$like', 'value' => $this->searchQuery]
-                                ]
-                            ]
-                        ]
+                                    ['target' => 'name', 'type' => '$like', 'value' => $this->searchQuery],
+                                ],
+                            ],
+                        ],
                     ];
                 }
 
-                if (!empty($this->filterByWorld)) {
+                if (! empty($this->filterByWorld)) {
                     $eloquentFilters[] = [
                         'type' => '$has',
                         'target' => 'player',
                         'value' => [
-                            ['target' => 'world_id', 'type' => '$eq', 'value' => $this->filterByWorld]
-                        ]
+                            ['target' => 'world_id', 'type' => '$eq', 'value' => $this->filterByWorld],
+                        ],
                     ];
                 }
 
-                if (!empty($this->filterByTribe)) {
+                if (! empty($this->filterByTribe)) {
                     $eloquentFilters[] = [
                         'type' => '$has',
                         'target' => 'player',
                         'value' => [
-                            ['target' => 'tribe', 'type' => '$eq', 'value' => $this->filterByTribe]
-                        ]
+                            ['target' => 'tribe', 'type' => '$eq', 'value' => $this->filterByTribe],
+                        ],
                     ];
                 }
 
-                if (!empty($this->filterByAlliance)) {
+                if (! empty($this->filterByAlliance)) {
                     $eloquentFilters[] = [
                         'type' => '$has',
                         'target' => 'player',
                         'value' => [
-                            ['target' => 'alliance_id', 'type' => '$eq', 'value' => $this->filterByAlliance]
-                        ]
+                            ['target' => 'alliance_id', 'type' => '$eq', 'value' => $this->filterByAlliance],
+                        ],
                     ];
                 }
 
@@ -124,8 +139,8 @@ class UserManagement extends Component
                         'type' => '$has',
                         'target' => 'player',
                         'value' => [
-                            ['target' => 'is_online', 'type' => '$eq', 'value' => true]
-                        ]
+                            ['target' => 'is_online', 'type' => '$eq', 'value' => true],
+                        ],
                     ];
                 }
 
@@ -134,13 +149,13 @@ class UserManagement extends Component
                         'type' => '$has',
                         'target' => 'player',
                         'value' => [
-                            ['target' => 'is_active', 'type' => '$eq', 'value' => true]
-                        ]
+                            ['target' => 'is_active', 'type' => '$eq', 'value' => true],
+                        ],
                     ];
                 }
 
                 // Apply eloquent filtering
-                if (!empty($eloquentFilters)) {
+                if (! empty($eloquentFilters)) {
                     $query = $query->filter($eloquentFilters);
                 }
 
@@ -154,11 +169,12 @@ class UserManagement extends Component
                     $user->game_stats = $user->getGameStats();
                     $user->is_online = $user->isOnline();
                     $user->last_activity = $user->getLastActivity();
+
                     return $user;
                 });
 
                 // Apply additional filtering using FilteringUtil
-                if (!empty($this->filterByStatus)) {
+                if (! empty($this->filterByStatus)) {
                     $users = FilteringUtil::filter(
                         $users,
                         'is_online',
@@ -172,10 +188,10 @@ class UserManagement extends Component
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading users', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ], 'user_management');
 
-            $this->addNotification('Error loading users: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading users: '.$e->getMessage(), 'error');
             $this->users = collect();
         } finally {
             $this->isLoading = false;
@@ -215,7 +231,7 @@ class UserManagement extends Component
             });
         } catch (\Exception $e) {
             LoggingUtil::error('Error loading user statistics', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 'user_management');
 
             $this->statistics = [
@@ -329,18 +345,22 @@ class UserManagement extends Component
                         case 'activate':
                             $user->player->update(['is_active' => true]);
                             $updatedCount++;
+
                             break;
                         case 'deactivate':
                             $user->player->update(['is_active' => false]);
                             $updatedCount++;
+
                             break;
                         case 'set_online':
                             $user->player->update(['is_online' => true, 'last_active_at' => now()]);
                             $updatedCount++;
+
                             break;
                         case 'set_offline':
                             $user->player->update(['is_online' => false]);
                             $updatedCount++;
+
                             break;
                     }
                 }
@@ -364,7 +384,7 @@ class UserManagement extends Component
                 'user_ids' => $this->selectedUserIds,
             ], 'user_management');
 
-            $this->addNotification('Error executing bulk action: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error executing bulk action: '.$e->getMessage(), 'error');
         }
     }
 
@@ -398,10 +418,10 @@ class UserManagement extends Component
             $this->addNotification('User data exported successfully', 'success');
         } catch (\Exception $e) {
             LoggingUtil::error('Error exporting users', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 'user_management');
 
-            $this->addNotification('Error exporting users: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error exporting users: '.$e->getMessage(), 'error');
         }
     }
 
@@ -429,7 +449,7 @@ class UserManagement extends Component
     {
         $this->dispatch('notification', [
             'message' => $message,
-            'type' => $type
+            'type' => $type,
         ]);
     }
 

@@ -2,11 +2,9 @@
 
 namespace App\Services\Game;
 
-use App\Models\Game\Quest;
 use App\Models\Game\Player;
 use App\Models\Game\PlayerQuest;
-use App\Models\Game\Village;
-use App\Models\Game\Resource;
+use App\Models\Game\Quest;
 use Illuminate\Support\Facades\DB;
 use SmartCache\Facades\SmartCache;
 
@@ -14,7 +12,8 @@ class QuestService
 {
     public function __construct(
         private ResourceService $resourceService
-    ) {}
+    ) {
+    }
 
     /**
      * Start a quest for a player
@@ -23,7 +22,7 @@ class QuestService
     {
         // Validate quest start
         $validation = $this->validateQuestStart($player, $quest);
-        if (!$validation['valid']) {
+        if (! $validation['valid']) {
             return $validation;
         }
 
@@ -58,7 +57,7 @@ class QuestService
             ->where('status', 'active')
             ->first();
 
-        if (!$playerQuest) {
+        if (! $playerQuest) {
             return [
                 'success' => false,
                 'message' => 'Quest not found or not active',
@@ -67,11 +66,11 @@ class QuestService
 
         // Validate quest completion
         $validation = $this->validateQuestCompletion($player, $quest, $playerQuest);
-        if (!$validation['valid']) {
+        if (! $validation['valid']) {
             return $validation;
         }
 
-        DB::transaction(function () use ($player, $quest, $playerQuest) {
+        DB::transaction(function () use ($player, $quest, $playerQuest): void {
             // Update quest status
             $playerQuest->update([
                 'status' => 'completed',
@@ -103,7 +102,7 @@ class QuestService
             ->where('status', 'active')
             ->first();
 
-        if (!$playerQuest) {
+        if (! $playerQuest) {
             return [
                 'success' => false,
                 'message' => 'Quest not found or not active',
@@ -112,7 +111,7 @@ class QuestService
 
         // Calculate new progress
         $newProgress = $this->calculateQuestProgress($quest, $progressData);
-        
+
         // Update progress
         $playerQuest->update([
             'progress' => $newProgress,
@@ -241,7 +240,7 @@ class QuestService
     public function generateDailyQuests(Player $player): array
     {
         $today = now()->startOfDay();
-        
+
         // Check if daily quests already generated today
         $existingDailyQuests = PlayerQuest::where('player_id', $player->id)
             ->where('quest_id', 'like', 'DailyQuest%')
@@ -328,7 +327,7 @@ class QuestService
      */
     private function validateQuestStart(Player $player, Quest $quest): array
     {
-        if (!$quest->is_active) {
+        if (! $quest->is_active) {
             return [
                 'valid' => false,
                 'message' => 'Quest is not active',
@@ -341,7 +340,7 @@ class QuestService
             ->whereIn('status', ['active', 'completed'])
             ->exists();
 
-        if ($existingQuest && !$quest->is_repeatable) {
+        if ($existingQuest && ! $quest->is_repeatable) {
             return [
                 'valid' => false,
                 'message' => 'Quest already completed or in progress',
@@ -349,7 +348,7 @@ class QuestService
         }
 
         // Check requirements
-        if (!$this->meetsQuestRequirements($player, $quest)) {
+        if (! $this->meetsQuestRequirements($player, $quest)) {
             return [
                 'valid' => false,
                 'message' => 'Quest requirements not met',
@@ -388,17 +387,23 @@ class QuestService
      */
     private function meetsQuestRequirements(Player $player, Quest $quest): bool
     {
-        if (!$quest->requirements) {
+        if (! $quest->requirements) {
             return true;
         }
 
         foreach ($quest->requirements as $requirement => $value) {
             switch ($requirement) {
                 case 'level':
-                    if ($player->level < $value) return false;
+                    if ($player->level < $value) {
+                        return false;
+                    }
+
                     break;
                 case 'village_count':
-                    if ($player->villages()->count() < $value) return false;
+                    if ($player->villages()->count() < $value) {
+                        return false;
+                    }
+
                     break;
                 case 'building_level':
                     // Check if player has required building level

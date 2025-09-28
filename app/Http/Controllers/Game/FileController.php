@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Game;
 
 use App\Services\FileProcessingService;
-use Illuminate\Http\Request;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Traits\FileProcessingTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\RateLimiterUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group File Management
@@ -31,13 +31,15 @@ class FileController extends CrudController
     use ValidationHelperTrait;
 
     protected FileProcessingService $fileProcessingService;
+
     protected RateLimiterUtil $rateLimiter;
+
     protected array $validationRules = [];
 
     protected function getValidationRules(): array
     {
         return [
-            'file' => 'required|file|max:10240', // 10MB max
+            'file' => 'required|file|max:10240',  // 10MB max
             'directory' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:500',
         ];
@@ -48,7 +50,7 @@ class FileController extends CrudController
         $this->fileProcessingService = $fileProcessingService;
         $this->rateLimiter = $rateLimiter;
         $this->validationRules = $this->getValidationRules();
-        parent::__construct(null); // FileController doesn't use a specific model
+        parent::__construct(null);  // FileController doesn't use a specific model
     }
 
     /**
@@ -81,7 +83,6 @@ class FileController extends CrudController
      *     "aspect_ratio": 1.78
      *   }
      * }
-     *
      * @response 422 {
      *   "message": "The given data was invalid.",
      *   "errors": {
@@ -95,16 +96,16 @@ class FileController extends CrudController
     {
         try {
             // Rate limiting for file uploads
-            $rateLimitKey = 'file_upload_' . (auth()->id() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
+            $rateLimitKey = 'file_upload_'.(auth()->id() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
                 return $this->errorResponse('Too many file uploads. Please try again later.', 429);
             }
 
-            $validated = $this->validateRequest($request, $this->validationRules);
+            $validated = $this->validateRequestData($request, $this->validationRules);
 
             $file = $request->file('file');
             $directory = $validated['directory'] ?? 'uploads';
-            
+
             $options = [];
             if ($request->has('create_thumbnails')) {
                 $options['create_thumbnails'] = $request->boolean('create_thumbnails');
@@ -127,7 +128,6 @@ class FileController extends CrudController
             } else {
                 return $this->errorResponse($result['error'], 422);
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('File upload error', [
                 'error' => $e->getMessage(),
@@ -172,12 +172,12 @@ class FileController extends CrudController
     {
         try {
             // Rate limiting for multiple file uploads
-            $rateLimitKey = 'multiple_file_upload_' . (auth()->id() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 3, 1)) {
+            $rateLimitKey = 'multiple_file_upload_'.(auth()->id() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 3, 1)) {
                 return $this->errorResponse('Too many multiple file uploads. Please try again later.', 429);
             }
 
-            $validated = $request->validate([
+            $validated = $this->validateRequestData($request, [
                 'files.*' => 'required|file|max:10240',
                 'directory' => 'nullable|string|max:255',
                 'create_thumbnails' => 'nullable|boolean',
@@ -185,7 +185,7 @@ class FileController extends CrudController
 
             $files = $request->file('files');
             $directory = $validated['directory'] ?? 'uploads/batch';
-            
+
             $options = [];
             if ($request->has('create_thumbnails')) {
                 $options['create_thumbnails'] = $request->boolean('create_thumbnails');
@@ -202,7 +202,6 @@ class FileController extends CrudController
             ], 'file_management');
 
             return $this->successResponse($result, $result['message'], 201);
-
         } catch (\Exception $e) {
             LoggingUtil::error('Multiple file upload error', [
                 'error' => $e->getMessage(),
@@ -236,7 +235,6 @@ class FileController extends CrudController
      *     "extension": "jpg"
      *   }
      * }
-     *
      * @response 404 {
      *   "success": false,
      *   "message": "File not found"
@@ -259,7 +257,6 @@ class FileController extends CrudController
             } else {
                 return $this->errorResponse($result['error'], 404);
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving file information', [
                 'error' => $e->getMessage(),
@@ -327,7 +324,6 @@ class FileController extends CrudController
             return $this->successResponse($result['data'], $result['message'], 200, [
                 'count' => $result['count'],
             ]);
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error listing files', [
                 'error' => $e->getMessage(),
@@ -352,7 +348,6 @@ class FileController extends CrudController
      *   "success": true,
      *   "message": "File deleted successfully"
      * }
-     *
      * @response 404 {
      *   "success": false,
      *   "message": "File not found"
@@ -375,7 +370,6 @@ class FileController extends CrudController
             } else {
                 return $this->errorResponse($result['error'], 404);
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('File deletion error', [
                 'error' => $e->getMessage(),
@@ -428,7 +422,6 @@ class FileController extends CrudController
             } else {
                 return $this->errorResponse($result['error'], 500);
             }
-
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving storage statistics', [
                 'error' => $e->getMessage(),
@@ -459,7 +452,7 @@ class FileController extends CrudController
     public function download(string $filePath): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         try {
-            if (!\Storage::exists($filePath)) {
+            if (! \Storage::exists($filePath)) {
                 LoggingUtil::warning('File download attempted for non-existent file', [
                     'user_id' => auth()->id(),
                     'file_path' => $filePath,
@@ -474,7 +467,6 @@ class FileController extends CrudController
             ], 'file_management');
 
             return \Storage::download($filePath);
-
         } catch (\Exception $e) {
             LoggingUtil::error('File download error', [
                 'error' => $e->getMessage(),

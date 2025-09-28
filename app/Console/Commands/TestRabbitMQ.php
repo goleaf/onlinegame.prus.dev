@@ -42,18 +42,22 @@ class TestRabbitMQ extends Command
         switch ($type) {
             case 'game-events':
                 $this->testGameEvents();
+
                 break;
             case 'notifications':
                 $this->testNotifications();
+
                 break;
             case 'custom':
                 $this->testCustomMessages();
+
                 break;
             case 'all':
             default:
                 $this->testGameEvents();
                 $this->testNotifications();
                 $this->testCustomMessages();
+
                 break;
         }
 
@@ -72,7 +76,7 @@ class TestRabbitMQ extends Command
 
         $this->rabbitMQ->publishPlayerAction(1, 'attack', [
             'target_village_id' => 2,
-            'troops_sent' => ['warrior' => 100, 'archer' => 50]
+            'troops_sent' => ['warrior' => 100, 'archer' => 50],
         ]);
         $this->line('✓ Published player attack event');
 
@@ -81,7 +85,7 @@ class TestRabbitMQ extends Command
             'target_village_id' => 2,
             'target_village_name' => 'Enemy Village',
             'trap_level' => 5,
-            'spy_defense' => 25
+            'spy_defense' => 25,
         ]);
         $this->line('✓ Published spy caught event');
 
@@ -91,8 +95,8 @@ class TestRabbitMQ extends Command
             'spy_data' => [
                 'population' => 150,
                 'resources' => ['wood' => 2000, 'clay' => 1500],
-                'buildings' => ['barracks' => 3, 'wall' => 2]
-            ]
+                'buildings' => ['barracks' => 3, 'wall' => 2],
+            ],
         ]);
         $this->line('✓ Published spy success event');
 
@@ -106,9 +110,9 @@ class TestRabbitMQ extends Command
             'optimal_composition' => [
                 'warrior' => 60,
                 'archer' => 30,
-                'cavalry' => 10
+                'cavalry' => 10,
             ],
-            'timestamp' => now()->toISOString()
+            'timestamp' => now()->toISOString(),
         ]);
         $this->line('✓ Published battle simulation event');
 
@@ -125,8 +129,8 @@ class TestRabbitMQ extends Command
             'defensive_bonus' => 0.15,
             'battle_power' => [
                 'attacker' => 1500,
-                'defender' => 1200
-            ]
+                'defender' => 1200,
+            ],
         ]);
         $this->line('✓ Published battle result event with defensive bonuses');
 
@@ -135,7 +139,7 @@ class TestRabbitMQ extends Command
             'wood' => 5000,
             'clay' => 3000,
             'iron' => 2000,
-            'crop' => 1000
+            'crop' => 1000,
         ]);
         $this->line('✓ Published resource update event');
     }
@@ -151,7 +155,7 @@ class TestRabbitMQ extends Command
             [
                 'player_name' => 'TestPlayer',
                 'battle_result' => 'victory',
-                'village_name' => 'Test Village'
+                'village_name' => 'Test Village',
             ]
         );
         $this->line('✓ Published email notification');
@@ -163,7 +167,7 @@ class TestRabbitMQ extends Command
             [
                 'building_name' => 'barracks',
                 'level' => 2,
-                'village_id' => 1
+                'village_id' => 1,
             ]
         );
         $this->line('✓ Published in-game notification');
@@ -179,8 +183,8 @@ class TestRabbitMQ extends Command
             'village_id' => 1,
             'custom_data' => [
                 'achievement' => 'first_victory',
-                'reward' => ['gold' => 100]
-            ]
+                'reward' => ['gold' => 100],
+            ],
         ]);
         $this->line('✓ Published custom game event');
 
@@ -189,7 +193,7 @@ class TestRabbitMQ extends Command
             'player_id' => 1,
             'title' => 'Game Update Available',
             'message' => 'New features have been added to the game!',
-            'action_url' => '/game/updates'
+            'action_url' => '/game/updates',
         ]);
         $this->line('✓ Published custom push notification');
     }

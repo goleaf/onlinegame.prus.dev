@@ -11,9 +11,13 @@ use SmartCache\Facades\SmartCache;
 class UpdaterService
 {
     protected string $repositoryUrl;
+
     protected string $currentVersion;
+
     protected string $latestVersion;
+
     protected array $updateSteps = [];
+
     protected bool $maintenanceMode = false;
 
     public function __construct()
@@ -27,14 +31,16 @@ class UpdaterService
      */
     public function getCurrentVersion(): string
     {
-        $cacheKey = 'updater_current_version_' . now()->format('Y-m-d-H');
-        
+        $cacheKey = 'updater_current_version_'.now()->format('Y-m-d-H');
+
         return SmartCache::remember($cacheKey, now()->addHours(1), function () {
             try {
                 $result = Process::run('git describe --tags --abbrev=0');
+
                 return $result->successful() ? trim($result->output()) : '1.0.0';
             } catch (\Exception $e) {
                 Log::warning('Could not get current version from git', ['error' => $e->getMessage()]);
+
                 return '1.0.0';
             }
         });
@@ -45,8 +51,8 @@ class UpdaterService
      */
     public function checkForUpdates(): array
     {
-        $cacheKey = 'updater_check_' . now()->format('Y-m-d-H-i');
-        
+        $cacheKey = 'updater_check_'.now()->format('Y-m-d-H-i');
+
         return SmartCache::remember($cacheKey, now()->addMinutes(5), function () {
             try {
                 // Fetch latest tags from remote
@@ -65,6 +71,7 @@ class UpdaterService
                 ];
             } catch (\Exception $e) {
                 Log::error('Error checking for updates', ['error' => $e->getMessage()]);
+
                 return [
                     'current_version' => $this->currentVersion,
                     'latest_version' => $this->currentVersion,
@@ -82,6 +89,7 @@ class UpdaterService
     {
         try {
             $result = Process::run('git rev-list --count HEAD..origin/main');
+
             return $result->successful() ? (int) trim($result->output()) : 0;
         } catch (\Exception $e) {
             return 0;
@@ -127,7 +135,7 @@ class UpdaterService
                 'new_version' => $this->getCurrentVersion(),
             ];
         } catch (\Exception $e) {
-            $this->addStep('Update failed: ' . $e->getMessage());
+            $this->addStep('Update failed: '.$e->getMessage());
             $this->disableMaintenanceMode();
 
             Log::error('Update failed', [
@@ -174,8 +182,8 @@ class UpdaterService
 
         $result = Process::run('git pull origin main');
 
-        if (!$result->successful()) {
-            throw new \Exception('Failed to pull latest changes: ' . $result->errorOutput());
+        if (! $result->successful()) {
+            throw new \Exception('Failed to pull latest changes: '.$result->errorOutput());
         }
 
         $this->addStep('Repository updated successfully');
@@ -190,8 +198,8 @@ class UpdaterService
 
         $result = Process::run('composer install --no-dev --optimize-autoloader');
 
-        if (!$result->successful()) {
-            throw new \Exception('Failed to update dependencies: ' . $result->errorOutput());
+        if (! $result->successful()) {
+            throw new \Exception('Failed to update dependencies: '.$result->errorOutput());
         }
 
         $this->addStep('Dependencies updated successfully');
@@ -299,6 +307,7 @@ class UpdaterService
     {
         try {
             $result = Process::run('git branch --show-current');
+
             return $result->successful() ? trim($result->output()) : 'unknown';
         } catch (\Exception $e) {
             return 'unknown';

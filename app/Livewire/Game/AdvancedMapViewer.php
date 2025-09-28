@@ -5,29 +5,43 @@ namespace App\Livewire\Game;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Services\GeographicService;
-use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class AdvancedMapViewer extends Component
 {
     public $world;
+
     public $centerX = 0;
+
     public $centerY = 0;
+
     public $zoom = 1;
+
     public $villages = [];
+
     public $selectedVillage = null;
+
     public $showVillageInfo = false;
+
     public $mapSize = 20;
+
     // Geographic features
     public $showRealWorldCoordinates = false;
+
     public $showGeohash = false;
+
     public $showDistance = false;
+
     public $showBearing = false;
+
     public $radiusFilter = 0;
+
     public $elevationFilter = null;
+
     // Map modes
     public $mapMode = 'game';  // 'game', 'real_world', 'hybrid'
+
     public $coordinateSystem = 'game';  // 'game', 'decimal', 'dms'
 
     protected $listeners = ['refreshMap', 'villageSelected', 'mapMoved'];
@@ -54,7 +68,7 @@ class AdvancedMapViewer extends Component
 
     public function loadMapData()
     {
-        if (!$this->world) {
+        if (! $this->world) {
             return;
         }
 
@@ -77,8 +91,10 @@ class AdvancedMapViewer extends Component
 
         // Apply radius filter if set
         if ($this->radiusFilter > 0) {
-            $query->whereRaw('SQRT(POW(x_coordinate - ?, 2) + POW(y_coordinate - ?, 2)) <= ?',
-                [$this->centerX, $this->centerY, $this->radiusFilter]);
+            $query->whereRaw(
+                'SQRT(POW(x_coordinate - ?, 2) + POW(y_coordinate - ?, 2)) <= ?',
+                [$this->centerX, $this->centerY, $this->radiusFilter]
+            );
         }
 
         // Apply elevation filter if set
@@ -117,6 +133,7 @@ class AdvancedMapViewer extends Component
     public function calculateDistance($x, $y)
     {
         $geoService = app(GeographicService::class);
+
         return $geoService->calculateGameDistance($this->centerX, $this->centerY, $x, $y);
     }
 
@@ -161,15 +178,19 @@ class AdvancedMapViewer extends Component
         switch ($direction) {
             case 'north':
                 $this->centerY -= 5;
+
                 break;
             case 'south':
                 $this->centerY += 5;
+
                 break;
             case 'east':
                 $this->centerX += 5;
+
                 break;
             case 'west':
                 $this->centerX -= 5;
+
                 break;
         }
 
@@ -189,22 +210,22 @@ class AdvancedMapViewer extends Component
 
     public function toggleRealWorldCoordinates()
     {
-        $this->showRealWorldCoordinates = !$this->showRealWorldCoordinates;
+        $this->showRealWorldCoordinates = ! $this->showRealWorldCoordinates;
     }
 
     public function toggleGeohash()
     {
-        $this->showGeohash = !$this->showGeohash;
+        $this->showGeohash = ! $this->showGeohash;
     }
 
     public function toggleDistance()
     {
-        $this->showDistance = !$this->showDistance;
+        $this->showDistance = ! $this->showDistance;
     }
 
     public function toggleBearing()
     {
-        $this->showBearing = !$this->showBearing;
+        $this->showBearing = ! $this->showBearing;
     }
 
     public function setMapMode($mode)

@@ -2,18 +2,18 @@
 
 namespace App\Services;
 
-use App\Models\Game\Quest;
-use App\Models\Game\PlayerQuest;
 use App\Models\Game\Player;
+use App\Models\Game\PlayerQuest;
+use App\Models\Game\Quest;
 use App\Models\Game\Village;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class QuestSystemService
 {
     protected CachingUtil $cachingUtil;
+
     protected LoggingUtil $loggingUtil;
 
     public function __construct()
@@ -39,11 +39,11 @@ class QuestSystemService
             // Get quests that meet the requirements
             $quests = Quest::where('is_active', true)
                 ->whereNotIn('id', $completedQuestIds)
-                ->where(function ($query) use ($player) {
+                ->where(function ($query) use ($player): void {
                     $query->whereNull('required_level')
                         ->orWhere('required_level', '<=', $player->level);
                 })
-                ->where(function ($query) use ($player) {
+                ->where(function ($query) use ($player): void {
                     $query->whereNull('required_villages')
                         ->orWhere('required_villages', '<=', $player->villages()->count());
                 })
@@ -53,7 +53,7 @@ class QuestSystemService
 
             $this->loggingUtil->debug('Retrieved available quests', [
                 'player_id' => $player->id,
-                'quest_count' => $quests->count()
+                'quest_count' => $quests->count(),
             ]);
 
             return $quests;
@@ -66,7 +66,7 @@ class QuestSystemService
     public function startQuest(Player $player, Quest $quest): PlayerQuest
     {
         // Check if player can start this quest
-        if (!$this->canPlayerStartQuest($player, $quest)) {
+        if (! $this->canPlayerStartQuest($player, $quest)) {
             throw new \Exception('Player cannot start this quest');
         }
 
@@ -100,7 +100,7 @@ class QuestSystemService
             $this->loggingUtil->info('Quest started', [
                 'player_id' => $player->id,
                 'quest_id' => $quest->id,
-                'player_quest_id' => $playerQuest->id
+                'player_quest_id' => $playerQuest->id,
             ]);
 
             // Clear cache
@@ -113,8 +113,9 @@ class QuestSystemService
             $this->loggingUtil->error('Failed to start quest', [
                 'player_id' => $player->id,
                 'quest_id' => $quest->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -136,7 +137,7 @@ class QuestSystemService
             foreach ($requirements as $requirement) {
                 $requirementProgress = $this->calculateRequirementProgress($playerQuest, $requirement, $progressData);
                 $totalProgress += $requirementProgress;
-                
+
                 if ($requirementProgress >= 100) {
                     $completedRequirements++;
                 }
@@ -161,15 +162,16 @@ class QuestSystemService
             $this->loggingUtil->info('Quest progress updated', [
                 'player_quest_id' => $playerQuest->id,
                 'progress' => $overallProgress,
-                'completed' => $isCompleted
+                'completed' => $isCompleted,
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
             $this->loggingUtil->error('Failed to update quest progress', [
                 'player_quest_id' => $playerQuest->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -200,7 +202,7 @@ class QuestSystemService
             $this->loggingUtil->info('Quest completed', [
                 'player_quest_id' => $playerQuest->id,
                 'player_id' => $playerQuest->player_id,
-                'quest_id' => $playerQuest->quest_id
+                'quest_id' => $playerQuest->quest_id,
             ]);
 
             // Clear cache
@@ -210,8 +212,9 @@ class QuestSystemService
             DB::rollBack();
             $this->loggingUtil->error('Failed to complete quest', [
                 'player_quest_id' => $playerQuest->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -295,7 +298,7 @@ class QuestSystemService
                     'avg_clay_reward' => round($questStats->avg_clay_reward ?? 0, 2),
                     'avg_iron_reward' => round($questStats->avg_iron_reward ?? 0, 2),
                     'avg_crop_reward' => round($questStats->avg_crop_reward ?? 0, 2),
-                ]
+                ],
             ];
         });
     }
@@ -320,7 +323,7 @@ class QuestSystemService
                     ->where('created_at', '>=', now()->startOfDay())
                     ->first();
 
-                if (!$existingQuest && $this->canPlayerStartQuest($player, $quest)) {
+                if (! $existingQuest && $this->canPlayerStartQuest($player, $quest)) {
                     try {
                         $this->startQuest($player, $quest);
                         $generated++;
@@ -328,7 +331,7 @@ class QuestSystemService
                         $this->loggingUtil->error('Failed to generate daily quest', [
                             'player_id' => $player->id,
                             'quest_id' => $quest->id,
-                            'error' => $e->getMessage()
+                            'error' => $e->getMessage(),
                         ]);
                     }
                 }
@@ -337,7 +340,7 @@ class QuestSystemService
 
         $this->loggingUtil->info('Daily quests generated', [
             'generated_count' => $generated,
-            'players_processed' => $players->count()
+            'players_processed' => $players->count(),
         ]);
 
         return $generated;
@@ -359,7 +362,7 @@ class QuestSystemService
         }
 
         // Check if quest is active
-        if (!$quest->is_active) {
+        if (! $quest->is_active) {
             return false;
         }
 
@@ -429,7 +432,7 @@ class QuestSystemService
                 'clay' => $quest->resource_reward_clay,
                 'iron' => $quest->resource_reward_iron,
                 'crop' => $quest->resource_reward_crop,
-            ]
+            ],
         ]);
     }
 

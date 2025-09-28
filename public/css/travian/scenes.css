@@ -28,8 +28,8 @@
   background-position: top left;
   box-sizing: border-box;
 }
-.scene input[type="text"],
-.scene input[type="number"] {
+.scene input[type='text'],
+.scene input[type='number'] {
   background-position: initial;
 }
 .scene i.artefact_buildingMaster {
@@ -183,7 +183,7 @@
   grid-column-start: auto;
   -ms-grid-row-align: end;
   align-self: end;
-  border: 1px solid #DDC6A2;
+  border: 1px solid #ddc6a2;
   border-bottom: none;
   display: -ms-grid;
   display: grid;
@@ -237,18 +237,18 @@
 .scene .tabContainer .tabHeader .tab i {
   margin-left: 5px;
 }
-.scene .tabContainer .tabHeader .tab:nth-child(n+2) {
+.scene .tabContainer .tabHeader .tab:nth-child(n + 2) {
   margin-left: 3px;
 }
 .scene .tabContainer .tabHeader .tab.selected {
   position: relative;
   z-index: 3;
   padding: 7px 10px;
-  background-color: #FCF2DA;
+  background-color: #fcf2da;
 }
 .scene .tabContainer .tabHeader .tab:not(.selected) {
   padding: 7px 10px 2px;
-  background-color: #F2E5C6;
+  background-color: #f2e5c6;
 }
 .scene .tabContainer .tabHeader .tab:hover:not(.selected) {
   padding-bottom: 7px;
@@ -257,14 +257,14 @@
   position: relative;
   z-index: 2;
   margin-top: -1px;
-  border: 1px solid #DDC6A2;
+  border: 1px solid #ddc6a2;
 }
 .scene .tabContainer .tabContent .header {
-  background-color: #FCF2DA;
+  background-color: #fcf2da;
   padding: 5px;
 }
 .scene .tabContainer .tabContent .body {
-  background-color: #FFF9EB;
+  background-color: #fff9eb;
   padding: 5px;
 }
 .scene .iconButton {
@@ -303,7 +303,7 @@
   fill: #5f5f64;
 }
 .scene .iconButton:not(.disabled):before {
-  content: "";
+  content: '';
   position: absolute;
   top: 1px;
   right: 1px;
@@ -315,22 +315,32 @@
 .scene .iconButton:not(.disabled):after {
   opacity: 0.5;
   transform: rotate(-10deg);
-  content: "";
+  content: '';
   position: absolute;
   top: -5px;
   right: -5px;
   bottom: -5px;
   left: -5px;
-  background-image: linear-gradient(to bottom, rgba(223, 223, 223, 0) 45%, #dfdfdf 55%, #e6e6e6);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(223, 223, 223, 0) 45%,
+    #dfdfdf 55%,
+    #e6e6e6
+  );
 }
-.scene .iconButton:not(.disabled):active, .scene .iconButton:not(.disabled).active {
+.scene .iconButton:not(.disabled):active,
+.scene .iconButton:not(.disabled).active {
   background-color: #add966;
   box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
-.scene .iconButton:not(.disabled):active:before, .scene .iconButton:not(.disabled):active:after, .scene .iconButton:not(.disabled).active:before, .scene .iconButton:not(.disabled).active:after {
+.scene .iconButton:not(.disabled):active:before,
+.scene .iconButton:not(.disabled):active:after,
+.scene .iconButton:not(.disabled).active:before,
+.scene .iconButton:not(.disabled).active:after {
   display: none;
 }
-.scene .iconButton:not(.disabled):active:hover, .scene .iconButton:not(.disabled).active:hover {
+.scene .iconButton:not(.disabled):active:hover,
+.scene .iconButton:not(.disabled).active:hover {
   background-color: #add966;
 }
 .scene .iconButton.round {
@@ -348,7 +358,7 @@
   pointer-events: none;
 }
 .scene .iconButton.disabled svg path {
-  fill: #FFFFFF;
+  fill: #ffffff;
 }
 
 /*** colorUsage ** */
@@ -523,34 +533,64 @@
   padding: 4px 20px;
   border: 1px solid #213745;
   background-image: linear-gradient(to bottom, #75a1bd, #4f84a6);
-  box-shadow: inset 2px 0 1px -1px #477794, inset -2px 0 1px -1px #477794, inset 0 3px 1px -1px #d6e3eb, inset 0 -3px 1px -1px rgba(48, 80, 100, 0.6);
+  box-shadow:
+    inset 2px 0 1px -1px #477794,
+    inset -2px 0 1px -1px #477794,
+    inset 0 3px 1px -1px #d6e3eb,
+    inset 0 -3px 1px -1px rgba(48, 80, 100, 0.6);
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
-#combatSimulator .switchRoleWrapper .switch.defender:hover:not(.disabled):not(:disabled) {
+#combatSimulator
+  .switchRoleWrapper
+  .switch.defender:hover:not(.disabled):not(:disabled) {
   background-color: #86adc5;
   border-color: #3d6680;
-  box-shadow: inset 2px 0 1px -1px #477794, inset -2px 0 1px -1px #477794, inset 0 3px 1px -1px #d6e3eb, inset 0 -3px 1px -1px rgba(48, 80, 100, 0.6), inset 0 20px 25px -10px rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 2px 0 1px -1px #477794,
+    inset -2px 0 1px -1px #477794,
+    inset 0 3px 1px -1px #d6e3eb,
+    inset 0 -3px 1px -1px rgba(48, 80, 100, 0.6),
+    inset 0 20px 25px -10px rgba(255, 255, 255, 0.7);
 }
-#combatSimulator .switchRoleWrapper .switch.defender:active:not(.disabled):not(:disabled) {
+#combatSimulator
+  .switchRoleWrapper
+  .switch.defender:active:not(.disabled):not(:disabled) {
   background-image: linear-gradient(to top, #86adc5, #4f84a6);
-  box-shadow: inset 2px 0 1px -1px #477794, inset -2px 0 1px -1px #477794;
+  box-shadow:
+    inset 2px 0 1px -1px #477794,
+    inset -2px 0 1px -1px #477794;
   color: #294556;
 }
 #combatSimulator .switchRoleWrapper .switch.attacker {
   padding: 4px 20px;
   border: 1px solid #4a1c1d;
   background-image: linear-gradient(to bottom, #c66c6e, #b14446);
-  box-shadow: inset 2px 0 1px -1px #9e3d3f, inset -2px 0 1px -1px #9e3d3f, inset 0 3px 1px -1px #eed3d3, inset 0 -3px 1px -1px rgba(107, 41, 43, 0.6);
+  box-shadow:
+    inset 2px 0 1px -1px #9e3d3f,
+    inset -2px 0 1px -1px #9e3d3f,
+    inset 0 3px 1px -1px #eed3d3,
+    inset 0 -3px 1px -1px rgba(107, 41, 43, 0.6);
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
 }
-#combatSimulator .switchRoleWrapper .switch.attacker:hover:not(.disabled):not(:disabled) {
+#combatSimulator
+  .switchRoleWrapper
+  .switch.attacker:hover:not(.disabled):not(:disabled) {
   background-color: #cd7e80;
   border-color: #883536;
-  box-shadow: inset 2px 0 1px -1px #9e3d3f, inset -2px 0 1px -1px #9e3d3f, inset 0 3px 1px -1px #eed3d3, inset 0 -3px 1px -1px rgba(107, 41, 43, 0.6), inset 0 20px 25px -10px rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 2px 0 1px -1px #9e3d3f,
+    inset -2px 0 1px -1px #9e3d3f,
+    inset 0 3px 1px -1px #eed3d3,
+    inset 0 -3px 1px -1px rgba(107, 41, 43, 0.6),
+    inset 0 20px 25px -10px rgba(255, 255, 255, 0.7);
 }
-#combatSimulator .switchRoleWrapper .switch.attacker:active:not(.disabled):not(:disabled) {
+#combatSimulator
+  .switchRoleWrapper
+  .switch.attacker:active:not(.disabled):not(:disabled) {
   background-image: linear-gradient(to top, #cd7e80, #b14446);
-  box-shadow: inset 2px 0 1px -1px #9e3d3f, inset -2px 0 1px -1px #9e3d3f;
+  box-shadow:
+    inset 2px 0 1px -1px #9e3d3f,
+    inset -2px 0 1px -1px #9e3d3f;
   color: #5c2425;
 }
 #combatSimulator #simulatePin {
@@ -565,9 +605,9 @@
   padding: 10px 0;
   width: 598px;
   margin-left: -23px;
-  border-top: 2px solid #9B9999;
-  border-bottom: 2px solid #9B9999;
-  background-image: linear-gradient(to top, #E7E7E6, white);
+  border-top: 2px solid #9b9999;
+  border-bottom: 2px solid #9b9999;
+  background-image: linear-gradient(to top, #e7e7e6, white);
 }
 #combatSimulator #simulatePin .simulateWrapper.pinned {
   position: absolute;
@@ -645,7 +685,7 @@
 }
 
 #combatSimulator .heroAttributes {
-  border-top: 1px solid #E8E4DC;
+  border-top: 1px solid #e8e4dc;
   display: -ms-grid;
   display: grid;
   -ms-grid-columns: 1fr auto;
@@ -665,7 +705,7 @@
 #combatSimulator .heroAttributes input {
   vertical-align: middle;
 }
-#combatSimulator .heroAttributes input[type=text] {
+#combatSimulator .heroAttributes input[type='text'] {
   width: 33px;
 }
 #combatSimulator .heroAttributes .calculated {
@@ -711,7 +751,7 @@
   vertical-align: middle;
 }
 #combatSimulator .heroAttributes .equipment .slot:hover {
-  box-shadow: 0 0 1px 1px #B09674;
+  box-shadow: 0 0 1px 1px #b09674;
   background-color: rgba(223, 196, 149, 0.2);
   border-radius: 5px;
 }
@@ -736,11 +776,15 @@
   right: 0;
   z-index: 30;
   padding: 10px 0;
-  background-color: #FCF2DA;
-  border: 1px solid #DDC6A2;
+  background-color: #fcf2da;
+  border: 1px solid #ddc6a2;
   white-space: nowrap;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown.opened.dropUp {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown.opened.dropUp {
   top: auto;
   bottom: 25px;
 }
@@ -748,67 +792,158 @@
   display: none;
 }
 #combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group {
-  color: #61332B;
+  color: #61332b;
   line-height: 1.4em;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group ~ .group {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  ~ .group {
   margin-top: 10px;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .title {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .title {
   text-transform: uppercase;
   font-weight: bold;
   line-height: 1.9em;
   padding: 0 15px 0 10px;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .title i {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .title
+  i {
   margin-right: 5px;
   vertical-align: text-bottom;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .entry {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .entry {
   padding: 2px 20px;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .entry input {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .entry
+  input {
   vertical-align: text-bottom;
   margin-top: 2px;
   margin-right: 5px;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .entry .checkmark {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .entry
+  .checkmark {
   width: 1em;
   height: 1em;
   margin-right: 3px;
   vertical-align: text-top;
   fill: transparent;
-  stroke: #61332B;
+  stroke: #61332b;
   stroke-width: 4;
   stroke-dasharray: 40;
   stroke-dashoffset: 40;
   transition: stroke-dashoffset 0.3s ease-out;
 }
 /* converter.ignore.next */
-.rtl #combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .entry .checkmark {
+.rtl
+  #combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .entry
+  .checkmark {
   transform: none;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .entry.selected {
-  background-color: #B09674;
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .entry.selected {
+  background-color: #b09674;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .entry.selected .checkmark {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .entry.selected
+  .checkmark {
   stroke-dashoffset: 0;
   transition: stroke-dashoffset 0.2s ease-in;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .entry.selected:not(:hover) {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .entry.selected:not(:hover) {
   color: white;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .entry.selected:not(:hover) .checkmark {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .entry.selected:not(:hover)
+  .checkmark {
   stroke: white;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .entry:not(.owned):not(:hover):not(.selected) {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .entry:not(.owned):not(:hover):not(.selected) {
   color: rgba(97, 51, 43, 0.4);
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown .group .entry:hover {
-  background-color: #F2E5C6;
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown
+  .group
+  .entry:hover {
+  background-color: #f2e5c6;
   cursor: pointer;
 }
-#combatSimulator .heroAttributes .equipment .equipContainer .dropdown.bag .entry i {
+#combatSimulator
+  .heroAttributes
+  .equipment
+  .equipContainer
+  .dropdown.bag
+  .entry
+  i {
   margin-right: 5px;
   vertical-align: text-bottom;
 }
@@ -828,7 +963,7 @@
 
 #combatSimulator .role {
   position: relative;
-  border: 1px solid #DDC6A2;
+  border: 1px solid #ddc6a2;
 }
 #combatSimulator .role label i {
   vertical-align: text-top;
@@ -844,7 +979,7 @@
 }
 #combatSimulator .role .header h2,
 #combatSimulator .role .header h3 {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 #combatSimulator .role .header h2 {
   font-size: 1.5em;
@@ -873,21 +1008,24 @@
 }
 #combatSimulator .role .content {
   position: relative;
-  background-color: #FFF9EB;
+  background-color: #fff9eb;
   padding: 0 5px;
 }
-#combatSimulator .role.attacker, #combatSimulator .role.defender {
+#combatSimulator .role.attacker,
+#combatSimulator .role.defender {
   padding: 0 5px 5px;
-  background-color: #FCF2DA;
+  background-color: #fcf2da;
 }
-#combatSimulator .role.attacker .header, #combatSimulator .role.defender .header {
+#combatSimulator .role.attacker .header,
+#combatSimulator .role.defender .header {
   -ms-grid-rows: 36px;
   grid-template-rows: 36px;
   -ms-grid-columns: 60px 1fr 80px 60px;
   grid-template-columns: 60px 1fr 80px 60px;
   margin: -1px -6px 5px;
 }
-#combatSimulator .role.attacker .header .roleIcon, #combatSimulator .role.defender .header .roleIcon {
+#combatSimulator .role.attacker .header .roleIcon,
+#combatSimulator .role.defender .header .roleIcon {
   -ms-grid-row: 1;
   grid-row-start: 1;
   -ms-grid-column: 1;
@@ -895,15 +1033,18 @@
   -ms-grid-row-align: center;
   align-self: center;
 }
-#combatSimulator .role.attacker .header .roleIcon.svgAttack, #combatSimulator .role.defender .header .roleIcon.svgAttack {
+#combatSimulator .role.attacker .header .roleIcon.svgAttack,
+#combatSimulator .role.defender .header .roleIcon.svgAttack {
   width: 45px;
   height: 51px;
 }
-#combatSimulator .role.attacker .header .roleIcon.svgDefend, #combatSimulator .role.defender .header .roleIcon.svgDefend {
+#combatSimulator .role.attacker .header .roleIcon.svgDefend,
+#combatSimulator .role.defender .header .roleIcon.svgDefend {
   width: 43px;
   height: 48px;
 }
-#combatSimulator .role.attacker .header .villageSelection, #combatSimulator .role.defender .header .villageSelection {
+#combatSimulator .role.attacker .header .villageSelection,
+#combatSimulator .role.defender .header .villageSelection {
   -ms-grid-row: 1;
   grid-row-start: 1;
   -ms-grid-column: 3;
@@ -912,23 +1053,28 @@
   align-self: center;
   margin-left: 20px;
 }
-#combatSimulator .role.attacker .header .villageSelection > *, #combatSimulator .role.defender .header .villageSelection > * {
+#combatSimulator .role.attacker .header .villageSelection > *,
+#combatSimulator .role.defender .header .villageSelection > * {
   display: inline-block;
   vertical-align: middle;
 }
-#combatSimulator .role.attacker .header .villageSelection select, #combatSimulator .role.defender .header .villageSelection select {
+#combatSimulator .role.attacker .header .villageSelection select,
+#combatSimulator .role.defender .header .villageSelection select {
   margin-right: 10px;
   max-width: 200px;
 }
-#combatSimulator .role.attacker .header .villageSelection select .empty.hidden, #combatSimulator .role.defender .header .villageSelection select .empty.hidden {
+#combatSimulator .role.attacker .header .villageSelection select .empty.hidden,
+#combatSimulator .role.defender .header .villageSelection select .empty.hidden {
   display: none;
 }
-#combatSimulator .role.attacker .header .villageSelection .reload svg, #combatSimulator .role.defender .header .villageSelection .reload svg {
+#combatSimulator .role.attacker .header .villageSelection .reload svg,
+#combatSimulator .role.defender .header .villageSelection .reload svg {
   width: 17px;
   height: 17px;
   margin: 3px;
 }
-#combatSimulator .role.attacker .header .rolePopulation, #combatSimulator .role.defender .header .rolePopulation {
+#combatSimulator .role.attacker .header .rolePopulation,
+#combatSimulator .role.defender .header .rolePopulation {
   -ms-grid-row: 1;
   grid-row-start: 1;
   -ms-grid-column: 3;
@@ -937,48 +1083,59 @@
   align-self: center;
   display: inline-block;
 }
-#combatSimulator .role.attacker .header .rolePopulation > *, #combatSimulator .role.defender .header .rolePopulation > * {
+#combatSimulator .role.attacker .header .rolePopulation > *,
+#combatSimulator .role.defender .header .rolePopulation > * {
   display: inline-block;
   vertical-align: middle;
 }
-#combatSimulator .role.attacker .header .rolePopulation i, #combatSimulator .role.defender .header .rolePopulation i {
+#combatSimulator .role.attacker .header .rolePopulation i,
+#combatSimulator .role.defender .header .rolePopulation i {
   margin-right: 5px;
 }
-#combatSimulator .role.attacker .header .rolePopulation input, #combatSimulator .role.defender .header .rolePopulation input {
+#combatSimulator .role.attacker .header .rolePopulation input,
+#combatSimulator .role.defender .header .rolePopulation input {
   width: 45px;
   font-size: 11px;
 }
-.rtl #combatSimulator .role.attacker .header .rolePopulation input, .rtl #combatSimulator .role.defender .header .rolePopulation input {
+.rtl #combatSimulator .role.attacker .header .rolePopulation input,
+.rtl #combatSimulator .role.defender .header .rolePopulation input {
   font-size: 12px;
 }
-#combatSimulator .role.attacker .header .iconButton.clear, #combatSimulator .role.defender .header .iconButton.clear {
+#combatSimulator .role.attacker .header .iconButton.clear,
+#combatSimulator .role.defender .header .iconButton.clear {
   -ms-grid-column: 4;
   grid-column-start: 4;
 }
-#combatSimulator .role.attacker .header.you, #combatSimulator .role.defender .header.you {
+#combatSimulator .role.attacker .header.you,
+#combatSimulator .role.defender .header.you {
   -ms-grid-columns: 65px auto 1fr 80px 60px;
   grid-template-columns: 65px auto 1fr 80px 60px;
 }
-#combatSimulator .role.attacker .header.you .rolePopulation, #combatSimulator .role.defender .header.you .rolePopulation {
+#combatSimulator .role.attacker .header.you .rolePopulation,
+#combatSimulator .role.defender .header.you .rolePopulation {
   -ms-grid-column: 4;
   grid-column-start: 4;
 }
-#combatSimulator .role.attacker .header.you .iconButton.clear, #combatSimulator .role.defender .header.you .iconButton.clear {
+#combatSimulator .role.attacker .header.you .iconButton.clear,
+#combatSimulator .role.defender .header.you .iconButton.clear {
   -ms-grid-column: 5;
   grid-column-start: 5;
 }
-#combatSimulator .role.attacker .header.you ~ .content .troopIcons i.unit, #combatSimulator .role.defender .header.you ~ .content .troopIcons i.unit {
+#combatSimulator .role.attacker .header.you ~ .content .troopIcons i.unit,
+#combatSimulator .role.defender .header.you ~ .content .troopIcons i.unit {
   cursor: pointer;
 }
-#combatSimulator .role.attacker .content, #combatSimulator .role.defender .content {
-  border: 1px solid #DFC495;
-  box-shadow: 0 0 10px 2px #DFC495;
+#combatSimulator .role.attacker .content,
+#combatSimulator .role.defender .content {
+  border: 1px solid #dfc495;
+  box-shadow: 0 0 10px 2px #dfc495;
 }
 #combatSimulator .role.attacker .header {
-  background-color: #A33F41;
+  background-color: #a33f41;
 }
-#combatSimulator .role.defender .header, #combatSimulator .role.reinforcement .header {
-  background-color: #8CB1C8;
+#combatSimulator .role.defender .header,
+#combatSimulator .role.reinforcement .header {
+  background-color: #8cb1c8;
 }
 #combatSimulator .role.reinforcement {
   margin: -1px 5px 0;
@@ -1029,45 +1186,60 @@
 #combatSimulator .tribeSelection .tribeWrapper div:hover {
   cursor: pointer;
 }
-#combatSimulator .tribeSelection.attack .tribeWrapper, #combatSimulator .tribeSelection.defense .tribeWrapper {
+#combatSimulator .tribeSelection.attack .tribeWrapper,
+#combatSimulator .tribeSelection.defense .tribeWrapper {
   height: 63px;
 }
-#combatSimulator .tribeSelection.attack .tribeWrapper svg, #combatSimulator .tribeSelection.defense .tribeWrapper svg {
+#combatSimulator .tribeSelection.attack .tribeWrapper svg,
+#combatSimulator .tribeSelection.defense .tribeWrapper svg {
   display: none;
 }
-#combatSimulator .tribeSelection.attack .tribeWrapper div, #combatSimulator .tribeSelection.defense .tribeWrapper div {
+#combatSimulator .tribeSelection.attack .tribeWrapper div,
+#combatSimulator .tribeSelection.defense .tribeWrapper div {
   width: 77px;
   padding: 0 10px;
 }
-#combatSimulator .tribeSelection.attack .tribeWrapper div:before, #combatSimulator .tribeSelection.defense .tribeWrapper div:before {
-  content: "";
+#combatSimulator .tribeSelection.attack .tribeWrapper div:before,
+#combatSimulator .tribeSelection.defense .tribeWrapper div:before {
+  content: '';
   position: absolute;
   top: auto;
   right: 0;
   bottom: 0;
   left: 0;
   height: 0;
-  background-image: linear-gradient(to top, rgba(223, 196, 149, 0.8), rgba(223, 196, 149, 0));
+  background-image: linear-gradient(
+    to top,
+    rgba(223, 196, 149, 0.8),
+    rgba(223, 196, 149, 0)
+  );
   transition: all 0.3s ease-out;
 }
-#combatSimulator .tribeSelection.attack .tribeWrapper div i, #combatSimulator .tribeSelection.defense .tribeWrapper div i {
+#combatSimulator .tribeSelection.attack .tribeWrapper div i,
+#combatSimulator .tribeSelection.defense .tribeWrapper div i {
   position: relative;
 }
-#combatSimulator .tribeSelection.attack .tribeWrapper div.active, #combatSimulator .tribeSelection.defense .tribeWrapper div.active {
+#combatSimulator .tribeSelection.attack .tribeWrapper div.active,
+#combatSimulator .tribeSelection.defense .tribeWrapper div.active {
   cursor: default;
 }
-#combatSimulator .tribeSelection.attack .tribeWrapper div.inactive, #combatSimulator .tribeSelection.defense .tribeWrapper div.inactive {
+#combatSimulator .tribeSelection.attack .tribeWrapper div.inactive,
+#combatSimulator .tribeSelection.defense .tribeWrapper div.inactive {
   cursor: pointer;
 }
-#combatSimulator .tribeSelection.attack .tribeWrapper div.inactive:hover:before, #combatSimulator .tribeSelection.defense .tribeWrapper div.inactive:hover:before {
+#combatSimulator .tribeSelection.attack .tribeWrapper div.inactive:hover:before,
+#combatSimulator
+  .tribeSelection.defense
+  .tribeWrapper
+  div.inactive:hover:before {
   height: 63px;
 }
 #combatSimulator .tribeSelection.reinforcement {
   position: relative;
   margin: -1px 5px 0;
-  border: 1px solid #DFC495;
-  border-top-color: #E8E4DC;
-  background-color: #FCF2DA;
+  border: 1px solid #dfc495;
+  border-top-color: #e8e4dc;
+  background-color: #fcf2da;
 }
 .roleReinforcement ~ #combatSimulator .tribeSelection.reinforcement {
   margin-top: -2px;
@@ -1078,7 +1250,7 @@
 }
 #combatSimulator .tribeSelection.reinforcement .tribeWrapper div {
   padding: 0 10px;
-  color: #9B9999;
+  color: #9b9999;
 }
 #combatSimulator .tribeSelection.reinforcement .tribeWrapper div svg {
   position: absolute;
@@ -1094,15 +1266,19 @@
 }
 #combatSimulator .tribeSelection.reinforcement .tribeWrapper div svg line {
   stroke-width: 1;
-  stroke: #FFFFFF;
+  stroke: #ffffff;
 }
-#combatSimulator .tribeSelection.reinforcement .tribeWrapper div:not(:hover) svg {
+#combatSimulator
+  .tribeSelection.reinforcement
+  .tribeWrapper
+  div:not(:hover)
+  svg {
   opacity: 0;
 }
 
 #combatSimulator .bonus ~ .troops,
 #combatSimulator .movement ~ .troops {
-  border-top: 1px solid #E8E4DC;
+  border-top: 1px solid #e8e4dc;
 }
 #combatSimulator .troops {
   width: 100%;
@@ -1121,10 +1297,11 @@
 #combatSimulator .troops input {
   vertical-align: middle;
 }
-#combatSimulator .troops input[type=text] {
+#combatSimulator .troops input[type='text'] {
   width: 100%;
 }
-#combatSimulator .troops input.unit9, #combatSimulator .troops input.unit10 {
+#combatSimulator .troops input.unit9,
+#combatSimulator .troops input.unit10 {
   width: 25px;
 }
 #combatSimulator .troops .hero.hidden {
@@ -1146,19 +1323,19 @@
   visibility: hidden;
 }
 #combatSimulator .troops .cataLevels:before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: calc(50% - 1px);
   width: 1px;
-  background-color: #E8E4DC;
+  background-color: #e8e4dc;
   height: 15px;
 }
 #combatSimulator .troops .cataLevels .cata1,
 #combatSimulator .troops .cataLevels .cata2 {
   position: absolute;
   top: 4px;
-  background-color: #FFF9EB;
+  background-color: #fff9eb;
 }
 #combatSimulator .troops .cataLevels .cata1 {
   left: -23px;
@@ -1197,7 +1374,7 @@
 #combatSimulator .results #applyLosses svg.svgArrowShort {
   width: 16px;
   height: 12px;
-  fill: #544E44;
+  fill: #544e44;
   display: inline-block;
   position: absolute;
   top: 6px;
@@ -1207,14 +1384,14 @@
   position: relative;
   text-align: center;
   margin-bottom: 35px;
-  color: #9B9999;
+  color: #9b9999;
 }
 #combatSimulator .results .separator:before {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   top: 7px;
-  border-bottom: 1px solid #9B9999;
+  border-bottom: 1px solid #9b9999;
 }
 #combatSimulator .results .separator.long:before {
   right: 0;
@@ -1225,7 +1402,7 @@
 #combatSimulator .results .separator .title {
   position: relative;
   display: inline-block;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 0 5px;
   font-size: 1.2rem;
 }
@@ -1237,7 +1414,7 @@
 #combatSimulator .results .separator .iconButton svg {
   width: 15px;
   height: 15px;
-  fill: #FFFFFF;
+  fill: #ffffff;
   margin: 5px;
 }
 #combatSimulator .results .separator .iconButton svg.collapse {
@@ -1248,16 +1425,16 @@
   transform: scaleX(1);
 }
 #combatSimulator .results .separator .iconButton:after {
-  content: "";
+  content: '';
   position: absolute;
   left: -6px;
   width: 5px;
   height: 100%;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 #combatSimulator .results .result {
-  background-color: #FFF9EB;
-  border: 1px solid #DFC495;
+  background-color: #fff9eb;
+  border: 1px solid #dfc495;
 }
 #combatSimulator .results .result .header {
   position: relative;
@@ -1268,7 +1445,7 @@
   justify-content: space-between;
 }
 #combatSimulator .results .result .header h2 {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 #combatSimulator .results .result .content {
   position: relative;
@@ -1284,8 +1461,8 @@
   padding: 5px 3px;
   white-space: nowrap;
 }
-.rtl #combatSimulator .results .result .content table th, .rtl
-#combatSimulator .results .result .content table td {
+.rtl #combatSimulator .results .result .content table th,
+.rtl #combatSimulator .results .result .content table td {
   font-size: 14px;
 }
 #combatSimulator .results .result .content table th {
@@ -1295,7 +1472,8 @@
   text-align: right;
   width: 42px;
 }
-#combatSimulator .results .result .content table td.u9, #combatSimulator .results .result .content table td.u10 {
+#combatSimulator .results .result .content table td.u9,
+#combatSimulator .results .result .content table td.u10 {
   width: 35px;
 }
 #combatSimulator .results .result .content table td.uhero {
@@ -1303,14 +1481,14 @@
 }
 #combatSimulator .results .result .content table .troopsLoss td,
 #combatSimulator .results .result .content table .troopsCaptured td {
-  color: #D40000;
+  color: #d40000;
 }
 #combatSimulator .results .result .content table .troopsResult {
-  background-color: #FCF2DA;
-  color: #228B22;
+  background-color: #fcf2da;
+  color: #228b22;
 }
 #combatSimulator .results .result .content table .troopsRevived {
-  color: #228B22;
+  color: #228b22;
 }
 #combatSimulator .results .result .content table .combatReportLine td {
   text-align: left;
@@ -1330,7 +1508,7 @@
   cursor: pointer;
 }
 #combatSimulator .results .result .content table .combatReportLine .negative {
-  color: #D40000;
+  color: #d40000;
 }
 #combatSimulator .results .result .content table .additionalInfo td {
   text-align: left;
@@ -1342,8 +1520,15 @@
 #combatSimulator .results .result .content table .additionalInfo td span {
   font-weight: bold;
 }
-#combatSimulator .results .result .content table .additionalInfo td span.negative {
-  color: #D40000;
+#combatSimulator
+  .results
+  .result
+  .content
+  table
+  .additionalInfo
+  td
+  span.negative {
+  color: #d40000;
 }
 #combatSimulator .results .result .content.extended {
   position: relative;
@@ -1351,22 +1536,25 @@
   width: 650px;
   padding: 5px;
   margin: -1px 0;
-  background-color: #FFF9EB;
-  border: 1px solid #9B9999;
+  background-color: #fff9eb;
+  border: 1px solid #9b9999;
 }
 #combatSimulator .results .result .content.extended table td {
   width: 63px;
 }
-#combatSimulator .results .result .content.extended table td.u9, #combatSimulator .results .result .content.extended table td.u10 {
+#combatSimulator .results .result .content.extended table td.u9,
+#combatSimulator .results .result .content.extended table td.u10 {
   width: 45px;
 }
-#combatSimulator .results .result.attack .header, #combatSimulator .results .result.defense .header {
+#combatSimulator .results .result.attack .header,
+#combatSimulator .results .result.defense .header {
   -ms-grid-columns: 100px 1fr 165px;
   grid-template-columns: 100px 1fr 165px;
   -ms-grid-rows: 36px;
   grid-template-rows: 36px;
 }
-#combatSimulator .results .result.attack .header .tribeIcon, #combatSimulator .results .result.defense .header .tribeIcon {
+#combatSimulator .results .result.attack .header .tribeIcon,
+#combatSimulator .results .result.defense .header .tribeIcon {
   -ms-grid-row: 1;
   grid-row-start: 1;
   -ms-grid-column: 1;
@@ -1375,7 +1563,8 @@
   left: 0;
   bottom: 0;
 }
-#combatSimulator .results .result.attack .header .roleIcon, #combatSimulator .results .result.defense .header .roleIcon {
+#combatSimulator .results .result.attack .header .roleIcon,
+#combatSimulator .results .result.defense .header .roleIcon {
   -ms-grid-row: 1;
   grid-row-start: 1;
   -ms-grid-column: 1;
@@ -1384,15 +1573,18 @@
   bottom: -4px;
   left: 45px;
 }
-#combatSimulator .results .result.attack .header .roleIcon.svgAttack, #combatSimulator .results .result.defense .header .roleIcon.svgAttack {
+#combatSimulator .results .result.attack .header .roleIcon.svgAttack,
+#combatSimulator .results .result.defense .header .roleIcon.svgAttack {
   width: 40px;
   height: 46px;
 }
-#combatSimulator .results .result.attack .header .roleIcon.svgDefend, #combatSimulator .results .result.defense .header .roleIcon.svgDefend {
+#combatSimulator .results .result.attack .header .roleIcon.svgDefend,
+#combatSimulator .results .result.defense .header .roleIcon.svgDefend {
   width: 40px;
   height: 45px;
 }
-#combatSimulator .results .result.attack .header h2, #combatSimulator .results .result.defense .header h2 {
+#combatSimulator .results .result.attack .header h2,
+#combatSimulator .results .result.defense .header h2 {
   -ms-grid-row: 1;
   grid-row-start: 1;
   -ms-grid-column: 2;
@@ -1401,7 +1593,8 @@
   align-self: center;
   text-transform: uppercase;
 }
-#combatSimulator .results .result.attack .header .outcome, #combatSimulator .results .result.defense .header .outcome {
+#combatSimulator .results .result.attack .header .outcome,
+#combatSimulator .results .result.defense .header .outcome {
   -ms-grid-row: 1;
   grid-row-start: 1;
   -ms-grid-column: 3;
@@ -1409,13 +1602,27 @@
   -ms-grid-row-align: center;
   align-self: center;
 }
-#combatSimulator .results .result.attack .header .outcome .arrowWrapper, #combatSimulator .results .result.defense .header .outcome .arrowWrapper {
+#combatSimulator .results .result.attack .header .outcome .arrowWrapper,
+#combatSimulator .results .result.defense .header .outcome .arrowWrapper {
   position: relative;
   width: 39px;
   height: 36px;
   overflow: hidden;
 }
-#combatSimulator .results .result.attack .header .outcome .arrowWrapper .outcomeArrow, #combatSimulator .results .result.defense .header .outcome .arrowWrapper .outcomeArrow {
+#combatSimulator
+  .results
+  .result.attack
+  .header
+  .outcome
+  .arrowWrapper
+  .outcomeArrow,
+#combatSimulator
+  .results
+  .result.defense
+  .header
+  .outcome
+  .arrowWrapper
+  .outcomeArrow {
   width: 40px;
   height: 38px;
   position: relative;
@@ -1425,60 +1632,144 @@
   stroke-width: 0.75;
 }
 /* converter.ignore.next */
-.rtl #combatSimulator .results .result.attack .header .outcome .arrowWrapper .outcomeArrow, .rtl #combatSimulator .results .result.defense .header .outcome .arrowWrapper .outcomeArrow {
+.rtl
+  #combatSimulator
+  .results
+  .result.attack
+  .header
+  .outcome
+  .arrowWrapper
+  .outcomeArrow,
+.rtl
+  #combatSimulator
+  .results
+  .result.defense
+  .header
+  .outcome
+  .arrowWrapper
+  .outcomeArrow {
   transform: scale(-1, 1);
 }
-#combatSimulator .results .result.attack .header .outcome .outcomeIcons, #combatSimulator .results .result.defense .header .outcome .outcomeIcons {
+#combatSimulator .results .result.attack .header .outcome .outcomeIcons,
+#combatSimulator .results .result.defense .header .outcome .outcomeIcons {
   position: absolute;
   right: 10px;
   bottom: -6px;
 }
-#combatSimulator .results .result.attack .header .outcome .outcomeIcons svg, #combatSimulator .results .result.defense .header .outcome .outcomeIcons svg {
+#combatSimulator .results .result.attack .header .outcome .outcomeIcons svg,
+#combatSimulator .results .result.defense .header .outcome .outcomeIcons svg {
   position: absolute;
   bottom: 0;
 }
-#combatSimulator .results .result.attack .header .outcome .outcomeIcons .svgAttack,
-#combatSimulator .results .result.attack .header .outcome .outcomeIcons .svgAttackLost, #combatSimulator .results .result.defense .header .outcome .outcomeIcons .svgAttack,
-#combatSimulator .results .result.defense .header .outcome .outcomeIcons .svgAttackLost {
+#combatSimulator
+  .results
+  .result.attack
+  .header
+  .outcome
+  .outcomeIcons
+  .svgAttack,
+#combatSimulator
+  .results
+  .result.attack
+  .header
+  .outcome
+  .outcomeIcons
+  .svgAttackLost,
+#combatSimulator
+  .results
+  .result.defense
+  .header
+  .outcome
+  .outcomeIcons
+  .svgAttack,
+#combatSimulator
+  .results
+  .result.defense
+  .header
+  .outcome
+  .outcomeIcons
+  .svgAttackLost {
   right: 0;
   width: 50px;
   height: 60px;
 }
-#combatSimulator .results .result.attack .header .outcome .outcomeIcons .svgDefend,
-#combatSimulator .results .result.attack .header .outcome .outcomeIcons .svgDefendLost, #combatSimulator .results .result.defense .header .outcome .outcomeIcons .svgDefend,
-#combatSimulator .results .result.defense .header .outcome .outcomeIcons .svgDefendLost {
+#combatSimulator
+  .results
+  .result.attack
+  .header
+  .outcome
+  .outcomeIcons
+  .svgDefend,
+#combatSimulator
+  .results
+  .result.attack
+  .header
+  .outcome
+  .outcomeIcons
+  .svgDefendLost,
+#combatSimulator
+  .results
+  .result.defense
+  .header
+  .outcome
+  .outcomeIcons
+  .svgDefend,
+#combatSimulator
+  .results
+  .result.defense
+  .header
+  .outcome
+  .outcomeIcons
+  .svgDefendLost {
   right: 0;
   width: 48px;
   height: 60px;
 }
-#combatSimulator .results .result.attack .header .outcome .outcomeIcons .svgSkull, #combatSimulator .results .result.defense .header .outcome .outcomeIcons .svgSkull {
+#combatSimulator
+  .results
+  .result.attack
+  .header
+  .outcome
+  .outcomeIcons
+  .svgSkull,
+#combatSimulator
+  .results
+  .result.defense
+  .header
+  .outcome
+  .outcomeIcons
+  .svgSkull {
   right: -7px;
   width: 28px;
   height: 35px;
 }
-#combatSimulator .results .result.attack .content, #combatSimulator .results .result.defense .content {
+#combatSimulator .results .result.attack .content,
+#combatSimulator .results .result.defense .content {
   padding: 5px 10px;
 }
 #combatSimulator .results .result.attack .header {
-  background-color: #A33F41;
+  background-color: #a33f41;
 }
 #combatSimulator .results .result.attack .header .outcome {
   background-color: #7e3132;
 }
 #combatSimulator .results .result.attack .header .outcome svg {
-  fill: #A33F41;
+  fill: #a33f41;
 }
 #combatSimulator .results .result.defense {
   margin-top: 25px;
 }
-#combatSimulator .results .result.defense .header, #combatSimulator .results .result.reinforcement .header {
-  background-color: #8CB1C8;
+#combatSimulator .results .result.defense .header,
+#combatSimulator .results .result.reinforcement .header {
+  background-color: #8cb1c8;
 }
-#combatSimulator .results .result.defense .header .outcome, #combatSimulator .results .result.reinforcement .header .outcome {
+#combatSimulator .results .result.defense .header .outcome,
+#combatSimulator .results .result.reinforcement .header .outcome {
   background-color: #6a9ab8;
 }
-#combatSimulator .results .result.defense .header .outcome svg, #combatSimulator .results .result.reinforcement .header .outcome svg {
-  fill: #8CB1C8;
+#combatSimulator .results .result.defense .header .outcome svg,
+#combatSimulator .results .result.reinforcement .header .outcome svg {
+  fill: #8cb1c8;
 }
 #combatSimulator .results .result.reinforcement {
   width: calc(100% - 10px);
@@ -1503,28 +1794,39 @@
 #combatSimulator .results .result.reinforcement .content {
   padding: 5px;
 }
-#combatSimulator .results .result.reinforcement .content.tribe4 .content td.uhero, #combatSimulator .results .result.reinforcement .content.tribe5 .content td.uhero {
+#combatSimulator
+  .results
+  .result.reinforcement
+  .content.tribe4
+  .content
+  td.uhero,
+#combatSimulator
+  .results
+  .result.reinforcement
+  .content.tribe5
+  .content
+  td.uhero {
   visibility: hidden;
 }
 #combatSimulator .results .combatStatistics {
   margin-top: 25px;
-  border: 1px solid #DDC6A2;
+  border: 1px solid #ddc6a2;
 }
 #combatSimulator .results .combatStatistics .header {
   height: 36px;
   line-height: 36px;
   background-color: #778243;
-  border-bottom: 1px solid #DDC6A2;
+  border-bottom: 1px solid #ddc6a2;
 }
 #combatSimulator .results .combatStatistics .header h2 {
-  color: #F2F2F2;
+  color: #f2f2f2;
   text-transform: uppercase;
   font-size: 1.5em;
   margin: 0 10px;
 }
 #combatSimulator .results .combatStatistics table {
   border-collapse: collapse;
-  background-color: #FFF9EB;
+  background-color: #fff9eb;
 }
 #combatSimulator .results .combatStatistics table th,
 #combatSimulator .results .combatStatistics table td {
@@ -1533,19 +1835,19 @@
 }
 #combatSimulator .results .combatStatistics table th:nth-child(2),
 #combatSimulator .results .combatStatistics table td:nth-child(2) {
-  border-left: 1px solid #DDC6A2;
-  border-right: 1px solid #DDC6A2;
+  border-left: 1px solid #ddc6a2;
+  border-right: 1px solid #ddc6a2;
 }
 #combatSimulator .results .combatStatistics table th {
   text-align: left;
 }
 #combatSimulator .results .combatStatistics table thead th {
   font-weight: bold;
-  background-color: #FCF2DA;
+  background-color: #fcf2da;
 }
 #combatSimulator .results .combatStatistics table tbody tr:nth-child(even) th,
 #combatSimulator .results .combatStatistics table tbody tr:nth-child(even) td {
-  background-color: #FCF2DA;
+  background-color: #fcf2da;
 }
 #combatSimulator .results .combatStatistics table tbody td {
   width: 30%;
@@ -1595,7 +1897,7 @@
   visibility: visible;
 }
 #reactDialogWrapper .reactDialog:before {
-  content: "";
+  content: '';
   display: inline-block;
   height: 100%;
   vertical-align: middle;
@@ -1607,7 +1909,7 @@
   width: auto;
   min-width: 600px;
   max-width: 95%;
-  background-color: #E8E4DC;
+  background-color: #e8e4dc;
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
   border-radius: 3px;
   position: relative;
@@ -1653,7 +1955,7 @@
 }
 #statisticsV2 h4 {
   padding: 0 0 0 46px;
-  background-color: #C4E18A;
+  background-color: #c4e18a;
   border: solid 1px #587c1e;
   height: 30px;
   line-height: 28px;
@@ -1738,16 +2040,24 @@
   z-index: 3;
 }
 #statisticsV2 .chartWithLegend .legendContainer .legendTabs .tab:not(.active) {
-  background-color: #D2D2D1;
+  background-color: #d2d2d1;
   z-index: 1;
   cursor: pointer;
   transition-duration: 250ms;
 }
-#statisticsV2 .chartWithLegend .legendContainer .legendTabs .tab:not(.active):hover {
-  background-color: #E7E7E6;
+#statisticsV2
+  .chartWithLegend
+  .legendContainer
+  .legendTabs
+  .tab:not(.active):hover {
+  background-color: #e7e7e6;
 }
-#statisticsV2 .chartWithLegend .legendContainer .legendTabs .tab:not(.active):active {
-  background-color: #F2F2F2;
+#statisticsV2
+  .chartWithLegend
+  .legendContainer
+  .legendTabs
+  .tab:not(.active):active {
+  background-color: #f2f2f2;
 }
 #statisticsV2 .chartWithLegend .legendContainer .legendTabs .tab i {
   vertical-align: bottom;
@@ -1803,28 +2113,49 @@
 #statisticsV2 .recharts-wrapper svg {
   overflow: visible;
 }
-.ie #statisticsV2 .recharts-wrapper svg, .edge #statisticsV2 .recharts-wrapper svg {
+.ie #statisticsV2 .recharts-wrapper svg,
+.edge #statisticsV2 .recharts-wrapper svg {
   overflow: hidden;
 }
 #statisticsV2 .recharts-wrapper .recharts-tooltip-wrapper {
   z-index: 205 !important;
 }
-#statisticsV2 .recharts-wrapper .recharts-tooltip-wrapper .recharts-default-tooltip {
+#statisticsV2
+  .recharts-wrapper
+  .recharts-tooltip-wrapper
+  .recharts-default-tooltip {
   background-color: rgba(0, 0, 0, 0.8) !important;
   border: none !important;
   border-radius: 4px;
   padding: 4px 9px 4px 9px !important;
 }
-#statisticsV2 .recharts-wrapper .recharts-tooltip-wrapper .recharts-default-tooltip li {
-  color: #DDDDDD !important;
+#statisticsV2
+  .recharts-wrapper
+  .recharts-tooltip-wrapper
+  .recharts-default-tooltip
+  li {
+  color: #dddddd !important;
   padding: 0 !important;
   font-size: 11px;
 }
-.rtl #statisticsV2 .recharts-wrapper .recharts-tooltip-wrapper .recharts-default-tooltip li {
+.rtl
+  #statisticsV2
+  .recharts-wrapper
+  .recharts-tooltip-wrapper
+  .recharts-default-tooltip
+  li {
   font-size: 12px;
 }
-#statisticsV2 .recharts-wrapper .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-name,
-#statisticsV2 .recharts-wrapper .recharts-tooltip-wrapper .recharts-default-tooltip .recharts-tooltip-item-separator {
+#statisticsV2
+  .recharts-wrapper
+  .recharts-tooltip-wrapper
+  .recharts-default-tooltip
+  .recharts-tooltip-item-name,
+#statisticsV2
+  .recharts-wrapper
+  .recharts-tooltip-wrapper
+  .recharts-default-tooltip
+  .recharts-tooltip-item-separator {
   display: none;
 }
 
@@ -1832,7 +2163,8 @@
 .rtl #statisticsV2 .recharts-wrapper .recharts-tooltip-wrapper {
   right: 300px;
 }
-.rtl #statisticsV2 .raidChart .recharts-wrapper .recharts-tooltip-wrapper, .rtl #statisticsV2 .tradeChart .recharts-wrapper .recharts-tooltip-wrapper {
+.rtl #statisticsV2 .raidChart .recharts-wrapper .recharts-tooltip-wrapper,
+.rtl #statisticsV2 .tradeChart .recharts-wrapper .recharts-tooltip-wrapper {
   right: 200px;
 }
 
@@ -1857,50 +2189,112 @@
   width: 554px;
   height: 136px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .serverNumbers {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .serverNumbers {
   position: absolute;
   top: 5px;
   right: 5px;
   text-align: right;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .serverNumbers .counter {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .serverNumbers
+  .counter {
   position: relative;
   text-align: center;
   display: inline-block;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .serverNumbers .counter i {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .serverNumbers
+  .counter
+  i {
   position: absolute;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .serverNumbers .counter.activatedPlayers {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .serverNumbers
+  .counter.activatedPlayers {
   min-width: 30px;
   margin-right: 10px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .serverNumbers .counter.activatedPlayers i {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .serverNumbers
+  .counter.activatedPlayers
+  i {
   left: calc(50% - (30px / 2));
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .serverNumbers .counter.serverTime {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .serverNumbers
+  .counter.serverTime {
   min-width: 53px;
   margin-right: 15px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .serverNumbers .counter.serverTime i {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .serverNumbers
+  .counter.serverTime
+  i {
   left: calc(50% - (53px / 2));
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/serverAge_large.png');
   width: 53px;
   height: 54px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .serverNumbers .counter span {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .serverNumbers
+  .counter
+  span {
   position: relative;
   z-index: 2;
   line-height: 64px;
   font-weight: bold;
   font-size: 24px;
-  color: #F2F2F2;
-  text-shadow: 1px 0 3px #000000, 1px 1px 3px #000000, 0 1px 3px #000000, -1px 1px 3px #000000, -1px 0 3px #000000, -1px -1px 3px #000000, 0 -1px 3px #000000, 1px -1px 3px #000000;
+  color: #f2f2f2;
+  text-shadow:
+    1px 0 3px #000000,
+    1px 1px 3px #000000,
+    0 1px 3px #000000,
+    -1px 1px 3px #000000,
+    -1px 0 3px #000000,
+    -1px -1px 3px #000000,
+    0 -1px 3px #000000,
+    1px -1px 3px #000000;
 }
-.rtl #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .serverNumbers .counter span {
+.rtl
+  #statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .serverNumbers
+  .counter
+  span {
   font-size: 25px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine {
   position: absolute;
   bottom: -65px;
   left: -1px;
@@ -1908,8 +2302,17 @@
   display: -ms-grid;
   display: grid;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine:before, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine:after {
-  content: "";
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine:before,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine:after {
+  content: '';
   background-size: auto 14px;
   height: 16px;
   position: absolute;
@@ -1919,44 +2322,93 @@
   background-repeat: repeat-x;
   border: 1px solid #333333;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine:before {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine:before {
   z-index: 1;
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/timelineBarLocked.png');
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine:after {
   z-index: 2;
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/timelineBarUnlocked.png');
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine.itemCount3 {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine.itemCount3 {
   -ms-grid-columns: 64px 1fr 64px 1fr 64px;
   grid-template-columns: 64px 1fr 64px 1fr 64px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine.itemCount3.unlocked1:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine.itemCount3.unlocked1:after {
   display: none;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine.itemCount3.unlocked2:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine.itemCount3.unlocked2:after {
   right: 50%;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine.itemCount6 {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine.itemCount6 {
   -ms-grid-columns: 64px 1fr 64px 1fr 64px 1fr 64px 1fr 64px 1fr 64px;
   grid-template-columns: 64px 1fr 64px 1fr 64px 1fr 64px 1fr 64px 1fr 64px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine.itemCount6.unlocked1:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine.itemCount6.unlocked1:after {
   display: none;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine.itemCount6.unlocked2:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine.itemCount6.unlocked2:after {
   right: 80%;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine.itemCount6.unlocked3:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine.itemCount6.unlocked3:after {
   right: 60%;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine.itemCount6.unlocked4:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine.itemCount6.unlocked4:after {
   right: 40%;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine.itemCount6.unlocked5:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine.itemCount6.unlocked5:after {
   right: 20%;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step {
   position: relative;
   z-index: 3;
   text-align: center;
@@ -1968,36 +2420,78 @@
   grid-template-rows: 95px 20px;
   /* icons */
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:nth-of-type(1) {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:nth-of-type(1) {
   -ms-grid-column: 1;
   grid-column-start: 1;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:nth-of-type(2) {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:nth-of-type(2) {
   -ms-grid-column: 3;
   grid-column-start: 3;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:nth-of-type(3) {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:nth-of-type(3) {
   -ms-grid-column: 5;
   grid-column-start: 5;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:nth-of-type(4) {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:nth-of-type(4) {
   -ms-grid-column: 7;
   grid-column-start: 7;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:nth-of-type(5) {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:nth-of-type(5) {
   -ms-grid-column: 9;
   grid-column-start: 9;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:nth-of-type(6) {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:nth-of-type(6) {
   -ms-grid-column: 11;
   grid-column-start: 11;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step i {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step
+  i {
   -ms-grid-row: 1;
   grid-row-start: 1;
   position: relative;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step .description {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step
+  .description {
   -ms-grid-row: 2;
   grid-row-start: 2;
   white-space: nowrap;
@@ -2010,117 +2504,357 @@
   -ms-grid-column-align: center;
   justify-self: center;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step i.secondVillage {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step
+  i.secondVillage {
   left: -2px;
   top: 19px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step i.artifacts {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step
+  i.artifacts {
   top: 19px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step i.constructionPlans {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step
+  i.constructionPlans {
   top: 19px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step i.firstWWLevelOne {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step
+  i.firstWWLevelOne {
   top: 18px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step i.serverEnd {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step
+  i.serverEnd {
   left: -2px;
   top: 19px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.achieved) i.start, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.unlocked) i.start {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.achieved)
+  i.start,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.unlocked)
+  i.start {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/serverStartLocked_large.png');
   width: 87px;
   height: 95px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.achieved) i.secondVillage, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.unlocked) i.secondVillage {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.achieved)
+  i.secondVillage,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.unlocked)
+  i.secondVillage {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/secondVillageLocked_large.png');
   width: 69px;
   height: 64px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.achieved) i.artifacts, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.unlocked) i.artifacts {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.achieved)
+  i.artifacts,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.unlocked)
+  i.artifacts {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/artifactsLocked_large.png');
   width: 64px;
   height: 64px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.achieved) i.constructionPlans, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.unlocked) i.constructionPlans {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.achieved)
+  i.constructionPlans,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.unlocked)
+  i.constructionPlans {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/constructionPlansLocked_large.png');
   width: 64px;
   height: 64px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.achieved) i.firstWWLevelOne, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.unlocked) i.firstWWLevelOne {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.achieved)
+  i.firstWWLevelOne,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.unlocked)
+  i.firstWWLevelOne {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/firstWWLocked_large.png');
   width: 64px;
   height: 65px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.achieved) i.serverEnd, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step:not(.unlocked) i.serverEnd {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.achieved)
+  i.serverEnd,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step:not(.unlocked)
+  i.serverEnd {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/serverEndLocked_large.png');
   width: 78px;
   height: 64px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.achieved i.start, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.unlocked i.start {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.achieved
+  i.start,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.unlocked
+  i.start {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/serverStart_large.png');
   width: 87px;
   height: 95px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.achieved i.secondVillage, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.unlocked i.secondVillage {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.achieved
+  i.secondVillage,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.unlocked
+  i.secondVillage {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/secondVillage_large.png');
   width: 69px;
   height: 64px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.achieved i.artifacts, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.unlocked i.artifacts {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.achieved
+  i.artifacts,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.unlocked
+  i.artifacts {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/artifacts_large.png');
   width: 64px;
   height: 64px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.achieved i.constructionPlans, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.unlocked i.constructionPlans {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.achieved
+  i.constructionPlans,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.unlocked
+  i.constructionPlans {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/constructionPlans_large.png');
   width: 64px;
   height: 64px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.achieved i.firstWWLevelOne, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.unlocked i.firstWWLevelOne {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.achieved
+  i.firstWWLevelOne,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.unlocked
+  i.firstWWLevelOne {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/firstWW_large.png');
   width: 64px;
   height: 65px;
 }
-#statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.achieved i.serverEnd, #statisticsV2 #serverProgression #serverProgressionTimeLine #timeLine .timeLine .step.unlocked i.serverEnd {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.achieved
+  i.serverEnd,
+#statisticsV2
+  #serverProgression
+  #serverProgressionTimeLine
+  #timeLine
+  .timeLine
+  .step.unlocked
+  i.serverEnd {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/timeline/serverEnd_large.png');
   width: 78px;
   height: 64px;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .chartContainer {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .chartContainer {
   margin-top: -40px;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution i.distribution {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  i.distribution {
   background-image: url('../img_ltr/scenes/Statistics/serverProgression/tribeDistribution_medium.png');
   width: 21px;
   height: 22px;
   vertical-align: middle;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table {
   margin: 0 auto;
   width: calc(100% - 5px);
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table thead td {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table
+  thead
+  td {
   padding-bottom: 15px;
   padding-left: 0;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table tbody tr td {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table
+  tbody
+  tr
+  td {
   padding: 0;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table tbody tr td:first-of-type img {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table
+  tbody
+  tr
+  td:first-of-type
+  img {
   float: none;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table tbody tr td:last-of-type {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table
+  tbody
+  tr
+  td:last-of-type {
   text-align: right;
   vertical-align: bottom;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table tbody tr td:last-of-type span {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table
+  tbody
+  tr
+  td:last-of-type
+  span {
   display: inline-block;
   position: relative;
   padding-right: 15px;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table tbody tr td:last-of-type span:after {
-  content: "";
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table
+  tbody
+  tr
+  td:last-of-type
+  span:after {
+  content: '';
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -2128,19 +2862,59 @@
   bottom: calc(50% - 5px);
   position: absolute;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table tbody tr td:last-of-type span.v1:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table
+  tbody
+  tr
+  td:last-of-type
+  span.v1:after {
   background-color: #96323d;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table tbody tr td:last-of-type span.v2:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table
+  tbody
+  tr
+  td:last-of-type
+  span.v2:after {
   background-color: #428291;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table tbody tr td:last-of-type span.v3:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table
+  tbody
+  tr
+  td:last-of-type
+  span.v3:after {
   background-color: #de7e1b;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table tbody tr td:last-of-type span.v6:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table
+  tbody
+  tr
+  td:last-of-type
+  span.v6:after {
   background-color: #3e559a;
 }
-#statisticsV2 #serverProgression #serverProgressionTribeDistribution .simpleLegend table tbody tr td:last-of-type span.v7:after {
+#statisticsV2
+  #serverProgression
+  #serverProgressionTribeDistribution
+  .simpleLegend
+  table
+  tbody
+  tr
+  td:last-of-type
+  span.v7:after {
   background-color: #674876;
 }
 
@@ -2204,8 +2978,16 @@
   position: absolute;
   bottom: 0;
   z-index: 2;
-  color: #F2F2F2;
-  text-shadow: 1px 0 3px #000000, 1px 1px 3px #000000, 0 1px 3px #000000, -1px 1px 3px #000000, -1px 0 3px #000000, -1px -1px 3px #000000, 0 -1px 3px #000000, 1px -1px 3px #000000;
+  color: #f2f2f2;
+  text-shadow:
+    1px 0 3px #000000,
+    1px 1px 3px #000000,
+    0 1px 3px #000000,
+    -1px 1px 3px #000000,
+    -1px 0 3px #000000,
+    -1px -1px 3px #000000,
+    0 -1px 3px #000000,
+    1px -1px 3px #000000;
 }
 .rtl #statisticsV2 .ServerAllianceRank .rankDisplay {
   font-size: 25px;
@@ -2248,46 +3030,113 @@
   text-align: right;
   width: 1%;
 }
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .strengthRankChart .worse,
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .strengthRankChart .better {
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .strengthRankChart
+  .worse,
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .strengthRankChart
+  .better {
   width: 75px;
   min-height: 100%;
   position: absolute;
   padding-top: 115px;
   z-index: 202;
 }
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .strengthRankChart .worse.better,
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .strengthRankChart .better.better {
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .strengthRankChart
+  .worse.better,
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .strengthRankChart
+  .better.better {
   left: 5px;
 }
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .strengthRankChart .worse.worse,
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .strengthRankChart .better.worse {
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .strengthRankChart
+  .worse.worse,
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .strengthRankChart
+  .better.worse {
   right: 0;
 }
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .chartDetails {
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .chartDetails {
   top: -20px;
   border-radius: 4px;
   padding: 0 10px;
   text-align: center;
 }
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .chartDetails div:not(.inlineIcon) {
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .chartDetails
+  div:not(.inlineIcon) {
   margin: 10px 0;
 }
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .chartDetails .strength {
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .chartDetails
+  .strength {
   font-size: 2em;
 }
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .chartDetails .strength i {
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .chartDetails
+  .strength
+  i {
   margin-right: 5px;
   vertical-align: middle;
 }
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .chartDetails .strength i + span {
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .chartDetails
+  .strength
+  i
+  + span {
   line-height: 24px;
   vertical-align: middle;
 }
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .chartDetails .name {
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .chartDetails
+  .name {
   font-weight: bold;
 }
-#statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .chartDetails .rankDisplay {
+#statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .chartDetails
+  .rankDisplay {
   position: absolute;
   top: -158px;
   left: calc(50% - 26px);
@@ -2301,7 +3150,13 @@
   font-size: 14px;
   z-index: 201;
 }
-.rtl #statisticsV2 #militaryStrengthRank .chartWithLegend .chartContainer .chartDetails .rankDisplay {
+.rtl
+  #statisticsV2
+  #militaryStrengthRank
+  .chartWithLegend
+  .chartContainer
+  .chartDetails
+  .rankDisplay {
   font-size: 15px;
 }
 
@@ -2309,7 +3164,7 @@
   visibility: hidden;
   display: block;
   font-size: 0;
-  content: " ";
+  content: ' ';
   clear: both;
   height: 0;
 }
@@ -2326,7 +3181,7 @@
   visibility: hidden;
   display: block;
   font-size: 0;
-  content: " ";
+  content: ' ';
   clear: both;
   height: 0;
 }
@@ -2338,11 +3193,15 @@
   visibility: hidden;
   display: block;
   font-size: 0;
-  content: " ";
+  content: ' ';
   clear: both;
   height: 0;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .balance {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .balance {
   height: 99px;
   width: 30.5%;
   line-height: 33px;
@@ -2350,7 +3209,12 @@
   padding-right: 4px;
   float: right;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .balance div {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .balance
+  div {
   height: 33px;
   font-size: 135%;
   text-align: left;
@@ -2359,83 +3223,219 @@
   white-space: nowrap;
   overflow: visible;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .balance div.positive {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .balance
+  div.positive {
   color: #eda932;
   transition-delay: 1000ms;
   padding-left: 5px;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .balance div.positive.total {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .balance
+  div.positive.total {
   color: #afe375;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .balance div.negative {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .balance
+  div.negative {
   color: #c35742;
   transition-delay: 2000ms;
   padding-left: 5px;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .balance div.negative > span {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .balance
+  div.negative
+  > span {
   display: inline-block;
   position: absolute;
   margin-left: -10px;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .balance div.negative.total {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .balance
+  div.negative.total {
   color: #ff0000;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .balance div.total {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .balance
+  div.total {
   position: relative;
   transition-delay: 2500ms;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .positive .raid {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .positive
+  .raid {
   background-color: #eda932;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .positive .trade {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .positive
+  .trade {
   background-color: #f4c97e;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .positive .production {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .positive
+  .production {
   background-color: #fbebd0;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .negative {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .negative {
   margin-top: 5px;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .negative .raid {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .negative
+  .raid {
   background-color: #c35742;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .negative .trade {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .negative
+  .trade {
   background-color: #d48879;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer {
   width: 67%;
   float: left;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .positive, #statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .negative {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .positive,
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .negative {
   transform: scaleX(0) translateZ(0);
   transform-origin: left;
   transition-duration: 1000ms;
   transition-timing-function: ease-out;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .positive:after, #statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .negative:after {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .positive:after,
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .negative:after {
   visibility: hidden;
   display: block;
   font-size: 0;
-  content: " ";
+  content: ' ';
   clear: both;
   height: 0;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .positive span, #statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .negative span {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .positive
+  span,
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .negative
+  span {
   display: inline-block;
   float: left;
   height: 33px;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .positive.negative, #statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .negative.negative {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .positive.negative,
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .negative.negative {
   transform-origin: right;
   transition-delay: 1000ms;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .positive.negative span.raid, #statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .negative.negative span.raid {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .positive.negative
+  span.raid,
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .negative.negative
+  span.raid {
   float: right;
   position: relative;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .positive.negative span.raid:before, #statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .negative.negative span.raid:before {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .positive.negative
+  span.raid:before,
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .negative.negative
+  span.raid:before {
   display: block;
-  content: "";
+  content: '';
   height: 71px;
   width: 0;
   border-left: solid 2px #333333;
@@ -2445,13 +3445,42 @@
   backface-visibility: hidden;
   -moz-backface-visibility: hidden;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .positive.negative span.trade, #statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart .barContainer .negative.negative span.trade {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .positive.negative
+  span.trade,
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart
+  .barContainer
+  .negative.negative
+  span.trade {
   float: right;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart.animated .balance div {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart.animated
+  .balance
+  div {
   opacity: 1;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart.animated .barContainer .positive, #statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChart.animated .barContainer .negative {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart.animated
+  .barContainer
+  .positive,
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChart.animated
+  .barContainer
+  .negative {
   transform: scaleX(1) translateZ(0);
 }
 #statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend {
@@ -2461,39 +3490,69 @@
   padding-left: 25px;
   border-collapse: collapse;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend:after {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend:after {
   visibility: hidden;
   display: block;
   font-size: 0;
-  content: " ";
+  content: ' ';
   clear: both;
   height: 0;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend td {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  td {
   font-size: 11px;
   text-align: right;
   line-height: 12px;
   padding: 0;
   white-space: nowrap;
 }
-.rtl #statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend td {
+.rtl
+  #statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  td {
   font-size: 12px;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend td.value {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  td.value {
   width: 1%;
   padding-left: 5px;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend td.indicators {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  td.indicators {
   width: 30px;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend td.indicators span.resourceIndicator {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  td.indicators
+  span.resourceIndicator {
   display: inline-block;
   width: 8px;
   height: 8px;
   position: relative;
   top: -1px;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend td.indicators svg.checkmark {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  td.indicators
+  svg.checkmark {
   display: inline-block;
   margin-left: 3px;
   width: 1em;
@@ -2504,44 +3563,112 @@
   stroke-dashoffset: 0;
   transition: stroke-dashoffset 0.3s ease-out;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend td.indicators svg.checkmark.invisible {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  td.indicators
+  svg.checkmark.invisible {
   stroke-dashoffset: 40px;
 }
 /* converter.ignore.next */
-.rtl #statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend td.indicators svg.checkmark {
+.rtl
+  #statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  td.indicators
+  svg.checkmark {
   transform: none;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend tr.positive.raid span.resourceIndicator {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  tr.positive.raid
+  span.resourceIndicator {
   background-color: #eda932;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend tr.positive.raid svg.checkmark {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  tr.positive.raid
+  svg.checkmark {
   stroke: #eda932;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend tr.positive.trade span.resourceIndicator {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  tr.positive.trade
+  span.resourceIndicator {
   background-color: #f4c97e;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend tr.positive.trade svg.checkmark {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  tr.positive.trade
+  svg.checkmark {
   stroke: #f4c97e;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend tr.positive.production span.resourceIndicator {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  tr.positive.production
+  span.resourceIndicator {
   background-color: #fbebd0;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend tr.positive.production svg.checkmark {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  tr.positive.production
+  svg.checkmark {
   stroke: #fbebd0;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend tr.negative.raid td {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  tr.negative.raid
+  td {
   padding-top: 10px;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend tr.negative.raid td span.resourceIndicator {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  tr.negative.raid
+  td
+  span.resourceIndicator {
   background-color: #c35742;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend tr.negative.raid td svg.checkmark {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  tr.negative.raid
+  td
+  svg.checkmark {
   stroke: #c35742;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend tr.negative.trade span.resourceIndicator {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  tr.negative.trade
+  span.resourceIndicator {
   background-color: #d48879;
 }
-#statisticsV2 #resourceRank .resourceBarChartContainer .resourceBarChartLegend tr.negative.trade svg.checkmark {
+#statisticsV2
+  #resourceRank
+  .resourceBarChartContainer
+  .resourceBarChartLegend
+  tr.negative.trade
+  svg.checkmark {
   stroke: #d48879;
 }
 #statisticsV2 #resourceRank .chartWithLegend {
@@ -2550,23 +3677,42 @@
 #statisticsV2 #resourceRank .chartWithLegend .legendContainer {
   margin-top: 15px;
 }
-#statisticsV2 #resourceRank .chartWithLegend .legendContainer .simpleLegend .ServerAllianceRank {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .legendContainer
+  .simpleLegend
+  .ServerAllianceRank {
   margin-top: 24px;
 }
 #statisticsV2 #resourceRank .chartWithLegend .chartContainer {
   position: relative;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .dataSwitchButtons {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .dataSwitchButtons {
   width: auto;
   position: absolute;
   z-index: 203;
   right: 0;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .dataSwitchButtons .iconButton {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .dataSwitchButtons
+  .iconButton {
   margin-left: 5px;
   padding: 4px;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .chartTitle ~ .recharts-wrapper {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .chartTitle
+  ~ .recharts-wrapper {
   top: 30px;
   margin-bottom: 30px;
 }
@@ -2582,16 +3728,52 @@
 }
 #statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .lost p,
 #statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .won p,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .lost p,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .won p {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .lost
+  p,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .won
+  p {
   position: relative;
   z-index: 202;
   margin: 3px 0;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .lost .svgArrow,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .won .svgArrow,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .lost .svgArrow,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .won .svgArrow {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .lost
+  .svgArrow,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .won
+  .svgArrow,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .lost
+  .svgArrow,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .won
+  .svgArrow {
   width: 22px;
   height: 22px;
   display: inline-block;
@@ -2600,74 +3782,292 @@
   z-index: -1;
   top: -3px;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .lost .svgArrow + span,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .won .svgArrow + span,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .lost .svgArrow + span,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .won .svgArrow + span {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .lost
+  .svgArrow
+  + span,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .won
+  .svgArrow
+  + span,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .lost
+  .svgArrow
+  + span,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .won
+  .svgArrow
+  + span {
   display: inline-block;
   vertical-align: middle;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .lost i.bounty,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .lost i.trade,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .won i.bounty,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .won i.trade,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .lost i.bounty,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .lost i.trade,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .won i.bounty,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .won i.trade {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .lost
+  i.bounty,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .lost
+  i.trade,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .won
+  i.bounty,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .won
+  i.trade,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .lost
+  i.bounty,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .lost
+  i.trade,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .won
+  i.bounty,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .won
+  i.trade {
   width: 16px;
   height: 16px;
   vertical-align: middle;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .lost.lost,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .won.lost,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .lost.lost,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .won.lost {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .lost.lost,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .won.lost,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .lost.lost,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .won.lost {
   left: 5px;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .lost.won,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .won.won,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .lost.won,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart .won.won {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .lost.won,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .won.won,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .lost.won,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart
+  .won.won {
   right: 0;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart.raidChart .lost .svgArrow,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart.raidChart .lost .svgArrow {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart.raidChart
+  .lost
+  .svgArrow,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart.raidChart
+  .lost
+  .svgArrow {
   fill: #c35742;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart.raidChart .lost .svgArrow.disabled,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart.raidChart .lost .svgArrow.disabled {
-  fill: #F2F2F2;
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart.raidChart
+  .lost
+  .svgArrow.disabled,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart.raidChart
+  .lost
+  .svgArrow.disabled {
+  fill: #f2f2f2;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart.raidChart .won .svgArrow,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart.raidChart .won .svgArrow {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart.raidChart
+  .won
+  .svgArrow,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart.raidChart
+  .won
+  .svgArrow {
   fill: #eda932;
   transform: rotate(180deg);
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart.raidChart .won .svgArrow.disabled,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart.raidChart .won .svgArrow.disabled {
-  fill: #F2F2F2;
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart.raidChart
+  .won
+  .svgArrow.disabled,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart.raidChart
+  .won
+  .svgArrow.disabled {
+  fill: #f2f2f2;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart.tradeChart .lost .svgArrow,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart.tradeChart .lost .svgArrow {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart.tradeChart
+  .lost
+  .svgArrow,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart.tradeChart
+  .lost
+  .svgArrow {
   fill: #d48879;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart.tradeChart .lost .svgArrow.disabled,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart.tradeChart .lost .svgArrow.disabled {
-  fill: #F2F2F2;
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart.tradeChart
+  .lost
+  .svgArrow.disabled,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart.tradeChart
+  .lost
+  .svgArrow.disabled {
+  fill: #f2f2f2;
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart.tradeChart .won .svgArrow,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart.tradeChart .won .svgArrow {
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart.tradeChart
+  .won
+  .svgArrow,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart.tradeChart
+  .won
+  .svgArrow {
   fill: #f4c97e;
   transform: rotate(180deg);
 }
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart.tradeChart .won .svgArrow.disabled,
-#statisticsV2 #resourceRank .chartWithLegend .chartContainer .tradeChart.tradeChart .won .svgArrow.disabled {
-  fill: #F2F2F2;
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart.tradeChart
+  .won
+  .svgArrow.disabled,
+#statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .tradeChart.tradeChart
+  .won
+  .svgArrow.disabled {
+  fill: #f2f2f2;
 }
 
 /* RTL fixes */
-.rtl #statisticsV2 #resourceRank .chartWithLegend .chartContainer .raidChart .lost.lost {
+.rtl
+  #statisticsV2
+  #resourceRank
+  .chartWithLegend
+  .chartContainer
+  .raidChart
+  .lost.lost {
   right: 0;
 }
 
@@ -2703,19 +4103,37 @@
   top: 3px;
   margin-top: -1px;
 }
-#statisticsV2 #culturePointsRank .culturePointsHeader .dataSwitchButtons a.iconButton:not(:last-child) {
+#statisticsV2
+  #culturePointsRank
+  .culturePointsHeader
+  .dataSwitchButtons
+  a.iconButton:not(:last-child) {
   margin: 0 8px 0 0;
 }
-#statisticsV2 #culturePointsRank .culturePointsHeader .dataSwitchButtons a.iconButton {
+#statisticsV2
+  #culturePointsRank
+  .culturePointsHeader
+  .dataSwitchButtons
+  a.iconButton {
   align-content: center;
   padding: 4px;
 }
-#statisticsV2 #culturePointsRank .culturePointsHeader .dataSwitchButtons a.iconButton i.distribution {
+#statisticsV2
+  #culturePointsRank
+  .culturePointsHeader
+  .dataSwitchButtons
+  a.iconButton
+  i.distribution {
   background-image: url('../img_ltr/scenes/Statistics/culturePointsRank/distribution_small.png');
   width: 16px;
   height: 16px;
 }
-#statisticsV2 #culturePointsRank .culturePointsHeader .dataSwitchButtons a.iconButton i.progression {
+#statisticsV2
+  #culturePointsRank
+  .culturePointsHeader
+  .dataSwitchButtons
+  a.iconButton
+  i.progression {
   background-image: url('../img_ltr/scenes/Statistics/culturePointsRank/progression_small.png');
   width: 16px;
   height: 16px;
@@ -2723,23 +4141,53 @@
 #statisticsV2 #culturePointsRank .cpProduction {
   margin-top: 35px;
   padding-top: 15px;
-  border-top: solid 1px #D2D2D1;
+  border-top: solid 1px #d2d2d1;
   text-align: center;
 }
-#statisticsV2 #culturePointsRank .chartWithLegend .chartContainer .culturePointsRankChart .worse,
-#statisticsV2 #culturePointsRank .chartWithLegend .chartContainer .culturePointsRankChart .better {
+#statisticsV2
+  #culturePointsRank
+  .chartWithLegend
+  .chartContainer
+  .culturePointsRankChart
+  .worse,
+#statisticsV2
+  #culturePointsRank
+  .chartWithLegend
+  .chartContainer
+  .culturePointsRankChart
+  .better {
   width: 75px;
   min-height: 100%;
   position: absolute;
   padding-top: 115px;
   z-index: 202;
 }
-#statisticsV2 #culturePointsRank .chartWithLegend .chartContainer .culturePointsRankChart .worse.better,
-#statisticsV2 #culturePointsRank .chartWithLegend .chartContainer .culturePointsRankChart .better.better {
+#statisticsV2
+  #culturePointsRank
+  .chartWithLegend
+  .chartContainer
+  .culturePointsRankChart
+  .worse.better,
+#statisticsV2
+  #culturePointsRank
+  .chartWithLegend
+  .chartContainer
+  .culturePointsRankChart
+  .better.better {
   left: 5px;
 }
-#statisticsV2 #culturePointsRank .chartWithLegend .chartContainer .culturePointsRankChart .worse.worse,
-#statisticsV2 #culturePointsRank .chartWithLegend .chartContainer .culturePointsRankChart .better.worse {
+#statisticsV2
+  #culturePointsRank
+  .chartWithLegend
+  .chartContainer
+  .culturePointsRankChart
+  .worse.worse,
+#statisticsV2
+  #culturePointsRank
+  .chartWithLegend
+  .chartContainer
+  .culturePointsRankChart
+  .better.worse {
   right: 0;
 }
 #statisticsV2 #cpProgressionChart {
@@ -2775,10 +4223,20 @@
 .rtl #statisticsV2 #cpDistributionChart .simpleLegend table tr:last-of-type td {
   font-size: 16px;
 }
-#statisticsV2 #cpDistributionChart .simpleLegend table tr:last-of-type td:first-of-type {
+#statisticsV2
+  #cpDistributionChart
+  .simpleLegend
+  table
+  tr:last-of-type
+  td:first-of-type {
   text-align: right;
 }
-#statisticsV2 #cpDistributionChart .simpleLegend table tr:last-of-type td:last-of-type {
+#statisticsV2
+  #cpDistributionChart
+  .simpleLegend
+  table
+  tr:last-of-type
+  td:last-of-type {
   font-weight: bold;
 }
 #statisticsV2 #cpDistributionChart .simpleLegend table span {
@@ -2786,7 +4244,7 @@
   padding-right: 15px;
 }
 #statisticsV2 #cpDistributionChart .simpleLegend table span:after {
-  content: "";
+  content: '';
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -2809,7 +4267,11 @@
 #statisticsV2 #cpDistributionChart .simpleLegend table span.rewards:after {
   background-color: #a9d18e;
 }
-#statisticsV2 #cpDistributionChart .simpleLegend table span.allianceBonus:after {
+#statisticsV2
+  #cpDistributionChart
+  .simpleLegend
+  table
+  span.allianceBonus:after {
   background-color: #8ea3d1;
 }
 #statisticsV2 #cpRankComparison .legendContainer {

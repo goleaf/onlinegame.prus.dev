@@ -30,7 +30,7 @@
 
 div.dialog div.content hr.achievementLine {
   border-style: none none solid;
-  border-color: #DDD9CE;
+  border-color: #ddd9ce;
   margin-bottom: 10px;
   margin-top: 10px;
 }
@@ -170,11 +170,11 @@ div.dialog div.content hr.achievementLine {
 }
 
 .questWrapper .questRewards span.questRewardValue.stockFull {
-  color: #CC0000;
+  color: #cc0000;
 }
 
 .questWrapper .questRewards.colorBlind span.questRewardValue.stockFull {
-  color: #0022AF;
+  color: #0022af;
 }
 
 .questWrapper .questButtons {
@@ -944,7 +944,8 @@ div.dialog div.content hr.achievementLine {
   box-shadow: none;
   border: none;
 }
-.sidebarBox .layoutButton.highlighted.background:before, .sidebarBox .layoutButton.highlighted.background:after {
+.sidebarBox .layoutButton.highlighted.background:before,
+.sidebarBox .layoutButton.highlighted.background:after {
   display: none;
 }
 
@@ -1009,7 +1010,9 @@ div#center #closeContentButton.highlighted.background:hover {
   margin-left: 1px;
 }
 
-.perspectiveResources #village_map .level.highlighted.background:not(.colorLayer) {
+.perspectiveResources
+  #village_map
+  .level.highlighted.background:not(.colorLayer) {
   transform: scale(0.86);
   width: 36px !important;
   height: 36px !important;
@@ -1037,7 +1040,12 @@ div#center #closeContentButton.highlighted.background:hover {
   stroke-width: 4px;
 }
 
-.colorBlind.perspectiveBuildings #village_map .g16e.highlighted + svg .hoverShape path {
+.colorBlind.perspectiveBuildings
+  #village_map
+  .g16e.highlighted
+  + svg
+  .hoverShape
+  path {
   stroke: blue;
   stroke-width: 4px;
 }
@@ -1050,12 +1058,18 @@ div.sidebar div#sidebarBoxHero .heroImageButton.highlighted.background {
   margin-top: 3px;
 }
 
-.colorBlind div.sidebar div#sidebarBoxHero .heroImageButton.highlighted.background {
+.colorBlind
+  div.sidebar
+  div#sidebarBoxHero
+  .heroImageButton.highlighted.background {
   background-image: url('../img_ltr/quests/highlight/heroButtonHighlightColorblind.png');
 }
 
 /* RTL fixes */
-body.rtl div.sidebar div#sidebarBoxHero .heroImageButton.highlighted.background {
+body.rtl
+  div.sidebar
+  div#sidebarBoxHero
+  .heroImageButton.highlighted.background {
   background-position: 4px top;
 }
 
@@ -1072,12 +1086,12 @@ body.rtl div.sidebar div#sidebarBoxHero .heroImageButton.highlighted.background 
 
 /* --- achievements --- */
 div.dialog div.content h1.questList {
-  color: #7B624C;
+  color: #7b624c;
   text-align: center;
 }
 
 div.dialog div.questWrapper div.achievement div.nextReset {
-  color: #7B624C;
+  color: #7b624c;
   text-align: center;
   margin-bottom: 3px;
   font-size: 10px;
@@ -1090,7 +1104,15 @@ div.dialog div.questWrapper div.achievement div.nextReset {
 div.dialog div.content div.birthdayRibbonContainer div.headline {
   color: #911d1d;
   font-family: ArialBlack, Arial, Helvetica, Verdana, sans-serif;
-  text-shadow: 1px 0 1px rgba(251, 236, 201, 0.4), 1px 1px 1px rgba(251, 236, 201, 0.4), 0 1px 1px rgba(251, 236, 201, 0.4), -1px 1px 1px rgba(251, 236, 201, 0.4), -1px 0 1px rgba(251, 236, 201, 0.4), -1px -1px 1px rgba(251, 236, 201, 0.4), 0 -1px 1px rgba(251, 236, 201, 0.4), 1px -1px 1px rgba(251, 236, 201, 0.4);
+  text-shadow:
+    1px 0 1px rgba(251, 236, 201, 0.4),
+    1px 1px 1px rgba(251, 236, 201, 0.4),
+    0 1px 1px rgba(251, 236, 201, 0.4),
+    -1px 1px 1px rgba(251, 236, 201, 0.4),
+    -1px 0 1px rgba(251, 236, 201, 0.4),
+    -1px -1px 1px rgba(251, 236, 201, 0.4),
+    0 -1px 1px rgba(251, 236, 201, 0.4),
+    1px -1px 1px rgba(251, 236, 201, 0.4);
   font-size: 22px;
   line-height: 3em;
   letter-spacing: 0.2em;
@@ -1149,22 +1171,42 @@ div.dialog div.content #achievementRewardList div.achievement div.hook img {
 }
 
 /* hook positions */
-div.dialog div.content #achievementRewardList div.achievement div.hook.points_25 img {
+div.dialog
+  div.content
+  #achievementRewardList
+  div.achievement
+  div.hook.points_25
+  img {
   left: 57px;
   top: -2px;
 }
 
-div.dialog div.content #achievementRewardList div.achievement div.hook.points_50 img {
+div.dialog
+  div.content
+  #achievementRewardList
+  div.achievement
+  div.hook.points_50
+  img {
   left: 49px;
   top: -2px;
 }
 
-div.dialog div.content #achievementRewardList div.achievement div.hook.points_75 img {
+div.dialog
+  div.content
+  #achievementRewardList
+  div.achievement
+  div.hook.points_75
+  img {
   left: 45px;
   top: -2px;
 }
 
-div.dialog div.content #achievementRewardList div.achievement div.hook.points_100 img {
+div.dialog
+  div.content
+  #achievementRewardList
+  div.achievement
+  div.hook.points_100
+  img {
   left: 45px;
   top: -2px;
 }
@@ -1215,7 +1257,12 @@ div#achievementRewardList div.achievement div.pointAmount.points_100 {
 }
 
 /* speech bubble */
-div.dialog div.content #achievementRewardList div.achievement .bigSpeechBubble.rewardReady img {
+div.dialog
+  div.content
+  #achievementRewardList
+  div.achievement
+  .bigSpeechBubble.rewardReady
+  img {
   background-image: url('../img_ltr/layout/icons/exclamationMark-ltr.png');
 }
 
@@ -1226,7 +1273,8 @@ div.dialog div.content #achievementRewardList div.achievement .bigSpeechBubble {
 }
 
 div.dialog div.content #achievementRewardList div.achievementArrow {
-  background: url('../img_ltr/quests/achievement/pfeil-ltr.png') no-repeat center center;
+  background: url('../img_ltr/quests/achievement/pfeil-ltr.png') no-repeat
+    center center;
   float: left;
   width: 9px;
   height: 112px;
@@ -1235,7 +1283,7 @@ div.dialog div.content #achievementRewardList div.achievementArrow {
 }
 
 div.dialog div.content #achievementRewardList div.verticalLine {
-  background-color: #DDD9CE;
+  background-color: #ddd9ce;
   float: left;
   width: 1px;
   height: 112px;
@@ -1247,7 +1295,8 @@ div.dialog div.content #achievementRewardList div.verticalLine {
 div.dialog div.content #achievementRewardList img.points_25 {
   width: 89px;
   height: 112px;
-  background: url('../img_ltr/quests/achievement/btn_brown_5F25.png') -18px center;
+  background: url('../img_ltr/quests/achievement/btn_brown_5F25.png') -18px
+    center;
 }
 
 div.dialog div.content #achievementRewardList img.points_50 {
@@ -1265,12 +1314,14 @@ div.dialog div.content #achievementRewardList img.points_75 {
 div.dialog div.content #achievementRewardList img.points_100 {
   width: 89px;
   height: 112px;
-  background: url('../img_ltr/quests/achievement/btn_brown_100.png') -28px center;
+  background: url('../img_ltr/quests/achievement/btn_brown_100.png') -28px
+    center;
 }
 
 /* activated */
 div.dialog div.content #achievementRewardList img.points_25.active {
-  background: url('../img_ltr/quests/achievement/btn_green_5F25.png') -4px center;
+  background: url('../img_ltr/quests/achievement/btn_green_5F25.png') -4px
+    center;
 }
 
 div.dialog div.content #achievementRewardList img.points_50.active {
@@ -1282,13 +1333,14 @@ div.dialog div.content #achievementRewardList img.points_75.active {
 }
 
 div.dialog div.content #achievementRewardList img.points_100.active {
-  background: url('../img_ltr/quests/achievement/btn_green_100.png') -28px center;
+  background: url('../img_ltr/quests/achievement/btn_green_100.png') -28px
+    center;
 }
 
 /* QuestList */
 div.dialog div.content #achievementQuestList {
-  border-top: 2px solid #DDD9CE;
-  background-color: #F2F2F2;
+  border-top: 2px solid #ddd9ce;
+  background-color: #f2f2f2;
   border-collapse: collapse;
 }
 
@@ -1298,11 +1350,11 @@ div.dialog div.content #achievementQuestList tr {
 
 div.dialog div.content #achievementQuestList td {
   background-color: transparent;
-  border-bottom: 2px solid #FFFFFF;
+  border-bottom: 2px solid #ffffff;
 }
 
 div.dialog div.content #achievementQuestList tr.zebra td {
-  background-color: #EFECDB;
+  background-color: #efecdb;
 }
 
 div.dialog div.content #achievementQuestList img.hook {
@@ -1324,11 +1376,11 @@ div.dialog div.content #achievementQuestList tr {
 }
 
 div.dialog div.content #achievementQuestList tr:nth-child(even) {
-  background-color: #EFECDB;
+  background-color: #efecdb;
 }
 
 div.dialog div.content #achievementQuestList tr:nth-child(odd) {
-  background-color: #F2F2F2;
+  background-color: #f2f2f2;
 }
 
 div.dialog div.content #achievementQuestList td.hook {
@@ -1341,7 +1393,7 @@ div.dialog div.content #achievementQuestList td.steps {
 
 div.dialog div.content #achievementQuestList td.points {
   width: 70px;
-  color: #99C01A;
+  color: #99c01a;
   font-weight: bold;
 }
 
@@ -1356,7 +1408,7 @@ div.dialog div.content #achievementQuestList td.points {
 }
 
 .questWrapper.achievements .difficulty.challenging {
-  color: #FF8C00;
+  color: #ff8c00;
 }
 
 .questWrapper.achievements .difficulty.hard {

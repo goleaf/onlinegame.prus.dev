@@ -20,7 +20,7 @@ class PerformanceHelper
 
         $html = '';
         foreach ($links as $url) {
-            $html .= '<link rel="preconnect" href="' . $url . '" crossorigin>' . "\n";
+            $html .= '<link rel="preconnect" href="'.$url.'" crossorigin>'."\n";
         }
 
         return $html;
@@ -42,7 +42,7 @@ class PerformanceHelper
 
         $html = '';
         foreach ($domains as $domain) {
-            $html .= '<link rel="dns-prefetch" href="//' . $domain . '">' . "\n";
+            $html .= '<link rel="dns-prefetch" href="//'.$domain.'">'."\n";
         }
 
         return $html;
@@ -107,9 +107,9 @@ class PerformanceHelper
     {
         return [
             'Cache-Control' => 'public, max-age=31536000, immutable',
-            'Expires' => gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT',
-            'Last-Modified' => gmdate('D, d M Y H:i:s') . ' GMT',
-            'ETag' => '"' . md5(time()) . '"',
+            'Expires' => gmdate('D, d M Y H:i:s', time() + 31536000).' GMT',
+            'Last-Modified' => gmdate('D, d M Y H:i:s').' GMT',
+            'ETag' => '"'.md5(time()).'"',
         ];
     }
 
@@ -144,13 +144,13 @@ class PerformanceHelper
      */
     public static function getResourceHints(): string
     {
-        return self::getPreconnectLinks() . self::getDnsPrefetchLinks();
+        return self::getPreconnectLinks().self::getDnsPrefetchLinks();
     }
 
     /**
      * Get optimized image attributes
      */
-    public static function getOptimizedImageAttributes(string $src, string $alt = '', int $width = null, int $height = null): array
+    public static function getOptimizedImageAttributes(string $src, string $alt = '', ?int $width = null, ?int $height = null): array
     {
         $attributes = [
             'src' => $src,
@@ -159,8 +159,12 @@ class PerformanceHelper
             'decoding' => 'async',
         ];
 
-        if ($width) $attributes['width'] = $width;
-        if ($height) $attributes['height'] = $height;
+        if ($width) {
+            $attributes['width'] = $width;
+        }
+        if ($height) {
+            $attributes['height'] = $height;
+        }
 
         return $attributes;
     }
@@ -210,7 +214,7 @@ class PerformanceHelper
                 'models' => 16,
                 'services' => 6,
                 'total_files' => 46,
-            ]
+            ],
         ];
     }
 
@@ -236,7 +240,7 @@ class PerformanceHelper
                 'Use SmartCache for intelligent caching',
                 'Cache query results with appropriate TTL',
                 'Implement cache invalidation strategies',
-            ]
+            ],
         ];
     }
 }

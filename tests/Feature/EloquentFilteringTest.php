@@ -2,10 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Game\Alliance;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
-use App\Models\Game\Alliance;
-use App\Models\Game\Battle;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -26,12 +25,12 @@ class EloquentFilteringTest extends TestCase
             [
                 'target' => 'name',
                 'type' => '$contains',
-                'value' => 'Test'
-            ]
+                'value' => 'Test',
+            ],
         ];
 
         $results = Player::filter($filters)->get();
-        
+
         $this->assertCount(2, $results);
         $this->assertTrue($results->contains('name', 'TestPlayer1'));
         $this->assertTrue($results->contains('name', 'TestPlayer2'));
@@ -50,12 +49,12 @@ class EloquentFilteringTest extends TestCase
             [
                 'target' => 'points',
                 'type' => '$gt',
-                'value' => 1500
-            ]
+                'value' => 1500,
+            ],
         ];
 
         $results = Player::filter($filters)->get();
-        
+
         $this->assertCount(2, $results);
         $this->assertTrue($results->contains('points', 2000));
         $this->assertTrue($results->contains('points', 3000));
@@ -74,12 +73,12 @@ class EloquentFilteringTest extends TestCase
             [
                 'target' => 'population',
                 'type' => '$lt',
-                'value' => 600
-            ]
+                'value' => 600,
+            ],
         ];
 
         $results = Village::filter($filters)->get();
-        
+
         $this->assertCount(2, $results);
         $this->assertTrue($results->contains('population', 100));
         $this->assertTrue($results->contains('population', 500));
@@ -98,12 +97,12 @@ class EloquentFilteringTest extends TestCase
             [
                 'target' => 'is_active',
                 'type' => '$eq',
-                'value' => true
-            ]
+                'value' => true,
+            ],
         ];
 
         $results = Alliance::filter($filters)->get();
-        
+
         $this->assertCount(2, $results);
         $this->assertTrue($results->contains('is_active', true));
         $this->assertFalse($results->contains('is_active', false));
@@ -121,12 +120,12 @@ class EloquentFilteringTest extends TestCase
             [
                 'target' => 'email',
                 'type' => '$contains',
-                'value' => 'test'
-            ]
+                'value' => 'test',
+            ],
         ];
 
         $results = User::filter($filters)->get();
-        
+
         $this->assertCount(2, $results);
         $this->assertTrue($results->contains('email', 'test1@example.com'));
         $this->assertTrue($results->contains('email', 'test2@example.com'));
@@ -146,22 +145,22 @@ class EloquentFilteringTest extends TestCase
             [
                 'target' => 'name',
                 'type' => '$contains',
-                'value' => 'Test'
+                'value' => 'Test',
             ],
             [
                 'target' => 'points',
                 'type' => '$gte',
-                'value' => 1000
+                'value' => 1000,
             ],
             [
                 'target' => 'is_active',
                 'type' => '$eq',
-                'value' => true
-            ]
+                'value' => true,
+            ],
         ];
 
         $results = Player::filter($filters)->get();
-        
+
         $this->assertCount(2, $results);
         $this->assertTrue($results->contains('name', 'TestPlayer1'));
         $this->assertTrue($results->contains('name', 'TestPlayer2'));
@@ -185,16 +184,15 @@ class EloquentFilteringTest extends TestCase
                     [
                         'target' => 'name',
                         'type' => '$eq',
-                        'value' => 'TestPlayer'
-                    ]
-                ]
-            ]
+                        'value' => 'TestPlayer',
+                    ],
+                ],
+            ],
         ];
 
         $results = User::filter($filters)->get();
-        
+
         $this->assertCount(1, $results);
         $this->assertEquals('TestUser', $results->first()->name);
     }
 }
-

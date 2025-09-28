@@ -12,7 +12,9 @@ class ArtifactControllerTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $player;
+
     protected $artifact;
 
     protected function setUp(): void

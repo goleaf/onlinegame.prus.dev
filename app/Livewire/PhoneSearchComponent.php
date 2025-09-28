@@ -11,8 +11,11 @@ class PhoneSearchComponent extends Component
     use WithPagination;
 
     public $searchTerm = '';
+
     public $searchType = 'all';  // all, phone, normalized, e164
+
     public $countryFilter = '';
+
     public $perPage = 20;
 
     protected $queryString = [
@@ -51,22 +54,26 @@ class PhoneSearchComponent extends Component
         if ($this->searchTerm) {
             $cleanSearchTerm = preg_replace('/[^0-9+]/', '', $this->searchTerm);
 
-            $query->where(function ($q) use ($cleanSearchTerm) {
+            $query->where(function ($q) use ($cleanSearchTerm): void {
                 switch ($this->searchType) {
                     case 'phone':
                         $q->where('phone', 'like', "%{$this->searchTerm}%");
+
                         break;
                     case 'normalized':
                         $q->where('phone_normalized', 'like', "%{$cleanSearchTerm}%");
+
                         break;
                     case 'e164':
                         $q->where('phone_e164', 'like', "%{$cleanSearchTerm}%");
+
                         break;
                     default:  // all
                         $q
                             ->where('phone', 'like', "%{$this->searchTerm}%")
                             ->orWhere('phone_normalized', 'like', "%{$cleanSearchTerm}%")
                             ->orWhere('phone_e164', 'like', "%{$cleanSearchTerm}%");
+
                         break;
                 }
             });

@@ -4,13 +4,15 @@ namespace App\Models\Game;
 
 use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Achievement extends Model
 {
-    use HasFactory, HasTaxonomy, HasReference;
+    use HasFactory;
+    use HasReference;
+    use HasTaxonomy;
 
     protected $table = 'achievements';
 
@@ -37,6 +39,7 @@ class Achievement extends Model
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [

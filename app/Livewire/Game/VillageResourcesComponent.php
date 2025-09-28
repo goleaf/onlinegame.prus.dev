@@ -10,6 +10,7 @@ use Livewire\Component;
 class VillageResourcesComponent extends Component
 {
     public Village $village;
+
     public VillageResources $resources;
 
     public function mount(Village $village)

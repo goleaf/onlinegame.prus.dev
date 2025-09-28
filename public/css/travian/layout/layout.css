@@ -54,7 +54,8 @@ body div#background div#bodyWrapper {
   min-width: 1280px;
   max-width: 1440px;
 }
-body.fullScreen div#background div#bodyWrapper, body.fullScreen div#background div#headerBar {
+body.fullScreen div#background div#bodyWrapper,
+body.fullScreen div#background div#headerBar {
   display: none;
 }
 

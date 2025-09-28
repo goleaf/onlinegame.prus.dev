@@ -60,7 +60,7 @@ class GameSuperSeeder extends Seeder
     protected function seedTableData(): void
     {
         $this->command->info('📋 Seeding table-specific data...');
-        
+
         $tableSeeders = [
             \Database\Seeders\Tables\PlayersSeeder::class,
             \Database\Seeders\Tables\VillagesSeeder::class,

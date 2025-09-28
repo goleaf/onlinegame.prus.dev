@@ -5,34 +5,48 @@ namespace App\Models\Game;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use sbamtr\LaravelQueryEnrich\QE;
-use SmartCache\Facades\SmartCache;
+use OwenIt\Auditing\Contracts\Auditable;
 
 use function sbamtr\LaravelQueryEnrich\c;
 
+use sbamtr\LaravelQueryEnrich\QE;
+use SmartCache\Facades\SmartCache;
+
 class Building extends Model implements Auditable
 {
+    use AuditableTrait;
     use HasFactory;
     use HasReference;
-    use AuditableTrait;
     // use Lift;
 
     // Laravel Lift typed properties
     public int $id;
+
     public int $village_id;
+
     public int $building_type_id;
+
     public string $name;
+
     public int $level;
+
     public ?int $x;
+
     public ?int $y;
+
     public bool $is_active;
+
     public ?\Carbon\Carbon $upgrade_started_at;
+
     public ?\Carbon\Carbon $upgrade_completed_at;
+
     public ?array $metadata;
+
     public ?string $reference_number;
+
     public \Carbon\CarbonImmutable $created_at;
+
     public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
@@ -57,6 +71,7 @@ class Building extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -100,7 +115,7 @@ class Building extends Model implements Auditable
                 ->from('buildings', 'b5')
                 ->whereColumn('b5.village_id', c('buildings.village_id'))
                 ->whereColumn('b5.building_type_id', c('buildings.building_type_id'))
-                ->as('same_type_count')
+                ->as('same_type_count'),
         ]);
     }
 
@@ -154,7 +169,7 @@ class Building extends Model implements Auditable
      */
     public static function getCachedBuildings($villageId, $filters = [])
     {
-        $cacheKey = "village_{$villageId}_buildings_" . md5(serialize($filters));
+        $cacheKey = "village_{$villageId}_buildings_".md5(serialize($filters));
 
         return SmartCache::remember($cacheKey, now()->addMinutes(5), function () use ($villageId, $filters) {
             $query = static::byVillage($villageId)->withStats();
@@ -188,10 +203,10 @@ class Building extends Model implements Auditable
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->whereHas('buildingType', function ($typeQ) use ($searchTerm) {
+            return $q->whereHas('buildingType', function ($typeQ) use ($searchTerm): void {
                 $typeQ
-                    ->where('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%');
+                    ->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('description', 'like', '%'.$searchTerm.'%');
             });
         });
     }
@@ -200,7 +215,7 @@ class Building extends Model implements Auditable
     {
         return $query->with([
             'buildingType:id,name,description,costs,production_bonus',
-            'village:id,name,player_id'
+            'village:id,name,player_id',
         ]);
     }
 }

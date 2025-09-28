@@ -2,19 +2,35 @@
 
 namespace App\Services;
 
+use App\Utilities\LoggingUtil;
+use LaraUtilX\Enums\LogLevel;
+use LaraUtilX\Utilities\CachingUtil;
+
 class ResourceProductionService
 {
     public function calculateResourceProduction($village)
     {
         $startTime = microtime(true);
-        
-        ds('ResourceProductionService: Calculating resource production', [
+        $cacheKey = 'resource_production_' . $village->id . '_' . now()->format('Y-m-d-H-i');
+
+        // Check cache first
+        $cachedProduction = CachingUtil::get($cacheKey);
+        if ($cachedProduction !== null) {
+            LoggingUtil::log(LogLevel::Info, 'Resource production retrieved from cache', [
+                'village_id' => $village->id,
+                'cache_key' => $cacheKey,
+            ], 'resource_production');
+
+            return $cachedProduction;
+        }
+
+        LoggingUtil::log(LogLevel::Info, 'Calculating resource production', [
             'service' => 'ResourceProductionService',
             'village_id' => $village->id,
             'village_name' => $village->name,
-            'calculation_time' => now()
-        ]);
-        
+            'calculation_time' => now(),
+        ], 'resource_production');
+
         $resources = $village->resources;
         $buildings = $village->buildings;
 
@@ -43,12 +59,12 @@ class ResourceProductionService
         }
 
         $calculationTime = round((microtime(true) - $startTime) * 1000, 2);
-        
+
         ds('ResourceProductionService: Resource production calculated', [
             'village_id' => $village->id,
             'production_rates' => $productionRates,
             'buildings_count' => $buildings->count(),
-            'calculation_time_ms' => $calculationTime
+            'calculation_time_ms' => $calculationTime,
         ]);
 
         return $productionRates;
@@ -133,7 +149,7 @@ class ResourceProductionService
 
         foreach ($costs as $resource => $amount) {
             $resourceModel = $resources->where('type', $resource)->first();
-            if (!$resourceModel || $resourceModel->amount < $amount) {
+            if (! $resourceModel || $resourceModel->amount < $amount) {
                 return false;
             }
         }
@@ -143,7 +159,7 @@ class ResourceProductionService
 
     public function spendResources($village, $costs)
     {
-        if (!$this->canAfford($village, $costs)) {
+        if (! $this->canAfford($village, $costs)) {
             return false;
         }
 

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -141,6 +141,27 @@ return new class() extends Migration {
             $table->index(['village_id', 'status']);
             $table->index(['category', 'status']);
             $table->index(['due_at']);
+        });
+
+        // Battles table
+        Schema::create('battles', function (Blueprint $table) {
+            $table->id();
+            $table->string('reference_number')->unique();
+            $table->foreignId('attacker_id')->constrained('players')->onDelete('cascade');
+            $table->foreignId('defender_id')->constrained('players')->onDelete('cascade');
+            $table->foreignId('village_id')->constrained('villages')->onDelete('cascade');
+            $table->json('attacker_troops');
+            $table->json('defender_troops');
+            $table->json('attacker_losses')->nullable();
+            $table->json('defender_losses')->nullable();
+            $table->json('loot')->nullable();
+            $table->string('result');
+            $table->timestamp('occurred_at');
+            $table->timestamps();
+
+            $table->index(['attacker_id', 'occurred_at']);
+            $table->index(['defender_id', 'occurred_at']);
+            $table->index(['village_id', 'occurred_at']);
         });
 
         // Game events table for logging

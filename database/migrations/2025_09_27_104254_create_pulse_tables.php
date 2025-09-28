@@ -1,11 +1,25 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Pulse\Support\PulseMigration;
 
-return new class extends PulseMigration
-{
+if (! class_exists(PulseMigration::class)) {
+    return new class () extends Migration {
+        public function up(): void
+        {
+            // Pulse is not installed; skip table creation.
+        }
+
+        public function down(): void
+        {
+            // Nothing to roll back.
+        }
+    };
+}
+
+return new class () extends PulseMigration {
     /**
      * Run the migrations.
      */

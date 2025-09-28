@@ -24,7 +24,7 @@ class VillageFactory extends Factory
         return [
             'player_id' => Player::factory(),
             'world_id' => World::factory(),
-            'name' => $this->faker->city() . ' Village',
+            'name' => $this->faker->city().' Village',
             'x_coordinate' => $this->faker->numberBetween(0, 400),
             'y_coordinate' => $this->faker->numberBetween(0, 400),
             'population' => $this->faker->numberBetween(100, 5000),
@@ -38,7 +38,7 @@ class VillageFactory extends Factory
      */
     public function capital(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_capital' => true,
             'population' => $this->faker->numberBetween(2000, 10000),
         ]);
@@ -49,7 +49,7 @@ class VillageFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => false,
         ]);
     }
@@ -59,7 +59,7 @@ class VillageFactory extends Factory
      */
     public function atCoordinates(int $x, int $y): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'x_coordinate' => $x,
             'y_coordinate' => $y,
         ]);

@@ -15,7 +15,9 @@ class GameDashboardTest extends DuskTestCase
     use DatabaseMigrations;
 
     protected $user;
+
     protected $player;
+
     protected $village;
 
     protected function setUp(): void
@@ -49,7 +51,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_game_dashboard_loads_successfully()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -64,7 +66,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_game_dashboard_shows_player_stats()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -77,7 +79,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_game_dashboard_shows_village_resources()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -90,7 +92,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_game_dashboard_navigation_works()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -106,7 +108,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_game_dashboard_refresh_button_works()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -118,7 +120,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_game_dashboard_shows_notifications()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -133,7 +135,7 @@ class GameDashboardTest extends DuskTestCase
         // Simulate an error by making the player inactive
         $this->player->update(['is_active' => false]);
 
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -144,7 +146,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_game_dashboard_responsive_design()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')

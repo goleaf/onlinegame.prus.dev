@@ -3,28 +3,29 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Traits\Commenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
 use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
-use LaraUtilX\Traits\Auditable as LarautilxAuditable;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 use WendellAdriel\Lift\Lift;
 
 class User extends Authenticatable implements Auditable
 {
+    use AuditableTrait;
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
-    use Notifiable;
+
     use HasNotables;
-    use AuditableTrait;
+
     // use Lift;
     use HasReference;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -60,7 +61,7 @@ class User extends Authenticatable implements Auditable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'phone' => \Propaganistas\LaravelPhone\Casts\RawPhoneNumberCast::class . ':phone_country',
+            'phone' => \Propaganistas\LaravelPhone\Casts\RawPhoneNumberCast::class.':phone_country',
             'reference_number' => 'string',
         ];
     }
@@ -76,8 +77,6 @@ class User extends Authenticatable implements Auditable
     /**
      * Determine if auditing is disabled for this model instance.
      * This method is used by the Laravel Auditing package to conditionally disable auditing.
-     *
-     * @return bool
      */
     public function isAuditingDisabled(): bool
     {
@@ -103,8 +102,6 @@ class User extends Authenticatable implements Auditable
     /**
      * Get the auditingDisabled attribute.
      * This is used by the Laravel Auditing package.
-     *
-     * @return bool
      */
     public function getAuditingDisabledAttribute(): bool
     {
@@ -130,11 +127,11 @@ class User extends Authenticatable implements Auditable
         $startTime = microtime(true);
 
         $player = $this->player;
-        if (!$player) {
+        if (! $player) {
             ds('User has no player', [
                 'user_id' => $this->id,
                 'user_name' => $this->name,
-                'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+                'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ])->label('User Game Stats - No Player');
 
             return null;
@@ -161,7 +158,7 @@ class User extends Authenticatable implements Auditable
             'village_count' => $stats['village_count'],
             'total_population' => $stats['total_population'],
             'points' => $stats['points'],
-            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
         ])->label('User Game Stats');
 
         return $stats;
@@ -182,7 +179,7 @@ class User extends Authenticatable implements Auditable
             'has_player' => (bool) $this->player,
             'player_active' => $this->player ? $this->player->is_active : false,
             'has_active_session' => $hasActiveSession,
-            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
         ])->label('User Active Session Check');
 
         return $hasActiveSession;
@@ -207,11 +204,11 @@ class User extends Authenticatable implements Auditable
     {
         $startTime = microtime(true);
 
-        if (!$this->player) {
+        if (! $this->player) {
             ds('User is not online - no player', [
                 'user_id' => $this->id,
                 'user_name' => $this->name,
-                'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+                'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ])->label('User Online Check - No Player');
 
             return false;
@@ -229,7 +226,7 @@ class User extends Authenticatable implements Auditable
             'last_active_at' => $this->player->last_active_at,
             'minutes_since_active' => $this->player->last_active_at ? $this->player->last_active_at->diffInMinutes(now()) : null,
             'is_online' => $isOnline,
-            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
         ])->label('User Online Check');
 
         return $isOnline;
@@ -250,7 +247,7 @@ class User extends Authenticatable implements Auditable
             'has_player' => (bool) $this->player,
             'village_count' => $villages->count(),
             'villages' => $villages->pluck('name')->toArray(),
-            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
         ])->label('User Villages');
 
         return $villages;
@@ -272,7 +269,7 @@ class User extends Authenticatable implements Auditable
             'has_capital' => (bool) $capitalVillage,
             'capital_village_id' => $capitalVillage ? $capitalVillage->id : null,
             'capital_village_name' => $capitalVillage ? $capitalVillage->name : null,
-            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+            'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
         ])->label('User Capital Village');
 
         return $capitalVillage;
@@ -291,7 +288,7 @@ class User extends Authenticatable implements Auditable
      */
     public function scopeActiveGameUsers($query)
     {
-        return $query->whereHas('player', function ($q) {
+        return $query->whereHas('player', function ($q): void {
             $q->where('is_active', true);
         });
     }
@@ -301,7 +298,7 @@ class User extends Authenticatable implements Auditable
      */
     public function scopeOnlineUsers($query)
     {
-        return $query->whereHas('player', function ($q) {
+        return $query->whereHas('player', function ($q): void {
             $q
                 ->where('is_online', true)
                 ->where('last_active_at', '>=', now()->subMinutes(15));
@@ -313,7 +310,7 @@ class User extends Authenticatable implements Auditable
      */
     public function scopeByWorld($query, $worldId)
     {
-        return $query->whereHas('player', function ($q) use ($worldId) {
+        return $query->whereHas('player', function ($q) use ($worldId): void {
             $q->where('world_id', $worldId);
         });
     }
@@ -323,7 +320,7 @@ class User extends Authenticatable implements Auditable
      */
     public function scopeByTribe($query, $tribe)
     {
-        return $query->whereHas('player', function ($q) use ($tribe) {
+        return $query->whereHas('player', function ($q) use ($tribe): void {
             $q->where('tribe', $tribe);
         });
     }
@@ -333,7 +330,7 @@ class User extends Authenticatable implements Auditable
      */
     public function scopeByAlliance($query, $allianceId)
     {
-        return $query->whereHas('player', function ($q) use ($allianceId) {
+        return $query->whereHas('player', function ($q) use ($allianceId): void {
             $q->where('alliance_id', $allianceId);
         });
     }
@@ -388,11 +385,11 @@ class User extends Authenticatable implements Auditable
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where(function ($subQ) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm): void {
                 $subQ
-                    ->where('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('email', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('phone', 'like', '%' . $searchTerm . '%');
+                    ->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('email', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('phone', 'like', '%'.$searchTerm.'%');
             });
         });
     }
@@ -400,7 +397,7 @@ class User extends Authenticatable implements Auditable
     public function scopeWithPlayerInfo($query)
     {
         return $query->with([
-            'player:id,user_id,name,alliance_id,points'
+            'player:id,user_id,name,alliance_id,points',
         ]);
     }
 

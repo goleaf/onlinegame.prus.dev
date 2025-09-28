@@ -4,12 +4,13 @@ namespace App\Models\Game;
 
 use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class BuildingType extends Model
 {
-    use HasFactory, HasTaxonomy;
+    use HasFactory;
+    use HasTaxonomy;
 
     protected $fillable = [
         'name',

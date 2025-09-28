@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Game\Player;
 use App\Models\Game\Alliance;
 use App\Models\Game\Notification;
-use App\Services\RealTimeGameService;
+use App\Models\Game\Player;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 
 class GameNotificationService
 {
@@ -129,7 +127,7 @@ class GameNotificationService
     ): int {
         try {
             // Get all active users
-            $userIds = Player::whereHas('user', function ($query) {
+            $userIds = Player::whereHas('user', function ($query): void {
                 $query->where('last_activity', '>=', now()->subDays(7));
             })->pluck('user_id')->toArray();
 
@@ -212,7 +210,7 @@ class GameNotificationService
     ): void {
         try {
             $player = Player::find($playerId);
-            if (!$player) {
+            if (! $player) {
                 return;
             }
 
@@ -243,7 +241,7 @@ class GameNotificationService
     ): void {
         try {
             $village = \App\Models\Game\Village::with('player')->find($villageId);
-            if (!$village) {
+            if (! $village) {
                 return;
             }
 
@@ -303,6 +301,7 @@ class GameNotificationService
 
             if ($notification) {
                 $notification->update(['is_read' => true]);
+
                 return true;
             }
 

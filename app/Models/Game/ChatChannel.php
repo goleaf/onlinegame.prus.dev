@@ -2,17 +2,19 @@
 
 namespace App\Models\Game;
 
+use App\Traits\HasReference;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class ChatChannel extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait;
+    use AuditableTrait;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'name',
@@ -34,11 +36,15 @@ class ChatChannel extends Model implements Auditable
     ];
 
     // Channel types
-    const TYPE_GLOBAL = 'global';
-    const TYPE_ALLIANCE = 'alliance';
-    const TYPE_PRIVATE = 'private';
-    const TYPE_TRADE = 'trade';
-    const TYPE_DIPLOMACY = 'diplomacy';
+    public const TYPE_GLOBAL = 'global';
+
+    public const TYPE_ALLIANCE = 'alliance';
+
+    public const TYPE_PRIVATE = 'private';
+
+    public const TYPE_TRADE = 'trade';
+
+    public const TYPE_DIPLOMACY = 'diplomacy';
 
     public function alliance(): BelongsTo
     {
@@ -114,7 +120,7 @@ class ChatChannel extends Model implements Auditable
 
     public function isPrivate(): bool
     {
-        return !$this->is_public;
+        return ! $this->is_public;
     }
 
     public function isGlobal(): bool
@@ -145,6 +151,7 @@ class ChatChannel extends Model implements Auditable
 
         if ($this->isAlliance()) {
             $player = Player::find($playerId);
+
             return $player && $player->alliance_id === $this->alliance_id;
         }
 
@@ -168,6 +175,7 @@ class ChatChannel extends Model implements Auditable
                 $allianceMember = $this->alliance->members()
                     ->where('player_id', $playerId)
                     ->first();
+
                 return $allianceMember && in_array($allianceMember->role, ['leader', 'officer']);
             }
         }
@@ -243,7 +251,7 @@ class ChatChannel extends Model implements Auditable
     {
         $currentSettings = $this->settings ?? [];
         $newSettings = array_merge($currentSettings, $settings);
-        
+
         return $this->update(['settings' => $newSettings]);
     }
 
@@ -255,12 +263,12 @@ class ChatChannel extends Model implements Auditable
     public static function createChannel(string $name, string $type, ?int $allianceId = null, ?int $createdBy = null, array $settings = []): self
     {
         $slug = \Str::slug($name);
-        
+
         // Ensure unique slug
         $originalSlug = $slug;
         $counter = 1;
         while (self::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $counter;
+            $slug = $originalSlug.'-'.$counter;
             $counter++;
         }
 
@@ -278,7 +286,7 @@ class ChatChannel extends Model implements Auditable
     private static function generateReferenceNumber(): string
     {
         do {
-            $reference = 'CHAN-' . strtoupper(\Str::random(8));
+            $reference = 'CHAN-'.strtoupper(\Str::random(8));
         } while (self::where('reference_number', $reference)->exists());
 
         return $reference;
@@ -289,23 +297,23 @@ class ChatChannel extends Model implements Auditable
      */
     public static function getCachedChannels($filters = [])
     {
-        $cacheKey = "chat_channels_" . md5(serialize($filters));
-        
+        $cacheKey = 'chat_channels_'.md5(serialize($filters));
+
         return SmartCache::remember($cacheKey, now()->addMinutes(10), function () use ($filters) {
             $query = static::with(['alliance']);
-            
+
             if (isset($filters['type'])) {
                 $query->where('channel_type', $filters['type']);
             }
-            
+
             if (isset($filters['active'])) {
                 $query->where('is_active', $filters['active']);
             }
-            
+
             if (isset($filters['public'])) {
                 $query->where('is_public', $filters['public']);
             }
-            
+
             return $query->orderBy('created_at', 'desc')->get();
         });
     }

@@ -3,11 +3,11 @@
 namespace App\Services;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use sbamtr\LaravelQueryEnrich\QE;
 
 use function sbamtr\LaravelQueryEnrich\c;
+
+use sbamtr\LaravelQueryEnrich\QE;
 
 /**
  * Query Enrich Service for Laravel Game
@@ -41,10 +41,10 @@ class QueryEnrichService
                             QE::eq(c('reports.status'), 'victory')
                         ), 1)
                         ->else(0)
-                )->as('total_victories')
+                )->as('total_victories'),
             ])
             ->leftJoin('villages', 'villages.player_id', '=', 'players.id')
-            ->leftJoin('reports', function ($join) {
+            ->leftJoin('reports', function ($join): void {
                 $join
                     ->on('reports.attacker_id', '=', 'players.id')
                     ->orOn('reports.defender_id', '=', 'players.id');
@@ -67,7 +67,7 @@ class QueryEnrichService
                     ->when(QE::eq(c('player_quests.status'), 'completed'), c('player_quests.id'))
                     ->else(null)
             )->as('completed_count'),
-            QE::avg(c('player_quests.progress'))->as('avg_progress')
+            QE::avg(c('player_quests.progress'))->as('avg_progress'),
         ];
 
         if ($playerId) {
@@ -111,7 +111,7 @@ class QueryEnrichService
                 QE::sum(c('resources.iron'))->as('total_iron'),
                 QE::sum(c('resources.crop'))->as('total_crop'),
                 QE::count(c('buildings.id'))->as('total_buildings'),
-                QE::avg(c('buildings.level'))->as('avg_building_level')
+                QE::avg(c('buildings.level'))->as('avg_building_level'),
             ])
             ->leftJoin('resources', 'resources.village_id', '=', 'villages.id')
             ->leftJoin('buildings', 'buildings.village_id', '=', 'villages.id')
@@ -126,7 +126,7 @@ class QueryEnrichService
         $query = DB::table('reports');
 
         if ($playerId) {
-            $query->where(function ($q) use ($playerId) {
+            $query->where(function ($q) use ($playerId): void {
                 $q
                     ->where('attacker_id', $playerId)
                     ->orWhere('defender_id', $playerId);
@@ -148,7 +148,7 @@ class QueryEnrichService
             QE::sum(c('attacker_losses'))->as('total_attacker_losses'),
             QE::sum(c('defender_losses'))->as('total_defender_losses'),
             QE::avg(c('attacker_losses'))->as('avg_attacker_losses'),
-            QE::avg(c('defender_losses'))->as('avg_defender_losses')
+            QE::avg(c('defender_losses'))->as('avg_defender_losses'),
         ]);
     }
 
@@ -185,7 +185,7 @@ class QueryEnrichService
                     QE::case()
                         ->when(QE::eq(c('buildings.type'), 'cropland'), c('buildings.production_rate'))
                         ->else(0)
-                )->as('crop_production')
+                )->as('crop_production'),
             ])
             ->leftJoin('buildings', 'buildings.village_id', '=', 'villages.id')
             ->groupBy('villages.id');
@@ -212,7 +212,7 @@ class QueryEnrichService
                     QE::case()
                         ->when(QE::eq(c('players.is_online'), true), c('players.id'))
                         ->else(null)
-                )->as('online_members')
+                )->as('online_members'),
             ])
             ->leftJoin('alliance_members', 'alliance_members.alliance_id', '=', 'alliances.id')
             ->leftJoin('players', 'players.id', '=', 'alliance_members.player_id')
@@ -252,7 +252,7 @@ class QueryEnrichService
                     ->when(QE::eq(c('resource_type'), 'crop'), c('amount'))
                     ->else(0)
             )->as('total_crop_offers'),
-            QE::avg(c('price_per_unit'))->as('avg_price_per_unit')
+            QE::avg(c('price_per_unit'))->as('avg_price_per_unit'),
         ]);
     }
 
@@ -308,10 +308,10 @@ class QueryEnrichService
                 QE::add(c('wood'), QE::multiply(c('wood_production_rate'), $hours))->as('projected_wood'),
                 QE::add(c('clay'), QE::multiply(c('clay_production_rate'), $hours))->as('projected_clay'),
                 QE::add(c('iron'), QE::multiply(c('iron_production_rate'), $hours))->as('projected_iron'),
-                QE::add(c('crop'), QE::multiply(c('crop_production_rate'), $hours))->as('projected_crop')
+                QE::add(c('crop'), QE::multiply(c('crop_production_rate'), $hours))->as('projected_crop'),
             ])
             ->leftJoin('villages', 'villages.id', '=', 'resources.village_id')
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q
                     ->whereRaw('(wood + (wood_production_rate * ?)) >= wood_capacity', [$hours])
                     ->orWhereRaw('(clay + (clay_production_rate * ?)) >= clay_capacity', [$hours])

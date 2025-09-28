@@ -3,22 +3,25 @@
 namespace Tests\Feature\Livewire\Game;
 
 use App\Livewire\Game\MovementManager;
-use App\Models\Game\Village;
-use App\Models\Game\Player;
-use App\Models\Game\World;
 use App\Models\Game\Movement;
+use App\Models\Game\Player;
+use App\Models\Game\Village;
+use App\Models\Game\World;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MovementManagerTest extends TestCase
 {
     use RefreshDatabase;
 
     private User $user;
+
     private Player $player;
+
     private World $world;
+
     private Village $village;
 
     protected function setUp(): void
@@ -30,14 +33,14 @@ class MovementManagerTest extends TestCase
         $this->world = World::factory()->create();
         $this->player = Player::factory()->create([
             'user_id' => $this->user->id,
-            'world_id' => $this->world->id
+            'world_id' => $this->world->id,
         ]);
 
         $this->village = Village::factory()->create([
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 100,
-            'y_coordinate' => 100
+            'y_coordinate' => 100,
         ]);
     }
 
@@ -55,7 +58,7 @@ class MovementManagerTest extends TestCase
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 200,
-            'y_coordinate' => 200
+            'y_coordinate' => 200,
         ]);
 
         $this->actingAs($this->user);
@@ -72,7 +75,7 @@ class MovementManagerTest extends TestCase
             'from_village_id' => $this->village->id,
             'to_village_id' => $targetVillage->id,
             'type' => 'attack',
-            'status' => 'travelling'
+            'status' => 'travelling',
         ]);
     }
 
@@ -89,7 +92,7 @@ class MovementManagerTest extends TestCase
 
         $this->assertDatabaseMissing('movements', [
             'from_village_id' => $this->village->id,
-            'to_village_id' => $this->village->id
+            'to_village_id' => $this->village->id,
         ]);
     }
 
@@ -111,7 +114,7 @@ class MovementManagerTest extends TestCase
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 200,
-            'y_coordinate' => 200
+            'y_coordinate' => 200,
         ]);
 
         $this->actingAs($this->user);
@@ -131,7 +134,7 @@ class MovementManagerTest extends TestCase
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 200,
-            'y_coordinate' => 200
+            'y_coordinate' => 200,
         ]);
 
         $movement = Movement::factory()->create([
@@ -139,7 +142,7 @@ class MovementManagerTest extends TestCase
             'from_village_id' => $this->village->id,
             'to_village_id' => $targetVillage->id,
             'type' => 'attack',
-            'status' => 'travelling'
+            'status' => 'travelling',
         ]);
 
         $this->actingAs($this->user);
@@ -157,7 +160,7 @@ class MovementManagerTest extends TestCase
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 200,
-            'y_coordinate' => 200
+            'y_coordinate' => 200,
         ]);
 
         $movement = Movement::factory()->create([
@@ -165,7 +168,7 @@ class MovementManagerTest extends TestCase
             'from_village_id' => $this->village->id,
             'to_village_id' => $targetVillage->id,
             'type' => 'attack',
-            'status' => 'completed'
+            'status' => 'completed',
         ]);
 
         $this->actingAs($this->user);
@@ -183,7 +186,7 @@ class MovementManagerTest extends TestCase
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 200,
-            'y_coordinate' => 200
+            'y_coordinate' => 200,
         ]);
 
         Movement::factory()->create([
@@ -191,7 +194,7 @@ class MovementManagerTest extends TestCase
             'from_village_id' => $this->village->id,
             'to_village_id' => $targetVillage->id,
             'type' => 'attack',
-            'status' => 'travelling'
+            'status' => 'travelling',
         ]);
 
         Movement::factory()->create([
@@ -199,7 +202,7 @@ class MovementManagerTest extends TestCase
             'from_village_id' => $this->village->id,
             'to_village_id' => $targetVillage->id,
             'type' => 'reinforce',
-            'status' => 'travelling'
+            'status' => 'travelling',
         ]);
 
         $this->actingAs($this->user);
@@ -215,7 +218,7 @@ class MovementManagerTest extends TestCase
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 200,
-            'y_coordinate' => 200
+            'y_coordinate' => 200,
         ]);
 
         Movement::factory()->create([
@@ -223,7 +226,7 @@ class MovementManagerTest extends TestCase
             'from_village_id' => $this->village->id,
             'to_village_id' => $targetVillage->id,
             'type' => 'attack',
-            'status' => 'travelling'
+            'status' => 'travelling',
         ]);
 
         Movement::factory()->create([
@@ -231,7 +234,7 @@ class MovementManagerTest extends TestCase
             'from_village_id' => $this->village->id,
             'to_village_id' => $targetVillage->id,
             'type' => 'attack',
-            'status' => 'completed'
+            'status' => 'completed',
         ]);
 
         $this->actingAs($this->user);

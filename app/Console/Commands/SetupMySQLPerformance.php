@@ -33,7 +33,8 @@ class SetupMySQLPerformance extends Command
             DB::connection()->getPdo();
             $this->info('✓ MySQL connection successful');
         } catch (\Exception $e) {
-            $this->error('✗ Cannot connect to MySQL: ' . $e->getMessage());
+            $this->error('✗ Cannot connect to MySQL: '.$e->getMessage());
+
             return 1;
         }
 
@@ -66,7 +67,7 @@ class SetupMySQLPerformance extends Command
         $this->info('✓ MySQL performance monitoring setup completed');
         $this->newLine();
         $this->info('Next steps:');
-        $this->line('1. Monitor slow query log: tail -f ' . $config['slow_query_log']['file']);
+        $this->line('1. Monitor slow query log: tail -f '.$config['slow_query_log']['file']);
         $this->line('2. Analyze queries with pt-query-digest (if installed)');
         $this->line('3. Check Laravel Debug Bar for local development');
         $this->line('4. Monitor query performance in application logs');
@@ -83,12 +84,12 @@ class SetupMySQLPerformance extends Command
             DB::statement("SET GLOBAL slow_query_log_file = '{$config['file']}'");
             DB::statement("SET GLOBAL long_query_time = {$config['long_query_time']}");
             DB::statement("SET GLOBAL slow_query_log = 'ON'");
-            DB::statement('SET GLOBAL log_queries_not_using_indexes = ' . ($config['log_queries_not_using_indexes'] ? 'ON' : 'OFF'));
+            DB::statement('SET GLOBAL log_queries_not_using_indexes = '.($config['log_queries_not_using_indexes'] ? 'ON' : 'OFF'));
             DB::statement("SET GLOBAL min_examined_row_limit = {$config['min_examined_row_limit']}");
 
             $this->info('✓ Slow query log configured');
         } catch (\Exception $e) {
-            $this->warn('⚠ Could not configure slow query log: ' . $e->getMessage());
+            $this->warn('⚠ Could not configure slow query log: '.$e->getMessage());
         }
     }
 
@@ -103,7 +104,7 @@ class SetupMySQLPerformance extends Command
 
             $this->info('✓ General query log configured');
         } catch (\Exception $e) {
-            $this->warn('⚠ Could not configure general query log: ' . $e->getMessage());
+            $this->warn('⚠ Could not configure general query log: '.$e->getMessage());
         }
     }
 
@@ -119,7 +120,7 @@ class SetupMySQLPerformance extends Command
 
             $this->info('✓ Performance schema configured');
         } catch (\Exception $e) {
-            $this->warn('⚠ Could not configure performance schema: ' . $e->getMessage());
+            $this->warn('⚠ Could not configure performance schema: '.$e->getMessage());
         }
     }
 
@@ -137,7 +138,7 @@ class SetupMySQLPerformance extends Command
 
             $this->info('✓ Query optimization configured');
         } catch (\Exception $e) {
-            $this->warn('⚠ Could not configure query optimization: ' . $e->getMessage());
+            $this->warn('⚠ Could not configure query optimization: '.$e->getMessage());
         }
     }
 
@@ -154,7 +155,7 @@ class SetupMySQLPerformance extends Command
 
             $this->info('✓ Connection optimization configured');
         } catch (\Exception $e) {
-            $this->warn('⚠ Could not configure connection optimization: ' . $e->getMessage());
+            $this->warn('⚠ Could not configure connection optimization: '.$e->getMessage());
         }
     }
 
@@ -171,7 +172,7 @@ class SetupMySQLPerformance extends Command
 
             $this->info('✓ Buffer optimization configured');
         } catch (\Exception $e) {
-            $this->warn('⚠ Could not configure buffer optimization: ' . $e->getMessage());
+            $this->warn('⚠ Could not configure buffer optimization: '.$e->getMessage());
         }
     }
 }

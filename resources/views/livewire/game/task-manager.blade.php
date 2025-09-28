@@ -178,16 +178,16 @@
                                 <i class="fas fa-eye mr-1"></i>View Details
                             </a>
                             @if($task->status === 'available')
-                                <button wire:click="startTask({{ $task->id }})" 
+                                <button wire:click.prevent="startTask({{ $task->id }})" 
                                         class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm transition-colors">
                                     <i class="fas fa-play mr-1"></i>Start
                                 </button>
                             @elseif($task->status === 'active')
-                                <button wire:click="completeTask({{ $task->id }})" 
+                                <button wire:click.prevent="completeTask({{ $task->id }})" 
                                         class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition-colors">
                                     <i class="fas fa-check mr-1"></i>Complete
                                 </button>
-                                <button wire:click="abandonTask({{ $task->id }})" 
+                                <button wire:click.prevent="abandonTask({{ $task->id }})" 
                                         wire:confirm="Are you sure you want to abandon this task? This action cannot be undone."
                                         class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm transition-colors">
                                     <i class="fas fa-times mr-1"></i>Abandon

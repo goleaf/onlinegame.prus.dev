@@ -3,13 +3,14 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class WonderConstruction extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'wonder_id',
@@ -32,6 +33,7 @@ class WonderConstruction extends Model
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -86,36 +88,39 @@ class WonderConstruction extends Model
 
     public function isInProgress(): bool
     {
-        return $this->construction_started_at && !$this->construction_completed_at;
+        return $this->construction_started_at && ! $this->construction_completed_at;
     }
 
     public function getConstructionDuration(): ?int
     {
-        if (!$this->construction_started_at) {
+        if (! $this->construction_started_at) {
             return null;
         }
 
         $endTime = $this->construction_completed_at ?? now();
+
         return $endTime->diffInSeconds($this->construction_started_at);
     }
 
     public function getRemainingTime(): ?int
     {
-        if (!$this->isInProgress()) {
+        if (! $this->isInProgress()) {
             return null;
         }
 
         $elapsedTime = now()->diffInSeconds($this->construction_started_at);
+
         return max(0, $this->construction_time - $elapsedTime);
     }
 
     public function getProgressPercentage(): float
     {
-        if (!$this->isInProgress()) {
+        if (! $this->isInProgress()) {
             return 100;
         }
 
         $elapsedTime = now()->diffInSeconds($this->construction_started_at);
+
         return min(100, ($elapsedTime / $this->construction_time) * 100);
     }
 }

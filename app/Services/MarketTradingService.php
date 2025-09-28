@@ -3,13 +3,12 @@
 namespace App\Services;
 
 use App\Models\Game\MarketOffer;
-use App\Models\Game\Village;
-use App\Models\Game\Player;
 use App\Models\Game\Resource;
+use App\Models\Game\Village;
 use App\ValueObjects\ResourceAmounts;
 use App\ValueObjects\VillageResources;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MarketTradingService
 {
@@ -38,7 +37,7 @@ class MarketTradingService
             $this->validateOfferData($offerData);
 
             // Check if village has enough resources using value objects
-            if (!$this->hasEnoughResources($village, $offeringResources)) {
+            if (! $this->hasEnoughResources($village, $offeringResources)) {
                 throw new \Exception('Insufficient resources for offer');
             }
 
@@ -86,7 +85,7 @@ class MarketTradingService
      */
     public function acceptOffer(MarketOffer $offer, Village $buyerVillage, int $quantity = 1): void
     {
-        DB::transaction(function () use ($offer, $buyerVillage, $quantity) {
+        DB::transaction(function () use ($offer, $buyerVillage, $quantity): void {
             // Check if offer is still active
             if ($offer->status !== 'active') {
                 throw new \Exception('Offer is no longer active');
@@ -104,7 +103,7 @@ class MarketTradingService
             }
 
             // Check if buyer has enough resources
-            if (!$this->hasEnoughResources($buyerVillage, $requiredResources)) {
+            if (! $this->hasEnoughResources($buyerVillage, $requiredResources)) {
                 throw new \Exception('Insufficient resources to accept offer');
             }
 
@@ -142,7 +141,7 @@ class MarketTradingService
      */
     public function cancelOffer(MarketOffer $offer): void
     {
-        DB::transaction(function () use ($offer) {
+        DB::transaction(function () use ($offer): void {
             if ($offer->status !== 'active') {
                 throw new \Exception('Cannot cancel inactive offer');
             }
@@ -174,19 +173,19 @@ class MarketTradingService
     public function getAvailableOffers(array $filters = []): \Illuminate\Database\Eloquent\Collection
     {
         $query = MarketOffer::where('status', 'active')
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q->whereNull('expires_at')
-                  ->orWhere('expires_at', '>', now());
+                    ->orWhere('expires_at', '>', now());
             })
             ->with(['village', 'player']);
 
         // Apply filters
         if (isset($filters['offering_resource'])) {
-            $query->whereJsonContains('offering->' . $filters['offering_resource'], '>', 0);
+            $query->whereJsonContains('offering->'.$filters['offering_resource'], '>', 0);
         }
 
         if (isset($filters['requesting_resource'])) {
-            $query->whereJsonContains('requesting->' . $filters['requesting_resource'], '>', 0);
+            $query->whereJsonContains('requesting->'.$filters['requesting_resource'], '>', 0);
         }
 
         if (isset($filters['min_ratio'])) {
@@ -274,24 +273,24 @@ class MarketTradingService
      */
     private function validateOfferData(array $data): void
     {
-        if (!isset($data['offering']) || !is_array($data['offering'])) {
+        if (! isset($data['offering']) || ! is_array($data['offering'])) {
             throw new \Exception('Invalid offering data');
         }
 
-        if (!isset($data['requesting']) || !is_array($data['requesting'])) {
+        if (! isset($data['requesting']) || ! is_array($data['requesting'])) {
             throw new \Exception('Invalid requesting data');
         }
 
         $validResources = ['wood', 'clay', 'iron', 'crop'];
 
         foreach ($data['offering'] as $resource => $amount) {
-            if (!in_array($resource, $validResources) || $amount <= 0) {
+            if (! in_array($resource, $validResources) || $amount <= 0) {
                 throw new \Exception('Invalid offering resource or amount');
             }
         }
 
         foreach ($data['requesting'] as $resource => $amount) {
-            if (!in_array($resource, $validResources) || $amount <= 0) {
+            if (! in_array($resource, $validResources) || $amount <= 0) {
                 throw new \Exception('Invalid requesting resource or amount');
             }
         }
@@ -303,7 +302,7 @@ class MarketTradingService
     private function hasEnoughResources(Village $village, ResourceAmounts $resources): bool
     {
         $villageResources = $village->resources;
-        if (!$villageResources) {
+        if (! $villageResources) {
             return false;
         }
 

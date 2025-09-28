@@ -2,23 +2,26 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\Building;
 use App\Models\Game\BuildingQueue;
 use App\Models\Game\MarketOffer;
 use App\Models\Game\Player;
 use App\Models\Game\TrainingQueue;
 use App\Models\Game\Village;
+use App\Models\User;
+use App\Models\User;
+use App\Models\User;
+use App\Models\User;
+use App\Models\User;
+use App\Models\User;
+use App\Models\User;
+use App\Models\User;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
-use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Game Integration API
@@ -34,11 +37,12 @@ use LaraUtilX\Utilities\LoggingUtil;
  */
 class GameIntegrationController extends CrudController
 {
-    use ApiResponseTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use ValidationHelperTrait;
 
     public function __construct()
     {
-        parent::__construct();
+        parent::__construct(new User());
     }
 
     /**
@@ -105,18 +109,18 @@ class GameIntegrationController extends CrudController
                         'clay' => $village->clay ?? 0,
                         'iron' => $village->iron ?? 0,
                         'crop' => $village->crop ?? 0,
-                    ]
+                    ],
                 ];
             });
 
             // Get active queues
-            $buildingQueues = BuildingQueue::whereHas('building', function ($query) use ($playerId) {
-                $query->whereHas('village', function ($q) use ($playerId) {
+            $buildingQueues = BuildingQueue::whereHas('building', function ($query) use ($playerId): void {
+                $query->whereHas('village', function ($q) use ($playerId): void {
                     $q->where('player_id', $playerId);
                 });
             })->count();
 
-            $trainingQueues = TrainingQueue::whereHas('village', function ($query) use ($playerId) {
+            $trainingQueues = TrainingQueue::whereHas('village', function ($query) use ($playerId): void {
                 $query->where('player_id', $playerId);
             })->count();
 
@@ -169,7 +173,7 @@ class GameIntegrationController extends CrudController
                 'user_id' => auth()->id(),
             ], 'game_integration');
 
-            return $this->errorResponse('Failed to retrieve dashboard data: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve dashboard data: '.$e->getMessage(), 500);
         }
     }
 
@@ -218,7 +222,6 @@ class GameIntegrationController extends CrudController
      *     "crop": 2000
      *   }
      * }
-     *
      * @response 404 {
      *   "message": "Village not found"
      * }
@@ -245,7 +248,7 @@ class GameIntegrationController extends CrudController
             });
 
             // Get building queue
-            $buildingQueue = BuildingQueue::whereHas('building', function ($query) use ($villageId) {
+            $buildingQueue = BuildingQueue::whereHas('building', function ($query) use ($villageId): void {
                 $query->where('village_id', $villageId);
             })
                 ->with(['buildingType'])
@@ -279,7 +282,7 @@ class GameIntegrationController extends CrudController
                     'coordinates' => [
                         'x' => $village->x ?? 0,
                         'y' => $village->y ?? 0,
-                    ]
+                    ],
                 ],
                 'buildings' => $buildings,
                 'queues' => [
@@ -291,7 +294,7 @@ class GameIntegrationController extends CrudController
                     'clay' => $village->clay ?? 0,
                     'iron' => $village->iron ?? 0,
                     'crop' => $village->crop ?? 0,
-                ]
+                ],
             ];
 
             LoggingUtil::info('Village overview retrieved', [
@@ -403,7 +406,7 @@ class GameIntegrationController extends CrudController
                 'user_id' => auth()->id(),
             ], 'game_integration');
 
-            return $this->errorResponse('Failed to retrieve statistics: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve statistics: '.$e->getMessage(), 500);
         }
     }
 
@@ -464,7 +467,7 @@ class GameIntegrationController extends CrudController
                 'user_id' => auth()->id(),
             ], 'game_integration');
 
-            return $this->errorResponse('Failed to retrieve system status: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve system status: '.$e->getMessage(), 500);
         }
     }
 }

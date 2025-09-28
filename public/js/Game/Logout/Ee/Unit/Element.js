@@ -5,32 +5,27 @@
  * @param {Ee.Units} parent
  * @returns {Ee.Unit.Element}
  */
-Ee.Unit.Element = function(options, parent)
-{
-	Ee.Unit.call(this, options, parent);
+Ee.Unit.Element = function (options, parent) {
+  Ee.Unit.call(this, options, parent);
 
-	this.element.setStyles(
-		{
-			opacity: 1,
-			display: 'inherit'
-		});
+  this.element.setStyles({
+    opacity: 1,
+    display: 'inherit',
+  });
 
-	return this;
+  return this;
 };
 
 // Prototype
-Ee.Unit.Element.prototype = Object.create(Ee.Unit.prototype,
-	{
-	});
+Ee.Unit.Element.prototype = Object.create(Ee.Unit.prototype, {});
 
 /**
  * greift eine Einheit an
  *
  * @returns {Ee.Unit}
  */
-Ee.Unit.Element.prototype.attack = function()
-{
-	return this;
+Ee.Unit.Element.prototype.attack = function () {
+  return this;
 };
 
 /**
@@ -38,9 +33,8 @@ Ee.Unit.Element.prototype.attack = function()
  *
  * @returns {Ee.Unit}
  */
-Ee.Unit.Element.prototype.create = function()
-{
-	return this;
+Ee.Unit.Element.prototype.create = function () {
+  return this;
 };
 
 /**
@@ -49,9 +43,8 @@ Ee.Unit.Element.prototype.create = function()
  * @params {Object} position {x: 0, y: 0}
  * @returns {Ee.Unit}
  */
-Ee.Unit.Element.prototype.setPosition = function(position)
-{
-	return this;
+Ee.Unit.Element.prototype.setPosition = function (position) {
+  return this;
 };
 
 /**
@@ -59,7 +52,6 @@ Ee.Unit.Element.prototype.setPosition = function(position)
  *
  * @returns {Ee.Unit}
  */
-Ee.Unit.Element.prototype.walk = function()
-{
-	return this;
+Ee.Unit.Element.prototype.walk = function () {
+  return this;
 };

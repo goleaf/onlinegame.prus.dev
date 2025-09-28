@@ -34,7 +34,7 @@ span.final_sales_amounts_text {
 /* ------------------------------------------- */
 /* language specific */
 hr {
-  border-color: -moz-use-text-color -moz-use-text-color #D3D3D3;
+  border-color: -moz-use-text-color -moz-use-text-color #d3d3d3;
   border-style: none none dotted;
   border-width: medium medium 1px;
   height: 1px;
@@ -48,13 +48,13 @@ span.provider_defect {
 }
 
 div.plus table.lang_ltr a.arrow {
-  background-image: url("../img_ltr/a/arrow-ltr.gif");
+  background-image: url('../img_ltr/a/arrow-ltr.gif');
   background-position: left 4px;
   padding-left: 8px;
 }
 
 div.plus table.lang_rtl a.arrow {
-  background-image: url("../img_rtl/a/arrow-rtl.gif");
+  background-image: url('../img_rtl/a/arrow-rtl.gif');
   background-position: right 4px;
   padding-right: 8px;
 }
@@ -74,12 +74,12 @@ div.plus table td {
   font-size: 13px;
   font-family: Arial, Helvetica, Verdana, sans-serif;
 }
-.rtl div.plus table th, .rtl
-div.plus table td {
+.rtl div.plus table th,
+.rtl div.plus table td {
   font-size: 14px;
 }
-.fa-IR div.plus table th, .fa-IR
-div.plus table td {
+.fa-IR div.plus table th,
+.fa-IR div.plus table td {
   font-family: IRANSans, Arial, Helvetica, Verdana, sans-serif;
 }
 
@@ -201,11 +201,11 @@ div.plus table#open_orders td {
 
 /* products */
 div.plus .productBackground.lang_ltr {
-  background-image: url("../img_ltr/p/plusPackages-ltr.png");
+  background-image: url('../img_ltr/p/plusPackages-ltr.png');
 }
 
 div.plus .productBackground.lang_rtl {
-  background-image: url("../img_rtl/p/plusPackages-rtl.png");
+  background-image: url('../img_rtl/p/plusPackages-rtl.png');
 }
 
 div.plus .productBackground {
@@ -227,7 +227,7 @@ div.plus div#products table.product th {
 }
 
 div.plus div#products table.product th div.boxes-contents {
-  color: #F2F2F2;
+  color: #f2f2f2;
   padding: 3px 0;
 }
 
@@ -240,7 +240,10 @@ div.plus .productBackground td.voucher a {
   position: relative;
 }
 
-div.plus .productBackground a.bookProduct, div.plus .productBackground a.bookProduct img, div.plus .productBackground a.voucher, div.plus .productBackground a.voucher img {
+div.plus .productBackground a.bookProduct,
+div.plus .productBackground a.bookProduct img,
+div.plus .productBackground a.voucher,
+div.plus .productBackground a.voucher img {
   position: absolute;
   top: 0;
   right: 0;
@@ -300,7 +303,7 @@ div.plus table.features td.preview {
 }
 
 div.plus table.features td.preview a {
-  border: 1px solid #C0C0C0;
+  border: 1px solid #c0c0c0;
   padding: 1px;
   display: block;
 }
@@ -457,7 +460,7 @@ div.plus p.mail {
 
 div.plus span.notice {
   font-size: 11px;
-  color: #C0C0C0;
+  color: #c0c0c0;
 }
 .rtl div.plus span.notice {
   font-size: 12px;
@@ -473,7 +476,7 @@ div.plus a#addMailRow {
 }
 
 div.plus p.report {
-  color: #228B22;
+  color: #228b22;
   font-size: 21px;
 }
 .rtl div.plus p.report {
@@ -612,10 +615,16 @@ div#silverExchange .exchangeType .exchangeItem .silverExchangeFormularTerm {
   line-height: 27px;
 }
 
-div#silverExchange .exchangeType .exchangeItem.formularDirectionLTR .silverExchangeFormularTerm {
+div#silverExchange
+  .exchangeType
+  .exchangeItem.formularDirectionLTR
+  .silverExchangeFormularTerm {
   float: left;
 }
 
-div#silverExchange .exchangeType .exchangeItem.formularDirectionRTL .silverExchangeFormularTerm {
+div#silverExchange
+  .exchangeType
+  .exchangeItem.formularDirectionRTL
+  .silverExchangeFormularTerm {
   float: right;
 }

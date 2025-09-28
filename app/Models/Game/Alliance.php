@@ -8,37 +8,27 @@ namespace App\Models\Game;
 // use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
 // use IndexZer0\EloquentFiltering\Filter\FilterType;
 use App\Traits\Commentable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use sbamtr\LaravelQueryEnrich\QE;
+use OwenIt\Auditing\Contracts\Auditable;
 
 use function sbamtr\LaravelQueryEnrich\c;
 
+use sbamtr\LaravelQueryEnrich\QE;
+
 class Alliance extends Model implements Auditable
 {
-    use HasNotables, HasReference, Commentable;
+    use HasFactory;
     use AuditableTrait;
+    use Commentable;
+    use HasNotables;
+    use HasReference;
     // use Lift;
-
-    // Laravel Lift typed properties
-    public int $id;
-    public string $name;
-    public string $tag;
-    public ?string $description;
-    public int $world_id;
-    public ?int $leader_id;
-    public int $points;
-    public int $villages_count;
-    public int $members_count;
-    public bool $is_active;
-    public ?string $reference_number;
-    public \Carbon\CarbonImmutable $created_at;
-    public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
         'name',
@@ -61,6 +51,7 @@ class Alliance extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -155,7 +146,7 @@ class Alliance extends Model implements Auditable
                 ->as('max_points'),
             QE::select(QE::count(c('id')))
                 ->from('villages', 'v')
-                ->whereIn('v.player_id', function ($subQuery) {
+                ->whereIn('v.player_id', function ($subQuery): void {
                     $subQuery
                         ->select('id')
                         ->from('players', 'p5')
@@ -164,13 +155,13 @@ class Alliance extends Model implements Auditable
                 ->as('total_villages'),
             QE::select(QE::sum(c('population')))
                 ->from('villages', 'v2')
-                ->whereIn('v2.player_id', function ($subQuery) {
+                ->whereIn('v2.player_id', function ($subQuery): void {
                     $subQuery
                         ->select('id')
                         ->from('players', 'p6')
                         ->whereColumn('p6.alliance_id', c('alliances.id'));
                 })
-                ->as('total_population')
+                ->as('total_population'),
         ]);
     }
 
@@ -222,11 +213,11 @@ class Alliance extends Model implements Auditable
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where(function ($subQ) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm): void {
                 $subQ
-                    ->where('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('tag', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%');
+                    ->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('tag', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('description', 'like', '%'.$searchTerm.'%');
             });
         });
     }
@@ -236,7 +227,7 @@ class Alliance extends Model implements Auditable
         return $query->with([
             'founder:id,name,points',
             'leader:id,name,points',
-            'players:id,name,alliance_id,points,created_at'
+            'players:id,name,alliance_id,points,created_at',
         ]);
     }
 

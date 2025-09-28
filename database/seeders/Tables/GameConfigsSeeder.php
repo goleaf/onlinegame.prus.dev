@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,9 +17,7 @@ class GameConfigsSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
@@ -334,11 +333,11 @@ class GameConfigsSeeder extends Seeder
                 'description' => 'Backup interval in seconds',
                 'created_at' => '2025-09-27 00:49:35',
                 'updated_at' => '2025-09-27 00:49:35',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("game_configs")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('game_configs')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

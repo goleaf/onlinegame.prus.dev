@@ -14,12 +14,19 @@ class TravianDashboard extends Component
     use WithPagination;
 
     public $player;
+
     public $currentVillage;
+
     public $villages = [];
+
     public $recentEvents = [];
+
     public $gameStats = [];
+
     public $autoRefresh = true;
+
     public $refreshInterval = 5;  // seconds
+
     public $lastUpdate;
 
     protected $listeners = ['refreshGameData', 'gameTickProcessed', 'gameTickError'];
@@ -34,7 +41,7 @@ class TravianDashboard extends Component
     {
         $user = Auth::user();
         $this->player = Player::where('user_id', $user->id)
-            ->with(['villages' => function ($query) {
+            ->with(['villages' => function ($query): void {
                 $query->with(['resources', 'buildings.buildingType:id,name,description']);
             }, 'alliance:id,name'])
             ->first();
@@ -109,7 +116,7 @@ class TravianDashboard extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
     }
 
     public function setRefreshInterval($interval)

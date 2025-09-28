@@ -37,21 +37,21 @@ class GameEventFactory extends Factory
 
     public function unread(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_read' => false,
         ]);
     }
 
     public function read(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_read' => true,
         ]);
     }
 
     public function buildingCompleted(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'event_type' => 'building_completed',
             'event_data' => [
                 'building_name' => $this->faker->randomElement(['Woodcutter', 'Clay Pit', 'Iron Mine', 'Crop Field']),
@@ -63,7 +63,7 @@ class GameEventFactory extends Factory
 
     public function attackReceived(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'event_type' => 'attack_received',
             'event_data' => [
                 'attacker_name' => $this->faker->name(),

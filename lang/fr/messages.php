@@ -24,7 +24,7 @@ return [
     'success' => 'Succès',
     'warning' => 'Avertissement',
     'info' => 'Information',
-    
+
     // Navigation
     'home' => 'Accueil',
     'dashboard' => 'Tableau de Bord',
@@ -33,7 +33,7 @@ return [
     'logout' => 'Déconnexion',
     'login' => 'Connexion',
     'register' => 'S\'inscrire',
-    
+
     // Game specific
     'game' => 'Jeu',
     'player' => 'Joueur',
@@ -57,7 +57,7 @@ return [
     'messages' => 'Messages',
     'forum' => 'Forum',
     'help' => 'Aide',
-    
+
     // Time
     'time' => 'Temps',
     'date' => 'Date',
@@ -68,7 +68,7 @@ return [
     'week' => 'Semaine',
     'month' => 'Mois',
     'year' => 'Année',
-    
+
     // Validation
     'required' => 'Ce champ est obligatoire.',
     'email' => 'Veuillez saisir une adresse email valide.',
@@ -80,4 +80,3 @@ return [
     'title' => 'Titre',
     'content' => 'Contenu',
 ];
-

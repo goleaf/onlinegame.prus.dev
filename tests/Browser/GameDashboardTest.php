@@ -15,8 +15,11 @@ class GameDashboardTest extends DuskTestCase
     use DatabaseMigrations;
 
     protected $user;
+
     protected $player;
+
     protected $world;
+
     protected $village;
 
     protected function setUp(): void
@@ -59,7 +62,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_game_dashboard_loads()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -75,7 +78,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_navigation_works()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -92,7 +95,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_real_time_updates()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -104,7 +107,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_resource_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -118,7 +121,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_building_grid_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -131,7 +134,7 @@ class GameDashboardTest extends DuskTestCase
 
     public function test_player_info_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')

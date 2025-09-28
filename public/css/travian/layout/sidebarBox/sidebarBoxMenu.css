@@ -38,6 +38,6 @@ div.sidebar div#sidebarBoxMenu ul li a {
 }
 div.sidebar div#sidebarBoxMenu ul li.active a,
 div.sidebar div#sidebarBoxMenu ul li a:active {
-  color: #F2F2F2;
-  background-color: #B29672;
+  color: #f2f2f2;
+  background-color: #b29672;
 }

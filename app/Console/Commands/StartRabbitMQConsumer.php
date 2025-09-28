@@ -52,7 +52,8 @@ class StartRabbitMQConsumer extends Command
                 sleep(1);
             }
         } catch (\Exception $e) {
-            $this->error('Failed to start consumer: ' . $e->getMessage());
+            $this->error('Failed to start consumer: '.$e->getMessage());
+
             return 1;
         }
 

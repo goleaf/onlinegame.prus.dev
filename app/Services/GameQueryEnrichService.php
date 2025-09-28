@@ -11,9 +11,10 @@ use App\Models\Game\Troop;
 use App\Models\Game\Village;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use sbamtr\LaravelQueryEnrich\QE;
 
 use function sbamtr\LaravelQueryEnrich\c;
+
+use sbamtr\LaravelQueryEnrich\QE;
 
 /**
  * Game Query Enrich Service
@@ -36,7 +37,7 @@ class GameQueryEnrichService
             ->with(['alliance:id,name', 'villages'])
             ->first();
 
-        if (!$player) {
+        if (! $player) {
             return [];
         }
 
@@ -48,7 +49,7 @@ class GameQueryEnrichService
                 QE::avg(c('population'))->as('avg_population'),
                 QE::sum(c('points'))->as('total_points'),
                 QE::max(c('population'))->as('largest_village'),
-                QE::min(c('population'))->as('smallest_village')
+                QE::min(c('population'))->as('smallest_village'),
             ])
             ->first();
 
@@ -64,13 +65,13 @@ class GameQueryEnrichService
                 QE::sum(c('resources.wood_production'))->as('wood_production'),
                 QE::sum(c('resources.clay_production'))->as('clay_production'),
                 QE::sum(c('resources.iron_production'))->as('iron_production'),
-                QE::sum(c('resources.crop_production'))->as('crop_production')
+                QE::sum(c('resources.crop_production'))->as('crop_production'),
             ])
             ->first();
 
         // Get battle statistics
         $battleStats = Report::where('world_id', $worldId ?? $player->world_id)
-            ->where(function ($q) use ($playerId) {
+            ->where(function ($q) use ($playerId): void {
                 $q
                     ->where('attacker_id', $playerId)
                     ->orWhere('defender_id', $playerId);
@@ -78,21 +79,21 @@ class GameQueryEnrichService
             ->select([
                 QE::count(c('id'))->as('total_battles'),
                 QE::count(QE::case()
-                        ->when(QE::eq(c('status'), 'victory'), c('id'))
-                        ->else(null))
+                    ->when(QE::eq(c('status'), 'victory'), c('id'))
+                    ->else(null))
                     ->as('victories'),
                 QE::count(QE::case()
-                        ->when(QE::eq(c('status'), 'defeat'), c('id'))
-                        ->else(null))
+                    ->when(QE::eq(c('status'), 'defeat'), c('id'))
+                    ->else(null))
                     ->as('defeats'),
                 QE::sum(QE::case()
-                        ->when(QE::eq(c('attacker_id'), $playerId), c('attacker_losses'))
-                        ->else(c('defender_losses')))
+                    ->when(QE::eq(c('attacker_id'), $playerId), c('attacker_losses'))
+                    ->else(c('defender_losses')))
                     ->as('total_losses'),
                 QE::sum(QE::case()
-                        ->when(QE::eq(c('defender_id'), $playerId), c('defender_losses'))
-                        ->else(c('attacker_losses')))
-                    ->as('total_inflicted_losses')
+                    ->when(QE::eq(c('defender_id'), $playerId), c('defender_losses'))
+                    ->else(c('attacker_losses')))
+                    ->as('total_inflicted_losses'),
             ])
             ->first();
 
@@ -100,7 +101,7 @@ class GameQueryEnrichService
             'player' => $player,
             'village_stats' => $villageStats,
             'resource_stats' => $resourceStats,
-            'battle_stats' => $battleStats
+            'battle_stats' => $battleStats,
         ];
     }
 
@@ -117,9 +118,9 @@ class GameQueryEnrichService
                 QE::sum(c('villages.points'))->as('total_points'),
                 QE::max(c('villages.population'))->as('largest_village'),
                 QE::count(QE::case()
-                        ->when(QE::eq(c('villages.is_capital'), true), c('villages.id'))
-                        ->else(null))
-                    ->as('capital_count')
+                    ->when(QE::eq(c('villages.is_capital'), true), c('villages.id'))
+                    ->else(null))
+                    ->as('capital_count'),
             ])
             ->leftJoin('villages', 'villages.player_id', '=', 'players.id')
             ->groupBy('players.id')
@@ -140,13 +141,13 @@ class GameQueryEnrichService
                 QE::avg(c('players.total_population'))->as('avg_member_population'),
                 QE::sum(c('players.total_points'))->as('total_points'),
                 QE::count(QE::case()
-                        ->when(QE::eq(c('players.is_online'), true), c('players.id'))
-                        ->else(null))
+                    ->when(QE::eq(c('players.is_online'), true), c('players.id'))
+                    ->else(null))
                     ->as('online_members'),
                 QE::count(QE::case()
-                        ->when(QE::eq(c('players.is_active'), true), c('players.id'))
-                        ->else(null))
-                    ->as('active_members')
+                    ->when(QE::eq(c('players.is_active'), true), c('players.id'))
+                    ->else(null))
+                    ->as('active_members'),
             ])
             ->leftJoin('alliance_members', 'alliance_members.alliance_id', '=', 'alliances.id')
             ->leftJoin('players', 'players.id', '=', 'alliance_members.player_id')
@@ -175,12 +176,16 @@ class GameQueryEnrichService
                 QE::sum(c('resources.clay_production'))->as('clay_production'),
                 QE::sum(c('resources.iron_production'))->as('iron_production'),
                 QE::sum(c('resources.crop_production'))->as('crop_production'),
-                QE::sum(QE::add(QE::add(c('resources.wood_production'), c('resources.clay_production')),
-                        QE::add(c('resources.iron_production'), c('resources.crop_production'))))
+                QE::sum(QE::add(
+                    QE::add(c('resources.wood_production'), c('resources.clay_production')),
+                    QE::add(c('resources.iron_production'), c('resources.crop_production'))
+                ))
                     ->as('total_production'),
-                QE::avg(QE::add(QE::add(c('resources.wood_production'), c('resources.clay_production')),
-                        QE::add(c('resources.iron_production'), c('resources.crop_production'))))
-                    ->as('avg_production_per_village')
+                QE::avg(QE::add(
+                    QE::add(c('resources.wood_production'), c('resources.clay_production')),
+                    QE::add(c('resources.iron_production'), c('resources.crop_production'))
+                ))
+                    ->as('avg_production_per_village'),
             ])
             ->leftJoin('resources', 'resources.village_id', '=', 'villages.id')
             ->groupBy('villages.id');
@@ -200,13 +205,13 @@ class GameQueryEnrichService
                 QE::max(c('buildings.level'))->as('max_level'),
                 QE::min(c('buildings.level'))->as('min_level'),
                 QE::sum(QE::case()
-                        ->when(QE::eq(c('buildings.level'), 20), 1)
-                        ->else(0))
+                    ->when(QE::eq(c('buildings.level'), 20), 1)
+                    ->else(0))
                     ->as('maxed_buildings'),
                 QE::count(QE::case()
-                        ->when(QE::notNull(c('buildings.construction_completed_at')), c('buildings.id'))
-                        ->else(null))
-                    ->as('under_construction')
+                    ->when(QE::notNull(c('buildings.construction_completed_at')), c('buildings.id'))
+                    ->else(null))
+                    ->as('under_construction'),
             ])
             ->groupBy('buildings.type')
             ->orderByDesc('total_buildings');
@@ -228,9 +233,9 @@ class GameQueryEnrichService
                 QE::avg(c('troops.quantity'))->as('avg_quantity_per_village'),
                 QE::max(c('troops.quantity'))->as('max_quantity_in_village'),
                 QE::count(QE::case()
-                        ->when(QE::gt(c('troops.quantity'), 0), c('troops.id'))
-                        ->else(null))
-                    ->as('villages_with_units')
+                    ->when(QE::gt(c('troops.quantity'), 0), c('troops.id'))
+                    ->else(null))
+                    ->as('villages_with_units'),
             ])
             ->groupBy('unit_types.id', 'unit_types.name', 'unit_types.attack', 'unit_types.defense')
             ->orderByDesc('total_quantity');
@@ -252,23 +257,23 @@ class GameQueryEnrichService
                 'quests.*',
                 QE::count(c('player_quests.id'))->as('total_attempts'),
                 QE::count(QE::case()
-                        ->when(QE::eq(c('player_quests.status'), 'completed'), c('player_quests.id'))
-                        ->else(null))
+                    ->when(QE::eq(c('player_quests.status'), 'completed'), c('player_quests.id'))
+                    ->else(null))
                     ->as('completed_attempts'),
                 QE::avg(QE::case()
-                        ->when(QE::eq(c('player_quests.status'), 'completed'), c('player_quests.progress'))
-                        ->else(null))
+                    ->when(QE::eq(c('player_quests.status'), 'completed'), c('player_quests.progress'))
+                    ->else(null))
                     ->as('avg_completion_progress'),
                 QE::count(QE::case()
-                        ->when(QE::eq(c('player_quests.player_id'), $playerId), c('player_quests.id'))
-                        ->else(null))
+                    ->when(QE::eq(c('player_quests.player_id'), $playerId), c('player_quests.id'))
+                    ->else(null))
                     ->as('player_attempts'),
                 QE::select(c('status'))
                     ->from('player_quests')
                     ->whereColumn('quest_id', c('quests.id'))
                     ->where('player_id', $playerId)
                     ->limit(1)
-                    ->as('player_status')
+                    ->as('player_status'),
             ])
             ->leftJoin('player_quests', 'player_quests.quest_id', '=', 'quests.id')
             ->groupBy('quests.id')
@@ -294,24 +299,24 @@ class GameQueryEnrichService
             ->select([
                 QE::count(c('id'))->as('total_offers'),
                 QE::sum(QE::case()
-                        ->when(QE::eq(c('resource_type'), 'wood'), c('amount'))
-                        ->else(0))
+                    ->when(QE::eq(c('resource_type'), 'wood'), c('amount'))
+                    ->else(0))
                     ->as('wood_offers'),
                 QE::sum(QE::case()
-                        ->when(QE::eq(c('resource_type'), 'clay'), c('amount'))
-                        ->else(0))
+                    ->when(QE::eq(c('resource_type'), 'clay'), c('amount'))
+                    ->else(0))
                     ->as('clay_offers'),
                 QE::sum(QE::case()
-                        ->when(QE::eq(c('resource_type'), 'iron'), c('amount'))
-                        ->else(0))
+                    ->when(QE::eq(c('resource_type'), 'iron'), c('amount'))
+                    ->else(0))
                     ->as('iron_offers'),
                 QE::sum(QE::case()
-                        ->when(QE::eq(c('resource_type'), 'crop'), c('amount'))
-                        ->else(0))
+                    ->when(QE::eq(c('resource_type'), 'crop'), c('amount'))
+                    ->else(0))
                     ->as('crop_offers'),
                 QE::avg(c('price_per_unit'))->as('avg_price_per_unit'),
                 QE::max(c('price_per_unit'))->as('max_price_per_unit'),
-                QE::min(c('price_per_unit'))->as('min_price_per_unit')
+                QE::min(c('price_per_unit'))->as('min_price_per_unit'),
             ])
             ->where(c('created_at'), '>=', QE::subDate(QE::now(), $days, QE::Unit::DAY));
     }
@@ -328,13 +333,13 @@ class GameQueryEnrichService
                 QE::sum(c('villages.population'))->as('total_population'),
                 QE::select(QE::count(c('id')))
                     ->from('reports')
-                    ->where(function ($q) {
+                    ->where(function ($q): void {
                         $q
                             ->whereColumn('attacker_id', c('players.id'))
                             ->orWhereColumn('defender_id', c('players.id'));
                     })
                     ->where(c('created_at'), '>=', QE::subDate(QE::now(), $days, QE::Unit::DAY))
-                    ->as('recent_activity')
+                    ->as('recent_activity'),
             ])
             ->leftJoin('villages', 'villages.player_id', '=', 'players.id')
             ->groupBy('players.id')
@@ -360,9 +365,9 @@ class GameQueryEnrichService
                 QE::add(c('wood'), QE::multiply(c('wood_production'), $hours))->as('projected_wood'),
                 QE::add(c('clay'), QE::multiply(c('clay_production'), $hours))->as('projected_clay'),
                 QE::add(c('iron'), QE::multiply(c('iron_production'), $hours))->as('projected_iron'),
-                QE::add(c('crop'), QE::multiply(c('crop_production'), $hours))->as('projected_crop')
+                QE::add(c('crop'), QE::multiply(c('crop_production'), $hours))->as('projected_crop'),
             ])
-            ->where(function ($q) use ($hours) {
+            ->where(function ($q) use ($hours): void {
                 $q
                     ->where(QE::add(c('wood'), QE::multiply(c('wood_production'), $hours)), '>=', c('villages.wood_capacity'))
                     ->orWhere(QE::add(c('clay'), QE::multiply(c('clay_production'), $hours)), '>=', c('villages.clay_capacity'))

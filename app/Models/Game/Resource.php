@@ -2,32 +2,39 @@
 
 namespace App\Models\Game;
 
-use App\ValueObjects\ResourceAmounts;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use MohamedSaid\Notable\Traits\HasNotables;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 use SmartCache\Facades\SmartCache;
 
 class Resource extends Model implements Auditable
 {
+    use AuditableTrait;
     use HasFactory;
     use HasNotables;
-    use AuditableTrait;
     // use Lift;
 
     // Laravel Lift typed properties
     public int $id;
+
     public int $village_id;
+
     public string $type;
+
     public int $amount;
+
     public float $production_rate;
+
     public int $storage_capacity;
+
     public int $level;
+
     public ?\Carbon\Carbon $last_updated;
+
     public \Carbon\CarbonImmutable $created_at;
+
     public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
@@ -107,7 +114,7 @@ class Resource extends Model implements Auditable
      */
     public static function getCachedResources($villageId, $filters = [])
     {
-        $cacheKey = "village_{$villageId}_resources_" . md5(serialize($filters));
+        $cacheKey = "village_{$villageId}_resources_".md5(serialize($filters));
 
         return SmartCache::remember($cacheKey, now()->addMinutes(2), function () use ($villageId, $filters) {
             $query = static::byVillage($villageId)->withStats();
@@ -155,14 +162,14 @@ class Resource extends Model implements Auditable
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where('type', 'like', '%' . $searchTerm . '%');
+            return $q->where('type', 'like', '%'.$searchTerm.'%');
         });
     }
 
     public function scopeWithVillageInfo($query)
     {
         return $query->with([
-            'village:id,name,player_id,population'
+            'village:id,name,player_id,population',
         ]);
     }
 }

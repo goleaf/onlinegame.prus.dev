@@ -13,10 +13,10 @@
 /*** RESOURCES ** */
 /** hero state */
 div.hero_inventory #attributes .main .health .bar-bg .bar {
-  background-color: #99C01A;
+  background-color: #99c01a;
 }
 div.hero_inventory #attributes.hero-regenerate .main .health .bar-bg .bar {
-  background-color: #F88C1F;
+  background-color: #f88c1f;
 }
 div.hero_inventory #attributes.hero-dead .lineWrapper {
   margin-top: 10px;
@@ -25,7 +25,7 @@ div.hero_inventory #attributes.hero-dead .lineWrapper:after {
   visibility: hidden;
   display: block;
   font-size: 0;
-  content: " ";
+  content: ' ';
   clear: both;
   height: 0;
 }
@@ -247,7 +247,7 @@ div.hero_inventory .attributes .points {
 }
 
 div.hero_inventory .attributes .progress .bar.setted {
-  background-color: #99C01A;
+  background-color: #99c01a;
   transition-duration: 250ms;
 }
 

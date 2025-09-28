@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Utilities\LoggingUtil;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use LaraUtilX\Traits\FileProcessingTrait;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class FileProcessingService
 {
@@ -31,11 +31,6 @@ class FileProcessingService
 
     /**
      * Upload a file with validation and processing
-     *
-     * @param UploadedFile $file
-     * @param string $directory
-     * @param array $options
-     * @return array
      */
     public function uploadFile(UploadedFile $file, string $directory = 'uploads', array $options = []): array
     {
@@ -45,7 +40,7 @@ class FileProcessingService
 
             // Generate unique filename
             $filename = $this->generateUniqueFilename($file);
-            $path = $directory . '/' . $filename;
+            $path = $directory.'/'.$filename;
 
             // Store file
             $storedPath = $file->storeAs($directory, $filename, 'public');
@@ -103,11 +98,6 @@ class FileProcessingService
 
     /**
      * Process multiple files
-     *
-     * @param array $files
-     * @param string $directory
-     * @param array $options
-     * @return array
      */
     public function uploadMultipleFiles(array $files, string $directory = 'uploads', array $options = []): array
     {
@@ -140,15 +130,12 @@ class FileProcessingService
                 'success_count' => $successCount,
                 'error_count' => $errorCount,
             ],
-            'message' => "Uploaded {$successCount} files successfully." . ($errorCount > 0 ? " {$errorCount} files failed." : ''),
+            'message' => "Uploaded {$successCount} files successfully.".($errorCount > 0 ? " {$errorCount} files failed." : ''),
         ];
     }
 
     /**
      * Delete a file
-     *
-     * @param string $filePath
-     * @return array
      */
     public function deleteFile(string $filePath): array
     {
@@ -192,14 +179,11 @@ class FileProcessingService
 
     /**
      * Get file information
-     *
-     * @param string $filePath
-     * @return array
      */
     public function getFileInfo(string $filePath): array
     {
         try {
-            if (!Storage::exists($filePath)) {
+            if (! Storage::exists($filePath)) {
                 return [
                     'success' => false,
                     'error' => 'File not found',
@@ -213,7 +197,7 @@ class FileProcessingService
             // Try to get from cache first
             $fileInfo = CachingUtil::get($cacheKey);
 
-            if (!$fileInfo) {
+            if (! $fileInfo) {
                 // Generate file info
                 $fileInfo = [
                     'filename' => $filename,
@@ -253,15 +237,11 @@ class FileProcessingService
 
     /**
      * List files in directory
-     *
-     * @param string $directory
-     * @param array $options
-     * @return array
      */
     public function listFiles(string $directory = 'uploads', array $options = []): array
     {
         try {
-            $cacheKey = "files_list_{$directory}_" . md5(serialize($options));
+            $cacheKey = "files_list_{$directory}_".md5(serialize($options));
 
             $files = CachingUtil::remember($cacheKey, now()->addMinutes(10), function () use ($directory, $options) {
                 $files = Storage::files($directory);
@@ -319,38 +299,34 @@ class FileProcessingService
     /**
      * Validate file
      *
-     * @param UploadedFile $file
      * @throws \Exception
      */
     protected function validateFile(UploadedFile $file): void
     {
         // Check file size
         if ($file->getSize() > $this->maxFileSize) {
-            throw new \Exception('File size exceeds maximum allowed size of ' . ($this->maxFileSize / 1024 / 1024) . 'MB.');
+            throw new \Exception('File size exceeds maximum allowed size of '.($this->maxFileSize / 1024 / 1024).'MB.');
         }
 
         // Check MIME type
-        if (!in_array($file->getMimeType(), $this->allowedMimeTypes)) {
-            throw new \Exception('File type not allowed. Allowed types: ' . implode(', ', $this->allowedMimeTypes));
+        if (! in_array($file->getMimeType(), $this->allowedMimeTypes)) {
+            throw new \Exception('File type not allowed. Allowed types: '.implode(', ', $this->allowedMimeTypes));
         }
 
         // Check extension
         $extension = strtolower($file->getClientOriginalExtension());
-        if (!in_array($extension, $this->allowedExtensions)) {
-            throw new \Exception('File extension not allowed. Allowed extensions: ' . implode(', ', $this->allowedExtensions));
+        if (! in_array($extension, $this->allowedExtensions)) {
+            throw new \Exception('File extension not allowed. Allowed extensions: '.implode(', ', $this->allowedExtensions));
         }
 
         // Check if file is valid
-        if (!$file->isValid()) {
+        if (! $file->isValid()) {
             throw new \Exception('Invalid file upload.');
         }
     }
 
     /**
      * Generate unique filename
-     *
-     * @param UploadedFile $file
-     * @return string
      */
     protected function generateUniqueFilename(UploadedFile $file): string
     {
@@ -363,9 +339,6 @@ class FileProcessingService
 
     /**
      * Check if file is an image
-     *
-     * @param UploadedFile $file
-     * @return bool
      */
     protected function isImage(UploadedFile $file): bool
     {
@@ -374,11 +347,6 @@ class FileProcessingService
 
     /**
      * Process image file
-     *
-     * @param UploadedFile $file
-     * @param string $storedPath
-     * @param array $options
-     * @return array
      */
     protected function processImage(UploadedFile $file, string $storedPath, array $options = []): array
     {
@@ -433,24 +401,19 @@ class FileProcessingService
 
     /**
      * Create thumbnail
-     *
-     * @param string $imagePath
-     * @param int $width
-     * @param int $height
-     * @return string|null
      */
     protected function createThumbnail(string $imagePath, int $width, int $height): ?string
     {
         try {
             // This is a simplified thumbnail creation
             // In production, you'd want to use a proper image processing library like Intervention Image
-            
+
             $pathInfo = pathinfo($imagePath);
-            $thumbnailPath = $pathInfo['dirname'] . '/thumbnails/' . $pathInfo['filename'] . "_{$width}x{$height}." . $pathInfo['extension'];
-            
+            $thumbnailPath = $pathInfo['dirname'].'/thumbnails/'.$pathInfo['filename']."_{$width}x{$height}.".$pathInfo['extension'];
+
             // Create thumbnail directory if it doesn't exist
             $thumbnailDir = dirname($thumbnailPath);
-            if (!is_dir($thumbnailDir)) {
+            if (! is_dir($thumbnailDir)) {
                 mkdir($thumbnailDir, 0755, true);
             }
 
@@ -474,8 +437,6 @@ class FileProcessingService
 
     /**
      * Get storage statistics
-     *
-     * @return array
      */
     public function getStorageStats(): array
     {

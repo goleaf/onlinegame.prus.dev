@@ -4,12 +4,11 @@
  * @param {Object} options
  * @param {Object} parent optional
  * @returns {Ee.Animations.ShowHit}
-*/
-Ee.Animations.ShowHit = function(options, parent)
-{
-	Ee.Animations.call(this, options, parent);
+ */
+Ee.Animations.ShowHit = function (options, parent) {
+  Ee.Animations.call(this, options, parent);
 
-	return this;
+  return this;
 };
 
 /**
@@ -34,22 +33,19 @@ Ee.Animations.ShowHit.prototype.displayTime = 100;
 Ee.Animations.ShowHit.prototype.image = null;
 
 //Prototype
-Ee.Animations.ShowHit.prototype = Object.create(Ee.Animations.prototype,
-{
-	color:
-	{
-		value: '#FF0000',
-		enumerable: false,
-		configurable: false,
-		writable: true
-	},
-	displayTime:
-	{
-		value: 100,
-		enumerable: false,
-		configurable: false,
-		writable: true
-	}
+Ee.Animations.ShowHit.prototype = Object.create(Ee.Animations.prototype, {
+  color: {
+    value: '#FF0000',
+    enumerable: false,
+    configurable: false,
+    writable: true,
+  },
+  displayTime: {
+    value: 100,
+    enumerable: false,
+    configurable: false,
+    writable: true,
+  },
 });
 
 /**
@@ -57,31 +53,27 @@ Ee.Animations.ShowHit.prototype = Object.create(Ee.Animations.prototype,
  *
  * @returns {Ee.Animations.ShowHit}
  */
-Ee.Animations.ShowHit.prototype.start = Ee.Animations.ShowHit.prototype.start.wrap(function(proceed)
-{
-	var self = this;
+Ee.Animations.ShowHit.prototype.start =
+  Ee.Animations.ShowHit.prototype.start.wrap(function (proceed) {
+    var self = this;
 
-	if (this.element._showHit)
-	{
-		clearTimeout(this.element._showHit);
-	}
+    if (this.element._showHit) {
+      clearTimeout(this.element._showHit);
+    }
 
-	this.element.setStyles(
-	{
-		outline: '2px solid ' + this.color
-	});
+    this.element.setStyles({
+      outline: '2px solid ' + this.color,
+    });
 
-	var fnClear = function()
-	{
-		self.element.setStyles(
-		{
-			outline: '0px solid transparent'
-		});
+    var fnClear = function () {
+      self.element.setStyles({
+        outline: '0px solid transparent',
+      });
 
-		self.element._showHit = null;
-	};
+      self.element._showHit = null;
+    };
 
-	this.element._showHit = fnClear.delay(this.displayTime);
+    this.element._showHit = fnClear.delay(this.displayTime);
 
-	return proceed();
-});
+    return proceed();
+  });

@@ -2,14 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\Game\ChatMessage;
-use App\Models\Game\ChatChannel;
-use App\Models\Game\Player;
 use App\Models\Game\Alliance;
-use App\Services\GameIntegrationService;
-use App\Services\GameNotificationService;
+use App\Models\Game\ChatChannel;
+use App\Models\Game\ChatMessage;
+use App\Models\Game\Player;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class ChatService
 {
@@ -96,7 +93,7 @@ class ChatService
             ->where('alliance_id', $allianceId)
             ->first();
 
-        if (!$channel) {
+        if (! $channel) {
             $channel = ChatChannel::createChannel(
                 'Alliance Chat',
                 ChatMessage::CHANNEL_ALLIANCE,
@@ -126,7 +123,7 @@ class ChatService
     {
         $channel = ChatChannel::where('type', ChatMessage::CHANNEL_TRADE)->first();
 
-        if (!$channel) {
+        if (! $channel) {
             $channel = ChatChannel::createChannel(
                 'Trade Chat',
                 ChatMessage::CHANNEL_TRADE,
@@ -145,7 +142,7 @@ class ChatService
     {
         $channel = ChatChannel::where('type', ChatMessage::CHANNEL_DIPLOMACY)->first();
 
-        if (!$channel) {
+        if (! $channel) {
             $channel = ChatChannel::createChannel(
                 'Diplomacy Chat',
                 ChatMessage::CHANNEL_DIPLOMACY,
@@ -164,7 +161,7 @@ class ChatService
     {
         $message = ChatMessage::find($messageId);
 
-        if (!$message || !$message->canBeDeletedBy($playerId)) {
+        if (! $message || ! $message->canBeDeletedBy($playerId)) {
             return false;
         }
 
@@ -178,12 +175,12 @@ class ChatService
     {
         // Look for existing private channel
         $channel = ChatChannel::where('type', ChatMessage::CHANNEL_PRIVATE)
-            ->where('settings->players', function ($query) use ($player1Id, $player2Id) {
+            ->where('settings->players', function ($query) use ($player1Id, $player2Id): void {
                 $query->whereJsonContains('players', [$player1Id, $player2Id]);
             })
             ->first();
 
-        if (!$channel) {
+        if (! $channel) {
             $channel = ChatChannel::createChannel(
                 'Private Chat',
                 ChatMessage::CHANNEL_PRIVATE,
@@ -242,7 +239,7 @@ class ChatService
     public function getChannelStats(int $channelId): array
     {
         $channel = ChatChannel::find($channelId);
-        if (!$channel) {
+        if (! $channel) {
             return [];
         }
 
@@ -271,7 +268,7 @@ class ChatService
     public function cleanupOldMessages(int $days = 30): int
     {
         $cutoffDate = now()->subDays($days);
-        
+
         return ChatMessage::where('created_at', '<', $cutoffDate)
             ->where('is_deleted', true)
             ->delete();
@@ -300,7 +297,7 @@ class ChatService
     {
         $searchQuery = ChatMessage::with(['sender', 'channel'])
             ->notDeleted()
-            ->where('message', 'like', '%' . $query . '%');
+            ->where('message', 'like', '%'.$query.'%');
 
         if ($channelType) {
             $searchQuery->byChannelType($channelType);

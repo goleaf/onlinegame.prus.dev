@@ -63,13 +63,13 @@ class SeoValidate extends Command
             'Home' => [
                 'title' => config('seo.default_title'),
                 'description' => config('seo.default_description'),
-                'image' => asset(config('seo.default_image'))
+                'image' => asset(config('seo.default_image')),
             ],
             'Game Index' => [
                 'title' => config('seo.default_title'),
                 'description' => config('seo.default_description'),
-                'image' => asset(config('seo.default_image'))
-            ]
+                'image' => asset(config('seo.default_image')),
+            ],
         ];
 
         $this->validatePageMetadata($pages);
@@ -100,7 +100,7 @@ class SeoValidate extends Command
             if (empty($errors)) {
                 $this->info('  ✅ All SEO metadata is valid');
             } else {
-                $this->error('  ❌ Found ' . count($errors) . ' issues:');
+                $this->error('  ❌ Found '.count($errors).' issues:');
                 foreach ($errors as $error) {
                     $this->error("    - {$error}");
                 }
@@ -137,8 +137,8 @@ class SeoValidate extends Command
 
         if (empty($config['default_image'])) {
             $errors[] = 'Default image is not set';
-        } elseif (!file_exists(public_path($config['default_image']))) {
-            $errors[] = 'Default image file does not exist: ' . $config['default_image'];
+        } elseif (! file_exists(public_path($config['default_image']))) {
+            $errors[] = 'Default image file does not exist: '.$config['default_image'];
         }
 
         if (empty($config['site_name'])) {
@@ -153,7 +153,7 @@ class SeoValidate extends Command
         if (empty($errors)) {
             $this->info('  ✅ SEO configuration is valid');
         } else {
-            $this->error('  ❌ Found ' . count($errors) . ' configuration issues:');
+            $this->error('  ❌ Found '.count($errors).' configuration issues:');
             foreach ($errors as $error) {
                 $this->error("    - {$error}");
             }

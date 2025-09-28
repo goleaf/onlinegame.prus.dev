@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\LarautilxIntegrationService;
+use App\Traits\ValidationHelperTrait;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
 
 class LarautilxController extends CrudController
 {
-    use ApiResponseTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use ValidationHelperTrait;
 
     protected LarautilxIntegrationService $integrationService;
 
     public function __construct(LarautilxIntegrationService $integrationService)
     {
         $this->integrationService = $integrationService;
-        parent::__construct();
+        parent::__construct(new User());
     }
 
     /**
@@ -27,6 +28,7 @@ class LarautilxController extends CrudController
     public function getStatus()
     {
         $status = $this->integrationService->getIntegrationStatus();
+
         return $this->successResponse($status, 'Larautilx integration status retrieved successfully.');
     }
 
@@ -36,6 +38,7 @@ class LarautilxController extends CrudController
     public function getCacheStats()
     {
         $stats = $this->integrationService->getCacheStats();
+
         return $this->successResponse($stats, 'Cache statistics retrieved successfully.');
     }
 
@@ -44,7 +47,7 @@ class LarautilxController extends CrudController
      */
     public function clearCache(Request $request)
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'tags' => 'required|array',
             'tags.*' => 'string',
         ]);
@@ -59,7 +62,7 @@ class LarautilxController extends CrudController
      */
     public function clearPlayerCache(Request $request)
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'player_id' => 'required|integer|exists:players,id',
         ]);
 
@@ -73,7 +76,7 @@ class LarautilxController extends CrudController
      */
     public function clearWorldCache(Request $request)
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'world_id' => 'required|integer|exists:worlds,id',
         ]);
 
@@ -87,7 +90,7 @@ class LarautilxController extends CrudController
      */
     public function clearVillageCache(Request $request)
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'village_id' => 'required|integer|exists:villages,id',
         ]);
 
@@ -101,7 +104,7 @@ class LarautilxController extends CrudController
      */
     public function testFiltering(Request $request)
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'filters' => 'required|array',
             'filters.*.field' => 'required|string',
             'filters.*.operator' => 'required|string|in:equals,not_equals,contains,not_contains,starts_with,ends_with',
@@ -122,7 +125,7 @@ class LarautilxController extends CrudController
      */
     public function testPagination(Request $request)
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'items' => 'required|array',
             'per_page' => 'integer|min:1|max:100',
             'current_page' => 'integer|min:1',
@@ -156,7 +159,7 @@ class LarautilxController extends CrudController
      */
     public function testCaching(Request $request)
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'key' => 'required|string',
             'data' => 'required',
             'expiration' => 'integer|min:1|max:3600',
@@ -171,7 +174,7 @@ class LarautilxController extends CrudController
 
         $cachedData = $this->integrationService->cacheGameData(
             $key,
-            fn() => $data,
+            fn () => $data,
             $expiration,
             $tags
         );

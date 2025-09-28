@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\Game\Player;
 use App\Models\Game\PlayerQuest;
 use App\Models\Game\Quest;
-use App\Models\Game\World;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -43,18 +42,23 @@ class QuestSystemCommand extends Command
         switch ($action) {
             case 'assign':
                 $this->assignQuests();
+
                 break;
             case 'complete':
                 $this->completeQuests();
+
                 break;
             case 'reset':
                 $this->resetQuests();
+
                 break;
             case 'daily':
                 $this->generateDailyQuests();
+
                 break;
             default:
                 $this->error("Unknown action: {$action}");
+
                 return 1;
         }
 
@@ -157,11 +161,13 @@ class QuestSystemCommand extends Command
                     if ($player->level < $value) {
                         return false;
                     }
+
                     break;
                 case 'village_count':
                     if ($player->villages_count < $value) {
                         return false;
                     }
+
                     break;
                 case 'building_level':
                     // Check if player has required building level
@@ -169,34 +175,36 @@ class QuestSystemCommand extends Command
                     if ($buildingKey) {
                         $hasBuilding = $player
                             ->villages()
-                            ->whereHas('buildings', function ($query) use ($buildingKey, $value) {
-                                $query->whereHas('buildingType', function ($q) use ($buildingKey) {
+                            ->whereHas('buildings', function ($query) use ($buildingKey, $value): void {
+                                $query->whereHas('buildingType', function ($q) use ($buildingKey): void {
                                     $q->where('key', $buildingKey);
                                 })->where('level', '>=', $value);
                             })
                             ->exists();
 
-                        if (!$hasBuilding) {
+                        if (! $hasBuilding) {
                             return false;
                         }
                     }
+
                     break;
                 case 'troop_count':
                     $troopKey = $requirements['troop_key'] ?? null;
                     if ($troopKey) {
                         $hasTroops = $player
                             ->villages()
-                            ->whereHas('troops', function ($query) use ($troopKey, $value) {
-                                $query->whereHas('unitType', function ($q) use ($troopKey) {
+                            ->whereHas('troops', function ($query) use ($troopKey, $value): void {
+                                $query->whereHas('unitType', function ($q) use ($troopKey): void {
                                     $q->where('key', $troopKey);
                                 })->where('count', '>=', $value);
                             })
                             ->exists();
 
-                        if (!$hasTroops) {
+                        if (! $hasTroops) {
                             return false;
                         }
                     }
+
                     break;
             }
         }
@@ -248,47 +256,50 @@ class QuestSystemCommand extends Command
                     if ($buildingKey) {
                         $hasBuilding = $player
                             ->villages()
-                            ->whereHas('buildings', function ($query) use ($buildingKey, $value) {
-                                $query->whereHas('buildingType', function ($q) use ($buildingKey) {
+                            ->whereHas('buildings', function ($query) use ($buildingKey, $value): void {
+                                $query->whereHas('buildingType', function ($q) use ($buildingKey): void {
                                     $q->where('key', $buildingKey);
                                 })->where('level', '>=', $value);
                             })
                             ->exists();
 
-                        if (!$hasBuilding) {
+                        if (! $hasBuilding) {
                             return false;
                         }
                     }
+
                     break;
                 case 'train_troops':
                     $troopKey = $requirements['troop_key'] ?? null;
                     if ($troopKey) {
                         $hasTroops = $player
                             ->villages()
-                            ->whereHas('troops', function ($query) use ($troopKey, $value) {
-                                $query->whereHas('unitType', function ($q) use ($troopKey) {
+                            ->whereHas('troops', function ($query) use ($troopKey, $value): void {
+                                $query->whereHas('unitType', function ($q) use ($troopKey): void {
                                     $q->where('key', $troopKey);
                                 })->where('count', '>=', $value);
                             })
                             ->exists();
 
-                        if (!$hasTroops) {
+                        if (! $hasTroops) {
                             return false;
                         }
                     }
+
                     break;
                 case 'attack_village':
                     // Check if player has launched an attack
                     $hasAttack = $player
                         ->villages()
-                        ->whereHas('movements', function ($query) {
+                        ->whereHas('movements', function ($query): void {
                             $query->where('type', 'attack');
                         })
                         ->exists();
 
-                    if (!$hasAttack) {
+                    if (! $hasAttack) {
                         return false;
                     }
+
                     break;
             }
         }
@@ -328,12 +339,15 @@ class QuestSystemCommand extends Command
             switch ($rewardType) {
                 case 'resources':
                     $this->giveResourceRewards($player, $amount);
+
                     break;
                 case 'experience':
                     $player->increment('experience', $amount);
+
                     break;
                 case 'gold':
                     $player->increment('gold', $amount);
+
                     break;
             }
         }
@@ -363,16 +377,17 @@ class QuestSystemCommand extends Command
      */
     protected function resetQuests(): void
     {
-        if (!$this->option('force')) {
-            if (!$this->confirm('Are you sure you want to reset all quests?')) {
+        if (! $this->option('force')) {
+            if (! $this->confirm('Are you sure you want to reset all quests?')) {
                 $this->info('Quest reset cancelled.');
+
                 return;
             }
         }
 
         $this->info('🔄 Resetting quest system...');
 
-        DB::transaction(function () {
+        DB::transaction(function (): void {
             // Reset all player quests
             PlayerQuest::truncate();
 
@@ -403,7 +418,7 @@ class QuestSystemCommand extends Command
             // Remove old daily quests
             $player
                 ->quests()
-                ->whereHas('quest', function ($query) {
+                ->whereHas('quest', function ($query): void {
                     $query->where('category', 'daily');
                 })
                 ->delete();

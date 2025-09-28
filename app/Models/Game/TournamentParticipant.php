@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class TournamentParticipant extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait;
+    use AuditableTrait;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'tournament_id',
@@ -38,6 +40,7 @@ class TournamentParticipant extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -158,7 +161,7 @@ class TournamentParticipant extends Model implements Auditable
     public function getWinRateAttribute(): float
     {
         $totalGames = $this->wins + $this->losses + $this->draws;
-        
+
         if ($totalGames === 0) {
             return 0.0;
         }
@@ -173,7 +176,7 @@ class TournamentParticipant extends Model implements Auditable
 
     public function getStatusDisplayNameAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'registered' => 'Registered',
             'active' => 'Active',
             'eliminated' => 'Eliminated',
@@ -185,7 +188,7 @@ class TournamentParticipant extends Model implements Auditable
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'registered' => '#3B82F6',   // Blue
             'active' => '#10B981',       // Green
             'eliminated' => '#6B7280',   // Gray

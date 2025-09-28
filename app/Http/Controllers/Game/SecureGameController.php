@@ -2,40 +2,39 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
+use App\Models\User;
 use App\Services\GameSecurityService;
+use App\Traits\ValidationHelperTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class SecureGameController extends CrudController
 {
-    use ApiResponseTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use ValidationHelperTrait;
 
     protected $securityService;
 
     public function __construct(GameSecurityService $securityService)
     {
         $this->securityService = $securityService;
-        parent::__construct();
+        parent::__construct(new User());
     }
 
     public function dashboard()
     {
         try {
             $user = Auth::user();
-            if (!$user) {
+            if (! $user) {
                 return redirect()->route('login');
             }
 
             $player = Player::where('user_id', $user->id)->first();
-            if (!$player) {
+            if (! $player) {
                 return view('game.no-player', compact('user'));
             }
 
@@ -47,14 +46,14 @@ class SecureGameController extends CrudController
 
     public function upgradeBuilding(Request $request)
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'village_id' => 'required|integer|exists:villages,id',
             'building_id' => 'required|integer|exists:buildings,id',
             'target_level' => 'required|integer|min:1|max:20',
         ]);
 
         // Check security
-        if (!$this->securityService->validateGameAction($request, 'building_upgrade', $request->all())) {
+        if (! $this->securityService->validateGameAction($request, 'building_upgrade', $request->all())) {
             return $this->errorResponse('Unauthorized action', 403);
         }
 
@@ -67,7 +66,7 @@ class SecureGameController extends CrudController
             $village = $request->get('village');
             $building = $village->buildings()->find($request->building_id);
 
-            if (!$building) {
+            if (! $building) {
                 return $this->errorResponse('Building not found', 404);
             }
 
@@ -87,14 +86,14 @@ class SecureGameController extends CrudController
 
     public function trainTroops(Request $request)
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'village_id' => 'required|integer|exists:villages,id',
             'unit_type_id' => 'required|integer|exists:unit_types,id',
             'quantity' => 'required|integer|min:1|max:1000',
         ]);
 
         // Check security
-        if (!$this->securityService->validateGameAction($request, 'troop_training', $request->all())) {
+        if (! $this->securityService->validateGameAction($request, 'troop_training', $request->all())) {
             return $this->errorResponse('Unauthorized action', 403);
         }
 
@@ -117,7 +116,7 @@ class SecureGameController extends CrudController
 
     public function spendResources(Request $request)
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'village_id' => 'required|integer|exists:villages,id',
             'costs' => 'required|array',
             'costs.wood' => 'integer|min:0',
@@ -127,7 +126,7 @@ class SecureGameController extends CrudController
         ]);
 
         // Check security
-        if (!$this->securityService->validateGameAction($request, 'resource_spend', $request->all())) {
+        if (! $this->securityService->validateGameAction($request, 'resource_spend', $request->all())) {
             return $this->errorResponse('Unauthorized action', 403);
         }
 
@@ -151,7 +150,7 @@ class SecureGameController extends CrudController
     public function getVillageData(Request $request, $villageId)
     {
         // Check security
-        if (!$this->securityService->validateGameAction($request, 'village_management', ['village_id' => $villageId])) {
+        if (! $this->securityService->validateGameAction($request, 'village_management', ['village_id' => $villageId])) {
             return $this->errorResponse('Unauthorized access', 403);
         }
 

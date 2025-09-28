@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,15 +17,13 @@ class BuildingQueueSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
-            
+
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("building_queue")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('building_queue')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

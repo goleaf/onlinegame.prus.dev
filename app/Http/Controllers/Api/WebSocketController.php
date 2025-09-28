@@ -2,58 +2,66 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\User;
+use App\Models\User;
 use App\Services\RealTimeGameService;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
 
-class WebSocketController extends Controller
+class WebSocketController extends CrudController
 {
+    use ApiResponseTrait;
+    use ValidationHelperTrait;
+
+    public function __construct()
+    {
+        parent::__construct(new User());
+    }
+
     /**
      * Subscribe to real-time updates
      */
     public function subscribe(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $this->validateRequestData($request, [
             'channels' => 'array',
             'channels.*' => 'string|in:user,village,alliance,global',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors(),
-            ], 400);
-        }
-
         try {
             $user = $request->user();
-            if (!$user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+            if (! $user) {
+                return $this->errorResponse('Unauthorized', 401);
             }
 
-            $channels = $request->input('channels', ['user']);
+            $channels = $validated['channels'] ?? ['user'];
 
             // Mark user as online
             RealTimeGameService::markUserOnline($user->id);
 
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'user_id' => $user->id,
-                    'channels' => $channels,
-                    'socket_url' => config('broadcasting.connections.pusher.options.host', 'localhost'),
-                    'auth_endpoint' => url('/api/websocket/auth'),
-                ],
-                'message' => 'Successfully subscribed to real-time updates',
-                'timestamp' => now()->toISOString(),
-            ]);
+            LoggingUtil::info('User subscribed to real-time updates', [
+                'user_id' => $user->id,
+                'channels' => $channels,
+            ], 'websocket');
+
+            return $this->successResponse([
+                'user_id' => $user->id,
+                'channels' => $channels,
+                'socket_url' => config('broadcasting.connections.pusher.options.host', 'localhost'),
+                'auth_endpoint' => url('/api/websocket/auth'),
+            ], 'Successfully subscribed to real-time updates');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Failed to subscribe to updates',
-            ], 500);
+            LoggingUtil::error('Error subscribing to real-time updates', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'websocket');
+
+            return $this->errorResponse('Failed to subscribe to updates', 500);
         }
     }
 
@@ -64,23 +72,25 @@ class WebSocketController extends Controller
     {
         try {
             $user = $request->user();
-            if (!$user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+            if (! $user) {
+                return $this->errorResponse('Unauthorized', 401);
             }
 
             // Mark user as offline
             RealTimeGameService::markUserOffline($user->id);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Successfully unsubscribed from real-time updates',
-                'timestamp' => now()->toISOString(),
-            ]);
+            LoggingUtil::info('User unsubscribed from real-time updates', [
+                'user_id' => $user->id,
+            ], 'websocket');
+
+            return $this->successResponse(null, 'Successfully unsubscribed from real-time updates');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Failed to unsubscribe from updates',
-            ], 500);
+            LoggingUtil::error('Error unsubscribing from real-time updates', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'websocket');
+
+            return $this->errorResponse('Failed to unsubscribe from updates', 500);
         }
     }
 
@@ -89,26 +99,19 @@ class WebSocketController extends Controller
      */
     public function getUpdates(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $this->validateRequestData($request, [
             'limit' => 'integer|min:1|max:100',
             'clear' => 'boolean',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors(),
-            ], 400);
-        }
-
         try {
             $user = $request->user();
-            if (!$user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+            if (! $user) {
+                return $this->errorResponse('Unauthorized', 401);
             }
 
-            $limit = $request->input('limit', 50);
-            $clear = $request->input('clear', false);
+            $limit = $validated['limit'] ?? 50;
+            $clear = $validated['clear'] ?? false;
 
             $updates = RealTimeGameService::getUserUpdates($user->id, $limit);
 
@@ -116,17 +119,24 @@ class WebSocketController extends Controller
                 RealTimeGameService::clearUserUpdates($user->id);
             }
 
-            return response()->json([
-                'success' => true,
-                'data' => $updates,
+            LoggingUtil::info('User updates retrieved', [
+                'user_id' => $user->id,
+                'updates_count' => count($updates),
+                'limit' => $limit,
+                'cleared' => $clear,
+            ], 'websocket');
+
+            return $this->successResponse([
+                'updates' => $updates,
                 'count' => count($updates),
-                'timestamp' => now()->toISOString(),
-            ]);
+            ], 'Updates retrieved successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Failed to get updates',
-            ], 500);
+            LoggingUtil::error('Error retrieving user updates', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'websocket');
+
+            return $this->errorResponse('Failed to get updates', 500);
         }
     }
 
@@ -135,42 +145,39 @@ class WebSocketController extends Controller
      */
     public function sendTestMessage(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $this->validateRequestData($request, [
             'message' => 'required|string|max:255',
             'type' => 'string|in:info,warning,error,success',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors(),
-            ], 400);
-        }
-
         try {
             $user = $request->user();
-            if (!$user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+            if (! $user) {
+                return $this->errorResponse('Unauthorized', 401);
             }
 
-            $message = $request->input('message');
-            $type = $request->input('type', 'info');
+            $message = $validated['message'];
+            $type = $validated['type'] ?? 'info';
 
             RealTimeGameService::sendUpdate($user->id, 'test_message', [
                 'message' => $message,
                 'type' => $type,
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Test message sent successfully',
-                'timestamp' => now()->toISOString(),
-            ]);
+            LoggingUtil::info('Test message sent', [
+                'user_id' => $user->id,
+                'message' => $message,
+                'type' => $type,
+            ], 'websocket');
+
+            return $this->successResponse(null, 'Test message sent successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Failed to send test message',
-            ], 500);
+            LoggingUtil::error('Error sending test message', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'websocket');
+
+            return $this->errorResponse('Failed to send test message', 500);
         }
     }
 
@@ -181,22 +188,24 @@ class WebSocketController extends Controller
     {
         try {
             $user = $request->user();
-            if (!$user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+            if (! $user) {
+                return $this->errorResponse('Unauthorized', 401);
             }
 
             $stats = RealTimeGameService::getRealTimeStats();
 
-            return response()->json([
-                'success' => true,
-                'data' => $stats,
-                'timestamp' => now()->toISOString(),
-            ]);
+            LoggingUtil::info('Real-time statistics retrieved', [
+                'user_id' => $user->id,
+            ], 'websocket');
+
+            return $this->successResponse($stats, 'Real-time statistics retrieved successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Failed to get statistics',
-            ], 500);
+            LoggingUtil::error('Error retrieving real-time statistics', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'websocket');
+
+            return $this->errorResponse('Failed to get statistics', 500);
         }
     }
 
@@ -207,16 +216,16 @@ class WebSocketController extends Controller
     {
         try {
             $user = $request->user();
-            if (!$user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+            if (! $user) {
+                return $this->errorResponse('Unauthorized', 401);
             }
 
             $channel = $request->input('channel_name');
             $socketId = $request->input('socket_id');
 
             // Validate channel access
-            if (!$this->canAccessChannel($user->id, $channel)) {
-                return response()->json(['error' => 'Forbidden'], 403);
+            if (! $this->canAccessChannel($user->id, $channel)) {
+                return $this->errorResponse('Forbidden', 403);
             }
 
             // Generate authentication signature (simplified)
@@ -228,9 +237,19 @@ class WebSocketController extends Controller
                 ])),
             ];
 
-            return response()->json($authData);
+            LoggingUtil::info('WebSocket authentication successful', [
+                'user_id' => $user->id,
+                'channel' => $channel,
+            ], 'websocket');
+
+            return $this->successResponse($authData, 'Authentication successful');
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Authentication failed'], 500);
+            LoggingUtil::error('WebSocket authentication failed', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'websocket');
+
+            return $this->errorResponse('Authentication failed', 500);
         }
     }
 
@@ -254,46 +273,43 @@ class WebSocketController extends Controller
      */
     public function broadcastAnnouncement(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $this->validateRequestData($request, [
             'title' => 'required|string|max:255',
             'message' => 'required|string|max:1000',
             'priority' => 'string|in:low,normal,high,urgent',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors(),
-            ], 400);
-        }
-
         try {
             $user = $request->user();
-            if (!$user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+            if (! $user) {
+                return $this->errorResponse('Unauthorized', 401);
             }
 
             // Check if user is admin (simplified check)
-            if (!$user->hasRole('admin')) {
-                return response()->json(['error' => 'Forbidden'], 403);
+            if (! $user->hasRole('admin')) {
+                return $this->errorResponse('Forbidden', 403);
             }
 
-            $title = $request->input('title');
-            $message = $request->input('message');
-            $priority = $request->input('priority', 'normal');
+            $title = $validated['title'];
+            $message = $validated['message'];
+            $priority = $validated['priority'] ?? 'normal';
 
             RealTimeGameService::sendSystemAnnouncement($title, $message, $priority);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Announcement broadcasted successfully',
-                'timestamp' => now()->toISOString(),
-            ]);
+            LoggingUtil::info('System announcement broadcasted', [
+                'user_id' => $user->id,
+                'title' => $title,
+                'priority' => $priority,
+            ], 'websocket');
+
+            return $this->successResponse(null, 'Announcement broadcasted successfully');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Failed to broadcast announcement',
-            ], 500);
+            LoggingUtil::error('Error broadcasting system announcement', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ], 'websocket');
+
+            return $this->errorResponse('Failed to broadcast announcement', 500);
         }
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,9 +17,7 @@ class TelescopeEntriesTagsSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'entry_uuid' => '9ff96bfe-ae20-4965-8b0e-452aa7877ff0',
@@ -347,11 +346,11 @@ class TelescopeEntriesTagsSeeder extends Seeder
             [
                 'entry_uuid' => '9ff96b61-da12-45db-bcf7-9dec47b0fe79',
                 'tag' => 'LaraUtilX\\Models\\AccessLog:1',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("telescope_entries_tags")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('telescope_entries_tags')->updateOrInsert(['entry_uuid' => $data['entry_uuid'], 'tag' => $data['tag']], $data);
         }
     }
 }

@@ -101,7 +101,7 @@ class BassetOptimizeCommand extends Command
         $filename = str_replace('/', '_', trim($path, '/'));
 
         if ($query) {
-            $filename .= '_' . md5($query);
+            $filename .= '_'.md5($query);
         }
 
         return $filename;
@@ -127,8 +127,9 @@ class BassetOptimizeCommand extends Command
         $disk = Storage::disk(config('backpack.basset.disk', 'public'));
         $path = config('backpack.basset.path', 'basset');
 
-        if (!$disk->exists($path)) {
+        if (! $disk->exists($path)) {
             $this->info('No cached assets found.');
+
             return;
         }
 
@@ -155,8 +156,9 @@ class BassetOptimizeCommand extends Command
         $disk = Storage::disk(config('backpack.basset.disk', 'public'));
         $path = config('backpack.basset.path', 'basset');
 
-        if (!$disk->exists($path)) {
+        if (! $disk->exists($path)) {
             $this->info('No cached assets found.');
+
             return;
         }
 
@@ -192,6 +194,6 @@ class BassetOptimizeCommand extends Command
 
         $bytes /= (1 << (10 * $pow));
 
-        return round($bytes, 2) . ' ' . $units[$pow];
+        return round($bytes, 2).' '.$units[$pow];
     }
 }

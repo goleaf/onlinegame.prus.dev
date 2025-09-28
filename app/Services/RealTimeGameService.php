@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Events\GameEvent;
 use App\Models\User;
-use App\Services\GeographicService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
@@ -141,7 +140,7 @@ class RealTimeGameService
         try {
             $alliance = \App\Models\Game\Alliance::with('members')->find($allianceId);
 
-            if (!$alliance) {
+            if (! $alliance) {
                 return;
             }
 
@@ -203,7 +202,7 @@ class RealTimeGameService
     public static function getOnlineUsers(): array
     {
         try {
-            $cacheKey = 'online_users_' . now()->format('Y-m-d-H-i');
+            $cacheKey = 'online_users_'.now()->format('Y-m-d-H-i');
 
             return SmartCache::remember($cacheKey, now()->addMinutes(2), function () {
                 $onlineUsers = Redis::smembers('online_users');
@@ -340,7 +339,7 @@ class RealTimeGameService
                 $userId = str_replace('user_updates:', '', $key);
                 $lastActivity = Cache::get("user_activity:{$userId}");
 
-                if (!$lastActivity || (now()->timestamp - $lastActivity) > 3600) {
+                if (! $lastActivity || (now()->timestamp - $lastActivity) > 3600) {
                     Redis::del($key);
                     $cleaned++;
                 }
@@ -350,7 +349,7 @@ class RealTimeGameService
             $onlineUsers = Redis::smembers('online_users');
             foreach ($onlineUsers as $userId) {
                 $lastActivity = Cache::get("user_activity:{$userId}");
-                if (!$lastActivity || (now()->timestamp - $lastActivity) > 300) {
+                if (! $lastActivity || (now()->timestamp - $lastActivity) > 300) {
                     Redis::srem('online_users', $userId);
                     $cleaned++;
                 }
@@ -371,13 +370,13 @@ class RealTimeGameService
     {
         try {
             $geoService = app(GeographicService::class);
-            
+
             // Get village with geographic data
             $village = \App\Models\Game\Village::with('player')
                 ->where('id', $villageId)
                 ->first();
 
-            if (!$village || !$village->latitude || !$village->longitude) {
+            if (! $village || ! $village->latitude || ! $village->longitude) {
                 return;
             }
 
@@ -393,6 +392,7 @@ class RealTimeGameService
                         $nearbyVillage->latitude,
                         $nearbyVillage->longitude
                     );
+
                     return $distance <= 50; // Within 50km
                 });
 
@@ -444,12 +444,12 @@ class RealTimeGameService
             $movement = \App\Models\Game\Movement::with(['fromVillage', 'toVillage', 'player'])
                 ->find($movementId);
 
-            if (!$movement) {
+            if (! $movement) {
                 return;
             }
 
             $geoService = app(GeographicService::class);
-            
+
             // Add geographic context to movement data
             $geographicContext = [
                 'movement_id' => $movementId,

@@ -3,7 +3,6 @@
 namespace App\AMQP\Handlers;
 
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Usmonaliyev\SimpleRabbit\MQ\Message;
 
 class NotificationHandler
@@ -18,19 +17,22 @@ class NotificationHandler
 
             Log::info('Notification event received', [
                 'notification_type' => $data['notification_type'] ?? 'unknown',
-                'data' => $data
+                'data' => $data,
             ]);
 
             // Process different types of notifications
             switch ($data['notification_type'] ?? '') {
                 case 'email':
                     $this->handleEmailNotification($data);
+
                     break;
                 case 'in_game':
                     $this->handleInGameNotification($data);
+
                     break;
                 case 'push':
                     $this->handlePushNotification($data);
+
                     break;
                 default:
                     Log::warning('Unknown notification type', ['notification_type' => $data['notification_type'] ?? 'unknown']);
@@ -41,7 +43,7 @@ class NotificationHandler
         } catch (\Exception $e) {
             Log::error('Error processing notification', [
                 'error' => $e->getMessage(),
-                'data' => $message->getBody()
+                'data' => $message->getBody(),
             ]);
 
             // Reject the message and requeue it

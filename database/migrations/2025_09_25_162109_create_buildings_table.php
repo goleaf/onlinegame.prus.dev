@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -100,25 +100,6 @@ return new class() extends Migration {
             $table->index(['arrives_at']);
         });
 
-        // Battles table
-        Schema::create('battles', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('attacker_id')->constrained('players')->onDelete('cascade');
-            $table->foreignId('defender_id')->constrained('players')->onDelete('cascade');
-            $table->foreignId('village_id')->constrained()->onDelete('cascade');
-            $table->json('attacker_troops')->nullable();  // JSON for attacker troops
-            $table->json('defender_troops')->nullable();  // JSON for defender troops
-            $table->json('attacker_losses')->nullable();  // JSON for attacker losses
-            $table->json('defender_losses')->nullable();  // JSON for defender losses
-            $table->json('loot')->nullable();  // JSON for looted resources
-            $table->enum('result', ['attacker_wins', 'defender_wins', 'draw']);
-            $table->timestamp('occurred_at');
-            $table->timestamps();
-
-            $table->index(['attacker_id', 'occurred_at']);
-            $table->index(['defender_id', 'occurred_at']);
-            $table->index(['village_id', 'occurred_at']);
-        });
     }
 
     /**
@@ -126,7 +107,6 @@ return new class() extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('battles');
         Schema::dropIfExists('movements');
         Schema::dropIfExists('training_queues');
         Schema::dropIfExists('troops');

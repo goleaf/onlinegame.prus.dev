@@ -30,7 +30,7 @@ div.reports #reportWrapper .adventureReport .adventureHeader .headline .to {
 }
 
 div.reports #reportWrapper .adventureReport {
-  border: solid 1px #DFC495;
+  border: solid 1px #dfc495;
   border-top: none;
 }
 div.reports #reportWrapper .adventureReport .adventureHeader .headline .from,
@@ -40,7 +40,7 @@ div.reports #reportWrapper .adventureReport .adventureHeader .headline .to {
   position: relative;
   text-transform: uppercase;
   font-size: 1.5em;
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 div.reports #reportWrapper .adventureReport .adventureHeader .headline .from {
   z-index: 2;
@@ -57,7 +57,14 @@ div.reports #reportWrapper .adventureReport .adventureHeader .headline .to svg {
   stroke: rgba(0, 0, 0, 0.2);
   stroke-width: 0.75;
 }
-.rtl div.reports #reportWrapper .adventureReport .adventureHeader .headline .to svg {
+.rtl
+  div.reports
+  #reportWrapper
+  .adventureReport
+  .adventureHeader
+  .headline
+  .to
+  svg {
   transform: scaleX(-1);
 }
 div.reports #reportWrapper .adventureReport .adventureHeader .headline {
@@ -65,19 +72,37 @@ div.reports #reportWrapper .adventureReport .adventureHeader .headline {
   grid-template-columns: 1fr 150px;
 }
 div.reports #reportWrapper .adventureReport .adventureHeader .headline .from {
-  background-color: #A33F41;
+  background-color: #a33f41;
   font-size: 1em;
 }
-div.reports #reportWrapper .adventureReport .adventureHeader .headline .from h2 {
-  color: #F2F2F2;
+div.reports
+  #reportWrapper
+  .adventureReport
+  .adventureHeader
+  .headline
+  .from
+  h2 {
+  color: #f2f2f2;
   margin-left: 100px;
   font-size: 1.5em;
 }
-div.reports #reportWrapper .adventureReport .adventureHeader .headline .from .tribeIcon {
+div.reports
+  #reportWrapper
+  .adventureReport
+  .adventureHeader
+  .headline
+  .from
+  .tribeIcon {
   position: absolute;
   left: 0;
 }
-div.reports #reportWrapper .adventureReport .adventureHeader .headline .from .roleIcon {
+div.reports
+  #reportWrapper
+  .adventureReport
+  .adventureHeader
+  .headline
+  .from
+  .roleIcon {
   position: absolute;
   width: 40px;
   height: 46px;
@@ -89,5 +114,5 @@ div.reports #reportWrapper .adventureReport .adventureHeader .headline .to {
   background-color: #7e3132;
 }
 div.reports #reportWrapper .adventureReport .adventureHeader .headline .to svg {
-  fill: #A33F41;
+  fill: #a33f41;
 }

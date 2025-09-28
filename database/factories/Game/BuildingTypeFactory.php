@@ -43,7 +43,7 @@ class BuildingTypeFactory extends Factory
      */
     public function special(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_special' => true,
             'max_level' => $this->faker->numberBetween(1, 5),
         ]);
@@ -54,7 +54,7 @@ class BuildingTypeFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => false,
         ]);
     }

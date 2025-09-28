@@ -1,6 +1,6 @@
 <?php
 
-namespace LaraUtilX\Traits;
+namespace App\Traits;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -85,7 +85,7 @@ trait ApiResponseTrait
                     'per_page' => $paginator->perPage(),
                     'current_page' => $paginator->currentPage(),
                     'total_pages' => $paginator->lastPage(),
-                ]
+                ],
             ]
         );
     }

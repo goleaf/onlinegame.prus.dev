@@ -5,12 +5,11 @@ namespace App\Services;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
-use App\Services\SeoBreadcrumbService;
-use App\Services\SeoCacheService;
 
 class GameSeoService
 {
     protected SeoCacheService $cacheService;
+
     protected SeoBreadcrumbService $breadcrumbService;
 
     public function __construct(SeoCacheService $cacheService, SeoBreadcrumbService $breadcrumbService)
@@ -33,7 +32,7 @@ class GameSeoService
             ->images($this->getOptimizedImages([
                 $config['default_image'],
                 'img/travian/village-preview.svg',
-                'img/travian/world-map.svg'
+                'img/travian/world-map.svg',
             ])[0] ?? asset($config['default_image']))
             ->twitterEnabled($config['twitter']['enabled'])
             ->twitterSite($config['twitter']['site'])
@@ -89,7 +88,7 @@ class GameSeoService
     /**
      * Set SEO metadata for the world map
      */
-    public function setWorldMapSeo(World $world = null): void
+    public function setWorldMapSeo(?World $world = null): void
     {
         $worldName = $world ? $world->name : 'Ancient World';
 
@@ -126,7 +125,7 @@ class GameSeoService
         $config = config('seo');
         $jsonLdConfig = $config['json_ld'];
 
-        if (!$jsonLdConfig['enabled']) {
+        if (! $jsonLdConfig['enabled']) {
             return;
         }
 
@@ -144,11 +143,11 @@ class GameSeoService
                 '@type' => 'Offer',
                 'price' => '0',
                 'priceCurrency' => 'USD',
-                'availability' => 'https://schema.org/InStock'
+                'availability' => 'https://schema.org/InStock',
             ],
             'publisher' => $jsonLdConfig['organization'],
             'datePublished' => '2024-01-01',
-            'image' => asset($config['default_image'])
+            'image' => asset($config['default_image']),
         ];
 
         // Website structured data
@@ -182,9 +181,9 @@ class GameSeoService
     /**
      * Set canonical URL for the current page
      */
-    public function setCanonicalUrl(string $url = null): void
+    public function setCanonicalUrl(?string $url = null): void
     {
-        if (!$url) {
+        if (! $url) {
             $url = request()->url();
         }
 

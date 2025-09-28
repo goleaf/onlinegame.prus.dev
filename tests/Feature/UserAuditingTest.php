@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Game\Player;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -401,4 +400,3 @@ class UserAuditingTest extends TestCase
         $this->assertEquals('updated', $audits[2]->event);
     }
 }
-

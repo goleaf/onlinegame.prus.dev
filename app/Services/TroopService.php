@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Game\TrainingQueue;
 use App\Models\Game\Village;
-use App\Services\RabbitMQService;
 use Illuminate\Support\Facades\Log;
 
 class TroopService
@@ -22,7 +21,7 @@ class TroopService
         $costs = $this->calculateTrainingCost($unitType, $quantity);
         $resourceService = new ResourceProductionService();
 
-        if (!$resourceService->canAfford($village, $costs)) {
+        if (! $resourceService->canAfford($village, $costs)) {
             return false;
         }
 
@@ -32,12 +31,12 @@ class TroopService
         foreach ($requirements as $buildingKey => $requiredLevel) {
             $building = $village
                 ->buildings()
-                ->whereHas('buildingType', function ($query) use ($buildingKey) {
+                ->whereHas('buildingType', function ($query) use ($buildingKey): void {
                     $query->where('key', $buildingKey);
                 })
                 ->first();
 
-            if (!$building || $building->level < $requiredLevel) {
+            if (! $building || $building->level < $requiredLevel) {
                 return false;
             }
         }
@@ -67,7 +66,7 @@ class TroopService
 
     public function startTraining($village, $unitType, $quantity = 1)
     {
-        if (!$this->canTrain($village, $unitType, $quantity)) {
+        if (! $this->canTrain($village, $unitType, $quantity)) {
             return false;
         }
 
@@ -105,7 +104,7 @@ class TroopService
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Failed to start troop training: ' . $e->getMessage());
+            Log::error('Failed to start troop training: '.$e->getMessage());
 
             return false;
         }
@@ -134,7 +133,7 @@ class TroopService
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Failed to complete troop training: ' . $e->getMessage());
+            Log::error('Failed to complete troop training: '.$e->getMessage());
 
             return false;
         }
@@ -158,7 +157,7 @@ class TroopService
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Failed to cancel troop training: ' . $e->getMessage());
+            Log::error('Failed to cancel troop training: '.$e->getMessage());
 
             return false;
         }

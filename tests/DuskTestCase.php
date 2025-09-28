@@ -18,7 +18,7 @@ abstract class DuskTestCase extends BaseTestCase
     {
         parent::setUp();
 
-        $this->browse(function ($browser) {
+        $this->browse(function ($browser): void {
             $browser->driver->manage()->deleteAllCookies();
         });
     }

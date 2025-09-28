@@ -27,11 +27,11 @@
   width: 300px;
   margin: 10px 5px 18px;
   color: #333333;
-  background-color: #3C4f56;
+  background-color: #3c4f56;
   pointer-events: auto;
 }
 .sidebar .sidebarBox:before {
-  content: "";
+  content: '';
   position: absolute;
   top: 5px;
   right: 5px;
@@ -42,7 +42,8 @@
 body:not(.ie10) .sidebar .sidebarBox:before {
   border-style: solid;
   border-width: 28px 30px 30px 34px;
-  border-image: url('../../../img_ltr/components/Box/default_paper.png') 28 30 30 34 fill stretch;
+  border-image: url('../../../img_ltr/components/Box/default_paper.png') 28 30
+    30 34 fill stretch;
 }
 .sidebar .sidebarBox .sidebarBoxInnerBox {
   position: relative;
@@ -70,7 +71,7 @@ body:not(.ie10) .sidebar .sidebarBox:before {
 }
 .sidebar .sidebarBox .sidebarBoxInnerBox .header,
 .sidebar .sidebarBox .sidebarBoxInnerBox .header a {
-  color: #61332B;
+  color: #61332b;
   font-weight: bold;
 }
 .sidebar .sidebarBox .sidebarBoxInnerBox .header {
@@ -99,7 +100,7 @@ body:not(.ie10) .sidebar .sidebarBox:before {
   margin: 0.5em auto;
 }
 .sidebar .sidebarBox .sidebarBoxInnerBox .header:not(.noHeader):after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 25px;
@@ -107,13 +108,18 @@ body:not(.ie10) .sidebar .sidebarBox:before {
   left: 25px;
   opacity: 0.5;
 }
-body:not(.ie10) .sidebar .sidebarBox .sidebarBoxInnerBox .header:not(.noHeader):after {
+body:not(.ie10)
+  .sidebar
+  .sidebarBox
+  .sidebarBoxInnerBox
+  .header:not(.noHeader):after {
   border-style: solid;
   border-width: 0px 38px 2px 70px;
-  border-image: url('../../../img_ltr/components/Box/default_separator.png') 0 38 2 70 round;
+  border-image: url('../../../img_ltr/components/Box/default_separator.png') 0
+    38 2 70 round;
 }
 .sidebar .sidebarBox .sidebarBoxInnerBox:after {
-  content: "";
+  content: '';
   position: absolute;
   top: -5px;
   right: -5px;
@@ -124,14 +130,18 @@ body:not(.ie10) .sidebar .sidebarBox .sidebarBoxInnerBox .header:not(.noHeader):
 body:not(.ie10) .sidebar .sidebarBox .sidebarBoxInnerBox:after {
   border-style: solid;
   border-width: 32px;
-  border-image: url('../../../img_ltr/components/Box/default_border.png') 32 round;
+  border-image: url('../../../img_ltr/components/Box/default_border.png') 32
+    round;
 }
 .ie10 .sidebar .sidebarBox {
   background-color: #d7c095;
   border: 2px solid;
   border-color: #e9d0a1 #9b8a6b #b6a27e #b6a27e;
   border-radius: 4px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7), 0 0 5px #000000, 0 10px 20px -5px rgba(255, 255, 255, 0.5) inset;
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.7),
+    0 0 5px #000000,
+    0 10px 20px -5px rgba(255, 255, 255, 0.5) inset;
 }
 .sidebar .sidebarBox .buttonsWrapper {
   margin-top: -10px;
@@ -170,7 +180,7 @@ body:not(.ie10) .sidebar .sidebarBox .sidebarBoxInnerBox:after {
   color: #252525;
 }
 .sidebar .sidebarBox div.sidebarBoxInnerBox div.content ul li:hover {
-  background-color: #FFFBEB;
+  background-color: #fffbeb;
 }
 .sidebar .sidebarBox div.sidebarBoxInnerBox div.content ul li.active {
   background-color: #e9d2a8;
@@ -182,7 +192,7 @@ body:not(.ie10) .sidebar .sidebarBox .sidebarBoxInnerBox:after {
   margin-bottom: 30px;
 }
 .sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist) .footer:before {
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   bottom: -20px;
@@ -205,48 +215,87 @@ body:not(.ie10) .sidebar .sidebarBox .sidebarBoxInnerBox:after {
   background-image: linear-gradient(to bottom, #8dcb00, #71a308);
   cursor: pointer;
 }
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist) .toggle .toggle-caret {
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist)
+  .toggle
+  .toggle-caret {
   position: relative;
   margin: 1px 1px 0;
   width: 20px;
   height: 14px;
 }
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist) .toggle .toggle-caret .caret {
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist)
+  .toggle
+  .toggle-caret
+  .caret {
   stroke-width: 2;
   stroke-miterlimit: 10;
 }
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist) .toggle .toggle-caret .down_glow,
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist) .toggle .toggle-caret .up_glow {
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist)
+  .toggle
+  .toggle-caret
+  .down_glow,
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist)
+  .toggle
+  .toggle-caret
+  .up_glow {
   fill: none;
 }
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist) .toggle .toggle-caret .topshadow,
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist) .toggle .toggle-caret .bottomshadow {
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist)
+  .toggle
+  .toggle-caret
+  .topshadow,
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist)
+  .toggle
+  .toggle-caret
+  .bottomshadow {
   fill: none;
 }
 .sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist) .toggle:active {
-  background-image: linear-gradient(to top, #567C06, #7AB000);
+  background-image: linear-gradient(to top, #567c06, #7ab000);
 }
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist).collapsed .header:after,
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist).collapsed
+  .header:after,
 .sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist).collapsed .content {
   display: none;
 }
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist).collapsed .toggle-caret .topshadow {
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist).collapsed
+  .toggle-caret
+  .topshadow {
   fill: #346700;
 }
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist).collapsed .toggle-caret:hover .down_glow {
-  stroke: #FFFFFF;
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist).collapsed
+  .toggle-caret:hover
+  .down_glow {
+  stroke: #ffffff;
   stroke-width: 8;
   stroke-opacity: 0.5;
   stroke-miterlimit: 10;
 }
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist).expanded .toggle-caret {
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist).expanded
+  .toggle-caret {
   transform: scaleY(-1);
 }
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist).expanded .toggle-caret .bottomshadow {
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist).expanded
+  .toggle-caret
+  .bottomshadow {
   fill: #346700;
 }
-.sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist).expanded .toggle-caret:hover .up_glow {
-  stroke: #FFFFFF;
+.sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist).expanded
+  .toggle-caret:hover
+  .up_glow {
+  stroke: #ffffff;
   stroke-width: 8;
   stroke-opacity: 0.5;
   stroke-miterlimit: 10;

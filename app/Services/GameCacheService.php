@@ -2,16 +2,18 @@
 
 namespace App\Services;
 
+use App\Models\Game\Alliance;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
-use App\Models\Game\Alliance;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class GameCacheService
 {
     protected $defaultTtl = 3600; // 1 hour
+
     protected $shortTtl = 300; // 5 minutes
+
     protected $longTtl = 86400; // 24 hours
 
     /**
@@ -205,7 +207,7 @@ class GameCacheService
     {
         try {
             $player = Player::where('user_id', $userId)->first();
-            if (!$player) {
+            if (! $player) {
                 return false;
             }
 

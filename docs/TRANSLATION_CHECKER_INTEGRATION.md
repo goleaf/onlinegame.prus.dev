@@ -17,38 +17,49 @@ The configuration file has been published to `config/translator.php` and can be 
 ## Available Commands
 
 ### Check Translations
+
 ```bash
 php artisan translations:check en
 ```
+
 This command checks for missing translation keys in the specified language and adds them with empty values.
 
 ### Find Missing Translations
+
 ```bash
 php artisan translations:find-missing
 ```
+
 Finds and adds any missing translations to the source language file.
 
 ### Clean Translations
+
 ```bash
 php artisan translations:clean
 ```
+
 Removes unused translation keys from the source language file.
 
 ### Sort Translations
+
 ```bash
 php artisan translations:sort
 ```
+
 Sorts translation files alphabetically.
 
 ### Sync Translations
+
 ```bash
 php artisan translations:sync
 ```
+
 Synchronizes translations between language files.
 
 ## Language Files Structure
 
 The project now includes basic language files for:
+
 - English (`lang/en/messages.php`)
 - Spanish (`lang/es/messages.php`)
 - French (`lang/fr/messages.php`)
@@ -56,12 +67,14 @@ The project now includes basic language files for:
 ## Usage
 
 1. Use translation keys in your code:
+
    ```php
    echo __('messages.welcome');
    echo __('messages.hello');
    ```
 
 2. Run the translation checker to find missing keys:
+
    ```bash
    php artisan translations:check en
    ```
@@ -86,4 +99,3 @@ The project now includes basic language files for:
 - `lang/fr/messages.php` - French translations
 - `test_translations.php` - Example usage file
 - `TRANSLATION_CHECKER_INTEGRATION.md` - This documentation
-

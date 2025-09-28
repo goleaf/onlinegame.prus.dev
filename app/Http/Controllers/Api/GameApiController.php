@@ -2,34 +2,29 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
-use App\Services\RealTimeGameService;
+use App\Models\User;
 use App\Services\GameCacheService;
 use App\Services\GameErrorHandler;
 use App\Services\GamePerformanceMonitor;
-use App\Services\GameIntegrationService;
-use App\Services\ValueObjectService;
+use App\Services\RealTimeGameService;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
+use App\ValueObjects\Coordinates;
 use App\ValueObjects\PlayerStats;
 use App\ValueObjects\VillageResources;
-use App\ValueObjects\Coordinates;
-use App\Traits\GameValidationTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-use Intervention\Validation\Rules\Username;
 use Intervention\Validation\Rules\Latitude;
 use Intervention\Validation\Rules\Longitude;
-use JonPurvis\Squeaky\Rules\Clean;
-use sbamtr\LaravelQueryEnrich\QE;
-use function sbamtr\LaravelQueryEnrich\c;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
-use LaraUtilX\Utilities\LoggingUtil;
+
+use function sbamtr\LaravelQueryEnrich\c;
+
+use sbamtr\LaravelQueryEnrich\QE;
 
 /**
  * @group Game API
@@ -51,11 +46,12 @@ use LaraUtilX\Utilities\LoggingUtil;
  */
 class GameApiController extends CrudController
 {
-    use ApiResponseTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use ValidationHelperTrait;
 
     public function __construct()
     {
-        parent::__construct();
+        parent::__construct(new User());
     }
 
     /**
@@ -73,7 +69,6 @@ class GameApiController extends CrudController
      *   "created_at": "2023-01-01T00:00:00.000000Z",
      *   "updated_at": "2023-01-01T00:00:00.000000Z"
      * }
-     *
      * @response 401 {
      *   "message": "Unauthenticated."
      * }
@@ -84,18 +79,18 @@ class GameApiController extends CrudController
     {
         $startTime = microtime(true);
 
-        ds('API: Get user request', [
+        LoggingUtil::info('API: Get user request', [
             'endpoint' => 'getUser',
             'user_id' => $request->user()->id ?? null,
-            'request_time' => now()
+            'request_time' => now(),
         ]);
 
         $user = $request->user();
         $responseTime = round((microtime(true) - $startTime) * 1000, 2);
 
-        ds('API: Get user response', [
+        LoggingUtil::info('API: Get user response', [
             'user_id' => $user->id,
-            'response_time_ms' => $responseTime
+            'response_time_ms' => $responseTime,
         ]);
 
         return $this->successResponse($user, 'User retrieved successfully.');
@@ -123,7 +118,6 @@ class GameApiController extends CrudController
      *     }
      *   ]
      * }
-     *
      * @response 401 {
      *   "message": "Unauthenticated."
      * }
@@ -134,19 +128,20 @@ class GameApiController extends CrudController
     {
         $startTime = microtime(true);
 
-        ds('API: Get villages request', [
+        LoggingUtil::info('API: Get villages request', [
             'endpoint' => 'getVillages',
             'user_id' => $request->user()->id ?? null,
-            'request_time' => now()
+            'request_time' => now(),
         ]);
 
         $user = $request->user();
         $player = Player::where('user_id', $user->id)->first();
 
-        if (!$player) {
-            ds('API: No player found for user', [
-                'user_id' => $user->id
+        if (! $player) {
+            LoggingUtil::warning('API: No player found for user', [
+                'user_id' => $user->id,
             ]);
+
             return $this->successResponse(['villages' => []], 'No villages found for user.');
         }
 
@@ -166,7 +161,7 @@ class GameApiController extends CrudController
                     ->from('troops')
                     ->whereColumn('village_id', c('villages.id'))
                     ->where('quantity', '>', 0)
-                    ->as('troop_count')
+                    ->as('troop_count'),
             ])
             ->get()
             ->map(function ($village) {
@@ -195,10 +190,10 @@ class GameApiController extends CrudController
 
         $responseTime = round((microtime(true) - $startTime) * 1000, 2);
 
-        ds('API: Get villages response', [
+        LoggingUtil::info('API: Get villages response', [
             'player_id' => $player->id,
             'villages_count' => $villages->count(),
-            'response_time_ms' => $responseTime
+            'response_time_ms' => $responseTime,
         ]);
 
         return $this->successResponse(['villages' => $villages], 'Villages retrieved successfully.');
@@ -229,7 +224,6 @@ class GameApiController extends CrudController
      *     "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     *
      * @response 422 {
      *   "success": false,
      *   "message": "The given data was invalid.",
@@ -237,7 +231,6 @@ class GameApiController extends CrudController
      *     "name": ["The name field is required."]
      *   }
      * }
-     *
      * @response 404 {
      *   "success": false,
      *   "message": "Player not found"
@@ -247,7 +240,7 @@ class GameApiController extends CrudController
      */
     public function createVillage(Request $request): JsonResponse
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'name' => 'required|string|max:255',
             'x' => 'required|integer|min:0|max:999',
             'y' => 'required|integer|min:0|max:999',
@@ -256,7 +249,7 @@ class GameApiController extends CrudController
         $user = $request->user();
         $player = Player::where('user_id', $user->id)->first();
 
-        if (!$player) {
+        if (! $player) {
             return $this->errorResponse('Player not found', 404);
         }
 
@@ -283,6 +276,7 @@ class GameApiController extends CrudController
      * @authenticated
      *
      * @urlParam id integer required Village ID. Example: 1
+     *
      * @bodyParam building_type string required Type of building to upgrade. Example: "wood"
      *
      * @response 200 {
@@ -301,12 +295,10 @@ class GameApiController extends CrudController
      *     "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     *
      * @response 401 {
      *   "success": false,
      *   "message": "Unauthorized"
      * }
-     *
      * @response 404 {
      *   "success": false,
      *   "message": "Village not found"
@@ -316,35 +308,21 @@ class GameApiController extends CrudController
      */
     public function upgradeBuilding(Request $request, int $id): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $this->validateRequestData($request, [
             'building_type' => 'required|string|in:wood,clay,iron,crop',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'The given data was invalid.',
-                'errors' => $validator->errors()
-            ], 422);
-        }
 
         $user = $request->user();
         $village = Village::find($id);
 
-        if (!$village) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Village not found'
-            ], 404);
+        if (! $village) {
+            return $this->errorResponse('Village not found', 404);
         }
 
         // Check if player owns this village
         $player = Player::where('user_id', $user->id)->first();
-        if (!$player || $village->player_id !== $player->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 401);
+        if (! $player || $village->player_id !== $player->id) {
+            return $this->errorResponse('Unauthorized', 401);
         }
 
         $buildingType = $request->input('building_type');
@@ -370,7 +348,7 @@ class GameApiController extends CrudController
                 $user->id,
                 $village->id,
                 $buildingType,
-                1, // Assuming level 1 for now
+                1,  // Assuming level 1 for now
                 [
                     'village_name' => $village->name,
                     'building_type' => $buildingType,
@@ -392,24 +370,17 @@ class GameApiController extends CrudController
                 'building_type' => $buildingType,
             ]);
 
-            return response()->json([
-                'success' => true,
-                'village' => $village->fresh()
-            ]);
-
+            return $this->successResponse($village->fresh(), 'Building upgraded successfully');
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             GameErrorHandler::handleGameError($e, [
                 'action' => 'api_upgrade_building',
                 'user_id' => $user->id,
                 'village_id' => $village->id,
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Building upgrade failed'
-            ], 500);
+            return $this->errorResponse('Building upgrade failed', 500);
         }
     }
 
@@ -437,12 +408,10 @@ class GameApiController extends CrudController
      *     "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     *
      * @response 401 {
      *   "success": false,
      *   "message": "Unauthorized"
      * }
-     *
      * @response 404 {
      *   "success": false,
      *   "message": "Village not found"
@@ -468,29 +437,21 @@ class GameApiController extends CrudController
                     ->from('troops')
                     ->whereColumn('village_id', c('villages.id'))
                     ->where('quantity', '>', 0)
-                    ->as('troop_count')
+                    ->as('troop_count'),
             ])
             ->find($id);
 
-        if (!$village) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Village not found'
-            ], 404);
+        if (! $village) {
+            return $this->errorResponse('Village not found', 404);
         }
 
         // Check if player owns this village
         $player = Player::where('user_id', $user->id)->first();
-        if (!$player || $village->player_id !== $player->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 401);
+        if (! $player || $village->player_id !== $player->id) {
+            return $this->errorResponse('Unauthorized', 401);
         }
 
-        return response()->json([
-            'village' => $village
-        ]);
+        return $this->successResponse($village, 'Village details retrieved successfully');
     }
 
     /**
@@ -515,7 +476,6 @@ class GameApiController extends CrudController
      *     "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     *
      * @response 404 {
      *   "success": false,
      *   "message": "Player not found"
@@ -530,11 +490,8 @@ class GameApiController extends CrudController
             ->with(['alliance', 'villages'])
             ->first();
 
-        if (!$player) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Player not found'
-            ], 404);
+        if (! $player) {
+            return $this->errorResponse('Player not found', 404);
         }
 
         // Create enhanced player stats using value objects
@@ -579,12 +536,11 @@ class GameApiController extends CrudController
             ];
         });
 
-        return response()->json([
-            'success' => true,
+        return $this->successResponse([
             'player' => $player,
             'player_stats' => $playerStats,
             'villages' => $villageData,
-            'value_objects_integration' => true
+            'value_objects_integration' => true,
         ]);
     }
 
@@ -615,28 +571,17 @@ class GameApiController extends CrudController
      */
     public function getGeographicData(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $this->validateRequestData($request, [
             'radius' => 'nullable|integer|min:1|max:1000',
             'center_lat' => 'nullable|numeric|between:-90,90',
             'center_lon' => 'nullable|numeric|between:-180,180',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'The given data was invalid.',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         $user = $request->user();
         $player = Player::where('user_id', $user->id)->first();
 
-        if (!$player) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Player not found'
-            ], 404);
+        if (! $player) {
+            return $this->errorResponse('Player not found', 404);
         }
 
         $query = Village::where('player_id', $player->id)
@@ -645,9 +590,9 @@ class GameApiController extends CrudController
 
         // Apply radius filter if provided
         if ($request->has('radius') && $request->has('center_lat') && $request->has('center_lon')) {
-            $radius = $request->input('radius');
-            $centerLat = $request->input('center_lat');
-            $centerLon = $request->input('center_lon');
+            $radius = $validated['radius'];
+            $centerLat = $validated['center_lat'];
+            $centerLon = $validated['center_lon'];
 
             $query->whereRaw('ST_Distance_Sphere(
                 POINT(longitude, latitude), 
@@ -685,10 +630,7 @@ class GameApiController extends CrudController
             return $data;
         });
 
-        return response()->json([
-            'success' => true,
-            'villages' => $villages
-        ]);
+        return $this->successResponse($villages, 'Player villages retrieved successfully');
     }
 
     /**
@@ -709,37 +651,23 @@ class GameApiController extends CrudController
      */
     public function calculateDistance(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $this->validateRequestData($request, [
             'village1_id' => 'required|integer|exists:villages,id',
             'village2_id' => 'required|integer|exists:villages,id',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'The given data was invalid.',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         $user = $request->user();
         $player = Player::where('user_id', $user->id)->first();
 
-        if (!$player) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Player not found'
-            ], 404);
+        if (! $player) {
+            return $this->errorResponse('Player not found', 404);
         }
 
         $village1 = Village::where('player_id', $player->id)->find($request->input('village1_id'));
         $village2 = Village::where('player_id', $player->id)->find($request->input('village2_id'));
 
-        if (!$village1 || !$village2) {
-            return response()->json([
-                'success' => false,
-                'message' => 'One or both villages not found or not owned by player'
-            ], 404);
+        if (! $village1 || ! $village2) {
+            return $this->errorResponse('One or both villages not found or not owned by player', 404);
         }
 
         $geoService = app(\App\Services\GeographicService::class);
@@ -760,11 +688,10 @@ class GameApiController extends CrudController
 
         $travelTime = $geoService->calculateTravelTimeFromDistance($distance);
 
-        return response()->json([
-            'success' => true,
+        return $this->successResponse([
             'distance_km' => round($distance, 2),
             'bearing' => round($bearing, 1),
-            'travel_time_minutes' => $travelTime
+            'travel_time_minutes' => $travelTime,
         ]);
     }
 

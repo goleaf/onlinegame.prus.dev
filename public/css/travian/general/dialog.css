@@ -105,16 +105,24 @@
   margin-top: -20px;
 }
 
-.dragWrapper .dialog.brown .dialog-contents .dialog-dragbar .dragbar-inner-left {
+.dragWrapper
+  .dialog.brown
+  .dialog-contents
+  .dialog-dragbar
+  .dragbar-inner-left {
   background-image: url('../../img_ltr/dialogBrown/dragbar_corners.png');
 }
 
-.dragWrapper .dialog.brown .dialog-contents .dialog-dragbar .dragbar-inner-right {
+.dragWrapper
+  .dialog.brown
+  .dialog-contents
+  .dialog-dragbar
+  .dragbar-inner-right {
   background-image: url('../../img_ltr/dialogBrown/dragbar_corners.png');
 }
 
 .dragWrapper .dialog .dialog-contents .dialog-dragbar .dragbar-inner-mid {
-  background: #EEEEEE;
+  background: #eeeeee;
   margin-left: 10px;
   margin-right: 10px;
   height: 20px;
@@ -138,7 +146,7 @@
   visibility: hidden;
   display: block;
   font-size: 0;
-  content: " ";
+  content: ' ';
   clear: both;
   height: 0;
 }
@@ -159,9 +167,15 @@
   width: 100%;
 }
 
-.dialog .dialog-background-tl, .dialog .dialog-background-tc, .dialog .dialog-background-tr,
-.dialog .dialog-background-ml, .dialog .dialog-background-mc, .dialog .dialog-background-mr,
-.dialog .dialog-background-bl, .dialog .dialog-background-bc, .dialog .dialog-background-br {
+.dialog .dialog-background-tl,
+.dialog .dialog-background-tc,
+.dialog .dialog-background-tr,
+.dialog .dialog-background-ml,
+.dialog .dialog-background-mc,
+.dialog .dialog-background-mr,
+.dialog .dialog-background-bl,
+.dialog .dialog-background-bc,
+.dialog .dialog-background-br {
   position: absolute;
 }
 
@@ -456,20 +470,48 @@
   }
 
   .dialog.white .dialog-contents .dialog-dragbar,
-  .dragWrapper .dialog.white .dialog-contents .dialog-dragbar .dragbar-inner-mid,
-  .dragWrapper .dialog.white .dialog-contents .dialog-dragbar .dragbar-inner-left,
-  .dragWrapper .dialog.white .dialog-contents .dialog-dragbar .dragbar-inner-right {
+  .dragWrapper
+    .dialog.white
+    .dialog-contents
+    .dialog-dragbar
+    .dragbar-inner-mid,
+  .dragWrapper
+    .dialog.white
+    .dialog-contents
+    .dialog-dragbar
+    .dragbar-inner-left,
+  .dragWrapper
+    .dialog.white
+    .dialog-contents
+    .dialog-dragbar
+    .dragbar-inner-right {
     height: 35px;
   }
 
-  .dragWrapper .dialog.white .dialog-contents .dialog-dragbar .dragbar-inner-mid,
-  .dragWrapper .dialog.white .dialog-contents .dialog-dragbar .dragbar-inner-left,
-  .dragWrapper .dialog.white .dialog-contents .dialog-dragbar .dragbar-inner-right {
-    background-color: #EEEEEE;
+  .dragWrapper
+    .dialog.white
+    .dialog-contents
+    .dialog-dragbar
+    .dragbar-inner-mid,
+  .dragWrapper
+    .dialog.white
+    .dialog-contents
+    .dialog-dragbar
+    .dragbar-inner-left,
+  .dragWrapper
+    .dialog.white
+    .dialog-contents
+    .dialog-dragbar
+    .dragbar-inner-right {
+    background-color: #eeeeee;
     background-image: none;
   }
 
-  .dragWrapper .dialog.white .dialog-contents .dialog-dragbar .dragbar-inner-right {
+  .dragWrapper
+    .dialog.white
+    .dialog-contents
+    .dialog-dragbar
+    .dragbar-inner-right {
     margin-top: -35px;
   }
 }
@@ -493,7 +535,13 @@
 .dialog .dialog-contents #vacationModeConfirmationDialog .villages table td {
   font-size: 11px;
 }
-.rtl .dialog .dialog-contents #vacationModeConfirmationDialog .villages table td {
+.rtl
+  .dialog
+  .dialog-contents
+  #vacationModeConfirmationDialog
+  .villages
+  table
+  td {
   font-size: 12px;
 }
 
@@ -501,6 +549,12 @@
   font-size: 11px;
   background-color: #fce6c4;
 }
-.rtl .dialog .dialog-contents #vacationModeConfirmationDialog .villages table th {
+.rtl
+  .dialog
+  .dialog-contents
+  #vacationModeConfirmationDialog
+  .villages
+  table
+  th {
   font-size: 12px;
 }

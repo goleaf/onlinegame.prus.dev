@@ -55,11 +55,11 @@ div.support table.form_table td {
 }
 
 .helpInfoBlock:hover {
-  background-color: #EEEEEE;
+  background-color: #eeeeee;
 }
 
 .helpInfoLinkLess:hover {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .helpInfoBlock a {
@@ -69,7 +69,7 @@ div.support table.form_table td {
 }
 
 .helpInfoBlock .plusFaq a {
-  color: #99C01A;
+  color: #99c01a;
   display: inline;
   font-weight: bold;
 }

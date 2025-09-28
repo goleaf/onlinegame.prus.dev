@@ -45,10 +45,10 @@ Route::get('/phone-bulk-operations', function () {
 })->middleware('auth');
 
 // Include auth routes
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
 
 // Include game routes
-require __DIR__ . '/game.php';
+require __DIR__.'/game.php';
 
 // Temporary debug route to test login
 Route::get('/debug-login', function () {
@@ -87,12 +87,12 @@ Route::get('/debug-game-dashboard', function () {
 
         $player = \App\Models\Game\Player::where('user_id', $user->id)->first();
         if (! $player) {
-            return 'No player found for user: ' . $user->email;
+            return 'No player found for user: '.$user->email;
         }
 
-        return 'Player found: ' . $player->name . ' (ID: ' . $player->id . ')';
+        return 'Player found: '.$player->name.' (ID: '.$player->id.')';
     } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
+        return 'Error: '.$e->getMessage();
     }
 });
 
@@ -114,31 +114,31 @@ Route::get('decompose', function () {
         $serverExtras = \Lubusin\Decomposer\Decomposer::getServerExtras();
         $laravelExtras = \Lubusin\Decomposer\Decomposer::getLaravelExtras();
         $extraStats = \Lubusin\Decomposer\Decomposer::getExtraStats();
-        
+
         $svgIcons = [
-            "composer" => \Lubusin\Decomposer\Decomposer::svg('composer', 'h-5'),
-            "statusTrue" => \Lubusin\Decomposer\Decomposer::svg('status_true', 'h-5'),
-            "statusFalse" => \Lubusin\Decomposer\Decomposer::svg('status_false', 'h-5'),
-            "laravelIcon" => \Lubusin\Decomposer\Decomposer::svg('laravel_icon', 'h-5'),
-            "serverIcon" => \Lubusin\Decomposer\Decomposer::svg('server', 'h-5')
+            'composer' => \Lubusin\Decomposer\Decomposer::svg('composer', 'h-5'),
+            'statusTrue' => \Lubusin\Decomposer\Decomposer::svg('status_true', 'h-5'),
+            'statusFalse' => \Lubusin\Decomposer\Decomposer::svg('status_false', 'h-5'),
+            'laravelIcon' => \Lubusin\Decomposer\Decomposer::svg('laravel_icon', 'h-5'),
+            'serverIcon' => \Lubusin\Decomposer\Decomposer::svg('server', 'h-5'),
         ];
-        
+
         $formattedPackages = collect($packages)->map(function ($pkg) {
             return [
                 'name' => $pkg['name'],
                 'version' => $pkg['version'],
                 'dependencies' => is_array($pkg['dependencies']) ? collect($pkg['dependencies'])->map(function ($v, $k) {
                     return ['name' => $k, 'version' => $v];
-                })->values() : [['name' => 'N/A', 'version' => $pkg['dependencies']]]
+                })->values() : [['name' => 'N/A', 'version' => $pkg['dependencies']]],
             ];
         })->values();
-        
+
         return view('Decomposer::app', compact('packages', 'laravelEnv', 'serverEnv', 'extraStats', 'serverExtras', 'laravelExtras', 'formattedPackages', 'svgIcons'));
     } catch (\Exception $e) {
         return response()->json([
             'error' => 'Laravel Decomposer Error',
             'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
+            'trace' => $e->getTraceAsString(),
         ], 500);
     }
 })->name('decompose');
@@ -147,16 +147,17 @@ Route::get('decompose', function () {
 Route::get('decompose/json', function () {
     try {
         $report = \Lubusin\Decomposer\Decomposer::getReportAsArray();
+
         return response()->json([
             'success' => true,
             'data' => $report,
-            'generated_at' => now()->toISOString()
+            'generated_at' => now()->toISOString(),
         ]);
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
             'error' => $e->getMessage(),
-            'generated_at' => now()->toISOString()
+            'generated_at' => now()->toISOString(),
         ], 500);
     }
 })->name('decompose.json');
@@ -165,28 +166,29 @@ Route::get('decompose/json', function () {
 Route::get('decompose/markdown', function () {
     try {
         $report = \Lubusin\Decomposer\Decomposer::getReportAsMarkdown();
+
         return response($report, 200, [
             'Content-Type' => 'text/markdown',
-            'Content-Disposition' => 'attachment; filename="laravel-decomposer-report.md"'
+            'Content-Disposition' => 'attachment; filename="laravel-decomposer-report.md"',
         ]);
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
             'error' => $e->getMessage(),
-            'generated_at' => now()->toISOString()
+            'generated_at' => now()->toISOString(),
         ], 500);
     }
 })->name('decompose.markdown');
 
 // Chat routes
-Route::middleware(['auth'])->prefix('game')->name('game.')->group(function () {
+Route::middleware(['auth'])->prefix('game')->name('game.')->group(function (): void {
     Route::get('/chat', App\Livewire\Game\ChatManager::class)->name('chat');
     Route::get('/messages', App\Livewire\Game\MessageManager::class)->name('messages');
     Route::get('/player/{player}', App\Livewire\Game\PlayerDetail::class)->name('player.detail');
 });
 
 // Admin routes
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function (): void {
     Route::get('/', App\Livewire\Admin\AdminDashboard::class)->name('dashboard');
     Route::get('/updater', App\Livewire\Admin\UpdaterComponent::class)->name('updater');
 });

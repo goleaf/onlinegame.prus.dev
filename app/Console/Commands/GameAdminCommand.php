@@ -4,13 +4,13 @@ namespace App\Console\Commands;
 
 use App\Services\GameErrorHandler;
 use App\Services\GamePerformanceMonitor;
-use App\Utilities\GameUtility;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
 class GameAdminCommand extends Command
 {
     protected $signature = 'game:admin {action} {--player=} {--village=} {--amount=} {--type=}';
+
     protected $description = 'Admin commands for game management';
 
     public function handle()
@@ -20,24 +20,30 @@ class GameAdminCommand extends Command
         switch ($action) {
             case 'stats':
                 $this->showGameStats();
+
                 break;
             case 'performance':
                 $this->showPerformanceReport();
+
                 break;
             case 'give-resources':
                 $this->giveResources();
+
                 break;
             case 'reset-player':
                 $this->resetPlayer();
+
                 break;
             case 'cleanup':
                 $this->cleanupOldData();
+
                 break;
             case 'backup':
                 $this->createGameBackup();
+
                 break;
             default:
-                $this->error('Unknown action: ' . $action);
+                $this->error('Unknown action: '.$action);
                 $this->showHelp();
         }
     }
@@ -89,21 +95,21 @@ class GameAdminCommand extends Command
             ['Metric', 'Value'],
             [
                 ['Total Queries', $report['performance_stats']['queries']['total']],
-                ['Average Query Time', $report['performance_stats']['queries']['average_time'] . 's'],
+                ['Average Query Time', $report['performance_stats']['queries']['average_time'].'s'],
                 ['Slow Queries', $report['performance_stats']['queries']['slow_queries']],
                 ['Total Responses', $report['performance_stats']['responses']['total']],
-                ['Average Response Time', $report['performance_stats']['responses']['average_time'] . 's'],
+                ['Average Response Time', $report['performance_stats']['responses']['average_time'].'s'],
                 ['Slow Responses', $report['performance_stats']['responses']['slow_responses']],
-                ['Current Memory Usage', $report['performance_stats']['memory']['current_usage_mb'] . ' MB'],
-                ['Peak Memory Usage', $report['performance_stats']['memory']['peak_usage_mb'] . ' MB'],
+                ['Current Memory Usage', $report['performance_stats']['memory']['current_usage_mb'].' MB'],
+                ['Peak Memory Usage', $report['performance_stats']['memory']['peak_usage_mb'].' MB'],
                 ['Concurrent Users', $report['concurrent_users']],
             ]
         );
 
-        if (!empty($report['recommendations'])) {
+        if (! empty($report['recommendations'])) {
             $this->warn('Recommendations:');
             foreach ($report['recommendations'] as $recommendation) {
-                $this->line('- ' . $recommendation);
+                $this->line('- '.$recommendation);
             }
         }
     }
@@ -115,14 +121,16 @@ class GameAdminCommand extends Command
         $amount = (int) $this->option('amount');
         $type = $this->option('type');
 
-        if (!$playerId || !$villageId || !$amount || !$type) {
+        if (! $playerId || ! $villageId || ! $amount || ! $type) {
             $this->error('All options are required: --player, --village, --amount, --type');
+
             return;
         }
 
         $validTypes = ['wood', 'clay', 'iron', 'crop'];
-        if (!in_array($type, $validTypes)) {
-            $this->error('Invalid resource type. Valid types: ' . implode(', ', $validTypes));
+        if (! in_array($type, $validTypes)) {
+            $this->error('Invalid resource type. Valid types: '.implode(', ', $validTypes));
+
             return;
         }
 
@@ -132,8 +140,9 @@ class GameAdminCommand extends Command
                 ->where('player_id', $playerId)
                 ->first();
 
-            if (!$village) {
+            if (! $village) {
                 $this->error('Village not found or does not belong to player');
+
                 return;
             }
 
@@ -151,7 +160,7 @@ class GameAdminCommand extends Command
                 'amount' => $amount,
             ]);
         } catch (\Exception $e) {
-            $this->error('Failed to give resources: ' . $e->getMessage());
+            $this->error('Failed to give resources: '.$e->getMessage());
             GameErrorHandler::handleGameError($e, [
                 'action' => 'admin_give_resources',
                 'player_id' => $playerId,
@@ -164,13 +173,15 @@ class GameAdminCommand extends Command
     {
         $playerId = $this->option('player');
 
-        if (!$playerId) {
+        if (! $playerId) {
             $this->error('Player ID is required: --player');
+
             return;
         }
 
-        if (!$this->confirm("Are you sure you want to reset player {$playerId}? This action cannot be undone.")) {
+        if (! $this->confirm("Are you sure you want to reset player {$playerId}? This action cannot be undone.")) {
             $this->info('Operation cancelled');
+
             return;
         }
 
@@ -213,7 +224,7 @@ class GameAdminCommand extends Command
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->error('Failed to reset player: ' . $e->getMessage());
+            $this->error('Failed to reset player: '.$e->getMessage());
             GameErrorHandler::handleGameError($e, [
                 'action' => 'admin_reset_player',
                 'player_id' => $playerId,
@@ -253,7 +264,7 @@ class GameAdminCommand extends Command
                 'deleted_logs' => $deletedLogs,
             ]);
         } catch (\Exception $e) {
-            $this->error('Cleanup failed: ' . $e->getMessage());
+            $this->error('Cleanup failed: '.$e->getMessage());
             GameErrorHandler::handleGameError($e, [
                 'action' => 'admin_cleanup',
             ]);
@@ -265,10 +276,10 @@ class GameAdminCommand extends Command
         $this->info('Creating game backup...');
 
         try {
-            $backupPath = storage_path('backups/game_backup_' . now()->format('Y_m_d_H_i_s') . '.sql');
+            $backupPath = storage_path('backups/game_backup_'.now()->format('Y_m_d_H_i_s').'.sql');
 
             // Create backup directory if it doesn't exist
-            if (!file_exists(dirname($backupPath))) {
+            if (! file_exists(dirname($backupPath))) {
                 mkdir(dirname($backupPath), 0755, true);
             }
 
@@ -295,7 +306,7 @@ class GameAdminCommand extends Command
                 $this->error('Backup failed');
             }
         } catch (\Exception $e) {
-            $this->error('Backup failed: ' . $e->getMessage());
+            $this->error('Backup failed: '.$e->getMessage());
             GameErrorHandler::handleGameError($e, [
                 'action' => 'admin_backup',
             ]);

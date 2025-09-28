@@ -7,6 +7,7 @@ Successfully enhanced the battle system with comprehensive combat mechanics, mov
 ## ✅ What Was Implemented
 
 ### 1. Movement System Processing
+
 - **Complete Movement Processing**: Added `processMovements()` to GameTickService
 - **Attack Processing**: Full battle resolution when troops arrive
 - **Support Processing**: Troop reinforcement system
@@ -15,6 +16,7 @@ Successfully enhanced the battle system with comprehensive combat mechanics, mov
 - **Return Movement**: Automatic troop return after missions
 
 ### 2. Battle System Mechanics
+
 - **Combat Calculations**: Realistic power calculations with randomness
 - **Troop Losses**: Dynamic casualty system based on battle outcome
 - **Resource Looting**: Plundering system for successful attacks
@@ -22,6 +24,7 @@ Successfully enhanced the battle system with comprehensive combat mechanics, mov
 - **Battle Records**: Complete battle history in database
 
 ### 3. Game Tick Command
+
 - **Artisan Command**: `php artisan game:tick` for manual processing
 - **Performance Monitoring**: Execution time tracking
 - **Error Handling**: Comprehensive error logging and recovery
@@ -30,6 +33,7 @@ Successfully enhanced the battle system with comprehensive combat mechanics, mov
 ## 🎮 Battle System Features
 
 ### Combat Mechanics
+
 ```php
 // Battle power calculation with randomness
 $attackerPower *= (0.8 + (rand(0, 40) / 100)); // 80-120% variation
@@ -43,6 +47,7 @@ if ($attackerPower > $defenderPower) {
 ```
 
 ### Movement Types Supported
+
 - **Attack**: Offensive military operations
 - **Support**: Defensive troop reinforcement
 - **Spy**: Intelligence gathering missions
@@ -50,6 +55,7 @@ if ($attackerPower > $defenderPower) {
 - **Return**: Automatic troop return after missions
 
 ### Battle Outcomes
+
 - **Attacker Wins**: 10-30% attacker losses, 50-80% defender losses, resource looting
 - **Defender Wins**: 50-80% attacker losses, 10-30% defender losses
 - **Draw**: 20-40% losses for both sides
@@ -57,6 +63,7 @@ if ($attackerPower > $defenderPower) {
 ## 🛠️ Technical Implementation
 
 ### GameTickService Enhancements
+
 ```php
 public function processGameTick()
 {
@@ -77,6 +84,7 @@ public function processGameTick()
 ```
 
 ### Movement Processing
+
 ```php
 private function processMovements()
 {
@@ -92,6 +100,7 @@ private function processMovements()
 ```
 
 ### Battle Resolution
+
 ```php
 private function processAttack(Movement $movement)
 {
@@ -126,6 +135,7 @@ private function processAttack(Movement $movement)
 ## 📊 Database Schema Updates
 
 ### Battle Table
+
 - **attacker_id**: Player who initiated the attack
 - **defender_id**: Player being attacked
 - **village_id**: Target village
@@ -138,6 +148,7 @@ private function processAttack(Movement $movement)
 - **occurred_at**: When the battle took place
 
 ### Movement Table
+
 - **player_id**: Player controlling the movement
 - **from_village_id**: Origin village
 - **to_village_id**: Destination village
@@ -152,6 +163,7 @@ private function processAttack(Movement $movement)
 ## 🎯 Usage Examples
 
 ### Manual Game Tick Processing
+
 ```bash
 # Process game tick manually
 php artisan game:tick
@@ -161,6 +173,7 @@ php artisan game:tick --force
 ```
 
 ### Battle System Flow
+
 1. **Player launches attack** from BattleManager
 2. **Movement created** with troops and arrival time
 3. **Game tick processes** movement when it arrives
@@ -171,6 +184,7 @@ php artisan game:tick --force
 8. **Return movement scheduled** for surviving troops
 
 ### Real-time Updates
+
 - **Livewire components** automatically refresh
 - **Battle notifications** sent to players
 - **Troop counts updated** in real-time
@@ -179,18 +193,21 @@ php artisan game:tick --force
 ## 🚀 Performance Optimizations
 
 ### Database Queries
+
 - **Optimized joins** for troop and village data
 - **Batch processing** for multiple movements
 - **Indexed columns** for fast lookups
 - **Transaction safety** for data integrity
 
 ### Memory Management
+
 - **Efficient data loading** with relationships
 - **Minimal memory footprint** during processing
 - **Garbage collection** after processing
 - **Optimized array operations** for battle calculations
 
 ### Execution Time
+
 - **Average processing time**: ~2.7 seconds
 - **Memory usage**: ~27MB during processing
 - **Database operations**: Atomic transactions
@@ -199,12 +216,14 @@ php artisan game:tick --force
 ## 🎮 Game Balance
 
 ### Combat Balance
+
 - **Realistic power calculations** based on unit stats
 - **Randomness factor** prevents predictable outcomes
 - **Loss rates** balanced for strategic gameplay
 - **Resource looting** provides meaningful rewards
 
 ### Strategic Depth
+
 - **Multiple movement types** for different strategies
 - **Troop composition matters** for battle outcomes
 - **Distance affects travel time** and strategy
@@ -213,12 +232,14 @@ php artisan game:tick --force
 ## 📋 Next Steps
 
 ### Immediate Improvements
+
 - [ ] **Unit Training System**: Complete all 30+ unit types
 - [ ] **Defense System**: Add wall bonuses and defensive mechanics
 - [ ] **Battle Reports**: Enhanced reporting with detailed statistics
 - [ ] **Alliance System**: Multi-player coordination features
 
 ### Future Enhancements
+
 - [ ] **Siege Weapons**: Specialized attack units
 - [ ] **Hero System**: Legendary units with special abilities
 - [ ] **Artifact System**: Server-wide bonuses and effects
@@ -240,4 +261,3 @@ php artisan game:tick --force
 **Battle System Enhancement Complete!** ⚔️🎮
 
 The Laravel Travian game now features a comprehensive military system with realistic combat mechanics, troop movements, and detailed battle resolution. Players can launch attacks, defend their villages, and engage in strategic warfare with meaningful consequences and rewards.
-

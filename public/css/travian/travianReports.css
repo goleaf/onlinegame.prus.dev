@@ -35,7 +35,7 @@
   width: 100%;
   background-size: cover;
   background-position: center;
-  border: 1px solid #DDC6A2;
+  border: 1px solid #ddc6a2;
   border-top: none;
   border-bottom: none;
 }
@@ -120,8 +120,8 @@
   margin-top: -1px;
 }
 #reportWrapper > .header {
-  background-color: #FCF2DA;
-  border: solid 1px #DDC6A2;
+  background-color: #fcf2da;
+  border: solid 1px #ddc6a2;
   margin-top: -4px;
   position: relative;
 }
@@ -134,7 +134,7 @@
 }
 #reportWrapper > .header .headline {
   height: 30px;
-  border-bottom: solid 1px #DDC6A2;
+  border-bottom: solid 1px #ddc6a2;
 }
 #reportWrapper > .header .headline.withQuickNavigation {
   display: -ms-grid;
@@ -149,15 +149,25 @@
   background-color: rgba(255, 255, 255, 0);
   transition-duration: 150ms;
 }
-#reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:first-of-type {
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:first-of-type {
   -ms-grid-column: 1;
   grid-column-start: 1;
 }
-#reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:last-of-type {
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:last-of-type {
   -ms-grid-column: 3;
   grid-column-start: 3;
 }
-#reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation svg {
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation
+  svg {
   width: 12px;
   height: 17px;
   margin-top: 7px;
@@ -165,42 +175,121 @@
   transition-duration: 150ms;
   transition-timing-function: ease-out;
 }
-.rtl #reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation svg {
+.rtl
+  #reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation
+  svg {
   transform: scale(-1, 1);
 }
-#reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation svg path {
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation
+  svg
+  path {
   fill: transparent;
-  stroke: #DDC6A2;
+  stroke: #ddc6a2;
   stroke-width: 4px;
   stroke-linecap: round;
   stroke-linejoin: round;
   transition-duration: 150ms;
 }
-#reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):hover, #reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):focus {
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):hover,
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):focus {
   background-color: rgba(255, 255, 255, 0.3);
 }
-#reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):hover svg.chevronBack, #reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):focus svg.chevronBack {
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):hover
+  svg.chevronBack,
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):focus
+  svg.chevronBack {
   margin-right: 10px;
 }
-#reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):hover svg.chevronForward, #reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):focus svg.chevronForward {
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):hover
+  svg.chevronForward,
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):focus
+  svg.chevronForward {
   margin-left: 10px;
 }
-.rtl #reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):hover svg.chevronBack, .rtl #reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):focus svg.chevronBack {
+.rtl
+  #reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):hover
+  svg.chevronBack,
+.rtl
+  #reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):focus
+  svg.chevronBack {
   transform: scale(-1, 1);
 }
-.rtl #reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):hover svg.chevronForward, .rtl #reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):focus svg.chevronForward {
+.rtl
+  #reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):hover
+  svg.chevronForward,
+.rtl
+  #reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):focus
+  svg.chevronForward {
   transform: scale(-1, 1);
 }
-#reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):hover svg path, #reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):focus svg path {
-  stroke: #998D73;
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):hover
+  svg
+  path,
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):focus
+  svg
+  path {
+  stroke: #998d73;
 }
-#reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation:not(.disabled):active {
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation:not(.disabled):active {
   background-color: rgba(255, 255, 255, 0.6);
 }
-#reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation.disabled {
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation.disabled {
   pointer-events: none;
 }
-#reportWrapper > .header .headline.withQuickNavigation .reportQuickNavigation.disabled svg path {
+#reportWrapper
+  > .header
+  .headline.withQuickNavigation
+  .reportQuickNavigation.disabled
+  svg
+  path {
   stroke: transparent;
 }
 #reportWrapper > .header .headline.withQuickNavigation .subject {
@@ -215,8 +304,8 @@
   direction: initial;
   line-height: 30px;
   padding: 0 5px;
-  border-left: solid 1px #DDC6A2;
-  border-right: solid 1px #DDC6A2;
+  border-left: solid 1px #ddc6a2;
+  border-right: solid 1px #ddc6a2;
 }
 #reportWrapper > .header .headline:not(.withQuickNavigation) .subject {
   width: 100%;
@@ -237,7 +326,7 @@
   margin-bottom: 35px;
 }
 #reportWrapper .body table {
-  background-color: #FFF9EB;
+  background-color: #fff9eb;
   padding: 3px 5px 5px;
 }
 #reportWrapper .body table th,
@@ -251,7 +340,7 @@
 #reportWrapper .body table th {
   width: 36px;
   text-align: center;
-  background-color: #FFF9EB;
+  background-color: #fff9eb;
 }
 #reportWrapper .body table th i {
   display: inline-block;
@@ -285,7 +374,8 @@
 #reportWrapper .body table .infos td {
   vertical-align: top;
 }
-#reportWrapper .body table .goods th span, #reportWrapper .body table .goods th i,
+#reportWrapper .body table .goods th span,
+#reportWrapper .body table .goods th i,
 #reportWrapper .body table .goods td span,
 #reportWrapper .body table .goods td i,
 #reportWrapper .body table .infos th span,
@@ -303,8 +393,8 @@
 }
 #reportWrapper .body .role {
   position: relative;
-  background-color: #FFF9EB;
-  border: 1px solid #DDC6A2;
+  background-color: #fff9eb;
+  border: 1px solid #ddc6a2;
   margin-bottom: 7px;
   padding-bottom: 10px;
 }
@@ -338,7 +428,7 @@
 }
 #reportWrapper .body .role .header h2,
 #reportWrapper .body .role .header h3 {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 #reportWrapper .body .role .header h2 {
   text-transform: uppercase;
@@ -368,7 +458,8 @@
   width: 48px;
   height: 60px;
 }
-#reportWrapper .body .role .header .outcome > img.skull, #reportWrapper .body .role .header .outcome > img.loot {
+#reportWrapper .body .role .header .outcome > img.skull,
+#reportWrapper .body .role .header .outcome > img.loot {
   right: 2px;
   bottom: 2px;
   width: 26px;
@@ -398,9 +489,9 @@
 #reportWrapper .body .role .troopHeadline {
   height: 38px;
   padding: 0 10px;
-  background-color: #FCF2DA;
-  border-top: 1px solid #DDC6A2;
-  border-bottom: 1px solid #DDC6A2;
+  background-color: #fcf2da;
+  border-top: 1px solid #ddc6a2;
+  border-bottom: 1px solid #ddc6a2;
   position: relative;
   line-height: 38px;
   font-size: 15px;
@@ -438,29 +529,34 @@
 #reportWrapper .body .role.attacker {
   border-top: none;
 }
-#reportWrapper .body .role.attacker .header, #reportWrapper .body .role.defender .header, #reportWrapper .body .role.reinforcement .header {
+#reportWrapper .body .role.attacker .header,
+#reportWrapper .body .role.defender .header,
+#reportWrapper .body .role.reinforcement .header {
   -ms-grid-rows: 36px;
   grid-template-rows: 36px;
   -ms-grid-columns: 100px 1fr 150px;
   grid-template-columns: 100px 1fr 150px;
 }
 #reportWrapper .body .role.attacker .header {
-  background-color: #A33F41;
+  background-color: #a33f41;
 }
 #reportWrapper .body .role.attacker .header .outcome {
   background-color: #7e3132;
 }
 #reportWrapper .body .role.attacker .header .outcome svg {
-  fill: #A33F41;
+  fill: #a33f41;
 }
-#reportWrapper .body .role.defender .header, #reportWrapper .body .role.reinforcement .header {
-  background-color: #8CB1C8;
+#reportWrapper .body .role.defender .header,
+#reportWrapper .body .role.reinforcement .header {
+  background-color: #8cb1c8;
 }
-#reportWrapper .body .role.defender .header .outcome, #reportWrapper .body .role.reinforcement .header .outcome {
+#reportWrapper .body .role.defender .header .outcome,
+#reportWrapper .body .role.reinforcement .header .outcome {
   background-color: #6a9ab8;
 }
-#reportWrapper .body .role.defender .header .outcome svg, #reportWrapper .body .role.reinforcement .header .outcome svg {
-  fill: #8CB1C8;
+#reportWrapper .body .role.defender .header .outcome svg,
+#reportWrapper .body .role.reinforcement .header .outcome svg {
+  fill: #8cb1c8;
 }
 #reportWrapper .body .role.reinforcement .outcome {
   display: none;
@@ -471,7 +567,7 @@
   width: 20%;
 }
 #reportWrapper .body .additionalInformation .combatReportLine .negative {
-  color: #D40000;
+  color: #d40000;
 }
 #reportWrapper .body tbody.infos td div {
   margin-bottom: 6px;
@@ -572,11 +668,125 @@
   background-image: url('../img_ltr/report/injury-ltr.png');
   float: none !important;
 }
-#reportWrapper .body .item, #reportWrapper .body div.reports .item {
+#reportWrapper .body .item,
+#reportWrapper .body div.reports .item {
   width: 18px;
   height: 12px;
 }
-#reportWrapper .body .item1, #reportWrapper .body .item2, #reportWrapper .body .item3, #reportWrapper .body .item4, #reportWrapper .body .item5, #reportWrapper .body .item6, #reportWrapper .body .item7, #reportWrapper .body .item8, #reportWrapper .body .item9, #reportWrapper .body .item10, #reportWrapper .body .item11, #reportWrapper .body .item12, #reportWrapper .body .item13, #reportWrapper .body .item14, #reportWrapper .body .item15, #reportWrapper .body .item16, #reportWrapper .body .item17, #reportWrapper .body .item18, #reportWrapper .body .item19, #reportWrapper .body .item20, #reportWrapper .body .item21, #reportWrapper .body .item22, #reportWrapper .body .item23, #reportWrapper .body .item24, #reportWrapper .body .item25, #reportWrapper .body .item26, #reportWrapper .body .item27, #reportWrapper .body .item28, #reportWrapper .body .item29, #reportWrapper .body .item30, #reportWrapper .body .item31, #reportWrapper .body .item32, #reportWrapper .body .item33, #reportWrapper .body .item34, #reportWrapper .body .item35, #reportWrapper .body .item36, #reportWrapper .body .item37, #reportWrapper .body .item38, #reportWrapper .body .item39, #reportWrapper .body .item40, #reportWrapper .body .item41, #reportWrapper .body .item42, #reportWrapper .body .item43, #reportWrapper .body .item44, #reportWrapper .body .item45, #reportWrapper .body .item46, #reportWrapper .body .item47, #reportWrapper .body .item48, #reportWrapper .body .item49, #reportWrapper .body .item50, #reportWrapper .body .item51, #reportWrapper .body .item52, #reportWrapper .body .item53, #reportWrapper .body .item54, #reportWrapper .body .item55, #reportWrapper .body .item56, #reportWrapper .body .item57, #reportWrapper .body .item58, #reportWrapper .body .item59, #reportWrapper .body .item60, #reportWrapper .body .item61, #reportWrapper .body .item62, #reportWrapper .body .item63, #reportWrapper .body .item64, #reportWrapper .body .item65, #reportWrapper .body .item66, #reportWrapper .body .item67, #reportWrapper .body .item68, #reportWrapper .body .item69, #reportWrapper .body .item70, #reportWrapper .body .item71, #reportWrapper .body .item72, #reportWrapper .body .item73, #reportWrapper .body .item74, #reportWrapper .body .item75, #reportWrapper .body .item76, #reportWrapper .body .item77, #reportWrapper .body .item78, #reportWrapper .body .item79, #reportWrapper .body .item80, #reportWrapper .body .item81, #reportWrapper .body .item82, #reportWrapper .body .item83, #reportWrapper .body .item84, #reportWrapper .body .item85, #reportWrapper .body .item86, #reportWrapper .body .item87, #reportWrapper .body .item88, #reportWrapper .body .item89, #reportWrapper .body .item90, #reportWrapper .body .item91, #reportWrapper .body .item92, #reportWrapper .body .item93, #reportWrapper .body .item94, #reportWrapper .body .item95, #reportWrapper .body .item96, #reportWrapper .body .item97, #reportWrapper .body .item98, #reportWrapper .body .item99, #reportWrapper .body .item100, #reportWrapper .body .item101, #reportWrapper .body .item102, #reportWrapper .body .item103, #reportWrapper .body .item104, #reportWrapper .body .item105, #reportWrapper .body .item106, #reportWrapper .body .item107, #reportWrapper .body .item108, #reportWrapper .body .item109, #reportWrapper .body .item110, #reportWrapper .body .item111, #reportWrapper .body .item112, #reportWrapper .body .item113, #reportWrapper .body .item114 {
+#reportWrapper .body .item1,
+#reportWrapper .body .item2,
+#reportWrapper .body .item3,
+#reportWrapper .body .item4,
+#reportWrapper .body .item5,
+#reportWrapper .body .item6,
+#reportWrapper .body .item7,
+#reportWrapper .body .item8,
+#reportWrapper .body .item9,
+#reportWrapper .body .item10,
+#reportWrapper .body .item11,
+#reportWrapper .body .item12,
+#reportWrapper .body .item13,
+#reportWrapper .body .item14,
+#reportWrapper .body .item15,
+#reportWrapper .body .item16,
+#reportWrapper .body .item17,
+#reportWrapper .body .item18,
+#reportWrapper .body .item19,
+#reportWrapper .body .item20,
+#reportWrapper .body .item21,
+#reportWrapper .body .item22,
+#reportWrapper .body .item23,
+#reportWrapper .body .item24,
+#reportWrapper .body .item25,
+#reportWrapper .body .item26,
+#reportWrapper .body .item27,
+#reportWrapper .body .item28,
+#reportWrapper .body .item29,
+#reportWrapper .body .item30,
+#reportWrapper .body .item31,
+#reportWrapper .body .item32,
+#reportWrapper .body .item33,
+#reportWrapper .body .item34,
+#reportWrapper .body .item35,
+#reportWrapper .body .item36,
+#reportWrapper .body .item37,
+#reportWrapper .body .item38,
+#reportWrapper .body .item39,
+#reportWrapper .body .item40,
+#reportWrapper .body .item41,
+#reportWrapper .body .item42,
+#reportWrapper .body .item43,
+#reportWrapper .body .item44,
+#reportWrapper .body .item45,
+#reportWrapper .body .item46,
+#reportWrapper .body .item47,
+#reportWrapper .body .item48,
+#reportWrapper .body .item49,
+#reportWrapper .body .item50,
+#reportWrapper .body .item51,
+#reportWrapper .body .item52,
+#reportWrapper .body .item53,
+#reportWrapper .body .item54,
+#reportWrapper .body .item55,
+#reportWrapper .body .item56,
+#reportWrapper .body .item57,
+#reportWrapper .body .item58,
+#reportWrapper .body .item59,
+#reportWrapper .body .item60,
+#reportWrapper .body .item61,
+#reportWrapper .body .item62,
+#reportWrapper .body .item63,
+#reportWrapper .body .item64,
+#reportWrapper .body .item65,
+#reportWrapper .body .item66,
+#reportWrapper .body .item67,
+#reportWrapper .body .item68,
+#reportWrapper .body .item69,
+#reportWrapper .body .item70,
+#reportWrapper .body .item71,
+#reportWrapper .body .item72,
+#reportWrapper .body .item73,
+#reportWrapper .body .item74,
+#reportWrapper .body .item75,
+#reportWrapper .body .item76,
+#reportWrapper .body .item77,
+#reportWrapper .body .item78,
+#reportWrapper .body .item79,
+#reportWrapper .body .item80,
+#reportWrapper .body .item81,
+#reportWrapper .body .item82,
+#reportWrapper .body .item83,
+#reportWrapper .body .item84,
+#reportWrapper .body .item85,
+#reportWrapper .body .item86,
+#reportWrapper .body .item87,
+#reportWrapper .body .item88,
+#reportWrapper .body .item89,
+#reportWrapper .body .item90,
+#reportWrapper .body .item91,
+#reportWrapper .body .item92,
+#reportWrapper .body .item93,
+#reportWrapper .body .item94,
+#reportWrapper .body .item95,
+#reportWrapper .body .item96,
+#reportWrapper .body .item97,
+#reportWrapper .body .item98,
+#reportWrapper .body .item99,
+#reportWrapper .body .item100,
+#reportWrapper .body .item101,
+#reportWrapper .body .item102,
+#reportWrapper .body .item103,
+#reportWrapper .body .item104,
+#reportWrapper .body .item105,
+#reportWrapper .body .item106,
+#reportWrapper .body .item107,
+#reportWrapper .body .item108,
+#reportWrapper .body .item109,
+#reportWrapper .body .item110,
+#reportWrapper .body .item111,
+#reportWrapper .body .item112,
+#reportWrapper .body .item113,
+#reportWrapper .body .item114 {
   background-image: url('../img_ltr/a/carry.gif');
 }
 #reportWrapper .body .itemLarge {
@@ -644,7 +854,7 @@
 }
 #reportWrapper .iconButton:not(.disabled):before,
 #reportWrapper button.icon:not(.disabled):before {
-  content: "";
+  content: '';
   position: absolute;
   top: 1px;
   right: 1px;
@@ -657,13 +867,18 @@
 #reportWrapper button.icon:not(.disabled):after {
   opacity: 0.5;
   transform: rotate(-10deg);
-  content: "";
+  content: '';
   position: absolute;
   top: -5px;
   right: -5px;
   bottom: -5px;
   left: -5px;
-  background-image: linear-gradient(to bottom, rgba(223, 223, 223, 0) 45%, #dfdfdf 55%, #e6e6e6);
+  background-image: linear-gradient(
+    to bottom,
+    rgba(223, 223, 223, 0) 45%,
+    #dfdfdf 55%,
+    #e6e6e6
+  );
 }
 #reportWrapper .iconButton:hover:not(.disabled),
 #reportWrapper button.icon:hover:not(.disabled) {
@@ -680,11 +895,18 @@
 }
 #reportWrapper .iconButton.gold:after,
 #reportWrapper button.icon.gold:after {
-  background-image: linear-gradient(to bottom, #fdf5cb, #f8eeb0 30%, #f0dc7c 35%, #e6ce64 75%, #caac50);
+  background-image: linear-gradient(
+    to bottom,
+    #fdf5cb,
+    #f8eeb0 30%,
+    #f0dc7c 35%,
+    #e6ce64 75%,
+    #caac50
+  );
 }
 #reportWrapper .iconButton.gold:hover:not(.disabled),
 #reportWrapper button.icon.gold:hover:not(.disabled) {
-  background-color: #A08939;
+  background-color: #a08939;
 }
 #reportWrapper .iconButton i,
 #reportWrapper button.icon i {
@@ -792,7 +1014,7 @@ table#inbox-size-table tbody tr:first-child td:last-child {
 }
 table#inbox-size-table #inbox-size-bar {
   height: 4px;
-  border: 1px solid #A6A6A6;
+  border: 1px solid #a6a6a6;
   padding: 1px;
   margin-top: 4px;
   position: relative;
@@ -877,7 +1099,8 @@ div.reports #markAll {
 div.reports #markAll span {
   margin-left: 8px;
 }
-div.reports table#overview td.sub a.reportInfo, div.reports table#overview td.sub span.reportInfo {
+div.reports table#overview td.sub a.reportInfo,
+div.reports table#overview td.sub span.reportInfo {
   float: right;
 }
 div.reports table#overview td.sub img.reportInfo.carry {
@@ -938,6 +1161,6 @@ div.reports table#overview tfoot th.buttons input {
 }
 div.reports table#overview tfoot th.navi {
   text-align: right;
-  color: #C0C0C0;
+  color: #c0c0c0;
   font-weight: bold;
 }

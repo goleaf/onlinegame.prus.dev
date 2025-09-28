@@ -3,21 +3,24 @@
 namespace Tests\Feature\Livewire\Game;
 
 use App\Livewire\Game\BattleManager;
-use App\Models\Game\Village;
 use App\Models\Game\Player;
+use App\Models\Game\Village;
 use App\Models\Game\World;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class BattleManagerTest extends TestCase
 {
     use RefreshDatabase;
 
     private User $user;
+
     private Player $player;
+
     private World $world;
+
     private Village $village;
 
     protected function setUp(): void
@@ -29,14 +32,14 @@ class BattleManagerTest extends TestCase
         $this->world = World::factory()->create();
         $this->player = Player::factory()->create([
             'user_id' => $this->user->id,
-            'world_id' => $this->world->id
+            'world_id' => $this->world->id,
         ]);
 
         $this->village = Village::factory()->create([
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 100,
-            'y_coordinate' => 100
+            'y_coordinate' => 100,
         ]);
     }
 
@@ -54,7 +57,7 @@ class BattleManagerTest extends TestCase
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 200,
-            'y_coordinate' => 200
+            'y_coordinate' => 200,
         ]);
 
         $this->actingAs($this->user);
@@ -91,7 +94,7 @@ class BattleManagerTest extends TestCase
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 200,
-            'y_coordinate' => 200
+            'y_coordinate' => 200,
         ]);
 
         $this->actingAs($this->user);
@@ -113,12 +116,12 @@ class BattleManagerTest extends TestCase
             'x_coordinate' => 200,
             'y_coordinate' => 200,
             'latitude' => 48.8566,
-            'longitude' => 2.3522
+            'longitude' => 2.3522,
         ]);
 
         $this->village->update([
             'latitude' => 52.520008,
-            'longitude' => 13.404954
+            'longitude' => 13.404954,
         ]);
 
         $this->actingAs($this->user);
@@ -138,7 +141,7 @@ class BattleManagerTest extends TestCase
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 200,
-            'y_coordinate' => 200
+            'y_coordinate' => 200,
         ]);
 
         $this->actingAs($this->user);
@@ -147,7 +150,7 @@ class BattleManagerTest extends TestCase
         $component->set('selectedTarget', $targetVillage);
         $component->set('attackingTroops', [
             ['speed' => 10],
-            ['speed' => 15]
+            ['speed' => 15],
         ]);
 
         $travelTime = $component->call('calculateTravelTime', 100);
@@ -171,7 +174,7 @@ class BattleManagerTest extends TestCase
             'player_id' => $this->player->id,
             'world_id' => $this->world->id,
             'x_coordinate' => 200,
-            'y_coordinate' => 200
+            'y_coordinate' => 200,
         ]);
 
         $this->actingAs($this->user);
@@ -185,7 +188,7 @@ class BattleManagerTest extends TestCase
         // Should not create a movement
         $this->assertDatabaseMissing('movements', [
             'from_village_id' => $this->village->id,
-            'to_village_id' => $targetVillage->id
+            'to_village_id' => $targetVillage->id,
         ]);
     }
 }

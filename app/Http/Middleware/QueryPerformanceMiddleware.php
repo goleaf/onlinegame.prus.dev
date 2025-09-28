@@ -2,11 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
-use Closure;
 
 class QueryPerformanceMiddleware
 {
@@ -31,7 +31,7 @@ class QueryPerformanceMiddleware
             'method' => $request->method(),
             'user_id' => auth()->id(),
             'initial_queries' => $startQueries,
-            'monitoring_start_time' => now()
+            'monitoring_start_time' => now(),
         ]);
 
         // Enable query logging
@@ -50,7 +50,7 @@ class QueryPerformanceMiddleware
             'final_query_count' => $endQueries,
             'status_code' => $response->getStatusCode(),
             'memory_usage' => memory_get_usage(true),
-            'slow_query_detected' => $executionTime > (config('mysql-performance.slow_query_log.long_query_time', 1.0) * 1000)
+            'slow_query_detected' => $executionTime > (config('mysql-performance.slow_query_log.long_query_time', 1.0) * 1000),
         ]);
 
         // Log performance metrics
@@ -58,7 +58,7 @@ class QueryPerformanceMiddleware
 
         // Add performance headers for debugging
         $response->headers->set('X-Query-Count', $queryCount);
-        $response->headers->set('X-Execution-Time', round($executionTime, 2) . 'ms');
+        $response->headers->set('X-Execution-Time', round($executionTime, 2).'ms');
 
         return $response;
     }

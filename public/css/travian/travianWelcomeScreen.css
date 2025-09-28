@@ -40,7 +40,11 @@
   border: solid 1px rgba(255, 255, 255, 0.5);
   cursor: pointer;
   background: rgba(0, 0, 0, 0.2);
-  transition: background-color 250ms, opacity 500ms, height 1000ms, width 1000ms;
+  transition:
+    background-color 250ms,
+    opacity 500ms,
+    height 1000ms,
+    width 1000ms;
   position: relative;
   overflow: hidden;
 }
@@ -56,7 +60,8 @@
 .welcomeScreen .welcomeScreenHeader .previewVideoContainer .play {
   width: 136px;
   height: 136px;
-  background: url('../img_ltr/welcomeScreen/riseOfAlliances/videoPlay-ltr.png') 0 0;
+  background: url('../img_ltr/welcomeScreen/riseOfAlliances/videoPlay-ltr.png')
+    0 0;
   position: absolute;
   left: 50%;
   top: 50%;
@@ -65,10 +70,11 @@
 }
 
 .welcomeScreen .welcomeScreenHeader .previewVideoContainer .play:after {
-  content: "";
+  content: '';
   width: 100%;
   height: 100%;
-  background: url('../img_ltr/welcomeScreen/riseOfAlliances/videoPlay-ltr.png') 137px;
+  background: url('../img_ltr/welcomeScreen/riseOfAlliances/videoPlay-ltr.png')
+    137px;
   display: block;
   opacity: 0;
   transition: opacity 250ms;
@@ -110,7 +116,7 @@
 
 .welcomeScreen .headlineDescription:before {
   display: block;
-  content: "";
+  content: '';
   width: 82%;
   height: 100%;
   position: absolute;
@@ -141,7 +147,7 @@
 }
 
 .welcomeScreen .headlineDescription:after {
-  content: "";
+  content: '';
   position: absolute;
   width: 120px;
   height: 119px;
@@ -152,9 +158,10 @@
 
 button.orangeBig {
   box-sizing: border-box;
-  background: url('../img_ltr/round/button/background/orangeBig-ltr.png') repeat-x 0 -54px;
+  background: url('../img_ltr/round/button/background/orangeBig-ltr.png')
+    repeat-x 0 -54px;
   text-align: center;
-  color: #F2F2F2;
+  color: #f2f2f2;
   font-weight: bold;
   font-size: 250%;
   height: 41px;
@@ -165,16 +172,19 @@ button.orangeBig {
   outline: none;
 }
 
-button.orangeBig, button.orangeBig:hover, .button.orangeBig:focus {
+button.orangeBig,
+button.orangeBig:hover,
+.button.orangeBig:focus {
   font-size: 250% !important;
 }
 
 button.orangeBig:before {
-  content: "";
+  content: '';
   position: absolute;
   width: 115px;
   height: 41px;
-  background: url('../img_ltr/round/button/background/orangeBig-ltr.png') repeat-x 0 0;
+  background: url('../img_ltr/round/button/background/orangeBig-ltr.png')
+    repeat-x 0 0;
   left: -115px;
   top: 0;
   margin-left: 115px;
@@ -183,11 +193,12 @@ button.orangeBig:before {
 }
 
 button.orangeBig:after {
-  content: "";
+  content: '';
   position: absolute;
   width: 115px;
   height: 41px;
-  background: url('../img_ltr/round/button/background/orangeBig-ltr.png') repeat-x 0 -109px;
+  background: url('../img_ltr/round/button/background/orangeBig-ltr.png')
+    repeat-x 0 -109px;
   right: 0px;
   top: 0;
   z-index: 1;
@@ -250,18 +261,46 @@ button.startPlaying {
 }
 
 .welcomeScreen .featureBox {
-  background: -moz-linear-gradient(bottom, #e0ebdf 0%, rgba(224, 235, 223, 0.52) 32%, rgba(224, 235, 223, 0.26) 83%, rgba(224, 235, 223, 0) 100%);
-  background: -webkit-linear-gradient(bottom, #e0ebdf 0%, rgba(224, 235, 223, 0.52) 32%, rgba(224, 235, 223, 0.26) 83%, rgba(224, 235, 223, 0) 100%);
-  background: linear-gradient(to top, #e0ebdf 0%, rgba(224, 235, 223, 0.52) 32%, rgba(224, 235, 223, 0.26) 83%, rgba(224, 235, 223, 0) 100%);
+  background: -moz-linear-gradient(
+    bottom,
+    #e0ebdf 0%,
+    rgba(224, 235, 223, 0.52) 32%,
+    rgba(224, 235, 223, 0.26) 83%,
+    rgba(224, 235, 223, 0) 100%
+  );
+  background: -webkit-linear-gradient(
+    bottom,
+    #e0ebdf 0%,
+    rgba(224, 235, 223, 0.52) 32%,
+    rgba(224, 235, 223, 0.26) 83%,
+    rgba(224, 235, 223, 0) 100%
+  );
+  background: linear-gradient(
+    to top,
+    #e0ebdf 0%,
+    rgba(224, 235, 223, 0.52) 32%,
+    rgba(224, 235, 223, 0.26) 83%,
+    rgba(224, 235, 223, 0) 100%
+  );
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00e0ebdf', endColorstr='#e0ebdf', GradientType=0);
   position: relative;
 }
 
 .welcomeScreen .featureBox:after {
-  background-image: linear-gradient(to bottom, #ffffff, transparent 10%, transparent), linear-gradient(to bottom, transparent 0, transparent 1px, #C0C0C0 1px, #C0C0C0 2px);
+  background-image:
+    linear-gradient(to bottom, #ffffff, transparent 10%, transparent),
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 1px,
+      #c0c0c0 1px,
+      #c0c0c0 2px
+    );
   background-repeat: no-repeat, repeat;
-  background-size: 100%, 1px 2px;
-  content: "";
+  background-size:
+    100%,
+    1px 2px;
+  content: '';
   display: block;
   position: absolute;
   left: 33%;
@@ -272,10 +311,20 @@ button.startPlaying {
 }
 
 .welcomeScreen .featureBox:before {
-  background-image: linear-gradient(to bottom, #ffffff, transparent 10%, transparent), linear-gradient(to bottom, transparent 0, transparent 1px, #C0C0C0 1px, #C0C0C0 2px);
+  background-image:
+    linear-gradient(to bottom, #ffffff, transparent 10%, transparent),
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 1px,
+      #c0c0c0 1px,
+      #c0c0c0 2px
+    );
   background-repeat: no-repeat, repeat;
-  background-size: 100%, 1px 2px;
-  content: "";
+  background-size:
+    100%,
+    1px 2px;
+  content: '';
   display: block;
   position: absolute;
   right: 33%;
@@ -310,9 +359,36 @@ button.startPlaying {
   box-sizing: border-box;
   border-bottom: dotted 1px #d0d0d0;
   margin-top: 119px;
-  background-image: -moz-linear-gradient(-1deg, rgba(224, 235, 223, 0) 0%, rgba(224, 235, 223, 0.48) 5%, rgba(224, 235, 223, 0.50196) 5%, rgba(240, 245, 239, 0.62) 16%, white 50%, rgba(224, 235, 223, 0.50196) 95%, rgba(224, 235, 223, 0) 100%);
-  background-image: -webkit-linear-gradient(-1deg, rgba(224, 235, 223, 0) 0%, rgba(224, 235, 223, 0.48) 5%, rgba(224, 235, 223, 0.50196) 5%, rgba(240, 245, 239, 0.62) 16%, white 50%, rgba(224, 235, 223, 0.50196) 95%, rgba(224, 235, 223, 0) 100%);
-  background-image: -ms-linear-gradient(-1deg, rgba(224, 235, 223, 0) 0%, rgba(224, 235, 223, 0.48) 5%, rgba(224, 235, 223, 0.50196) 5%, rgba(240, 245, 239, 0.62) 16%, white 50%, rgba(224, 235, 223, 0.50196) 95%, rgba(224, 235, 223, 0) 100%);
+  background-image: -moz-linear-gradient(
+    -1deg,
+    rgba(224, 235, 223, 0) 0%,
+    rgba(224, 235, 223, 0.48) 5%,
+    rgba(224, 235, 223, 0.50196) 5%,
+    rgba(240, 245, 239, 0.62) 16%,
+    white 50%,
+    rgba(224, 235, 223, 0.50196) 95%,
+    rgba(224, 235, 223, 0) 100%
+  );
+  background-image: -webkit-linear-gradient(
+    -1deg,
+    rgba(224, 235, 223, 0) 0%,
+    rgba(224, 235, 223, 0.48) 5%,
+    rgba(224, 235, 223, 0.50196) 5%,
+    rgba(240, 245, 239, 0.62) 16%,
+    white 50%,
+    rgba(224, 235, 223, 0.50196) 95%,
+    rgba(224, 235, 223, 0) 100%
+  );
+  background-image: -ms-linear-gradient(
+    -1deg,
+    rgba(224, 235, 223, 0) 0%,
+    rgba(224, 235, 223, 0.48) 5%,
+    rgba(224, 235, 223, 0.50196) 5%,
+    rgba(240, 245, 239, 0.62) 16%,
+    white 50%,
+    rgba(224, 235, 223, 0.50196) 95%,
+    rgba(224, 235, 223, 0) 100%
+  );
 }
 .rtl .welcomeScreen .featureContainer .feature .description span {
   font-size: 17px;
@@ -342,7 +418,7 @@ button.startPlaying {
 }
 
 .welcomeScreen .victoryConditions:before {
-  content: "";
+  content: '';
   display: inline-block;
   width: 100%;
   height: 30px;
@@ -355,7 +431,8 @@ button.startPlaying {
   min-height: 22px;
   display: inline-block;
   line-height: 22px;
-  background: url('../img_ltr/welcomeScreen/riseOfAlliances/victory-points-ltr.png') no-repeat left center;
+  background: url('../img_ltr/welcomeScreen/riseOfAlliances/victory-points-ltr.png')
+    no-repeat left center;
   padding-left: 25px;
   font-size: 14px;
 }
@@ -390,8 +467,8 @@ button.startPlaying {
   z-index: 2;
   display: table-cell;
 }
-.rtl .welcomeScreen .readMore, .rtl
-.welcomeScreen .readLess {
+.rtl .welcomeScreen .readMore,
+.rtl .welcomeScreen .readLess {
   font-size: 19px;
 }
 
@@ -558,7 +635,9 @@ button.startPlaying {
   background-image: linear-gradient(to top, #5c8d0f, #82b433);
   background-position: 0 0 !important;
   box-sizing: border-box;
-  box-shadow: inset 0 0 0 3px #ffffff, 0 0 2px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    inset 0 0 0 3px #ffffff,
+    0 0 2px rgba(0, 0, 0, 0.5);
   z-index: 2;
 }
 
@@ -571,7 +650,7 @@ button.startPlaying {
 }
 
 .introductionScreen #dialogCancelButton.iconButton.small.cancel:before {
-  content: "";
+  content: '';
   display: block;
   position: absolute;
   width: 100%;

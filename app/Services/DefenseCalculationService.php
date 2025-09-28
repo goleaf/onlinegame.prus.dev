@@ -4,8 +4,6 @@ namespace App\Services;
 
 use App\Models\Game\Building;
 use App\Models\Game\Village;
-use App\Services\GeographicService;
-use Illuminate\Support\Facades\Log;
 
 class DefenseCalculationService
 {
@@ -55,7 +53,7 @@ class DefenseCalculationService
         // Get trap level for spy defense
         $trap = $village
             ->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'trap');
             })
             ->first();
@@ -78,14 +76,14 @@ class DefenseCalculationService
         // Get warehouse and granary levels
         $warehouse = $village
             ->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'warehouse');
             })
             ->first();
 
         $granary = $village
             ->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'granary');
             })
             ->first();
@@ -112,7 +110,7 @@ class DefenseCalculationService
         // Get barracks level
         $barracks = $village
             ->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'barracks');
             })
             ->first();
@@ -143,7 +141,7 @@ class DefenseCalculationService
         if ($buildingKey) {
             $building = $village
                 ->buildings()
-                ->whereHas('buildingType', function ($query) use ($buildingKey) {
+                ->whereHas('buildingType', function ($query) use ($buildingKey): void {
                     $query->where('key', $buildingKey);
                 })
                 ->first();
@@ -221,12 +219,12 @@ class DefenseCalculationService
         // Check wall level
         $wall = $village
             ->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'wall');
             })
             ->first();
 
-        if (!$wall || $wall->level < 10) {
+        if (! $wall || $wall->level < 10) {
             $recommendations[] = [
                 'type' => 'wall',
                 'priority' => 'high',
@@ -239,12 +237,12 @@ class DefenseCalculationService
         // Check trap level
         $trap = $village
             ->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'trap');
             })
             ->first();
 
-        if (!$trap || $trap->level < 5) {
+        if (! $trap || $trap->level < 5) {
             $recommendations[] = [
                 'type' => 'trap',
                 'priority' => 'medium',
@@ -257,12 +255,12 @@ class DefenseCalculationService
         // Check watchtower
         $watchtower = $village
             ->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'watchtower');
             })
             ->first();
 
-        if (!$watchtower || $watchtower->level < 3) {
+        if (! $watchtower || $watchtower->level < 3) {
             $recommendations[] = [
                 'type' => 'watchtower',
                 'priority' => 'medium',
@@ -280,7 +278,7 @@ class DefenseCalculationService
      */
     public function calculateGeographicDefenseBonus(Village $village): float
     {
-        if (!$village->latitude || !$village->longitude) {
+        if (! $village->latitude || ! $village->longitude) {
             return 0;
         }
 
@@ -309,13 +307,13 @@ class DefenseCalculationService
     {
         // Simplified terrain analysis based on geohash characters
         $terrainScore = 0;
-        
+
         // Analyze geohash for terrain characteristics
         for ($i = 0; $i < min(strlen($geohash), 6); $i++) {
             $char = $geohash[$i];
             $terrainScore += ord($char) % 10;
         }
-        
+
         // Convert to percentage bonus (0-5%)
         return ($terrainScore % 5) / 100;
     }
@@ -333,7 +331,7 @@ class DefenseCalculationService
         $bonus = 0;
 
         foreach ($alliedVillages as $alliedVillage) {
-            if (!$alliedVillage->latitude || !$alliedVillage->longitude) {
+            if (! $alliedVillage->latitude || ! $alliedVillage->longitude) {
                 continue;
             }
 

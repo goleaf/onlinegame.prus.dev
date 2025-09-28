@@ -2,34 +2,37 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\Message;
 use App\Models\Game\Player;
 use App\Services\MessageService;
-use App\Traits\GameValidationTrait;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
 
 class MessageController extends CrudController
 {
-    use ApiResponseTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use ValidationHelperTrait;
 
     protected Model $model;
+
     protected MessageService $messageService;
+
     protected RateLimiterUtil $rateLimiter;
+
     protected array $validationRules = [];
+
     protected array $searchableFields = ['subject', 'body'];
+
     protected array $relationships = ['sender', 'recipient', 'alliance'];
+
     protected int $perPage = 20;
 
     protected function getValidationRules(): array
@@ -58,11 +61,12 @@ class MessageController extends CrudController
     {
         try {
             $playerId = Auth::user()->player->id;
-            $cacheKey = "inbox_messages_{$playerId}_" . md5(serialize($request->all()));
+            $cacheKey = "inbox_messages_{$playerId}_".md5(serialize($request->all()));
 
             $result = CachingUtil::remember($cacheKey, now()->addMinutes(5), function () use ($request, $playerId) {
                 $limit = $request->get('limit', 50);
                 $offset = $request->get('offset', 0);
+
                 return $this->messageService->getInbox($playerId, $limit, $offset);
             });
 
@@ -90,11 +94,12 @@ class MessageController extends CrudController
     {
         try {
             $playerId = Auth::user()->player->id;
-            $cacheKey = "sent_messages_{$playerId}_" . md5(serialize($request->all()));
+            $cacheKey = "sent_messages_{$playerId}_".md5(serialize($request->all()));
 
             $result = CachingUtil::remember($cacheKey, now()->addMinutes(5), function () use ($request, $playerId) {
                 $limit = $request->get('limit', 50);
                 $offset = $request->get('offset', 0);
+
                 return $this->messageService->getSentMessages($playerId, $limit, $offset);
             });
 
@@ -122,10 +127,11 @@ class MessageController extends CrudController
     {
         try {
             $playerId = Auth::user()->player->id;
-            $cacheKey = "conversation_{$playerId}_{$otherPlayerId}_" . md5(serialize($request->all()));
+            $cacheKey = "conversation_{$playerId}_{$otherPlayerId}_".md5(serialize($request->all()));
 
             $result = CachingUtil::remember($cacheKey, now()->addMinutes(2), function () use ($request, $playerId, $otherPlayerId) {
                 $limit = $request->get('limit', 50);
+
                 return $this->messageService->getConversation($playerId, $otherPlayerId, $limit);
             });
 
@@ -156,15 +162,16 @@ class MessageController extends CrudController
         try {
             $player = Auth::user()->player;
 
-            if (!$player->alliance_id) {
+            if (! $player->alliance_id) {
                 return $this->errorResponse('Player is not in an alliance', 400);
             }
 
-            $cacheKey = "alliance_messages_{$player->alliance_id}_" . md5(serialize($request->all()));
+            $cacheKey = "alliance_messages_{$player->alliance_id}_".md5(serialize($request->all()));
 
             $result = CachingUtil::remember($cacheKey, now()->addMinutes(3), function () use ($request, $player) {
                 $limit = $request->get('limit', 50);
                 $offset = $request->get('offset', 0);
+
                 return $this->messageService->getAllianceMessages($player->alliance_id, $limit, $offset);
             });
 
@@ -193,12 +200,12 @@ class MessageController extends CrudController
     {
         try {
             // Rate limiting for sending messages
-            $rateLimitKey = 'send_message_' . (auth()->id() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 20, 1)) {
+            $rateLimitKey = 'send_message_'.(auth()->id() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 20, 1)) {
                 return $this->errorResponse('Too many messages sent. Please try again later.', 429);
             }
 
-            $validated = $this->validateRequest($request, $this->validationRules);
+            $validated = $this->validateRequestData($request, $this->validationRules);
 
             $message = $this->messageService->sendPrivateMessage(
                 Auth::user()->player->id,
@@ -227,7 +234,7 @@ class MessageController extends CrudController
                 'user_id' => auth()->id(),
             ], 'message_system');
 
-            return $this->errorResponse('Failed to send message: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to send message: '.$e->getMessage(), 500);
         }
     }
 
@@ -239,17 +246,17 @@ class MessageController extends CrudController
         try {
             $player = Auth::user()->player;
 
-            if (!$player->alliance_id) {
+            if (! $player->alliance_id) {
                 return $this->errorResponse('Player is not in an alliance', 400);
             }
 
             // Rate limiting for sending alliance messages
-            $rateLimitKey = 'send_alliance_message_' . (auth()->id() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
+            $rateLimitKey = 'send_alliance_message_'.(auth()->id() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
                 return $this->errorResponse('Too many alliance messages sent. Please try again later.', 429);
             }
 
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'subject' => 'required|string|max:255',
                 'body' => 'required|string|max:5000',
                 'priority' => 'required|in:low,normal,high,urgent',
@@ -281,7 +288,7 @@ class MessageController extends CrudController
                 'user_id' => auth()->id(),
             ], 'message_system');
 
-            return $this->errorResponse('Failed to send alliance message: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to send alliance message: '.$e->getMessage(), 500);
         }
     }
 
@@ -313,7 +320,7 @@ class MessageController extends CrudController
                 'message_id' => $messageId,
             ], 'message_system');
 
-            return $this->errorResponse('Failed to mark message as read: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to mark message as read: '.$e->getMessage(), 500);
         }
     }
 
@@ -346,7 +353,7 @@ class MessageController extends CrudController
                 'message_id' => $messageId,
             ], 'message_system');
 
-            return $this->errorResponse('Failed to delete message: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to delete message: '.$e->getMessage(), 500);
         }
     }
 
@@ -375,7 +382,7 @@ class MessageController extends CrudController
                 'user_id' => auth()->id(),
             ], 'message_system');
 
-            return $this->errorResponse('Failed to get message statistics: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to get message statistics: '.$e->getMessage(), 500);
         }
     }
 
@@ -385,7 +392,7 @@ class MessageController extends CrudController
     public function bulkMarkAsRead(Request $request): JsonResponse
     {
         try {
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'message_ids' => 'required|array',
                 'message_ids.*' => 'integer|exists:messages,id',
             ]);
@@ -415,7 +422,7 @@ class MessageController extends CrudController
                 'user_id' => auth()->id(),
             ], 'message_system');
 
-            return $this->errorResponse('Failed to bulk mark messages as read: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to bulk mark messages as read: '.$e->getMessage(), 500);
         }
     }
 
@@ -425,7 +432,7 @@ class MessageController extends CrudController
     public function bulkDelete(Request $request): JsonResponse
     {
         try {
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'message_ids' => 'required|array',
                 'message_ids.*' => 'integer|exists:messages,id',
             ]);
@@ -456,7 +463,7 @@ class MessageController extends CrudController
                 'user_id' => auth()->id(),
             ], 'message_system');
 
-            return $this->errorResponse('Failed to bulk delete messages: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to bulk delete messages: '.$e->getMessage(), 500);
         }
     }
 
@@ -489,7 +496,7 @@ class MessageController extends CrudController
                 'user_id' => auth()->id(),
             ], 'message_system');
 
-            return $this->errorResponse('Failed to get players: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to get players: '.$e->getMessage(), 500);
         }
     }
 
@@ -505,7 +512,7 @@ class MessageController extends CrudController
             $message = CachingUtil::remember($cacheKey, now()->addMinutes(5), function () use ($messageId, $playerId) {
                 return Message::with(['sender', 'recipient', 'alliance'])
                     ->where('id', $messageId)
-                    ->where(function ($q) use ($playerId) {
+                    ->where(function ($q) use ($playerId): void {
                         $q
                             ->where('sender_id', $playerId)
                             ->orWhere('recipient_id', $playerId);
@@ -513,7 +520,7 @@ class MessageController extends CrudController
                     ->first();
             });
 
-            if (!$message) {
+            if (! $message) {
                 return $this->errorResponse('Message not found or access denied', 404);
             }
 
@@ -538,7 +545,7 @@ class MessageController extends CrudController
                 'message_id' => $messageId,
             ], 'message_system');
 
-            return $this->errorResponse('Failed to get message: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to get message: '.$e->getMessage(), 500);
         }
     }
 }

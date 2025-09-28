@@ -28,10 +28,18 @@ body.village1 div#center div#contentOuterContainer div.contentTitle {
   z-index: 500;
   border: none;
 }
-body.village1 div#center div#contentOuterContainer div.contentTitle .contentTitleButton {
+body.village1
+  div#center
+  div#contentOuterContainer
+  div.contentTitle
+  .contentTitleButton {
   display: none;
 }
-body.village1 div#center div#contentOuterContainer div.contentTitle .contentTitleButton#answersButton {
+body.village1
+  div#center
+  div#contentOuterContainer
+  div.contentTitle
+  .contentTitleButton#answersButton {
   display: inline-block;
 }
 body.village1 div#center div#contentOuterContainer div.contentFooter {
@@ -53,7 +61,8 @@ div.village1 table {
   line-height: 19px;
   background: none;
 }
-div.village1 table th, div.village1 table td {
+div.village1 table th,
+div.village1 table td {
   padding: 0;
   background: none;
 }
@@ -193,10 +202,13 @@ div.village1 div#map_details {
   float: right;
 }
 
-div.village1 div.production, div.village1 div.units {
+div.village1 div.production,
+div.village1 div.units {
   width: 200px;
 }
-div.village1 div.movements div.boxes-contents.cf, div.village1 div.production div.boxes-contents.cf, div.village1 div.units div.boxes-contents.cf {
+div.village1 div.movements div.boxes-contents.cf,
+div.village1 div.production div.boxes-contents.cf,
+div.village1 div.units div.boxes-contents.cf {
   padding: 8px;
 }
 div.village1 div#map_details .boxes {
@@ -231,7 +243,7 @@ div.village1 table#movements div.dur_r {
   float: right;
   padding-right: 2px;
   font-size: 11px;
-  color: #6B6B6B;
+  color: #6b6b6b;
   white-space: nowrap;
 }
 .rtl div.village1 table#movements div.dur_r {
@@ -244,39 +256,42 @@ div.village1 table#movements div.dur_l {
   float: left;
   padding-bottom: 2px;
   font-size: 11px;
-  color: #6B6B6B;
+  color: #6b6b6b;
 }
 .rtl div.village1 table#movements div.dur_l {
   font-size: 12px;
 }
 div.village1 table#movements .a1 {
-  color: #FF0000;
+  color: #ff0000;
 }
 
 /* truppenbewegungen */
 .colorBlind div.village1 table#movements .a1 {
-  color: #0022AF;
+  color: #0022af;
 }
 
 div.village1 table#movements .d1 {
-  color: #228B22;
+  color: #228b22;
 }
-div.village1 table#movements .a2, div.village1 table#movements .d2 {
-  color: #F2C700;
+div.village1 table#movements .a2,
+div.village1 table#movements .d2 {
+  color: #f2c700;
 }
-div.village1 table#movements .a3, div.village1 table#movements .d3 {
-  color: #B500A3;
+div.village1 table#movements .a3,
+div.village1 table#movements .d3 {
+  color: #b500a3;
 }
-div.village1 table#movements .adventure, div.village1 table#movements .settle {
-  color: #0022AF;
+div.village1 table#movements .adventure,
+div.village1 table#movements .settle {
+  color: #0022af;
 }
 
 .colorBlind div.village1 table#movements .adventure {
-  color: #228B22;
+  color: #228b22;
 }
 
 div.village1 table#movements .settle {
-  color: #228B22;
+  color: #228b22;
 }
 div.village1 table#production td.res {
   width: 70%;

@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\User;
 use App\Models\Game\Player;
+use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Propaganistas\LaravelPhone\Rules\Phone;
@@ -13,18 +13,24 @@ class PhoneContactManager extends Component
     use WithPagination;
 
     public $contacts = [];
+
     public $selectedContacts = [];
+
     public $searchTerm = '';
+
     public $filterByAlliance = '';
+
     public $filterByWorld = '';
+
     public $showAddContact = false;
+
     public $newContact = [
         'player_id' => '',
         'name' => '',
         'phone' => '',
         'phone_country' => 'US',
         'notes' => '',
-        'category' => 'friend'
+        'category' => 'friend',
     ];
 
     protected $rules = [
@@ -44,27 +50,27 @@ class PhoneContactManager extends Component
     public function loadContacts()
     {
         $query = User::whereNotNull('phone')
-                    ->with(['player.world', 'player.alliance']);
+            ->with(['player.world', 'player.alliance']);
 
         if ($this->searchTerm) {
-            $query->where(function ($q) {
+            $query->where(function ($q): void {
                 $q->where('name', 'like', "%{$this->searchTerm}%")
-                  ->orWhere('email', 'like', "%{$this->searchTerm}%")
-                  ->orWhere('phone', 'like', "%{$this->searchTerm}%")
-                  ->orWhereHas('player', function ($playerQuery) {
-                      $playerQuery->where('name', 'like', "%{$this->searchTerm}%");
-                  });
+                    ->orWhere('email', 'like', "%{$this->searchTerm}%")
+                    ->orWhere('phone', 'like', "%{$this->searchTerm}%")
+                    ->orWhereHas('player', function ($playerQuery): void {
+                        $playerQuery->where('name', 'like', "%{$this->searchTerm}%");
+                    });
             });
         }
 
         if ($this->filterByAlliance) {
-            $query->whereHas('player', function ($q) {
+            $query->whereHas('player', function ($q): void {
                 $q->where('alliance_id', $this->filterByAlliance);
             });
         }
 
         if ($this->filterByWorld) {
-            $query->whereHas('player', function ($q) {
+            $query->whereHas('player', function ($q): void {
                 $q->where('world_id', $this->filterByWorld);
             });
         }
@@ -92,8 +98,8 @@ class PhoneContactManager extends Component
 
     public function toggleAddContact()
     {
-        $this->showAddContact = !$this->showAddContact;
-        if (!$this->showAddContact) {
+        $this->showAddContact = ! $this->showAddContact;
+        if (! $this->showAddContact) {
             $this->resetNewContact();
         }
     }
@@ -106,7 +112,7 @@ class PhoneContactManager extends Component
             'phone' => '',
             'phone_country' => 'US',
             'notes' => '',
-            'category' => 'friend'
+            'category' => 'friend',
         ];
         $this->resetValidation();
     }
@@ -116,8 +122,9 @@ class PhoneContactManager extends Component
         $this->validate();
 
         $player = Player::find($this->newContact['player_id']);
-        if (!$player || !$player->user) {
+        if (! $player || ! $player->user) {
             session()->flash('error', 'Player not found or has no associated user.');
+
             return;
         }
 
@@ -149,6 +156,7 @@ class PhoneContactManager extends Component
     {
         if (empty($this->selectedContacts)) {
             session()->flash('error', 'Please select contacts to send SMS to.');
+
             return;
         }
 
@@ -160,16 +168,17 @@ class PhoneContactManager extends Component
     {
         if (empty($this->selectedContacts)) {
             session()->flash('error', 'Please select contacts to export.');
+
             return;
         }
 
         $contacts = User::whereIn('id', $this->selectedContacts)
-                      ->whereNotNull('phone')
-                      ->with(['player'])
-                      ->get();
+            ->whereNotNull('phone')
+            ->with(['player'])
+            ->get();
 
         $csvData = "Name,Email,Phone,Country,E164,Player Name,Alliance,World\n";
-        
+
         foreach ($contacts as $contact) {
             $csvData .= sprintf(
                 "%s,%s,%s,%s,%s,%s,%s,%s\n",
@@ -186,7 +195,7 @@ class PhoneContactManager extends Component
 
         $this->dispatch('download-csv', [
             'data' => base64_encode($csvData),
-            'filename' => 'contacts_export.csv'
+            'filename' => 'contacts_export.csv',
         ]);
 
         session()->flash('message', 'Contacts exported successfully!');
@@ -195,31 +204,31 @@ class PhoneContactManager extends Component
     public function getAvailablePlayers()
     {
         return Player::with(['user', 'world', 'alliance'])
-                    ->whereHas('user')
-                    ->whereDoesntHave('user', function ($query) {
-                        $query->whereNotNull('phone');
-                    })
-                    ->get();
+            ->whereHas('user')
+            ->whereDoesntHave('user', function ($query): void {
+                $query->whereNotNull('phone');
+            })
+            ->get();
     }
 
     public function getAvailableAlliances()
     {
         return Player::whereNotNull('alliance_id')
-                    ->with('alliance')
-                    ->get()
-                    ->pluck('alliance')
-                    ->unique('id')
-                    ->values();
+            ->with('alliance')
+            ->get()
+            ->pluck('alliance')
+            ->unique('id')
+            ->values();
     }
 
     public function getAvailableWorlds()
     {
         return Player::whereNotNull('world_id')
-                    ->with('world')
-                    ->get()
-                    ->pluck('world')
-                    ->unique('id')
-                    ->values();
+            ->with('world')
+            ->get()
+            ->pluck('world')
+            ->unique('id')
+            ->values();
     }
 
     public function render()

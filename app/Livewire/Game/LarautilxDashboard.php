@@ -2,13 +2,11 @@
 
 namespace App\Livewire\Game;
 
-use App\Services\AIService;
 use App\Services\GameIntegrationService;
 use App\Services\GameNotificationService;
-use App\Services\LarautilxIntegrationService;
+use App\Traits\ApiResponseTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\Auth;
-use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\LoggingUtil;
 use Livewire\Component;
 
 class LarautilxDashboard extends Component
@@ -16,11 +14,17 @@ class LarautilxDashboard extends Component
     use ApiResponseTrait;
 
     public $dashboardData = [];
+
     public $integrationSummary = [];
+
     public $isLoading = false;
+
     public $activeTab = 'overview';
+
     public $testResults = [];
+
     public $selectedTestComponents = ['caching', 'filtering', 'pagination', 'logging'];
+
     public $isTesting = false;
 
     protected $listeners = [
@@ -54,7 +58,7 @@ class LarautilxDashboard extends Component
                 'error' => $e->getMessage(),
             ], 'larautilx_dashboard');
 
-            $this->addNotification('Error loading dashboard data: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading dashboard data: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -76,7 +80,7 @@ class LarautilxDashboard extends Component
                 'error' => $e->getMessage(),
             ], 'larautilx_dashboard');
 
-            $this->addNotification('Error loading integration summary: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading integration summary: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -101,7 +105,7 @@ class LarautilxDashboard extends Component
                 'error' => $e->getMessage(),
             ], 'larautilx_dashboard');
 
-            $this->addNotification('Error testing components: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error testing components: '.$e->getMessage(), 'error');
         } finally {
             $this->isTesting = false;
         }
@@ -138,7 +142,7 @@ class LarautilxDashboard extends Component
     {
         $this->dispatch('notification', [
             'message' => $message,
-            'type' => $type
+            'type' => $type,
         ]);
     }
 
@@ -146,7 +150,7 @@ class LarautilxDashboard extends Component
     {
         try {
             $response = \Http::withHeaders([
-                'Authorization' => 'Bearer ' . auth()->user()->createToken('larautilx-dashboard')->plainTextToken,
+                'Authorization' => 'Bearer '.auth()->user()->createToken('larautilx-dashboard')->plainTextToken,
                 'Accept' => 'application/json',
             ])->$method(url($url), $data);
 
@@ -154,7 +158,7 @@ class LarautilxDashboard extends Component
                 return $response->json();
             }
 
-            throw new \Exception('API request failed: ' . $response->body());
+            throw new \Exception('API request failed: '.$response->body());
         } catch (\Exception $e) {
             LoggingUtil::error('API request failed', [
                 'method' => $method,
@@ -176,7 +180,7 @@ class LarautilxDashboard extends Component
             if ($userId) {
                 // Initialize real-time features for the user
                 GameIntegrationService::initializeUserRealTime($userId);
-                
+
                 $this->dispatch('larautilx-initialized', [
                     'message' => 'Larautilx dashboard real-time features activated',
                     'user_id' => $userId,
@@ -184,7 +188,7 @@ class LarautilxDashboard extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to initialize Larautilx real-time features: ' . $e->getMessage(),
+                'message' => 'Failed to initialize Larautilx real-time features: '.$e->getMessage(),
             ]);
         }
     }
@@ -216,7 +220,7 @@ class LarautilxDashboard extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to test components: ' . $e->getMessage(),
+                'message' => 'Failed to test components: '.$e->getMessage(),
             ]);
         }
     }
@@ -247,7 +251,7 @@ class LarautilxDashboard extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to refresh dashboard: ' . $e->getMessage(),
+                'message' => 'Failed to refresh dashboard: '.$e->getMessage(),
             ]);
         }
     }
@@ -259,7 +263,7 @@ class LarautilxDashboard extends Component
     {
         $this->loadDashboardData();
         $this->loadIntegrationSummary();
-        
+
         $this->addNotification('Dashboard data refreshed successfully', 'success');
     }
 
@@ -273,14 +277,14 @@ class LarautilxDashboard extends Component
             if (isset($data['type']) && $data['type'] === 'cache_stats') {
                 $this->dashboardData['cache_stats'] = $data['stats'];
             }
-            
+
             if (isset($data['type']) && $data['type'] === 'integration_status') {
                 $this->integrationSummary['status'] = $data['status'];
             }
 
             // Dispatch event to update UI
             $this->dispatch('realTimeDataUpdated', $data);
-            
+
         } catch (\Exception $e) {
             LoggingUtil::error('Error handling real-time update', [
                 'error' => $e->getMessage(),

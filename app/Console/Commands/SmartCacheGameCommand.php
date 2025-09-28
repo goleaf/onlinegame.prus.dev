@@ -46,7 +46,7 @@ class SmartCacheGameCommand extends Command
             'building_data',
             'resource_data',
             'battle_data',
-            'statistics'
+            'statistics',
         ];
 
         $startTime = microtime(true);
@@ -68,7 +68,7 @@ class SmartCacheGameCommand extends Command
 
         $executionTime = microtime(true) - $startTime;
         $this->newLine();
-        $this->info('SmartCache optimization completed in ' . round($executionTime * 1000, 2) . 'ms');
+        $this->info('SmartCache optimization completed in '.round($executionTime * 1000, 2).'ms');
 
         return 0;
     }
@@ -85,9 +85,10 @@ class SmartCacheGameCommand extends Command
 
             $this->info("✅ Users processed: {$results['users_processed']}");
             $this->info("✅ Cache entries created: {$results['cache_entries_created']}");
-            $this->info('⏱️ Execution time: ' . round($results['execution_time'] * 1000, 2) . 'ms');
+            $this->info('⏱️ Execution time: '.round($results['execution_time'] * 1000, 2).'ms');
         } catch (\Exception $e) {
             $this->error("Failed to perform intelligent warmup: {$e->getMessage()}");
+
             return 1;
         }
 
@@ -105,15 +106,15 @@ class SmartCacheGameCommand extends Command
             // Cache Strategies
             $this->info('🎯 Cache Strategies:');
             foreach ($metrics['cache_strategies'] as $type => $strategy) {
-                $this->line("  {$type}: TTL {$strategy['ttl']}min, Compression: " . ($strategy['compression'] ? 'Yes' : 'No'));
+                $this->line("  {$type}: TTL {$strategy['ttl']}min, Compression: ".($strategy['compression'] ? 'Yes' : 'No'));
             }
             $this->newLine();
 
             // Performance Metrics
-            if (!empty($metrics['performance_metrics'])) {
+            if (! empty($metrics['performance_metrics'])) {
                 $this->info('⚡ Performance Metrics:');
                 foreach ($metrics['performance_metrics'] as $key => $value) {
-                    $this->line("  {$key}: " . round($value * 1000, 2) . 'ms');
+                    $this->line("  {$key}: ".round($value * 1000, 2).'ms');
                 }
                 $this->newLine();
             }
@@ -133,13 +134,14 @@ class SmartCacheGameCommand extends Command
             } else {
                 $this->line("  Strategies Count: {$cacheStats['strategies_count']}");
                 $this->line("  Performance Metrics Count: {$cacheStats['performance_metrics_count']}");
-                $this->line('  Cache Operations: ' . round($cacheStats['cache_operations'] * 1000, 2) . 'ms');
+                $this->line('  Cache Operations: '.round($cacheStats['cache_operations'] * 1000, 2).'ms');
             }
             $this->newLine();
 
             $this->info("📅 Generated at: {$metrics['timestamp']}");
         } catch (\Exception $e) {
             $this->error("Failed to retrieve SmartCache metrics: {$e->getMessage()}");
+
             return 1;
         }
 
@@ -168,9 +170,10 @@ class SmartCacheGameCommand extends Command
 
             $this->newLine();
             $this->info("✅ Total keys invalidated: {$totalInvalidated}");
-            $this->info('⏱️ Total execution time: ' . round($totalTime * 1000, 2) . 'ms');
+            $this->info('⏱️ Total execution time: '.round($totalTime * 1000, 2).'ms');
         } catch (\Exception $e) {
             $this->error("Failed to perform intelligent invalidation: {$e->getMessage()}");
+
             return 1;
         }
 
@@ -190,9 +193,10 @@ class SmartCacheGameCommand extends Command
 
             $this->info("✅ Operation: {$results['operation']}");
             $this->info("✅ Users processed: {$results['users_processed']}");
-            $this->info('⏱️ Execution time: ' . round($results['execution_time'] * 1000, 2) . 'ms');
+            $this->info('⏱️ Execution time: '.round($results['execution_time'] * 1000, 2).'ms');
         } catch (\Exception $e) {
             $this->error("Failed to perform batch operations: {$e->getMessage()}");
+
             return 1;
         }
 

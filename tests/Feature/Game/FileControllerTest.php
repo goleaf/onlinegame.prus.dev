@@ -7,12 +7,13 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
 use LaraUtilX\Utilities\RateLimiterUtil;
+use Tests\TestCase;
 
 class FileControllerTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     protected User $user;
 
@@ -24,7 +25,7 @@ class FileControllerTest extends TestCase
         $this->user = User::factory()->create();
 
         // Mock rate limiter
-        $this->mock(RateLimiterUtil::class, function ($mock) {
+        $this->mock(RateLimiterUtil::class, function ($mock): void {
             $mock->shouldReceive('attempt')->andReturn(true);
         });
 
@@ -60,7 +61,7 @@ class FileControllerTest extends TestCase
                     'width',
                     'height',
                     'aspect_ratio',
-                ]
+                ],
             ]);
 
         $response->assertJsonPath('data.original_name', 'test-image.jpg');
@@ -135,14 +136,14 @@ class FileControllerTest extends TestCase
                             'filename',
                             'path',
                             'url',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 'summary' => [
                     'total_files',
                     'success_count',
                     'error_count',
-                ]
+                ],
             ]);
 
         $response->assertJsonPath('summary.total_files', 3);
@@ -155,7 +156,7 @@ class FileControllerTest extends TestCase
     {
         // Upload a file first
         $file = UploadedFile::fake()->image('test-image.jpg');
-        
+
         $uploadResponse = $this->actingAs($this->user)
             ->postJson('/game/api/files/upload', [
                 'file' => $file,
@@ -180,7 +181,7 @@ class FileControllerTest extends TestCase
                     'mime_type',
                     'last_modified',
                     'extension',
-                ]
+                ],
             ]);
 
         $response->assertJsonPath('data.filename', 'test-image.jpg');
@@ -239,8 +240,8 @@ class FileControllerTest extends TestCase
                         'mime_type',
                         'last_modified',
                         'extension',
-                    ]
-                ]
+                    ],
+                ],
             ]);
 
         $response->assertJsonCount(3, 'data');
@@ -301,7 +302,7 @@ class FileControllerTest extends TestCase
     {
         // Upload a file first
         $file = UploadedFile::fake()->image('test-image.jpg');
-        
+
         $uploadResponse = $this->actingAs($this->user)
             ->postJson('/game/api/files/upload', [
                 'file' => $file,
@@ -373,7 +374,7 @@ class FileControllerTest extends TestCase
                     'total_size_mb',
                     'files_by_type',
                     'directories',
-                ]
+                ],
             ]);
 
         $response->assertJsonPath('data.total_files', 3);
@@ -386,7 +387,7 @@ class FileControllerTest extends TestCase
     {
         // Upload a file first
         $file = UploadedFile::fake()->create('test-document.txt', 100, 'text/plain');
-        
+
         $uploadResponse = $this->actingAs($this->user)
             ->postJson('/game/api/files/upload', [
                 'file' => $file,
@@ -441,9 +442,9 @@ class FileControllerTest extends TestCase
                             ],
                             'path',
                             'url',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]);
 
         $response->assertJsonCount(2, 'data.thumbnails');
@@ -453,7 +454,7 @@ class FileControllerTest extends TestCase
     public function it_respects_rate_limiting()
     {
         // Mock rate limiter to return false
-        $this->mock(RateLimiterUtil::class, function ($mock) {
+        $this->mock(RateLimiterUtil::class, function ($mock): void {
             $mock->shouldReceive('attempt')->andReturn(false);
         });
 

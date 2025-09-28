@@ -36,13 +36,15 @@ class BattleSimulationTest extends Command
         $attackerVillage = Village::with(['troops.unitType'])->find($attackerVillageId);
         $defenderVillage = Village::with(['troops.unitType', 'buildings.buildingType'])->find($defenderVillageId);
 
-        if (!$attackerVillage) {
+        if (! $attackerVillage) {
             $this->error("Attacker village not found: {$attackerVillageId}");
+
             return 1;
         }
 
-        if (!$defenderVillage) {
+        if (! $defenderVillage) {
             $this->error("Defender village not found: {$defenderVillageId}");
+
             return 1;
         }
 
@@ -55,7 +57,7 @@ class BattleSimulationTest extends Command
 
         // Get defender defense report
         $defenseReport = $defenseService->getDefenseReport($defenderVillage);
-        $this->info('Defender Defensive Bonus: ' . number_format($defenseReport['defensive_bonus'] * 100, 1) . '%');
+        $this->info('Defender Defensive Bonus: '.number_format($defenseReport['defensive_bonus'] * 100, 1).'%');
         $this->info("Defender Spy Defense: {$defenseReport['spy_defense']}%");
 
         // Prepare attacking troops
@@ -92,11 +94,13 @@ class BattleSimulationTest extends Command
 
         if (empty($attackingTroops)) {
             $this->error("No attacking troops found in village {$attackerVillage->name}");
+
             return 1;
         }
 
         if (empty($defendingTroops)) {
             $this->error("No defending troops found in village {$defenderVillage->name}");
+
             return 1;
         }
 
@@ -130,36 +134,36 @@ class BattleSimulationTest extends Command
         $this->info("Iterations: {$iterations}");
 
         $this->info("\nWin Rates:");
-        $this->line('  Attacker Wins: ' . number_format($results['attacker_win_rate'], 1) . "% ({$results['attacker_wins']} battles)");
-        $this->line('  Defender Wins: ' . number_format($results['defender_win_rate'], 1) . "% ({$results['defender_wins']} battles)");
-        $this->line('  Draws: ' . number_format($results['draw_rate'], 1) . "% ({$results['draws']} battles)");
+        $this->line('  Attacker Wins: '.number_format($results['attacker_win_rate'], 1)."% ({$results['attacker_wins']} battles)");
+        $this->line('  Defender Wins: '.number_format($results['defender_win_rate'], 1)."% ({$results['defender_wins']} battles)");
+        $this->line('  Draws: '.number_format($results['draw_rate'], 1)."% ({$results['draws']} battles)");
 
         $this->info("\nBattle Power Statistics:");
-        $this->line('  Attacker Average: ' . number_format($results['battle_power_stats']['attacker_avg'], 0));
-        $this->line('  Defender Average: ' . number_format($results['battle_power_stats']['defender_avg'], 0));
-        $this->line('  Attacker Range: ' . number_format($results['battle_power_stats']['attacker_min']) . ' - ' . number_format($results['battle_power_stats']['attacker_max']));
-        $this->line('  Defender Range: ' . number_format($results['battle_power_stats']['defender_min']) . ' - ' . number_format($results['battle_power_stats']['defender_max']));
+        $this->line('  Attacker Average: '.number_format($results['battle_power_stats']['attacker_avg'], 0));
+        $this->line('  Defender Average: '.number_format($results['battle_power_stats']['defender_avg'], 0));
+        $this->line('  Attacker Range: '.number_format($results['battle_power_stats']['attacker_min']).' - '.number_format($results['battle_power_stats']['attacker_max']));
+        $this->line('  Defender Range: '.number_format($results['battle_power_stats']['defender_min']).' - '.number_format($results['battle_power_stats']['defender_max']));
 
-        $this->info("\nDefensive Bonus: " . number_format($results['defensive_bonus'] * 100, 1) . '%');
+        $this->info("\nDefensive Bonus: ".number_format($results['defensive_bonus'] * 100, 1).'%');
 
-        if (!empty($results['attacker_avg_losses'])) {
+        if (! empty($results['attacker_avg_losses'])) {
             $this->info("\nAttacker Average Losses:");
             foreach ($results['attacker_avg_losses'] as $unitType => $losses) {
                 $this->line("  - {$unitType}: {$losses}");
             }
         }
 
-        if (!empty($results['defender_avg_losses'])) {
+        if (! empty($results['defender_avg_losses'])) {
             $this->info("\nDefender Average Losses:");
             foreach ($results['defender_avg_losses'] as $unitType => $losses) {
                 $this->line("  - {$unitType}: {$losses}");
             }
         }
 
-        if (!empty($results['avg_resources_looted'])) {
+        if (! empty($results['avg_resources_looted'])) {
             $this->info("\nAverage Resources Looted:");
             foreach ($results['avg_resources_looted'] as $resource => $amount) {
-                $this->line("  - {$resource}: " . number_format($amount));
+                $this->line("  - {$resource}: ".number_format($amount));
             }
         }
 
@@ -190,7 +194,7 @@ class BattleSimulationTest extends Command
                 $totalTroops
             );
 
-            $this->info('Best Win Rate: ' . number_format($optimizationResults['win_rate'], 1) . '%');
+            $this->info('Best Win Rate: '.number_format($optimizationResults['win_rate'], 1).'%');
             $this->info('Optimal Composition:');
 
             foreach ($optimizationResults['composition'] as $troop) {
@@ -213,6 +217,7 @@ class BattleSimulationTest extends Command
         }
 
         $this->info("\nBattle simulation test completed successfully!");
+
         return 0;
     }
 }

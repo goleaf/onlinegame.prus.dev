@@ -17,8 +17,11 @@ class VillageManagerTest extends DuskTestCase
     use DatabaseMigrations;
 
     protected $user;
+
     protected $player;
+
     protected $village;
+
     protected $buildingType;
 
     protected function setUp(): void
@@ -59,7 +62,7 @@ class VillageManagerTest extends DuskTestCase
 
     public function test_village_manager_loads_successfully()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village')
@@ -72,7 +75,7 @@ class VillageManagerTest extends DuskTestCase
 
     public function test_village_manager_shows_building_grid()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village')
@@ -92,7 +95,7 @@ class VillageManagerTest extends DuskTestCase
             'position' => 0,
         ]);
 
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village')
@@ -111,7 +114,7 @@ class VillageManagerTest extends DuskTestCase
             'position' => 0,
         ]);
 
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village')
@@ -133,7 +136,7 @@ class VillageManagerTest extends DuskTestCase
             'position' => 0,
         ]);
 
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village')
@@ -147,7 +150,7 @@ class VillageManagerTest extends DuskTestCase
 
     public function test_village_manager_shows_resources()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village')
@@ -160,7 +163,7 @@ class VillageManagerTest extends DuskTestCase
 
     public function test_village_manager_refresh_button_works()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village')
@@ -180,7 +183,7 @@ class VillageManagerTest extends DuskTestCase
             'position' => 0,
         ]);
 
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village')
@@ -194,7 +197,7 @@ class VillageManagerTest extends DuskTestCase
 
     public function test_village_manager_responsive_design()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/village')

@@ -14,7 +14,7 @@
                                     <p>Coordinates: {{ $village->coordinates }}</p>
                                     <p>Population: {{ $village->population }}</p>
                                     <p>Status: {{ $village->is_capital ? 'Capital' : 'Village' }}</p>
-                                    <button wire:click="enterVillage({{ $village->id }})" class="btn btn-primary btn-sm">
+                                    <button wire:click.prevent="enterVillage({{ $village->id }})" class="btn btn-primary btn-sm">
                                         Enter Village
                                     </button>
                                 </div>
@@ -24,7 +24,7 @@
                         <div class="text-center py-5">
                             <h4>No villages found</h4>
                             <p>Start by creating your first village!</p>
-                            <button wire:click="createVillage" class="btn btn-success">
+                            <button wire:click.prevent="createVillage" class="btn btn-success">
                                 Create First Village
                             </button>
                         </div>

@@ -91,12 +91,14 @@ div.wheelOfFortune#wheelDescription p:first-child {
 }
 
 div.wheelOfFortune#preloadWheelAnimationMove {
-  background: url('../img_ltr/wheelOfFortune/pot_move.png') no-repeat -9999px -9999px;
+  background: url('../img_ltr/wheelOfFortune/pot_move.png')
+    no-repeat -9999px -9999px;
   visibility: hidden;
 }
 
 div.wheelOfFortune#preloadWheelAnimationIdle {
-  background: url('../img_ltr/wheelOfFortune/pot_idle.png') no-repeat -9999px -9999px;
+  background: url('../img_ltr/wheelOfFortune/pot_idle.png')
+    no-repeat -9999px -9999px;
   visibility: hidden;
 }
 
@@ -605,7 +607,7 @@ div.wheelOfFortune.troop_training_voucher_stable {
 }
 
 div.wheelOfFortune.npc_merchant_voucher_x5 span.npc_merchant_voucher_x5_text {
-  color: #F2F2F2;
+  color: #f2f2f2;
   position: relative;
   left: 78px;
   top: 82px;
@@ -621,11 +623,11 @@ div.wheelOfFortune#wheelPrizeDescription {
   width: 100%;
   padding: 3px;
   text-align: center;
-  background-color: #BCBCB9;
+  background-color: #bcbcb9;
   position: absolute;
   bottom: 0;
   box-sizing: border-box;
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
 div.wheelOfFortune.fly #wheelPrizeDescription {
@@ -636,10 +638,10 @@ div.wheelOfFortune.wheelPrizeDescription {
   width: 100%;
   padding: 3px;
   text-align: center;
-  background-color: #BCBCB9;
+  background-color: #bcbcb9;
   bottom: 0;
   box-sizing: border-box;
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
 div.wheelOfFortune.wheelPrizeDescription.hidden {
@@ -650,13 +652,13 @@ div.wheelOfFortune.wheelPrizeDescription.hidden {
 div.wheelOfFortune#wheelPrizeStacks {
   height: 20px;
   text-align: center;
-  background-color: #BCBCB9;
+  background-color: #bcbcb9;
   position: absolute;
   top: 0;
   right: 0;
   padding: 2px 5px 3px 6px;
   box-sizing: border-box;
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
 /* sidebar box UI */
@@ -670,17 +672,20 @@ div#sidebarBoxWheelOfFortune.sidebarBox div.wheelOfFortuneRibbon {
 }
 
 div#sidebarBoxWheelOfFortune.sidebarBox div.wheelOfFortuneRibbon div.headline {
-  color: #F2F2F2;
+  color: #f2f2f2;
   font-size: 13px;
   padding-right: 3px;
   padding-top: 8px;
 }
-.rtl div#sidebarBoxWheelOfFortune.sidebarBox div.wheelOfFortuneRibbon div.headline {
+.rtl
+  div#sidebarBoxWheelOfFortune.sidebarBox
+  div.wheelOfFortuneRibbon
+  div.headline {
   font-size: 14px;
 }
 
 div#sidebarBoxWheelOfFortune.sidebarBox div.boxTitle {
-  color: #7B5940;
+  color: #7b5940;
   font-size: 13px;
   font-weight: normal;
   padding-top: 17px;
@@ -728,11 +733,14 @@ div.wheelOfFortune.prizeTooltipContainer div.wheelOfFortune.prizeTooltipTitle {
   height: 16px;
 }
 
-div.wheelOfFortune.prizeTooltipContainer div.wheelOfFortune.prizeTooltipTitle img {
+div.wheelOfFortune.prizeTooltipContainer
+  div.wheelOfFortune.prizeTooltipTitle
+  img {
   margin-right: 2px;
 }
 
-div.wheelOfFortune.prizeTooltipContainer div.wheelOfFortune.prizeTooltipDescription {
+div.wheelOfFortune.prizeTooltipContainer
+  div.wheelOfFortune.prizeTooltipDescription {
   margin-top: 5px;
 }
 

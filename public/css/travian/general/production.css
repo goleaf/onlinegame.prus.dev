@@ -77,15 +77,20 @@ div.productionBoostResourceSpeechBubble .speechArrowBack {
   bottom: 23px;
 }
 
-div.cropBalanceContainer div.productionBoostResourceSpeechBubble .speechArrowBack {
+div.cropBalanceContainer
+  div.productionBoostResourceSpeechBubble
+  .speechArrowBack {
   bottom: 10px;
 }
 
-div.productionBoostResourceSpeechBubble .productionBoostSpeechBubbleFurtherInfo {
+div.productionBoostResourceSpeechBubble
+  .productionBoostSpeechBubbleFurtherInfo {
   font-style: italic;
   font-size: 11px;
 }
-.rtl div.productionBoostResourceSpeechBubble .productionBoostSpeechBubbleFurtherInfo {
+.rtl
+  div.productionBoostResourceSpeechBubble
+  .productionBoostSpeechBubbleFurtherInfo {
   font-size: 12px;
 }
 
@@ -108,7 +113,7 @@ div.productionContainer .productionPerHour table,
 div.productionContainer .productionPerHour tr,
 div.productionContainer .productionPerHour td {
   border-collapse: collapse;
-  border: 1px solid #C0C0C0;
+  border: 1px solid #c0c0c0;
 }
 
 div.productionPerHour table thead td {
@@ -162,7 +167,10 @@ div.cropBalanceContainer .emptyStorageSpeechBubble p {
   margin: 2px;
 }
 
-div.cropBalanceContainer .emptyStorageSpeechBubble .fluidSpeechBubble .speechArrowBack {
+div.cropBalanceContainer
+  .emptyStorageSpeechBubble
+  .fluidSpeechBubble
+  .speechArrowBack {
   top: auto;
   bottom: 12px;
 }

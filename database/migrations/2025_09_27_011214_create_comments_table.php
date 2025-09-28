@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -21,7 +20,7 @@ return new class extends Migration
             $table->boolean('is_pinned')->default(false);
             $table->json('metadata')->nullable(); // For additional data like mentions, reactions
             $table->timestamps();
-            
+
             $table->index(['commentable_id', 'commentable_type']);
             $table->index(['user_id', 'created_at']);
             $table->index(['parent_id', 'created_at']);

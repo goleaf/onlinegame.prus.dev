@@ -7,12 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class Tournament extends Model implements Auditable
 {
-    use HasFactory, HasTaxonomy, HasReference, AuditableTrait;
+    use AuditableTrait;
+    use HasFactory;
+    use HasReference;
+    use HasTaxonomy;
 
     protected $fillable = [
         'name',
@@ -50,6 +53,7 @@ class Tournament extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -103,8 +107,8 @@ class Tournament extends Model implements Auditable
     public function scopeOpenForRegistration($query)
     {
         return $query->where('status', 'registration')
-                    ->where('registration_start', '<=', now())
-                    ->where('registration_end', '>=', now());
+            ->where('registration_start', '<=', now())
+            ->where('registration_end', '>=', now());
     }
 
     // Helper methods
@@ -130,7 +134,7 @@ class Tournament extends Model implements Auditable
 
     public function canRegister(Player $player): bool
     {
-        if (!$this->isRegistrationOpen()) {
+        if (! $this->isRegistrationOpen()) {
             return false;
         }
 
@@ -148,33 +152,38 @@ class Tournament extends Model implements Auditable
     public function meetsRequirements(Player $player): bool
     {
         $requirements = $this->requirements ?? [];
-        
+
         foreach ($requirements as $requirement => $value) {
             switch ($requirement) {
                 case 'min_level':
                     if ($player->level < $value) {
                         return false;
                     }
+
                     break;
                 case 'min_points':
                     if ($player->points < $value) {
                         return false;
                     }
+
                     break;
                 case 'min_villages':
                     if ($player->villages->count() < $value) {
                         return false;
                     }
+
                     break;
                 case 'required_tribe':
-                    if (!in_array($player->tribe, $value)) {
+                    if (! in_array($player->tribe, $value)) {
                         return false;
                     }
+
                     break;
                 case 'min_gold':
                     if ($player->gold < $value) {
                         return false;
                     }
+
                     break;
             }
         }
@@ -236,7 +245,7 @@ class Tournament extends Model implements Auditable
 
     public function getTypeDisplayNameAttribute(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             'pvp' => 'Player vs Player',
             'pve' => 'Player vs Environment',
             'raid' => 'Raid Tournament',
@@ -251,7 +260,7 @@ class Tournament extends Model implements Auditable
 
     public function getFormatDisplayNameAttribute(): string
     {
-        return match($this->format) {
+        return match ($this->format) {
             'single_elimination' => 'Single Elimination',
             'double_elimination' => 'Double Elimination',
             'round_robin' => 'Round Robin',
@@ -264,7 +273,7 @@ class Tournament extends Model implements Auditable
 
     public function getStatusDisplayNameAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'upcoming' => 'Upcoming',
             'registration' => 'Open for Registration',
             'active' => 'Active',
@@ -305,7 +314,7 @@ class Tournament extends Model implements Auditable
     public function getTimeRemainingFormattedAttribute(): ?string
     {
         $minutes = $this->time_remaining;
-        
+
         if ($minutes === null) {
             return null;
         }
@@ -336,6 +345,7 @@ class Tournament extends Model implements Auditable
             switch ($rewardType) {
                 case 'gold':
                     $player->increment('gold', $amount);
+
                     break;
                 case 'resources':
                     // Award resources to player's capital village
@@ -353,12 +363,15 @@ class Tournament extends Model implements Auditable
                             }
                         }
                     }
+
                     break;
                 case 'experience':
                     $player->increment('experience', $amount);
+
                     break;
                 case 'points':
                     $player->increment('points', $amount);
+
                     break;
             }
         }

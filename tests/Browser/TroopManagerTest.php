@@ -16,8 +16,11 @@ class TroopManagerTest extends DuskTestCase
     use DatabaseMigrations;
 
     protected $user;
+
     protected $player;
+
     protected $world;
+
     protected $village;
 
     protected function setUp(): void
@@ -73,7 +76,7 @@ class TroopManagerTest extends DuskTestCase
 
     public function test_troop_manager_loads()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/troops')
@@ -85,7 +88,7 @@ class TroopManagerTest extends DuskTestCase
 
     public function test_current_troops_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/troops')
@@ -96,7 +99,7 @@ class TroopManagerTest extends DuskTestCase
 
     public function test_training_queue_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/troops')
@@ -107,7 +110,7 @@ class TroopManagerTest extends DuskTestCase
 
     public function test_train_new_troops_section()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/troops')
@@ -122,7 +125,7 @@ class TroopManagerTest extends DuskTestCase
 
     public function test_troop_training_form()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/troops')
@@ -133,7 +136,7 @@ class TroopManagerTest extends DuskTestCase
 
     public function test_troop_cost_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/troops')

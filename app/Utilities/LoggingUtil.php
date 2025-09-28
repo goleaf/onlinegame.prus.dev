@@ -1,57 +1,50 @@
 <?php
 
-namespace LaraUtilX\Utilities;
+namespace App\Utilities;
 
-use Illuminate\Support\Facades\Log;
+use Illuminate\Log\Logger as IlluminateLogger;
 use Illuminate\Support\Facades\Config;
-use Monolog\Formatter\JsonFormatter;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
+use Illuminate\Support\Facades\Log;
 use LaraUtilX\Enums\LogLevel;
+use Monolog\Logger;
 
 class LoggingUtil
 {
-    private static ?Logger $customLogger = null;
+    private static ?IlluminateLogger $customLogger = null;
 
     /**
      * Initialize a custom logger instance if needed.
      *
-     * @param string|null $channel Custom log channel
-     * @return Logger
+     * @param  string|null  $channel  Custom log channel
      */
-    private static function getLogger(?string $channel = null): Logger
+    private static function getLogger(?string $channel = null): IlluminateLogger
     {
         if ($channel) {
             return Log::channel($channel);
         }
 
-        if (!self::$customLogger) {
-            $logPath = storage_path('logs/custom.log');
-            $handler = new StreamHandler($logPath, Logger::DEBUG);
-            $handler->setFormatter(new JsonFormatter());
-            
-            
-            self::$customLogger = new Logger('custom');
-            self::$customLogger->pushHandler($handler);
+        if (! self::$customLogger) {
+            // Use Laravel's default logger for custom logging
+            self::$customLogger = Log::channel('single');
         }
-        
+
         return self::$customLogger;
     }
 
     /**
      * Log a message with context and formatting.
      *
-     * @param LogLevel $level Log level (debug, info, warning, error, critical)
-     * @param string $message Log message
-     * @param array $context Additional context data
-     * @param string|null $channel Log channel (default, single, daily, custom, etc.)
+     * @param  LogLevel  $level  Log level (debug, info, warning, error, critical)
+     * @param  string  $message  Log message
+     * @param  array  $context  Additional context data
+     * @param  string|null  $channel  Log channel (default, single, daily, custom, etc.)
      */
     public static function log(LogLevel $level, string $message, array $context = [], ?string $channel = null): void
     {
         $logger = self::getLogger($channel);
         $context['timestamp'] = now()->toDateTimeString();
         $context['env'] = Config::get('app.env');
-        
+
         $logger->{$level->value}($message, $context);
     }
 

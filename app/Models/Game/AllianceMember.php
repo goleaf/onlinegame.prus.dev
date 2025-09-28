@@ -2,8 +2,8 @@
 
 namespace App\Models\Game;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
 use SmartCache\Facades\SmartCache;
 
@@ -25,6 +25,7 @@ class AllianceMember extends Model
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -85,8 +86,8 @@ class AllianceMember extends Model
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->whereHas('player', function ($playerQ) use ($searchTerm) {
-                $playerQ->where('name', 'like', '%' . $searchTerm . '%');
+            return $q->whereHas('player', function ($playerQ) use ($searchTerm): void {
+                $playerQ->where('name', 'like', '%'.$searchTerm.'%');
             });
         });
     }
@@ -95,7 +96,7 @@ class AllianceMember extends Model
     {
         return $query->with([
             'player:id,name,points,created_at',
-            'alliance:id,name,tag'
+            'alliance:id,name,tag',
         ]);
     }
 
@@ -132,7 +133,7 @@ class AllianceMember extends Model
      */
     public static function getCachedAllianceMembers($allianceId = null, $filters = [])
     {
-        $cacheKey = "alliance_members_{$allianceId}_" . md5(serialize($filters));
+        $cacheKey = "alliance_members_{$allianceId}_".md5(serialize($filters));
 
         return SmartCache::remember($cacheKey, now()->addMinutes(8), function () use ($allianceId, $filters) {
             $query = static::withStats()->withPlayerInfo();

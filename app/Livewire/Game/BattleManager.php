@@ -6,10 +6,9 @@ use App\Models\Game\Battle;
 use App\Models\Game\Movement;
 use App\Models\Game\Troop;
 use App\Models\Game\Village;
-use App\Services\GeographicService;
-use App\Services\QueryOptimizationService;
 use App\Services\GameIntegrationService;
 use App\Services\GameNotificationService;
+use App\Services\GeographicService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use Livewire\Component;
@@ -18,15 +17,23 @@ use SmartCache\Facades\SmartCache;
 
 class BattleManager extends Component
 {
-    use WithPagination, ApiResponseTrait;
+    use ApiResponseTrait;
+    use WithPagination;
 
     public $village;
+
     public $attackingTroops = [];
+
     public $defendingTroops = [];
+
     public $availableTroops = [];
+
     public $selectedTarget = null;
+
     public $showBattleModal = false;
+
     public $battleResult = null;
+
     public $recentBattles = [];
 
     protected $listeners = ['refreshBattles', 'battleCompleted', 'movementArrived'];
@@ -56,7 +63,7 @@ class BattleManager extends Component
                 'player_id' => $player->id,
                 'village' => $this->village,
                 'available_troops_count' => $this->village?->troops?->count() ?? 0,
-                'mount_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+                'mount_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ])->label('BattleManager Mount');
 
             $this->loadBattleData();
@@ -86,13 +93,13 @@ class BattleManager extends Component
                     [
                         'target' => 'attacker_id',
                         'type' => '$eq',
-                        'value' => $this->village->player_id
+                        'value' => $this->village->player_id,
                     ],
                     [
                         'target' => 'occurred_at',
                         'type' => '$gte',
-                        'value' => now()->subDays(7)->toISOString()
-                    ]
+                        'value' => now()->subDays(7)->toISOString(),
+                    ],
                 ];
 
                 return Battle::filter($filters)
@@ -109,14 +116,16 @@ class BattleManager extends Component
     {
         try {
             // Validate input
-            if (!$villageId || !is_numeric($villageId)) {
+            if (! $villageId || ! is_numeric($villageId)) {
                 $this->addNotification('Invalid village ID provided.', 'error');
+
                 return;
             }
 
             // Check if target is the same as current village
             if ($villageId == $this->village->id) {
                 $this->addNotification('Cannot attack your own village.', 'error');
+
                 return;
             }
 
@@ -133,8 +142,9 @@ class BattleManager extends Component
                     ->find($villageId);
             });
 
-            if (!$this->selectedTarget) {
+            if (! $this->selectedTarget) {
                 $this->addNotification('Target village not found.', 'error');
+
                 return;
             }
 
@@ -146,15 +156,15 @@ class BattleManager extends Component
             ds('Target selected successfully', [
                 'target_village_id' => $villageId,
                 'target_village_name' => $this->selectedTarget->name,
-                'target_player' => $this->selectedTarget->player->name ?? 'Unknown'
+                'target_player' => $this->selectedTarget->player->name ?? 'Unknown',
             ])->label('BattleManager Target Selected');
         } catch (\Exception $e) {
-            $this->addNotification('Error selecting target: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error selecting target: '.$e->getMessage(), 'error');
 
             ds('Target selection error', [
                 'village_id' => $villageId,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ])->label('BattleManager Target Selection Error');
         }
     }
@@ -183,11 +193,12 @@ class BattleManager extends Component
 
     public function launchAttack()
     {
-        if (!$this->selectedTarget || empty($this->attackingTroops)) {
+        if (! $this->selectedTarget || empty($this->attackingTroops)) {
             ds('Attack launch failed - missing target or troops', [
                 'selected_target' => $this->selectedTarget,
-                'attacking_troops' => $this->attackingTroops
+                'attacking_troops' => $this->attackingTroops,
             ])->label('BattleManager Attack Launch Failed');
+
             return;
         }
 
@@ -209,7 +220,7 @@ class BattleManager extends Component
                 'attacking_troops' => $this->attackingTroops,
                 'total_attack_power' => array_sum(array_column($this->attackingTroops, 'attack')),
                 'from_coordinates' => "({$this->village->x_coordinate}|{$this->village->y_coordinate})",
-                'to_coordinates' => "({$this->selectedTarget->x_coordinate}|{$this->selectedTarget->y_coordinate})"
+                'to_coordinates' => "({$this->selectedTarget->x_coordinate}|{$this->selectedTarget->y_coordinate})",
             ])->label('BattleManager Attack Launch');
 
             // Create movement record
@@ -243,7 +254,7 @@ class BattleManager extends Component
             ds('Attack launched successfully', [
                 'movement_id' => $movement->id,
                 'reference_number' => $movement->reference_number,
-                'arrives_at' => $movement->arrives_at
+                'arrives_at' => $movement->arrives_at,
             ])->label('BattleManager Attack Success');
 
             // Track attack launch
@@ -258,7 +269,7 @@ class BattleManager extends Component
         } catch (\Exception $e) {
             ds('Attack launch error', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ])->label('BattleManager Attack Error');
             $this->dispatch('attackError', ['message' => $e->getMessage()]);
         }
@@ -266,11 +277,12 @@ class BattleManager extends Component
 
     public function calculateDistance()
     {
-        if (!$this->selectedTarget) {
+        if (! $this->selectedTarget) {
             return 0;
         }
 
         $geoService = app(GeographicService::class);
+
         return $geoService->calculateGameDistance(
             $this->village->x_coordinate,
             $this->village->y_coordinate,
@@ -286,7 +298,7 @@ class BattleManager extends Component
      */
     public function calculateRealWorldDistance()
     {
-        if (!$this->selectedTarget) {
+        if (! $this->selectedTarget) {
             return 0;
         }
 
@@ -345,7 +357,7 @@ class BattleManager extends Component
             'attacker_power' => $attackerPower,
             'defender_power' => $defenderPower,
             'random_factor' => $randomFactor,
-            'result' => $result
+            'result' => $result,
         ])->label('BattleManager Battle Simulation');
 
         return $result;
@@ -366,7 +378,7 @@ class BattleManager extends Component
             if ($user) {
                 // Initialize real-time features for the user
                 GameIntegrationService::initializeUserRealTime($user->id);
-                
+
                 $this->dispatch('battle-initialized', [
                     'message' => 'Battle manager real-time features activated',
                     'user_id' => $user->id,
@@ -374,7 +386,7 @@ class BattleManager extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to initialize battle real-time features: ' . $e->getMessage(),
+                'message' => 'Failed to initialize battle real-time features: '.$e->getMessage(),
             ]);
         }
     }
@@ -408,7 +420,7 @@ class BattleManager extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to launch attack: ' . $e->getMessage(),
+                'message' => 'Failed to launch attack: '.$e->getMessage(),
             ]);
         }
     }
@@ -439,7 +451,7 @@ class BattleManager extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to refresh battles: ' . $e->getMessage(),
+                'message' => 'Failed to refresh battles: '.$e->getMessage(),
             ]);
         }
     }

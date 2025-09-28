@@ -62,4 +62,3 @@ return [
         'pt_query_digest_path' => env('PT_QUERY_DIGEST_PATH', '/usr/bin/pt-query-digest'),
     ],
 ];
-

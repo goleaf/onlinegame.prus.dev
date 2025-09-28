@@ -14,7 +14,8 @@ readonly class TroopCounts
         public int $rams = 0,
         public int $spies = 0,
         public int $settlers = 0
-    ) {}
+    ) {
+    }
 
     /**
      * Get total troop count
@@ -132,14 +133,18 @@ readonly class TroopCounts
     {
         $composition = $this->getComposition();
 
-        if ($composition['infantry'] >= 60)
+        if ($composition['infantry'] >= 60) {
             return 'infantry-heavy';
-        if ($composition['cavalry'] >= 60)
+        }
+        if ($composition['cavalry'] >= 60) {
             return 'cavalry-heavy';
-        if ($composition['siege'] >= 30)
+        }
+        if ($composition['siege'] >= 30) {
             return 'siege-focused';
-        if ($composition['support'] >= 20)
+        }
+        if ($composition['support'] >= 20) {
             return 'support-heavy';
+        }
 
         return 'balanced';
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,14 +17,12 @@ class HeroesSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
-                'reference_number' => NULL,
-                'player_id' => 1,
+
+                'player_id' => 7,
                 'name' => 'Trajan',
                 'level' => 1,
                 'experience' => 0,
@@ -39,8 +38,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'reference_number' => NULL,
-                'player_id' => 2,
+
+                'player_id' => 7,
                 'name' => 'Bard',
                 'level' => 1,
                 'experience' => 0,
@@ -56,8 +55,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'reference_number' => NULL,
-                'player_id' => 3,
+
+                'player_id' => 7,
                 'name' => 'Druid',
                 'level' => 1,
                 'experience' => 0,
@@ -73,8 +72,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 4,
-                'reference_number' => NULL,
-                'player_id' => 4,
+
+                'player_id' => 7,
                 'name' => 'Odin',
                 'level' => 1,
                 'experience' => 0,
@@ -90,8 +89,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 5,
-                'reference_number' => NULL,
-                'player_id' => 5,
+
+                'player_id' => 7,
                 'name' => 'Thor',
                 'level' => 1,
                 'experience' => 0,
@@ -107,8 +106,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 6,
-                'reference_number' => NULL,
-                'player_id' => 6,
+
+                'player_id' => 7,
                 'name' => 'Hadrian',
                 'level' => 1,
                 'experience' => 0,
@@ -124,7 +123,7 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 7,
-                'reference_number' => NULL,
+
                 'player_id' => 7,
                 'name' => 'Druid',
                 'level' => 1,
@@ -141,8 +140,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 8,
-                'reference_number' => NULL,
-                'player_id' => 8,
+
+                'player_id' => 7,
                 'name' => 'Augustus',
                 'level' => 1,
                 'experience' => 0,
@@ -158,8 +157,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 9,
-                'reference_number' => NULL,
-                'player_id' => 9,
+
+                'player_id' => 7,
                 'name' => 'Druid',
                 'level' => 1,
                 'experience' => 0,
@@ -175,8 +174,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 10,
-                'reference_number' => NULL,
-                'player_id' => 10,
+
+                'player_id' => 7,
                 'name' => 'Marcus Aurelius',
                 'level' => 1,
                 'experience' => 0,
@@ -192,8 +191,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 11,
-                'reference_number' => NULL,
-                'player_id' => 11,
+
+                'player_id' => 7,
                 'name' => 'Druid',
                 'level' => 1,
                 'experience' => 0,
@@ -209,8 +208,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 12,
-                'reference_number' => NULL,
-                'player_id' => 12,
+
+                'player_id' => 7,
                 'name' => 'Ragnar',
                 'level' => 1,
                 'experience' => 0,
@@ -226,8 +225,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 13,
-                'reference_number' => NULL,
-                'player_id' => 13,
+
+                'player_id' => 7,
                 'name' => 'Thor',
                 'level' => 1,
                 'experience' => 0,
@@ -243,8 +242,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 14,
-                'reference_number' => NULL,
-                'player_id' => 14,
+
+                'player_id' => 7,
                 'name' => 'Natarian Guardian',
                 'level' => 1,
                 'experience' => 0,
@@ -260,8 +259,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 15,
-                'reference_number' => NULL,
-                'player_id' => 15,
+
+                'player_id' => 7,
                 'name' => 'Bard',
                 'level' => 1,
                 'experience' => 0,
@@ -277,8 +276,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 16,
-                'reference_number' => NULL,
-                'player_id' => 16,
+
+                'player_id' => 7,
                 'name' => 'Natarian Guardian',
                 'level' => 1,
                 'experience' => 0,
@@ -294,8 +293,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 17,
-                'reference_number' => NULL,
-                'player_id' => 17,
+
+                'player_id' => 7,
                 'name' => 'Obelix',
                 'level' => 1,
                 'experience' => 0,
@@ -311,8 +310,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 18,
-                'reference_number' => NULL,
-                'player_id' => 18,
+
+                'player_id' => 7,
                 'name' => 'Crystal Sage',
                 'level' => 1,
                 'experience' => 0,
@@ -328,8 +327,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 19,
-                'reference_number' => NULL,
-                'player_id' => 19,
+
+                'player_id' => 7,
                 'name' => 'Obelix',
                 'level' => 1,
                 'experience' => 0,
@@ -345,8 +344,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 20,
-                'reference_number' => NULL,
-                'player_id' => 20,
+
+                'player_id' => 7,
                 'name' => 'Mystic Defender',
                 'level' => 1,
                 'experience' => 0,
@@ -362,8 +361,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 21,
-                'reference_number' => NULL,
-                'player_id' => 21,
+
+                'player_id' => 7,
                 'name' => 'Asterix',
                 'level' => 1,
                 'experience' => 0,
@@ -379,8 +378,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 22,
-                'reference_number' => NULL,
-                'player_id' => 22,
+
+                'player_id' => 7,
                 'name' => 'Asterix',
                 'level' => 1,
                 'experience' => 0,
@@ -396,8 +395,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 23,
-                'reference_number' => NULL,
-                'player_id' => 23,
+
+                'player_id' => 7,
                 'name' => 'Obelix',
                 'level' => 1,
                 'experience' => 0,
@@ -413,8 +412,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 24,
-                'reference_number' => NULL,
-                'player_id' => 24,
+
+                'player_id' => 7,
                 'name' => 'Natarian Guardian',
                 'level' => 1,
                 'experience' => 0,
@@ -430,8 +429,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 25,
-                'reference_number' => NULL,
-                'player_id' => 25,
+
+                'player_id' => 7,
                 'name' => 'Julius Caesar',
                 'level' => 1,
                 'experience' => 0,
@@ -447,8 +446,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 26,
-                'reference_number' => NULL,
-                'player_id' => 26,
+
+                'player_id' => 7,
                 'name' => 'Beowulf',
                 'level' => 1,
                 'experience' => 0,
@@ -464,8 +463,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 27,
-                'reference_number' => NULL,
-                'player_id' => 27,
+
+                'player_id' => 7,
                 'name' => 'Shadow Knight',
                 'level' => 1,
                 'experience' => 0,
@@ -481,8 +480,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 28,
-                'reference_number' => NULL,
-                'player_id' => 28,
+
+                'player_id' => 7,
                 'name' => 'Thor',
                 'level' => 1,
                 'experience' => 0,
@@ -498,8 +497,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 29,
-                'reference_number' => NULL,
-                'player_id' => 29,
+
+                'player_id' => 7,
                 'name' => 'Ancient Warrior',
                 'level' => 1,
                 'experience' => 0,
@@ -515,8 +514,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 30,
-                'reference_number' => NULL,
-                'player_id' => 30,
+
+                'player_id' => 7,
                 'name' => 'Bard',
                 'level' => 1,
                 'experience' => 0,
@@ -532,8 +531,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 31,
-                'reference_number' => NULL,
-                'player_id' => 31,
+
+                'player_id' => 7,
                 'name' => 'Augustus',
                 'level' => 1,
                 'experience' => 0,
@@ -549,8 +548,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 32,
-                'reference_number' => NULL,
-                'player_id' => 32,
+
+                'player_id' => 7,
                 'name' => 'Beowulf',
                 'level' => 1,
                 'experience' => 0,
@@ -566,8 +565,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 33,
-                'reference_number' => NULL,
-                'player_id' => 33,
+
+                'player_id' => 7,
                 'name' => 'Augustus',
                 'level' => 1,
                 'experience' => 0,
@@ -583,8 +582,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 34,
-                'reference_number' => NULL,
-                'player_id' => 34,
+
+                'player_id' => 7,
                 'name' => 'Siegfried',
                 'level' => 1,
                 'experience' => 0,
@@ -600,8 +599,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 35,
-                'reference_number' => NULL,
-                'player_id' => 35,
+
+                'player_id' => 7,
                 'name' => 'Trajan',
                 'level' => 1,
                 'experience' => 0,
@@ -617,8 +616,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 36,
-                'reference_number' => NULL,
-                'player_id' => 36,
+
+                'player_id' => 7,
                 'name' => 'Ancient Warrior',
                 'level' => 1,
                 'experience' => 0,
@@ -634,8 +633,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 37,
-                'reference_number' => NULL,
-                'player_id' => 37,
+
+                'player_id' => 7,
                 'name' => 'Vercingetorix',
                 'level' => 1,
                 'experience' => 0,
@@ -651,8 +650,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 38,
-                'reference_number' => NULL,
-                'player_id' => 38,
+
+                'player_id' => 7,
                 'name' => 'Thor',
                 'level' => 1,
                 'experience' => 0,
@@ -668,8 +667,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 39,
-                'reference_number' => NULL,
-                'player_id' => 39,
+
+                'player_id' => 7,
                 'name' => 'Hadrian',
                 'level' => 1,
                 'experience' => 0,
@@ -685,8 +684,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 40,
-                'reference_number' => NULL,
-                'player_id' => 40,
+
+                'player_id' => 7,
                 'name' => 'Shadow Knight',
                 'level' => 1,
                 'experience' => 0,
@@ -702,8 +701,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 41,
-                'reference_number' => NULL,
-                'player_id' => 41,
+
+                'player_id' => 7,
                 'name' => 'Vercingetorix',
                 'level' => 1,
                 'experience' => 0,
@@ -719,8 +718,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 42,
-                'reference_number' => NULL,
-                'player_id' => 42,
+
+                'player_id' => 7,
                 'name' => 'Vercingetorix',
                 'level' => 1,
                 'experience' => 0,
@@ -736,8 +735,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 43,
-                'reference_number' => NULL,
-                'player_id' => 43,
+
+                'player_id' => 7,
                 'name' => 'Siegfried',
                 'level' => 1,
                 'experience' => 0,
@@ -753,8 +752,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 44,
-                'reference_number' => NULL,
-                'player_id' => 44,
+
+                'player_id' => 7,
                 'name' => 'Mystic Defender',
                 'level' => 1,
                 'experience' => 0,
@@ -770,8 +769,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 45,
-                'reference_number' => NULL,
-                'player_id' => 45,
+
+                'player_id' => 7,
                 'name' => 'Augustus',
                 'level' => 1,
                 'experience' => 0,
@@ -787,8 +786,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 46,
-                'reference_number' => NULL,
-                'player_id' => 46,
+
+                'player_id' => 7,
                 'name' => 'Natarian Guardian',
                 'level' => 1,
                 'experience' => 0,
@@ -804,8 +803,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 47,
-                'reference_number' => NULL,
-                'player_id' => 47,
+
+                'player_id' => 7,
                 'name' => 'Trajan',
                 'level' => 1,
                 'experience' => 0,
@@ -821,8 +820,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 48,
-                'reference_number' => NULL,
-                'player_id' => 48,
+
+                'player_id' => 7,
                 'name' => 'Natarian Guardian',
                 'level' => 1,
                 'experience' => 0,
@@ -838,8 +837,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 49,
-                'reference_number' => NULL,
-                'player_id' => 49,
+
+                'player_id' => 7,
                 'name' => 'Obelix',
                 'level' => 1,
                 'experience' => 0,
@@ -855,8 +854,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 50,
-                'reference_number' => NULL,
-                'player_id' => 50,
+
+                'player_id' => 7,
                 'name' => 'Crystal Sage',
                 'level' => 1,
                 'experience' => 0,
@@ -872,8 +871,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 51,
-                'reference_number' => NULL,
-                'player_id' => 51,
+
+                'player_id' => 7,
                 'name' => 'Julius Caesar',
                 'level' => 1,
                 'experience' => 0,
@@ -889,8 +888,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 52,
-                'reference_number' => NULL,
-                'player_id' => 52,
+
+                'player_id' => 7,
                 'name' => 'Augustus',
                 'level' => 1,
                 'experience' => 0,
@@ -906,8 +905,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 53,
-                'reference_number' => NULL,
-                'player_id' => 53,
+
+                'player_id' => 7,
                 'name' => 'Marcus Aurelius',
                 'level' => 1,
                 'experience' => 0,
@@ -923,8 +922,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 54,
-                'reference_number' => NULL,
-                'player_id' => 55,
+
+                'player_id' => 7,
                 'name' => 'Marcus Aurelius',
                 'level' => 1,
                 'experience' => 0,
@@ -940,8 +939,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 55,
-                'reference_number' => NULL,
-                'player_id' => 56,
+
+                'player_id' => 7,
                 'name' => 'Marcus Aurelius',
                 'level' => 1,
                 'experience' => 0,
@@ -957,8 +956,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 56,
-                'reference_number' => NULL,
-                'player_id' => 58,
+
+                'player_id' => 7,
                 'name' => 'Trajan',
                 'level' => 1,
                 'experience' => 0,
@@ -974,8 +973,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 57,
-                'reference_number' => NULL,
-                'player_id' => 61,
+
+                'player_id' => 7,
                 'name' => 'Trajan',
                 'level' => 1,
                 'experience' => 0,
@@ -991,8 +990,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 58,
-                'reference_number' => NULL,
-                'player_id' => 62,
+
+                'player_id' => 7,
                 'name' => 'Marcus Aurelius',
                 'level' => 1,
                 'experience' => 0,
@@ -1008,8 +1007,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 59,
-                'reference_number' => NULL,
-                'player_id' => 63,
+
+                'player_id' => 7,
                 'name' => 'Marcus Aurelius',
                 'level' => 1,
                 'experience' => 0,
@@ -1025,8 +1024,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 60,
-                'reference_number' => NULL,
-                'player_id' => 64,
+
+                'player_id' => 7,
                 'name' => 'Julius Caesar',
                 'level' => 1,
                 'experience' => 0,
@@ -1042,8 +1041,8 @@ class HeroesSeeder extends Seeder
             ],
             [
                 'id' => 61,
-                'reference_number' => NULL,
-                'player_id' => 65,
+
+                'player_id' => 7,
                 'name' => 'Marcus Aurelius',
                 'level' => 1,
                 'experience' => 0,
@@ -1056,11 +1055,11 @@ class HeroesSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => '2025-09-27 01:21:15',
                 'updated_at' => '2025-09-27 01:21:15',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("heroes")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('heroes')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

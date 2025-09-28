@@ -8,7 +8,6 @@ use App\Models\Game\Player;
 use App\Models\Game\SiegeWeapon;
 use App\Models\Game\Village;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class AdvancedCombatCommand extends Command
 {
@@ -43,18 +42,23 @@ class AdvancedCombatCommand extends Command
         switch ($action) {
             case 'heroes':
                 $this->manageHeroes();
+
                 break;
             case 'siege':
                 $this->manageSiegeWeapons();
+
                 break;
             case 'reports':
                 $this->generateBattleReports();
+
                 break;
             case 'simulate':
                 $this->simulateCombat();
+
                 break;
             default:
                 $this->error("Unknown action: {$action}");
+
                 return 1;
         }
 
@@ -81,7 +85,7 @@ class AdvancedCombatCommand extends Command
         $heroesCreated = 0;
 
         foreach ($players as $player) {
-            if (!$player->hero) {
+            if (! $player->hero) {
                 $hero = $this->createHeroForPlayer($player);
                 if ($hero) {
                     $heroesCreated++;
@@ -102,7 +106,7 @@ class AdvancedCombatCommand extends Command
             'roman' => ['Marcus Aurelius', 'Julius Caesar', 'Augustus', 'Trajan', 'Hadrian'],
             'teuton' => ['Siegfried', 'Beowulf', 'Thor', 'Odin', 'Ragnar'],
             'gaul' => ['Vercingetorix', 'Asterix', 'Obelix', 'Druid', 'Bard'],
-            'natars' => ['Natarian Guardian', 'Ancient Warrior', 'Mystic Defender', 'Shadow Knight', 'Crystal Sage']
+            'natars' => ['Natarian Guardian', 'Ancient Warrior', 'Mystic Defender', 'Shadow Knight', 'Crystal Sage'],
         ];
 
         $tribe = $player->tribe;
@@ -132,20 +136,20 @@ class AdvancedCombatCommand extends Command
         $abilities = [
             'roman' => [
                 'legion_leadership' => ['name' => 'Legion Leadership', 'description' => 'Increases infantry attack by 20%'],
-                'tactical_brilliance' => ['name' => 'Tactical Brilliance', 'description' => 'Reduces enemy defense by 15%']
+                'tactical_brilliance' => ['name' => 'Tactical Brilliance', 'description' => 'Reduces enemy defense by 15%'],
             ],
             'teuton' => [
                 'berserker_rage' => ['name' => 'Berserker Rage', 'description' => 'Increases attack power by 30% when health is low'],
-                'fearless_charge' => ['name' => 'Fearless Charge', 'description' => 'Cavalry units move 25% faster']
+                'fearless_charge' => ['name' => 'Fearless Charge', 'description' => 'Cavalry units move 25% faster'],
             ],
             'gaul' => [
                 'nature_blessing' => ['name' => 'Nature Blessing', 'description' => 'Increases resource production by 15%'],
-                'druidic_wisdom' => ['name' => 'Druidic Wisdom', 'description' => 'Reduces building construction time by 20%']
+                'druidic_wisdom' => ['name' => 'Druidic Wisdom', 'description' => 'Reduces building construction time by 20%'],
             ],
             'natars' => [
                 'ancient_power' => ['name' => 'Ancient Power', 'description' => 'All units gain 25% bonus to all stats'],
-                'mystic_shield' => ['name' => 'Mystic Shield', 'description' => 'Reduces incoming damage by 20%']
-            ]
+                'mystic_shield' => ['name' => 'Mystic Shield', 'description' => 'Reduces incoming damage by 20%'],
+            ],
         ];
 
         return $abilities[$tribe] ?? $abilities['roman'];
@@ -192,7 +196,7 @@ class AdvancedCombatCommand extends Command
                 'defense_power' => 20,
                 'health' => 500,
                 'cost' => ['wood' => 300, 'clay' => 200, 'iron' => 200, 'crop' => 100],
-                'description' => 'Effective against walls and gates'
+                'description' => 'Effective against walls and gates',
             ],
             'catapult' => [
                 'name' => 'Catapult',
@@ -200,7 +204,7 @@ class AdvancedCombatCommand extends Command
                 'defense_power' => 30,
                 'health' => 300,
                 'cost' => ['wood' => 320, 'clay' => 400, 'iron' => 100, 'crop' => 100],
-                'description' => 'Long-range siege weapon for destroying buildings'
+                'description' => 'Long-range siege weapon for destroying buildings',
             ],
             'trebuchet' => [
                 'name' => 'Trebuchet',
@@ -208,8 +212,8 @@ class AdvancedCombatCommand extends Command
                 'defense_power' => 40,
                 'health' => 400,
                 'cost' => ['wood' => 500, 'clay' => 600, 'iron' => 200, 'crop' => 150],
-                'description' => 'Most powerful siege weapon, slow but devastating'
-            ]
+                'description' => 'Most powerful siege weapon, slow but devastating',
+            ],
         ];
 
         $created = 0;
@@ -268,11 +272,11 @@ class AdvancedCombatCommand extends Command
         $this->line("    Village: {$battle->village->name}");
 
         if (isset($battleData['attacking_troops'])) {
-            $this->line('    Attacking Troops: ' . count($battleData['attacking_troops']));
+            $this->line('    Attacking Troops: '.count($battleData['attacking_troops']));
         }
 
         if (isset($battleData['defending_troops'])) {
-            $this->line('    Defending Troops: ' . count($battleData['defending_troops']));
+            $this->line('    Defending Troops: '.count($battleData['defending_troops']));
         }
 
         if (isset($battleData['battle_power'])) {
@@ -280,7 +284,7 @@ class AdvancedCombatCommand extends Command
         }
 
         if (isset($battleData['defensive_bonus'])) {
-            $this->line('    Defensive Bonus: ' . ($battleData['defensive_bonus'] * 100) . '%');
+            $this->line('    Defensive Bonus: '.($battleData['defensive_bonus'] * 100).'%');
         }
     }
 
@@ -292,7 +296,7 @@ class AdvancedCombatCommand extends Command
         $this->info('🎯 Simulating combat scenarios...');
 
         $villages = Village::with(['player', 'troops.unitType', 'buildings.buildingType'])
-            ->whereHas('troops', function ($query) {
+            ->whereHas('troops', function ($query): void {
                 $query->where('count', '>', 0);
             })
             ->limit(10)

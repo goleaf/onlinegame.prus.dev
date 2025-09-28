@@ -26,8 +26,10 @@ class AppServiceProvider extends ServiceProvider
         // Auto-resolve common game services
         $this->app->bindIf(\App\Services\GameMechanicsService::class, function ($app) {
             return new \App\Services\GameMechanicsService(
-                $app->make('game.cache'),
-                $app->make('game.session')
+                $app->make(\App\Services\GameTickService::class),
+                $app->make(\App\Services\ResourceProductionService::class),
+                $app->make(\App\Services\BuildingService::class),
+                $app->make(\App\Services\TroopService::class)
             );
         });
 
@@ -100,7 +102,15 @@ class AppServiceProvider extends ServiceProvider
                 config('lara-util-x.cache.default_tags', ['game'])
             );
         });
-        
+
+        // Register local App utilities with proper dependencies
+        $this->app->bind(\App\Utilities\CachingUtil::class, function ($app) {
+            return new \App\Utilities\CachingUtil(
+                config('lara-util-x.cache.default_expiration', 3600),
+                config('lara-util-x.cache.default_tags', ['game'])
+            );
+        });
+
         $this->app->bind(\LaraUtilX\Utilities\LoggingUtil::class, function ($app) {
             return new \LaraUtilX\Utilities\LoggingUtil();
         });
@@ -116,13 +126,13 @@ class AppServiceProvider extends ServiceProvider
     {
         // Prevent lazy loading in non-production environments
         // This will throw exceptions when N+1 queries are detected
-        Model::preventLazyLoading(!$this->app->isProduction());
+        Model::preventLazyLoading(! $this->app->isProduction());
 
         // Prevent accessing missing attributes silently
-        Model::preventSilentlyDiscardingAttributes(!$this->app->isProduction());
+        Model::preventSilentlyDiscardingAttributes(! $this->app->isProduction());
 
         // Prevent accessing missing relationships silently
-        Model::preventAccessingMissingAttributes(!$this->app->isProduction());
+        Model::preventAccessingMissingAttributes(! $this->app->isProduction());
 
         // Enhanced debug page configuration for Laravel 12.29.0+
         if ($this->app->environment('local', 'development')) {

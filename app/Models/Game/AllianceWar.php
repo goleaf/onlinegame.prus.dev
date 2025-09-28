@@ -3,13 +3,14 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class AllianceWar extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'attacker_alliance_id',
@@ -86,7 +87,7 @@ class AllianceWar extends Model
      */
     public function getWinnerAttribute(): ?Alliance
     {
-        if (!$this->isCompleted()) {
+        if (! $this->isCompleted()) {
             return null;
         }
 
@@ -98,7 +99,7 @@ class AllianceWar extends Model
      */
     public function getLoserAttribute(): ?Alliance
     {
-        if (!$this->isCompleted()) {
+        if (! $this->isCompleted()) {
             return null;
         }
 

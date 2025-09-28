@@ -3,17 +3,17 @@
 namespace App\Http\Middleware;
 
 use App\Services\GameErrorHandler;
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
-use Closure;
 
 class GameSecurityMiddleware
 {
     /**
      * Handle an incoming request.
      */
-    public function handle(Request $request, Closure $next, string $action = null)
+    public function handle(Request $request, Closure $next, ?string $action = null)
     {
         $startTime = microtime(true);
 
@@ -25,7 +25,7 @@ class GameSecurityMiddleware
             'user_id' => auth()->id(),
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'security_check_time' => now()
+            'security_check_time' => now(),
         ]);
 
         try {
@@ -36,7 +36,7 @@ class GameSecurityMiddleware
                 $rateLimitTime = round((microtime(true) - $rateLimitStart) * 1000, 2);
                 ds('GameSecurityMiddleware: Rate limit check completed', [
                     'action' => $action,
-                    'rate_limit_time_ms' => $rateLimitTime
+                    'rate_limit_time_ms' => $rateLimitTime,
                 ]);
             }
 
@@ -45,7 +45,7 @@ class GameSecurityMiddleware
             $this->validateRequestIntegrity($request);
             $integrityTime = round((microtime(true) - $integrityStart) * 1000, 2);
             ds('GameSecurityMiddleware: Request integrity validated', [
-                'integrity_check_time_ms' => $integrityTime
+                'integrity_check_time_ms' => $integrityTime,
             ]);
 
             // Check for suspicious patterns
@@ -53,7 +53,7 @@ class GameSecurityMiddleware
             $this->checkSuspiciousActivity($request);
             $suspiciousTime = round((microtime(true) - $suspiciousStart) * 1000, 2);
             ds('GameSecurityMiddleware: Suspicious activity check completed', [
-                'suspicious_check_time_ms' => $suspiciousTime
+                'suspicious_check_time_ms' => $suspiciousTime,
             ]);
 
             // Log security event
@@ -66,14 +66,14 @@ class GameSecurityMiddleware
             // Log performance
             $duration = microtime(true) - $startTime;
             $totalTime = round($duration * 1000, 2);
-            
+
             ds('GameSecurityMiddleware: Security check completed successfully', [
                 'action' => $action,
                 'total_time_ms' => $totalTime,
                 'status_code' => $response->getStatusCode(),
-                'memory_usage' => memory_get_usage(true)
+                'memory_usage' => memory_get_usage(true),
             ]);
-            
+
             if ($duration > 1.0) {
                 Log::channel('security')->warning('Slow request detected', [
                     'action' => $action,
@@ -89,9 +89,9 @@ class GameSecurityMiddleware
                 'action' => $action,
                 'error' => $e->getMessage(),
                 'exception' => get_class($e),
-                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
-            
+
             GameErrorHandler::handleGameError($e, [
                 'action' => 'security_middleware',
                 'request_action' => $action,
@@ -111,7 +111,7 @@ class GameSecurityMiddleware
         $rateLimits = config('game.security.rate_limiting', []);
         $limit = $rateLimits[$action] ?? 60;  // Default: 60 requests per minute
 
-        $key = 'game_action:' . $action . ':' . $request->ip();
+        $key = 'game_action:'.$action.':'.$request->ip();
 
         if (RateLimiter::tooManyAttempts($key, $limit)) {
             $seconds = RateLimiter::availableIn($key);
@@ -174,7 +174,7 @@ class GameSecurityMiddleware
         $ip = $request->ip();
 
         // Check for rapid successive requests
-        $key = 'rapid_requests:' . $ip . ':' . $userId;
+        $key = 'rapid_requests:'.$ip.':'.$userId;
         $recentRequests = RateLimiter::attempts($key);
 
         if ($recentRequests > 10) {
@@ -241,7 +241,7 @@ class GameSecurityMiddleware
     /**
      * Log security event
      */
-    private function logSecurityEvent(Request $request, string $action = null): void
+    private function logSecurityEvent(Request $request, ?string $action = null): void
     {
         Log::channel('security')->info('Game security event', [
             'action' => $action,

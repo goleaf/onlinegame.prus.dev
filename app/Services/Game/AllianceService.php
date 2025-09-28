@@ -3,11 +3,10 @@
 namespace App\Services\Game;
 
 use App\Models\Game\Alliance;
-use App\Models\Game\AllianceMember;
-use App\Models\Game\Player;
-use App\Models\Game\AllianceWar;
 use App\Models\Game\AllianceDiplomacy;
-use App\Services\Game\RealTimeGameService;
+use App\Models\Game\AllianceMember;
+use App\Models\Game\AllianceWar;
+use App\Models\Game\Player;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -65,12 +64,12 @@ class AllianceService
             ->where('player_id', $inviterId)
             ->first();
 
-        if (!$alliance || !$inviter || !$this->canInvitePlayers($inviter)) {
+        if (! $alliance || ! $inviter || ! $this->canInvitePlayers($inviter)) {
             return false;
         }
 
         $player = Player::find($playerId);
-        if (!$player || $player->alliance_id) {
+        if (! $player || $player->alliance_id) {
             return false;
         }
 
@@ -102,7 +101,7 @@ class AllianceService
             ->where('rank', 'pending')
             ->first();
 
-        if (!$invitation) {
+        if (! $invitation) {
             return false;
         }
 
@@ -142,7 +141,7 @@ class AllianceService
             ->where('player_id', $playerId)
             ->first();
 
-        if (!$alliance || !$member || !$this->canRemovePlayers($remover, $member)) {
+        if (! $alliance || ! $member || ! $this->canRemovePlayers($remover, $member)) {
             return false;
         }
 
@@ -172,7 +171,7 @@ class AllianceService
         $alliance = Alliance::find($allianceId);
         $targetAlliance = Alliance::find($targetAllianceId);
 
-        if (!$alliance || !$targetAlliance || $allianceId === $targetAllianceId) {
+        if (! $alliance || ! $targetAlliance || $allianceId === $targetAllianceId) {
             throw new \InvalidArgumentException('Invalid alliance war declaration');
         }
 
@@ -205,8 +204,8 @@ class AllianceService
     public function getAllianceStats(int $allianceId): array
     {
         $alliance = Alliance::with(['members', 'wars'])->find($allianceId);
-        
-        if (!$alliance) {
+
+        if (! $alliance) {
             return [];
         }
 
@@ -287,6 +286,7 @@ class AllianceService
             ->get()
             ->map(function ($relation) use ($allianceId) {
                 $isInitiator = $relation->alliance_id === $allianceId;
+
                 return [
                     'relation' => $relation,
                     'target_alliance' => $isInitiator ? $relation->targetAlliance : $relation->alliance,
@@ -302,7 +302,7 @@ class AllianceService
     private function getAllianceRank(int $allianceId): int
     {
         $alliance = Alliance::find($allianceId);
-        if (!$alliance) {
+        if (! $alliance) {
             return 0;
         }
 
@@ -331,7 +331,7 @@ class AllianceService
     private function generateReferenceNumber(): string
     {
         do {
-            $reference = 'ALL-' . strtoupper(Str::random(8));
+            $reference = 'ALL-'.strtoupper(Str::random(8));
         } while (AllianceMember::where('reference_number', $reference)->exists());
 
         return $reference;
@@ -344,7 +344,7 @@ class AllianceService
     {
         try {
             $userIds = $alliance->members->pluck('user_id')->toArray();
-            
+
             RealTimeGameService::broadcastUpdate($userIds, 'alliance_update', [
                 'alliance_id' => $alliance->id,
                 'action' => $action,
@@ -391,7 +391,7 @@ class AllianceService
             $attackerUserIds = $war->attackerAlliance->members->pluck('user_id')->toArray();
             $defenderUserIds = $war->defenderAlliance->members->pluck('user_id')->toArray();
             $allUserIds = array_merge($attackerUserIds, $defenderUserIds);
-            
+
             RealTimeGameService::broadcastUpdate($allUserIds, 'war_declared', [
                 'war' => $war,
                 'timestamp' => now()->toISOString(),

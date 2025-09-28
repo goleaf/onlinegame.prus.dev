@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GameErrorHandler
 {
     protected $errorLog = [];
+
     protected $maxLogSize = 1000;
 
     /**
@@ -236,6 +237,7 @@ class GameErrorHandler
             $context = $error['context'] ?? 'unknown';
             $contexts[$context] = ($contexts[$context] ?? 0) + 1;
         }
+
         return $contexts;
     }
 
@@ -249,6 +251,7 @@ class GameErrorHandler
             $type = $error['error_type'] ?? 'unknown';
             $types[$type] = ($types[$type] ?? 0) + 1;
         }
+
         return $types;
     }
 
@@ -259,7 +262,7 @@ class GameErrorHandler
     {
         $totalRequests = 1000; // This should be tracked separately
         $totalErrors = count($this->errorLog);
-        
+
         return $totalRequests > 0 ? ($totalErrors / $totalRequests) * 100 : 0;
     }
 
@@ -278,7 +281,7 @@ class GameErrorHandler
     {
         $count = count($this->errorLog);
         $this->errorLog = [];
-        
+
         Log::info('Error log cleared', [
             'cleared_count' => $count,
         ]);
@@ -346,11 +349,11 @@ class GameErrorHandler
     {
         $trends = [];
         $now = now();
-        
+
         for ($i = 0; $i < 24; $i++) {
             $hour = $now->subHours($i);
             $count = 0;
-            
+
             foreach ($this->errorLog as $error) {
                 if (isset($error['timestamp'])) {
                     $errorTime = \Carbon\Carbon::parse($error['timestamp']);
@@ -359,10 +362,10 @@ class GameErrorHandler
                     }
                 }
             }
-            
+
             $trends[$hour->format('H:00')] = $count;
         }
-        
+
         return $trends;
     }
 
@@ -373,11 +376,11 @@ class GameErrorHandler
     {
         $trends = [];
         $now = now();
-        
+
         for ($i = 0; $i < 7; $i++) {
             $day = $now->subDays($i);
             $count = 0;
-            
+
             foreach ($this->errorLog as $error) {
                 if (isset($error['timestamp'])) {
                     $errorTime = \Carbon\Carbon::parse($error['timestamp']);
@@ -386,10 +389,10 @@ class GameErrorHandler
                     }
                 }
             }
-            
+
             $trends[$day->format('Y-m-d')] = $count;
         }
-        
+
         return $trends;
     }
 
@@ -400,11 +403,11 @@ class GameErrorHandler
     {
         $trends = [];
         $now = now();
-        
+
         for ($i = 0; $i < 4; $i++) {
             $week = $now->subWeeks($i);
             $count = 0;
-            
+
             foreach ($this->errorLog as $error) {
                 if (isset($error['timestamp'])) {
                     $errorTime = \Carbon\Carbon::parse($error['timestamp']);
@@ -413,10 +416,10 @@ class GameErrorHandler
                     }
                 }
             }
-            
+
             $trends[$week->format('Y-W')] = $count;
         }
-        
+
         return $trends;
     }
 }

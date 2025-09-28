@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,9 +17,7 @@ class UsersSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --tables=users --limit=2 --fields=id,name,email
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
@@ -29,9 +28,9 @@ class UsersSeeder extends Seeder
                 'id' => 2,
                 'name' => 'Darion Cruickshank',
                 'email' => 'grimes.oren@example.com',
-            ]
+            ],
         ];
-        
-        DB::table("users")->insert($dataTables);
+
+        DB::table('users')->insert($dataTables);
     }
 }

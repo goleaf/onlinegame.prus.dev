@@ -3,21 +3,27 @@
 namespace App\Http\Controllers\Game;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\AIService;
 use App\Traits\GameValidationTrait;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
 
 class AIController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait;
+    use ApiResponseTrait;
+    use GameValidationTrait;
+    use ValidationHelperTrait;
 
     protected Model $model;
+
     protected AIService $aiService;
+
     protected RateLimiterUtil $rateLimiter;
 
     protected array $validationRules = [
@@ -28,7 +34,9 @@ class AIController extends CrudController
     ];
 
     protected array $searchableFields = ['prompt'];
+
     protected array $relationships = [];
+
     protected int $perPage = 10;
 
     public function __construct(AIService $aiService, RateLimiterUtil $rateLimiter)
@@ -36,7 +44,7 @@ class AIController extends CrudController
         $this->aiService = $aiService;
         $this->rateLimiter = $rateLimiter;
         // AI Controller doesn't have a specific model, so we'll use a generic approach
-        parent::__construct();
+        parent::__construct(new User());
     }
 
     /**
@@ -70,13 +78,13 @@ class AIController extends CrudController
     public function generateVillageNames(Request $request)
     {
         // Rate limiting
-        $rateLimitKey = 'ai_village_names_' . ($request->ip() ?? 'unknown');
-        if (!$this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
+        $rateLimitKey = 'ai_village_names_'.($request->ip() ?? 'unknown');
+        if (! $this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
             return $this->errorResponse('Too many requests. Please try again later.', 429);
         }
 
         try {
-            $validated = $request->validate([
+            $validated = $this->validateRequestData($request, [
                 'count' => 'integer|min:1|max:10',
                 'tribe' => 'string|in:roman,teuton,gaul',
             ]);
@@ -115,13 +123,13 @@ class AIController extends CrudController
     public function generateAllianceNames(Request $request)
     {
         // Rate limiting
-        $rateLimitKey = 'ai_alliance_names_' . ($request->ip() ?? 'unknown');
-        if (!$this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
+        $rateLimitKey = 'ai_alliance_names_'.($request->ip() ?? 'unknown');
+        if (! $this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
             return $this->errorResponse('Too many requests. Please try again later.', 429);
         }
 
         try {
-            $validated = $request->validate([
+            $validated = $this->validateRequestData($request, [
                 'count' => 'integer|min:1|max:10',
             ]);
 
@@ -154,13 +162,13 @@ class AIController extends CrudController
     public function generateQuestDescription(Request $request)
     {
         // Rate limiting
-        $rateLimitKey = 'ai_quest_description_' . ($request->ip() ?? 'unknown');
-        if (!$this->rateLimiter->attempt($rateLimitKey, 5, 1)) {
+        $rateLimitKey = 'ai_quest_description_'.($request->ip() ?? 'unknown');
+        if (! $this->rateLimiter->attempt($rateLimitKey, 5, 1)) {
             return $this->errorResponse('Too many requests. Please try again later.', 429);
         }
 
         try {
-            $validated = $request->validate([
+            $validated = $this->validateRequestData($request, [
                 'quest_type' => 'required|string|max:255',
                 'context' => 'array',
                 'context.*' => 'string|max:255',
@@ -199,13 +207,13 @@ class AIController extends CrudController
     public function generateBattleReport(Request $request)
     {
         // Rate limiting
-        $rateLimitKey = 'ai_battle_report_' . ($request->ip() ?? 'unknown');
-        if (!$this->rateLimiter->attempt($rateLimitKey, 5, 1)) {
+        $rateLimitKey = 'ai_battle_report_'.($request->ip() ?? 'unknown');
+        if (! $this->rateLimiter->attempt($rateLimitKey, 5, 1)) {
             return $this->errorResponse('Too many requests. Please try again later.', 429);
         }
 
         try {
-            $validated = $request->validate([
+            $validated = $this->validateRequestData($request, [
                 'attacker' => 'required|string|max:255',
                 'defender' => 'required|string|max:255',
                 'attacker_troops' => 'required|integer|min:0',
@@ -252,13 +260,13 @@ class AIController extends CrudController
     public function generatePlayerMessage(Request $request)
     {
         // Rate limiting
-        $rateLimitKey = 'ai_player_message_' . ($request->ip() ?? 'unknown');
-        if (!$this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
+        $rateLimitKey = 'ai_player_message_'.($request->ip() ?? 'unknown');
+        if (! $this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
             return $this->errorResponse('Too many requests. Please try again later.', 429);
         }
 
         try {
-            $validated = $request->validate([
+            $validated = $this->validateRequestData($request, [
                 'message_type' => 'required|string|max:255',
                 'context' => 'array',
                 'context.*' => 'string|max:255',
@@ -297,13 +305,13 @@ class AIController extends CrudController
     public function generateWorldEvent(Request $request)
     {
         // Rate limiting
-        $rateLimitKey = 'ai_world_event_' . ($request->ip() ?? 'unknown');
-        if (!$this->rateLimiter->attempt($rateLimitKey, 5, 1)) {
+        $rateLimitKey = 'ai_world_event_'.($request->ip() ?? 'unknown');
+        if (! $this->rateLimiter->attempt($rateLimitKey, 5, 1)) {
             return $this->errorResponse('Too many requests. Please try again later.', 429);
         }
 
         try {
-            $validated = $request->validate([
+            $validated = $this->validateRequestData($request, [
                 'event_type' => 'required|string|max:255',
                 'world_data' => 'array',
                 'world_data.*' => 'string|max:255',
@@ -342,13 +350,13 @@ class AIController extends CrudController
     public function generateStrategySuggestion(Request $request)
     {
         // Rate limiting
-        $rateLimitKey = 'ai_strategy_suggestion_' . ($request->ip() ?? 'unknown');
-        if (!$this->rateLimiter->attempt($rateLimitKey, 3, 1)) {
+        $rateLimitKey = 'ai_strategy_suggestion_'.($request->ip() ?? 'unknown');
+        if (! $this->rateLimiter->attempt($rateLimitKey, 3, 1)) {
             return $this->errorResponse('Too many requests. Please try again later.', 429);
         }
 
         try {
-            $validated = $request->validate([
+            $validated = $this->validateRequestData($request, [
                 'game_state' => 'required|array',
                 'game_state.*' => 'string|max:255',
             ]);
@@ -381,13 +389,13 @@ class AIController extends CrudController
     public function generateCustomContent(Request $request)
     {
         // Rate limiting
-        $rateLimitKey = 'ai_custom_content_' . ($request->ip() ?? 'unknown');
-        if (!$this->rateLimiter->attempt($rateLimitKey, 5, 1)) {
+        $rateLimitKey = 'ai_custom_content_'.($request->ip() ?? 'unknown');
+        if (! $this->rateLimiter->attempt($rateLimitKey, 5, 1)) {
             return $this->errorResponse('Too many requests. Please try again later.', 429);
         }
 
         try {
-            $validated = $request->validate([
+            $validated = $this->validateRequestData($request, [
                 'prompt' => 'required|string|max:1000',
                 'provider' => 'string|in:openai,gemini',
                 'model' => 'string|max:255',
@@ -442,7 +450,7 @@ class AIController extends CrudController
     public function switchProvider(Request $request)
     {
         try {
-            $validated = $request->validate([
+            $validated = $this->validateRequestData($request, [
                 'provider' => 'required|string|in:openai,gemini',
             ]);
 

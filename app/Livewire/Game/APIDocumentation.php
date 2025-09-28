@@ -2,9 +2,8 @@
 
 namespace App\Livewire\Game;
 
-use Illuminate\Support\Facades\Auth;
+use App\Utilities\LoggingUtil;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\LoggingUtil;
 use Livewire\Component;
 
 class APIDocumentation extends Component
@@ -12,9 +11,13 @@ class APIDocumentation extends Component
     use ApiResponseTrait;
 
     public $documentation = [];
+
     public $isLoading = false;
+
     public $activeSection = 'overview';
+
     public $searchQuery = '';
+
     public $filteredEndpoints = [];
 
     protected $listeners = [
@@ -43,7 +46,7 @@ class APIDocumentation extends Component
                 'error' => $e->getMessage(),
             ], 'api_documentation');
 
-            $this->addNotification('Error loading API documentation: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading API documentation: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -63,6 +66,7 @@ class APIDocumentation extends Component
     {
         if (empty($this->searchQuery)) {
             $this->filteredEndpoints = $this->documentation['endpoints'] ?? [];
+
             return;
         }
 
@@ -77,7 +81,7 @@ class APIDocumentation extends Component
                     $filteredCategory[$endpoint] = $details;
                 }
             }
-            if (!empty($filteredCategory)) {
+            if (! empty($filteredCategory)) {
                 $filtered[$category] = $filteredCategory;
             }
         }
@@ -106,7 +110,7 @@ class APIDocumentation extends Component
     {
         $this->dispatch('notification', [
             'message' => $message,
-            'type' => $type
+            'type' => $type,
         ]);
     }
 
@@ -114,7 +118,7 @@ class APIDocumentation extends Component
     {
         try {
             $response = \Http::withHeaders([
-                'Authorization' => 'Bearer ' . auth()->user()->createToken('api-documentation')->plainTextToken,
+                'Authorization' => 'Bearer '.auth()->user()->createToken('api-documentation')->plainTextToken,
                 'Accept' => 'application/json',
             ])->$method(url($url), $data);
 
@@ -122,7 +126,7 @@ class APIDocumentation extends Component
                 return $response->json();
             }
 
-            throw new \Exception('API request failed: ' . $response->body());
+            throw new \Exception('API request failed: '.$response->body());
         } catch (\Exception $e) {
             LoggingUtil::error('API request failed', [
                 'method' => $method,

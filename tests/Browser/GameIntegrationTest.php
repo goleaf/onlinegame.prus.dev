@@ -19,8 +19,11 @@ class GameIntegrationTest extends DuskTestCase
     use DatabaseMigrations;
 
     protected $user;
+
     protected $player;
+
     protected $world;
+
     protected $village;
 
     protected function setUp(): void
@@ -105,7 +108,7 @@ class GameIntegrationTest extends DuskTestCase
 
     public function test_complete_game_flow()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             // 1. Login and access game dashboard
             $browser
                 ->loginAs($this->user)
@@ -229,7 +232,7 @@ class GameIntegrationTest extends DuskTestCase
 
     public function test_real_time_updates()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game')
@@ -241,7 +244,7 @@ class GameIntegrationTest extends DuskTestCase
 
     public function test_navigation_consistency()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game');
@@ -272,7 +275,7 @@ class GameIntegrationTest extends DuskTestCase
 
     public function test_responsive_design()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             // Test mobile viewport
             $browser
                 ->loginAs($this->user)
@@ -297,7 +300,7 @@ class GameIntegrationTest extends DuskTestCase
 
     public function test_game_performance()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $startTime = microtime(true);
 
             $browser

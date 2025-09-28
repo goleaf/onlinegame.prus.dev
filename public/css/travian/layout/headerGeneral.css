@@ -32,7 +32,7 @@ div#header {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
 }
 div#header:before {
-  content: "";
+  content: '';
   display: block;
   width: 100%;
   height: 23px;
@@ -47,7 +47,7 @@ div#header:before {
   z-index: 1;
 }
 div#header:after {
-  content: "";
+  content: '';
   display: block;
   width: 100%;
   height: calc(100% - 20px);
@@ -93,15 +93,24 @@ div#header #logo.pathToPandora {
 div#header #logo.pathToPandora .overlayUIBackgroundHelper {
   background-image: url('../../img_ltr/layout/logoPathToPandora_white.svg');
 }
-.activate div#header, .login div#header, .logout div#header {
+.activate div#header,
+.login div#header,
+.logout div#header {
   box-shadow: none;
   border: none;
   height: 14px;
 }
-.activate div#header:before, .activate div#header:after, .login div#header:before, .login div#header:after, .logout div#header:before, .logout div#header:after {
+.activate div#header:before,
+.activate div#header:after,
+.login div#header:before,
+.login div#header:after,
+.logout div#header:before,
+.logout div#header:after {
   display: none;
 }
-.activate div#header #logo, .login div#header #logo, .logout div#header #logo {
+.activate div#header #logo,
+.login div#header #logo,
+.logout div#header #logo {
   top: -2px;
   left: 0;
   width: 300px;
@@ -129,5 +138,5 @@ div#header #goldSilver {
   transform: translateX(50%);
 }
 div#header #goldSilver.overlayUIAffected {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }

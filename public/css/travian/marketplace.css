@@ -25,7 +25,7 @@ div#build.exchangeResources p#submitButton {
   display: none;
 }
 div#build.exchangeResources span.corr {
-  color: #FF4000;
+  color: #ff4000;
 }
 div#build.exchangeResources p.npc_desc {
   font-size: 13px;
@@ -46,7 +46,7 @@ div#build.exchangeResources table#npc td {
   text-align: center;
 }
 div#build.exchangeResources table#npc thead td {
-  background-color: #E7E7E7;
+  background-color: #e7e7e7;
 }
 div#build.exchangeResources table#npc thead td i.r4 {
   vertical-align: middle;
@@ -72,7 +72,8 @@ div#build.exchangeResources table#npc td.sum {
   padding-left: 20px;
 }
 .fa-IR div#build.exchangeResources table#npc .rem,
-.fa-IR div#build.exchangeResources table#npc #remain, .he-IL div#build.exchangeResources table#npc .rem,
+.fa-IR div#build.exchangeResources table#npc #remain,
+.he-IL div#build.exchangeResources table#npc .rem,
 .he-IL div#build.exchangeResources table#npc #remain {
   direction: ltr;
   unicode-bidi: embed;

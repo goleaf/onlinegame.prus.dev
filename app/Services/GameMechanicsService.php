@@ -13,8 +13,11 @@ use Illuminate\Support\Facades\Log;
 class GameMechanicsService
 {
     protected $gameTickService;
+
     protected $resourceProductionService;
+
     protected $buildingService;
+
     protected $troopService;
 
     public function __construct(
@@ -35,15 +38,15 @@ class GameMechanicsService
     public function processWorldMechanics(World $world)
     {
         $startTime = microtime(true);
-        
+
         ds('GameMechanicsService: Processing world mechanics', [
             'service' => 'GameMechanicsService',
             'method' => 'processWorldMechanics',
             'world_id' => $world->id,
             'world_name' => $world->name,
-            'processing_time' => now()
+            'processing_time' => now(),
         ]);
-        
+
         try {
             DB::beginTransaction();
 
@@ -53,11 +56,11 @@ class GameMechanicsService
                 ->with(['resources', 'buildings', 'player'])
                 ->get();
             $villageQueryTime = round((microtime(true) - $villageQueryStart) * 1000, 2);
-            
+
             ds('GameMechanicsService: Villages loaded for processing', [
                 'world_id' => $world->id,
                 'villages_count' => $villages->count(),
-                'village_query_time_ms' => $villageQueryTime
+                'village_query_time_ms' => $villageQueryTime,
             ]);
 
             $villageProcessingStart = microtime(true);
@@ -74,27 +77,27 @@ class GameMechanicsService
             DB::commit();
 
             $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-            
+
             ds('GameMechanicsService: World mechanics processed successfully', [
                 'world_id' => $world->id,
                 'villages_processed' => $villages->count(),
                 'village_processing_time_ms' => $villageProcessingTime,
                 'world_events_time_ms' => $worldEventsTime,
-                'total_time_ms' => $totalTime
+                'total_time_ms' => $totalTime,
             ]);
 
             Log::info("World mechanics processed for world {$world->id}");
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             ds('GameMechanicsService: World mechanics processing failed', [
                 'world_id' => $world->id,
                 'error' => $e->getMessage(),
                 'exception' => get_class($e),
-                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
-            
-            Log::error('Failed to process world mechanics: ' . $e->getMessage());
+
+            Log::error('Failed to process world mechanics: '.$e->getMessage());
 
             throw $e;
         }
@@ -185,7 +188,7 @@ class GameMechanicsService
             Log::info("Building completed: {$queue->buildingType->name} level {$queue->target_level} in village {$queue->village_id}");
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to complete building: ' . $e->getMessage());
+            Log::error('Failed to complete building: '.$e->getMessage());
 
             throw $e;
         }
@@ -272,8 +275,8 @@ class GameMechanicsService
         foreach ($buildings as $building) {
             $effects = $building->buildingType->effects ?? [];
 
-            if (isset($effects['capacity_' . $resourceType])) {
-                $capacity += $effects['capacity_' . $resourceType] * $building->level;
+            if (isset($effects['capacity_'.$resourceType])) {
+                $capacity += $effects['capacity_'.$resourceType] * $building->level;
             }
         }
 
@@ -293,7 +296,7 @@ class GameMechanicsService
             $requirements = $building->buildingType->requirements ?? [];
 
             foreach ($requirements as $requirement) {
-                if (!$this->checkRequirement($village, $requirement)) {
+                if (! $this->checkRequirement($village, $requirement)) {
                     // Handle requirement not met
                     $this->handleRequirementNotMet($village, $building, $requirement);
                 }
@@ -332,7 +335,7 @@ class GameMechanicsService
     protected function handleRequirementNotMet(Village $village, Building $building, array $requirement)
     {
         // Log requirement not met
-        Log::warning("Requirement not met for building {$building->id}: " . json_encode($requirement));
+        Log::warning("Requirement not met for building {$building->id}: ".json_encode($requirement));
 
         // Create event for requirement not met
         $this->createRequirementNotMetEvent($village, $building, $requirement);
@@ -462,8 +465,8 @@ class GameMechanicsService
             $effects = $building->buildingType->effects ?? [];
 
             foreach (['wood', 'clay', 'iron', 'crop'] as $resource) {
-                if (isset($effects['capacity_' . $resource])) {
-                    $capacity[$resource] += $effects['capacity_' . $resource] * $building->level;
+                if (isset($effects['capacity_'.$resource])) {
+                    $capacity[$resource] += $effects['capacity_'.$resource] * $building->level;
                 }
             }
         }

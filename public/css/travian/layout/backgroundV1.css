@@ -18,8 +18,9 @@ body.buildingsV1 {
   min-width: 1290px;
   overflow-y: scroll;
 }
-body.buildingsV1:before, body.buildingsV1:after {
-  content: "";
+body.buildingsV1:before,
+body.buildingsV1:after {
+  content: '';
   position: absolute;
   z-index: -1;
   top: 0;
@@ -105,40 +106,64 @@ body.buildingsV1.perspectiveResources.season-winter:after {
 body.buildingsV1.perspectiveResources.season-winter div#background {
   background-image: url('../../img_ltr/layout/bgResources_winter-ltr.jpg');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f1 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f1 {
   background-image: url('../../img_ltr/g/f1_winter-ltr.png');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f2 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f2 {
   background-image: url('../../img_ltr/g/f2_winter-ltr.png');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f3 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f3 {
   background-image: url('../../img_ltr/g/f3_winter-ltr.png');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f4 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f4 {
   background-image: url('../../img_ltr/g/f4_winter-ltr.png');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f5 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f5 {
   background-image: url('../../img_ltr/g/f5_winter-ltr.png');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f6 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f6 {
   background-image: url('../../img_ltr/g/f6_winter-ltr.png');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f7 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f7 {
   background-image: url('../../img_ltr/g/f7_winter-ltr.png');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f8 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f8 {
   background-image: url('../../img_ltr/g/f8_winter-ltr.png');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f9 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f9 {
   background-image: url('../../img_ltr/g/f9_winter-ltr.png');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f10 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f10 {
   background-image: url('../../img_ltr/g/f10_winter-ltr.png');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f11 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f11 {
   background-image: url('../../img_ltr/g/f11_winter-ltr.png');
 }
-body.buildingsV1.perspectiveResources.season-winter div.village1 #village_map.f12 {
+body.buildingsV1.perspectiveResources.season-winter
+  div.village1
+  #village_map.f12 {
   background-image: url('../../img_ltr/g/f12_winter-ltr.png');
 }
 body.buildingsV1.perspectiveBuildings:before {
@@ -153,7 +178,7 @@ body.buildingsV1.perspectiveBuildings div#background {
   min-height: 1090px;
 }
 body.buildingsV1.perspectiveBuildings div#background:before {
-  content: "";
+  content: '';
   position: absolute;
   top: 1090px;
   bottom: 0;

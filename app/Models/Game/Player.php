@@ -9,30 +9,25 @@ use App\Traits\Commentable;
 use App\ValueObjects\PlayerStats;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
 use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use sbamtr\LaravelQueryEnrich\QE;
+use OwenIt\Auditing\Contracts\Auditable;
 use SmartCache\Facades\SmartCache;
-
-use function sbamtr\LaravelQueryEnrich\c;
 
 class Player extends Model implements Auditable
 {
-    use HasFactory, Commentable;
+    use AuditableTrait;
+    use Commentable;
+    use HasFactory;
     use HasNotables;
     use HasReference;
-    use AuditableTrait;
 
     protected $fillable = [
         'user_id',
@@ -63,6 +58,7 @@ class Player extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -78,7 +74,7 @@ class Player extends Model implements Auditable
     protected function stats(): Attribute
     {
         return Attribute::make(
-            get: fn() => new PlayerStats(
+            get: fn () => new PlayerStats(
                 points: $this->points,
                 population: $this->population,
                 villagesCount: $this->villages_count,
@@ -87,7 +83,7 @@ class Player extends Model implements Auditable
                 isActive: $this->is_active,
                 isOnline: $this->is_online
             ),
-            set: fn(PlayerStats $stats) => [
+            set: fn (PlayerStats $stats) => [
                 'points' => $stats->points,
                 'population' => $stats->population,
                 'villages_count' => $stats->villagesCount,
@@ -206,7 +202,7 @@ class Player extends Model implements Auditable
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where('name', 'like', '%' . $searchTerm . '%');
+            return $q->where('name', 'like', '%'.$searchTerm.'%');
         });
     }
 
@@ -236,61 +232,61 @@ class Player extends Model implements Auditable
     public static function getCachedPlayers($worldId = null, $filters = [])
     {
         $startTime = microtime(true);
-        
+
         ds('Player: Getting cached players', [
             'model' => 'Player',
             'method' => 'getCachedPlayers',
             'world_id' => $worldId,
             'filters' => $filters,
-            'cache_key' => "players_{$worldId}_" . md5(serialize($filters)),
-            'request_time' => now()
+            'cache_key' => "players_{$worldId}_".md5(serialize($filters)),
+            'request_time' => now(),
         ]);
-        
-        $cacheKey = "players_{$worldId}_" . md5(serialize($filters));
-        
+
+        $cacheKey = "players_{$worldId}_".md5(serialize($filters));
+
         return SmartCache::remember($cacheKey, now()->addMinutes(10), function () use ($worldId, $filters, $startTime) {
             $query = static::active()->withStats();
-            
+
             // Build eloquent filters array
             $eloquentFilters = [];
-            
+
             if ($worldId) {
                 $eloquentFilters[] = ['target' => 'world_id', 'type' => '$eq', 'value' => $worldId];
             }
-            
+
             if (isset($filters['tribe'])) {
                 $eloquentFilters[] = ['target' => 'tribe', 'type' => '$eq', 'value' => $filters['tribe']];
             }
-            
+
             if (isset($filters['alliance'])) {
                 $eloquentFilters[] = ['target' => 'alliance_id', 'type' => '$eq', 'value' => $filters['alliance']];
             }
-            
+
             if (isset($filters['online'])) {
                 $eloquentFilters[] = ['target' => 'is_online', 'type' => '$eq', 'value' => true];
             }
-            
+
             if (isset($filters['search'])) {
                 $eloquentFilters[] = ['target' => 'name', 'type' => '$like', 'value' => $filters['search']];
             }
-            
+
             // Apply eloquent filtering
-            if (!empty($eloquentFilters)) {
+            if (! empty($eloquentFilters)) {
                 $query = $query->filter($eloquentFilters);
             }
-            
+
             $players = $query->get();
-            
+
             $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-            
+
             ds('Player: Cached players retrieved', [
                 'players_count' => $players->count(),
                 'world_id' => $worldId,
                 'filters_applied' => count($eloquentFilters),
                 'query_time_ms' => $totalTime,
-                'cache_hit' => false // This is a cache miss since we're in the closure
+                'cache_hit' => false, // This is a cache miss since we're in the closure
             ]);
-            
+
             return $players;
         });
     }
@@ -351,7 +347,7 @@ class Player extends Model implements Auditable
     {
         try {
             GameIntegrationService::initializeUserRealTime($this->user_id);
-            
+
             // Send welcome notification
             GameNotificationService::sendNotification(
                 [$this->user_id],

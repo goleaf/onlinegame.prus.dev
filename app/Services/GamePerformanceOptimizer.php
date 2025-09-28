@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Services\EnhancedCacheService;
-use App\Services\EnhancedSessionService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use SmartCache\Facades\SmartCache;
@@ -15,7 +13,9 @@ use SmartCache\Facades\SmartCache;
 class GamePerformanceOptimizer
 {
     protected EnhancedCacheService $cacheService;
+
     protected EnhancedSessionService $sessionService;
+
     protected array $performanceMetrics = [];
 
     public function __construct(
@@ -47,6 +47,7 @@ class GamePerformanceOptimizer
         }
 
         $this->performanceMetrics['game_data_loading'] = microtime(true) - $startTime;
+
         return $results;
     }
 
@@ -101,7 +102,7 @@ class GamePerformanceOptimizer
      */
     public function optimizeQueries(string $queryType, array $params = []): mixed
     {
-        $cacheKey = "optimized_query_{$queryType}_" . md5(serialize($params));
+        $cacheKey = "optimized_query_{$queryType}_".md5(serialize($params));
 
         return SmartCache::remember(
             $cacheKey,
@@ -164,6 +165,7 @@ class GamePerformanceOptimizer
         }
 
         $results['execution_time'] = microtime(true) - $startTime;
+
         return $results;
     }
 
@@ -189,7 +191,7 @@ class GamePerformanceOptimizer
     {
         $user = DB::table('users')
             ->select([
-                'id', 'name', 'email', 'created_at', 'updated_at'
+                'id', 'name', 'email', 'created_at', 'updated_at',
             ])
             ->where('id', $userId)
             ->first();
@@ -381,6 +383,6 @@ class GamePerformanceOptimizer
 
         $bytes /= pow(1024, $pow);
 
-        return round($bytes, 2) . ' ' . $units[$pow];
+        return round($bytes, 2).' '.$units[$pow];
     }
 }

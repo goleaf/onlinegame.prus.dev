@@ -24,7 +24,7 @@ return [
     'success' => 'Success',
     'warning' => 'Warning',
     'info' => 'Information',
-    
+
     // Navigation
     'home' => 'Home',
     'dashboard' => 'Dashboard',
@@ -33,7 +33,7 @@ return [
     'logout' => 'Logout',
     'login' => 'Login',
     'register' => 'Register',
-    
+
     // Game specific
     'game' => 'Game',
     'player' => 'Player',
@@ -57,7 +57,7 @@ return [
     'messages' => 'Messages',
     'forum' => 'Forum',
     'help' => 'Help',
-    
+
     // Time
     'time' => 'Time',
     'date' => 'Date',
@@ -68,7 +68,7 @@ return [
     'week' => 'Week',
     'month' => 'Month',
     'year' => 'Year',
-    
+
     // Validation
     'required' => 'This field is required.',
     'email' => 'Please enter a valid email address.',
@@ -80,4 +80,3 @@ return [
     'title' => 'Title',
     'content' => 'Content',
 ];
-

@@ -3,43 +3,58 @@
 namespace App\Models\Game;
 
 // use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+use App\Services\GeographicService;
+use App\ValueObjects\ResourceAmounts;
+use App\ValueObjects\TroopCounts;
 use EloquentFiltering\AllowedFilterList;
 use EloquentFiltering\Filter;
-use EloquentFiltering\FilterType;
-use App\Services\GeographicService;
-use App\ValueObjects\TroopCounts;
-use App\ValueObjects\ResourceAmounts;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use sbamtr\LaravelQueryEnrich\QE;
+use OwenIt\Auditing\Contracts\Auditable;
+
 use function sbamtr\LaravelQueryEnrich\c;
+
+use sbamtr\LaravelQueryEnrich\QE;
 
 class Movement extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait, Lift;
+    use AuditableTrait;
+    use HasFactory;
+    use HasReference;
 
     // Laravel Lift typed properties
     public int $id;
+
     public int $player_id;
+
     public int $from_village_id;
+
     public int $to_village_id;
+
     public string $type;
+
     public ?array $troops;
+
     public ?array $resources;
+
     public \Carbon\Carbon $started_at;
+
     public \Carbon\Carbon $arrives_at;
+
     public ?\Carbon\Carbon $returned_at;
+
     public string $status;
+
     public ?array $metadata;
+
     public ?string $reference_number;
+
     public \Carbon\CarbonImmutable $created_at;
+
     public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
@@ -84,7 +99,7 @@ class Movement extends Model implements Auditable
                 senators: $value['senators'] ?? 0,
                 settlers: $value['settlers'] ?? 0
             ) : null,
-            set: fn (TroopCounts $troops = null) => $troops ? [
+            set: fn (?TroopCounts $troops = null) => $troops ? [
                 'legionnaires' => $troops->legionnaires,
                 'praetorians' => $troops->praetorians,
                 'imperians' => $troops->imperians,
@@ -111,7 +126,7 @@ class Movement extends Model implements Auditable
                 iron: $value['iron'] ?? 0,
                 crop: $value['crop'] ?? 0
             ) : null,
-            set: fn (ResourceAmounts $resources = null) => $resources ? [
+            set: fn (?ResourceAmounts $resources = null) => $resources ? [
                 'wood' => $resources->wood,
                 'clay' => $resources->clay,
                 'iron' => $resources->iron,
@@ -122,6 +137,7 @@ class Movement extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -153,16 +169,16 @@ class Movement extends Model implements Auditable
             'movements.*',
             QE::select(QE::count(c('id')))
                 ->from('movements', 'm2')
-                ->where(function($q) {
+                ->where(function ($q): void {
                     $q->whereColumn('m2.from_village_id', c('movements.from_village_id'))
-                      ->orWhereColumn('m2.to_village_id', c('movements.from_village_id'));
+                        ->orWhereColumn('m2.to_village_id', c('movements.from_village_id'));
                 })
                 ->as('total_movements_from_village'),
             QE::select(QE::count(c('id')))
                 ->from('movements', 'm3')
-                ->where(function($q) {
+                ->where(function ($q): void {
                     $q->whereColumn('m3.from_village_id', c('movements.to_village_id'))
-                      ->orWhereColumn('m3.to_village_id', c('movements.to_village_id'));
+                        ->orWhereColumn('m3.to_village_id', c('movements.to_village_id'));
                 })
                 ->as('total_movements_to_village'),
             QE::select(QE::avg(c('travel_time')))
@@ -172,13 +188,13 @@ class Movement extends Model implements Auditable
             QE::select(QE::avg(c('travel_time')))
                 ->from('movements', 'm5')
                 ->whereColumn('m5.to_village_id', c('movements.to_village_id'))
-                ->as('avg_travel_time_to')
+                ->as('avg_travel_time_to'),
         ]);
     }
 
     public function scopeByVillage($query, $villageId)
     {
-        return $query->where(function ($q) use ($villageId) {
+        return $query->where(function ($q) use ($villageId): void {
             $q
                 ->where('from_village_id', $villageId)
                 ->orWhere('to_village_id', $villageId);
@@ -222,17 +238,17 @@ class Movement extends Model implements Auditable
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where(function ($subQ) use ($searchTerm) {
-                $subQ->whereIn('to_village_id', function ($villageQ) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm): void {
+                $subQ->whereIn('to_village_id', function ($villageQ) use ($searchTerm): void {
                     $villageQ
                         ->select('id')
                         ->from('villages')
-                        ->where('name', 'like', '%' . $searchTerm . '%');
-                })->orWhereIn('from_village_id', function ($villageQ) use ($searchTerm) {
+                        ->where('name', 'like', '%'.$searchTerm.'%');
+                })->orWhereIn('from_village_id', function ($villageQ) use ($searchTerm): void {
                     $villageQ
                         ->select('id')
                         ->from('villages')
-                        ->where('name', 'like', '%' . $searchTerm . '%');
+                        ->where('name', 'like', '%'.$searchTerm.'%');
                 });
             });
         });
@@ -273,11 +289,12 @@ class Movement extends Model implements Auditable
      */
     public function getDistanceAttribute(): ?float
     {
-        if (!$this->fromVillage || !$this->toVillage) {
+        if (! $this->fromVillage || ! $this->toVillage) {
             return null;
         }
 
         $geographicService = app(GeographicService::class);
+
         return $geographicService->calculateDistance(
             $this->fromVillage->latitude,
             $this->fromVillage->longitude,
@@ -292,11 +309,12 @@ class Movement extends Model implements Auditable
     public function getTravelTimeAttribute(): ?int
     {
         $distance = $this->distance;
-        if (!$distance) {
+        if (! $distance) {
             return null;
         }
 
         $geographicService = app(GeographicService::class);
+
         return $geographicService->calculateTravelTimeFromDistance($distance);
     }
 
@@ -305,11 +323,12 @@ class Movement extends Model implements Auditable
      */
     public function getBearingAttribute(): ?float
     {
-        if (!$this->fromVillage || !$this->toVillage) {
+        if (! $this->fromVillage || ! $this->toVillage) {
             return null;
         }
 
         $geographicService = app(GeographicService::class);
+
         return $geographicService->calculateBearing(
             $this->fromVillage->latitude,
             $this->fromVillage->longitude,
@@ -323,11 +342,11 @@ class Movement extends Model implements Auditable
      */
     public function scopeWithinDistance($query, $latitude, $longitude, $maxDistance)
     {
-        return $query->whereHas('fromVillage', function ($q) use ($latitude, $longitude, $maxDistance) {
-            $q->whereRaw("ST_Distance_Sphere(
+        return $query->whereHas('fromVillage', function ($q) use ($latitude, $longitude, $maxDistance): void {
+            $q->whereRaw('ST_Distance_Sphere(
                 POINT(longitude, latitude), 
                 POINT(?, ?)
-            ) <= ?", [$longitude, $latitude, $maxDistance * 1000]);
+            ) <= ?', [$longitude, $latitude, $maxDistance * 1000]);
         });
     }
 }

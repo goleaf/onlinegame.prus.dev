@@ -49,7 +49,7 @@ class WorldFactory extends Factory
      */
     public function active(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => true,
             'start_date' => $this->faker->dateTimeBetween('-6 months', 'now'),
             'end_date' => $this->faker->dateTimeBetween('now', '+6 months'),
@@ -61,7 +61,7 @@ class WorldFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => false,
             'end_date' => $this->faker->dateTimeBetween('-1 year', '-1 month'),
         ]);
@@ -72,8 +72,8 @@ class WorldFactory extends Factory
      */
     public function speedWorld(): static
     {
-        return $this->state(fn(array $attributes) => [
-            'name' => 'Speed World ' . $this->faker->numberBetween(1, 10),
+        return $this->state(fn (array $attributes) => [
+            'name' => 'Speed World '.$this->faker->numberBetween(1, 10),
             'speed' => $this->faker->numberBetween(3, 10),
             'description' => 'High-speed world with accelerated gameplay',
         ]);
@@ -84,8 +84,8 @@ class WorldFactory extends Factory
      */
     public function classic(): static
     {
-        return $this->state(fn(array $attributes) => [
-            'name' => 'Classic World ' . $this->faker->numberBetween(1, 10),
+        return $this->state(fn (array $attributes) => [
+            'name' => 'Classic World '.$this->faker->numberBetween(1, 10),
             'speed' => 1,
             'has_plus' => false,
             'has_artifacts' => false,
@@ -98,8 +98,8 @@ class WorldFactory extends Factory
      */
     public function plus(): static
     {
-        return $this->state(fn(array $attributes) => [
-            'name' => 'Plus World ' . $this->faker->numberBetween(1, 10),
+        return $this->state(fn (array $attributes) => [
+            'name' => 'Plus World '.$this->faker->numberBetween(1, 10),
             'has_plus' => true,
             'has_artifacts' => $this->faker->boolean(50),
             'description' => 'Premium world with Plus features and artifacts',

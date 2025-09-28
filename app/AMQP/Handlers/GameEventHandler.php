@@ -17,31 +17,38 @@ class GameEventHandler
 
             Log::info('Game event received', [
                 'event_type' => $data['event_type'] ?? 'unknown',
-                'data' => $data
+                'data' => $data,
             ]);
 
             // Process different types of game events
             switch ($data['event_type'] ?? '') {
                 case 'player_action':
                     $this->handlePlayerAction($data);
+
                     break;
                 case 'building_completed':
                     $this->handleBuildingCompleted($data);
+
                     break;
                 case 'battle_result':
                     $this->handleBattleResult($data);
+
                     break;
                 case 'resource_update':
                     $this->handleResourceUpdate($data);
+
                     break;
                 case 'spy_caught':
                     $this->handleSpyCaught($data);
+
                     break;
                 case 'spy_success':
                     $this->handleSpySuccess($data);
+
                     break;
                 case 'battle_simulation':
                     $this->handleBattleSimulation($data);
+
                     break;
                 default:
                     Log::warning('Unknown game event type', ['event_type' => $data['event_type'] ?? 'unknown']);
@@ -52,7 +59,7 @@ class GameEventHandler
         } catch (\Exception $e) {
             Log::error('Error processing game event', [
                 'error' => $e->getMessage(),
-                'data' => $message->getBody()
+                'data' => $message->getBody(),
             ]);
 
             // Reject the message and requeue it

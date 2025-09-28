@@ -2,7 +2,6 @@
 
 namespace App\Models\Game;
 
-use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +9,8 @@ use MohamedSaid\Referenceable\Traits\HasReference;
 
 class Notification extends Model
 {
-    use HasFactory, HasReference, Lift;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'player_id',
@@ -32,6 +32,7 @@ class Notification extends Model
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -112,6 +113,7 @@ class Notification extends Model
         }
 
         $this->update(['read_at' => now()]);
+
         return true;
     }
 
@@ -122,12 +124,13 @@ class Notification extends Model
         }
 
         $this->update(['read_at' => null]);
+
         return true;
     }
 
     public function getPriorityLevel(): int
     {
-        return match($this->priority) {
+        return match ($this->priority) {
             'low' => 1,
             'normal' => 2,
             'high' => 3,
@@ -148,7 +151,7 @@ class Notification extends Model
 
     public function getTimeToRead(): ?int
     {
-        if (!$this->read_at) {
+        if (! $this->read_at) {
             return null;
         }
 
@@ -157,7 +160,7 @@ class Notification extends Model
 
     public function getNotificationIcon(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             'battle' => '⚔️',
             'alliance' => '🤝',
             'village' => '🏘️',
@@ -174,7 +177,7 @@ class Notification extends Model
 
     public function getNotificationColor(): string
     {
-        return match($this->priority) {
+        return match ($this->priority) {
             'low' => 'text-gray-500',
             'normal' => 'text-blue-600',
             'high' => 'text-orange-600',
@@ -185,7 +188,7 @@ class Notification extends Model
 
     public function getNotificationBadge(): string
     {
-        return match($this->priority) {
+        return match ($this->priority) {
             'low' => 'bg-gray-100 text-gray-800',
             'normal' => 'bg-blue-100 text-blue-800',
             'high' => 'bg-orange-100 text-orange-800',
@@ -206,24 +209,24 @@ class Notification extends Model
 
     public function getShortMessage(int $length = 100): string
     {
-        return strlen($this->message) > $length 
-            ? substr($this->message, 0, $length) . '...'
+        return strlen($this->message) > $length
+            ? substr($this->message, 0, $length).'...'
             : $this->message;
     }
 
     public function getFormattedData(): array
     {
         $data = $this->data;
-        
+
         // Format specific data types
         if (isset($data['attack_time'])) {
             $data['attack_time'] = \Carbon\Carbon::parse($data['attack_time'])->format('Y-m-d H:i:s');
         }
-        
+
         if (isset($data['war_duration'])) {
-            $data['war_duration'] = $data['war_duration'] . ' hours';
+            $data['war_duration'] .= ' hours';
         }
-        
+
         return $data;
     }
 

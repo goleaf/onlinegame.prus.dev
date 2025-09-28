@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -31,7 +30,7 @@ return new class extends Migration
             $table->boolean('is_server_wide')->default(false); // Affects entire server
             $table->boolean('is_unique')->default(false); // Only one can exist
             $table->timestamps();
-            
+
             $table->index(['type', 'rarity']);
             $table->index(['status', 'is_server_wide']);
             $table->index(['owner_id', 'status']);

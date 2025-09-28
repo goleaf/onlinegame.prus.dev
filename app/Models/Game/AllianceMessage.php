@@ -3,8 +3,8 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AllianceMessage extends Model
 {
@@ -30,18 +30,28 @@ class AllianceMessage extends Model
     ];
 
     // Message types
-    const TYPE_GENERAL = 'general';
-    const TYPE_ANNOUNCEMENT = 'announcement';
-    const TYPE_WAR = 'war';
-    const TYPE_DIPLOMACY = 'diplomacy';
-    const TYPE_TRADE = 'trade';
-    const TYPE_STRATEGY = 'strategy';
-    const TYPE_SOCIAL = 'social';
+    public const TYPE_GENERAL = 'general';
+
+    public const TYPE_ANNOUNCEMENT = 'announcement';
+
+    public const TYPE_WAR = 'war';
+
+    public const TYPE_DIPLOMACY = 'diplomacy';
+
+    public const TYPE_TRADE = 'trade';
+
+    public const TYPE_STRATEGY = 'strategy';
+
+    public const TYPE_SOCIAL = 'social';
+
     // Priority levels
-    const PRIORITY_LOW = 'low';
-    const PRIORITY_NORMAL = 'normal';
-    const PRIORITY_HIGH = 'high';
-    const PRIORITY_URGENT = 'urgent';
+    public const PRIORITY_LOW = 'low';
+
+    public const PRIORITY_NORMAL = 'normal';
+
+    public const PRIORITY_HIGH = 'high';
+
+    public const PRIORITY_URGENT = 'urgent';
 
     public function alliance(): BelongsTo
     {
@@ -116,7 +126,7 @@ class AllianceMessage extends Model
 
     public function scopeNotExpired($query)
     {
-        return $query->where(function ($q) {
+        return $query->where(function ($q): void {
             $q
                 ->whereNull('expires_at')
                 ->orWhere('expires_at', '>', now());
@@ -263,7 +273,7 @@ class AllianceMessage extends Model
     private static function generateReferenceNumber(): string
     {
         do {
-            $reference = 'AMSG-' . strtoupper(\Str::random(8));
+            $reference = 'AMSG-'.strtoupper(\Str::random(8));
         } while (self::where('reference_number', $reference)->exists());
 
         return $reference;

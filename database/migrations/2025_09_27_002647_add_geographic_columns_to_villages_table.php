@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,16 +14,16 @@ return new class extends Migration
             // Add real-world coordinate columns
             $table->decimal('latitude', 10, 8)->nullable()->after('y_coordinate');
             $table->decimal('longitude', 11, 8)->nullable()->after('latitude');
-            
+
             // Add geohash for efficient spatial queries
             $table->string('geohash', 12)->nullable()->after('longitude');
-            
+
             // Add elevation (optional)
             $table->decimal('elevation', 8, 2)->nullable()->after('geohash');
-            
+
             // Add geographic metadata
             $table->json('geographic_metadata')->nullable()->after('elevation');
-            
+
             // Add indexes for geographic queries
             $table->index(['latitude', 'longitude'], 'idx_villages_coordinates');
             $table->index('geohash', 'idx_villages_geohash');
@@ -41,13 +40,13 @@ return new class extends Migration
             $table->dropIndex('idx_villages_coordinates');
             $table->dropIndex('idx_villages_geohash');
             $table->dropIndex('idx_villages_game_coordinates');
-            
+
             $table->dropColumn([
                 'latitude',
                 'longitude',
                 'geohash',
                 'elevation',
-                'geographic_metadata'
+                'geographic_metadata',
             ]);
         });
     }

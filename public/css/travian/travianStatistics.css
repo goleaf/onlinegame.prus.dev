@@ -126,7 +126,7 @@ div.statistics div#search_navi div.navi {
   text-align: right;
   line-height: 22px;
   white-space: nowrap;
-  color: #C0C0C0;
+  color: #c0c0c0;
   font-weight: bold;
 }
 
@@ -189,7 +189,7 @@ div.statistics table.top10 td.val {
 }
 
 div.statistics table.top10 tr.none td {
-  background-color: #EFEFEF;
+  background-color: #efefef;
 }
 
 div.statistics table.top10 tr.own.hl td.ra {
@@ -307,7 +307,7 @@ div.statistics table#wonder td.lev {
 
 div.statistics table#wonder td.at {
   width: 2%;
-  color: #C0C0C0;
+  color: #c0c0c0;
 }
 
 /* plus */

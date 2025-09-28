@@ -13,24 +13,24 @@ class UserObserver
     public function created(User $user): void
     {
         $startTime = microtime(true);
-        
+
         ds('UserObserver: User created event triggered', [
             'observer' => 'UserObserver',
             'event' => 'created',
             'user_id' => $user->id,
             'user_email' => $user->email,
-            'has_phone' => !empty($user->phone),
-            'event_time' => now()
+            'has_phone' => ! empty($user->phone),
+            'event_time' => now(),
         ]);
-        
+
         $this->formatPhoneNumber($user);
-        
+
         $processingTime = round((microtime(true) - $startTime) * 1000, 2);
-        
+
         ds('UserObserver: User created event completed', [
             'user_id' => $user->id,
             'processing_time_ms' => $processingTime,
-            'phone_formatted' => !empty($user->phone)
+            'phone_formatted' => ! empty($user->phone),
         ]);
     }
 
@@ -40,24 +40,24 @@ class UserObserver
     public function updated(User $user): void
     {
         $startTime = microtime(true);
-        
+
         ds('UserObserver: User updated event triggered', [
             'observer' => 'UserObserver',
             'event' => 'updated',
             'user_id' => $user->id,
             'user_email' => $user->email,
             'changed_attributes' => $user->getDirty(),
-            'event_time' => now()
+            'event_time' => now(),
         ]);
-        
+
         $this->formatPhoneNumber($user);
-        
+
         $processingTime = round((microtime(true) - $startTime) * 1000, 2);
-        
+
         ds('UserObserver: User updated event completed', [
             'user_id' => $user->id,
             'processing_time_ms' => $processingTime,
-            'attributes_changed' => count($user->getDirty())
+            'attributes_changed' => count($user->getDirty()),
         ]);
     }
 
@@ -87,7 +87,7 @@ class UserObserver
                 $user->saveQuietly();
             } catch (\Exception $e) {
                 // Handle phone number parsing errors gracefully
-                \Log::warning('Failed to format phone number for user ' . $user->id . ': ' . $e->getMessage());
+                \Log::warning('Failed to format phone number for user '.$user->id.': '.$e->getMessage());
             }
         }
     }
@@ -123,7 +123,7 @@ class UserObserver
     {
         try {
             $geoService = app(GeographicService::class);
-            
+
             // Get user's villages with geographic data
             $villages = $user->player?->villages()
                 ->whereNotNull('latitude')
@@ -143,14 +143,14 @@ class UserObserver
                 'user_id' => $user->id,
                 'event_type' => $eventType,
                 'villages_count' => $villages->count(),
-                'event_time' => now()
+                'event_time' => now(),
             ]);
         } catch (\Exception $e) {
             ds('UserObserver: Geographic event error', [
                 'user_id' => $user->id,
                 'event_type' => $eventType,
                 'error' => $e->getMessage(),
-                'event_time' => now()
+                'event_time' => now(),
             ]);
         }
     }
@@ -163,15 +163,19 @@ class UserObserver
         switch ($eventType) {
             case 'village_created':
                 $this->handleVillageCreated($village, $geoService);
+
                 break;
             case 'village_updated':
                 $this->handleVillageUpdated($village, $data, $geoService);
+
                 break;
             case 'attack_launched':
                 $this->handleAttackLaunched($village, $data, $geoService);
+
                 break;
             case 'defense_activated':
                 $this->handleDefenseActivated($village, $data, $geoService);
+
                 break;
         }
     }
@@ -182,7 +186,7 @@ class UserObserver
     private function handleVillageCreated($village, GeographicService $geoService): void
     {
         // Update village with geographic data if not present
-        if (!$village->latitude || !$village->longitude) {
+        if (! $village->latitude || ! $village->longitude) {
             $coords = $geoService->gameToRealWorld($village->x_coordinate, $village->y_coordinate);
             $village->update([
                 'latitude' => $coords['lat'],
@@ -210,7 +214,7 @@ class UserObserver
                 $data['x_coordinate'] ?? $village->x_coordinate,
                 $data['y_coordinate'] ?? $village->y_coordinate
             );
-            
+
             $village->update([
                 'latitude' => $coords['lat'],
                 'longitude' => $coords['lon'],
@@ -238,7 +242,7 @@ class UserObserver
             'attack',
             [
                 'radius' => 25,
-                'details' => 'Attack launched from ' . $village->name
+                'details' => 'Attack launched from '.$village->name,
             ]
         );
 

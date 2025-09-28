@@ -6,20 +6,23 @@ use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use App\Traits\Commentable;
 use App\Traits\GameValidationTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use MohamedSaid\Notable\Traits\HasNotables;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use sbamtr\LaravelQueryEnrich\QE;
+use OwenIt\Auditing\Contracts\Auditable;
 use SmartCache\Facades\SmartCache;
-
-use function sbamtr\LaravelQueryEnrich\c;
 
 class Quest extends Model implements Auditable
 {
-    use HasFactory, HasTaxonomy, HasNotables, HasReference, Commentable, AuditableTrait, GameValidationTrait;
+    use AuditableTrait;
+    use Commentable;
+    use GameValidationTrait;
+    use HasFactory;
+    use HasNotables;
+    use HasReference;
+    use HasTaxonomy;
 
     protected $fillable = [
         'name',
@@ -52,6 +55,7 @@ class Quest extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -109,14 +113,14 @@ class Quest extends Model implements Auditable
     public function scopeWithPlayerStats($query, $playerId = null)
     {
         return $query->withCount([
-            'players as completed_count' => function ($q) {
+            'players as completed_count' => function ($q): void {
                 $q->where('status', 'completed');
             },
-            'players as active_count' => function ($q) {
+            'players as active_count' => function ($q): void {
                 $q->where('status', 'active');
             },
-        ])->when($playerId, function ($q) use ($playerId) {
-            $q->with(['players' => function ($q) use ($playerId) {
+        ])->when($playerId, function ($q) use ($playerId): void {
+            $q->with(['players' => function ($q) use ($playerId): void {
                 $q->where('player_id', $playerId);
             }]);
         });
@@ -125,13 +129,13 @@ class Quest extends Model implements Auditable
     public function scopeWithStats($query)
     {
         return $query->withCount([
-            'players as completed_count' => function ($q) {
+            'players as completed_count' => function ($q): void {
                 $q->where('status', 'completed');
             },
-            'players as active_count' => function ($q) {
+            'players as active_count' => function ($q): void {
                 $q->where('status', 'active');
             },
-            'players as available_count' => function ($q) {
+            'players as available_count' => function ($q): void {
                 $q->where('status', 'available');
             },
         ]);
@@ -203,8 +207,8 @@ class Quest extends Model implements Auditable
 
     public function canBeStartedByPlayer(int $playerId): bool
     {
-        return !$this->isCompletedByPlayer($playerId) &&
-            !$this->isActiveForPlayer($playerId) &&
+        return ! $this->isCompletedByPlayer($playerId) &&
+            ! $this->isActiveForPlayer($playerId) &&
             $this->is_active;
     }
 
@@ -282,7 +286,7 @@ class Quest extends Model implements Auditable
     {
         return $query
             ->where('is_active', true)
-            ->whereNotIn('id', function ($q) use ($playerId) {
+            ->whereNotIn('id', function ($q) use ($playerId): void {
                 $q
                     ->select('quest_id')
                     ->from('player_quests')
@@ -293,7 +297,7 @@ class Quest extends Model implements Auditable
 
     public function scopeCompletedByPlayer($query, $playerId)
     {
-        return $query->whereIn('id', function ($q) use ($playerId) {
+        return $query->whereIn('id', function ($q) use ($playerId): void {
             $q
                 ->select('quest_id')
                 ->from('player_quests')
@@ -305,11 +309,11 @@ class Quest extends Model implements Auditable
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where(function ($subQ) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm): void {
                 $subQ
-                    ->where('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('category', 'like', '%' . $searchTerm . '%');
+                    ->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('category', 'like', '%'.$searchTerm.'%');
             });
         });
     }

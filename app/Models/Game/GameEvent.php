@@ -3,15 +3,17 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class GameEvent extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait;
+    use AuditableTrait;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'player_id',
@@ -100,11 +102,11 @@ class GameEvent extends Model implements Auditable
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where(function ($subQ) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm): void {
                 $subQ
-                    ->where('title', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('event_type', 'like', '%' . $searchTerm . '%');
+                    ->where('title', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('event_type', 'like', '%'.$searchTerm.'%');
             });
         });
     }

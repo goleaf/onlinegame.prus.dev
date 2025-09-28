@@ -15,8 +15,11 @@ class WorldMapTest extends DuskTestCase
     use DatabaseMigrations;
 
     protected $user;
+
     protected $player;
+
     protected $village;
+
     protected $world;
 
     protected function setUp(): void
@@ -50,7 +53,7 @@ class WorldMapTest extends DuskTestCase
 
     public function test_world_map_loads_successfully()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -64,7 +67,7 @@ class WorldMapTest extends DuskTestCase
 
     public function test_world_map_shows_villages()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -76,7 +79,7 @@ class WorldMapTest extends DuskTestCase
 
     public function test_world_map_zoom_controls_work()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -91,7 +94,7 @@ class WorldMapTest extends DuskTestCase
 
     public function test_world_map_navigation_controls_work()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -108,7 +111,7 @@ class WorldMapTest extends DuskTestCase
 
     public function test_world_map_village_selection_works()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -124,7 +127,7 @@ class WorldMapTest extends DuskTestCase
 
     public function test_world_map_filters_work()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -137,7 +140,7 @@ class WorldMapTest extends DuskTestCase
 
     public function test_world_map_toggle_controls_work()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -152,7 +155,7 @@ class WorldMapTest extends DuskTestCase
 
     public function test_world_map_center_on_village_works()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -165,7 +168,7 @@ class WorldMapTest extends DuskTestCase
 
     public function test_world_map_shows_map_statistics()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -177,7 +180,7 @@ class WorldMapTest extends DuskTestCase
 
     public function test_world_map_handles_loading_state()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -189,7 +192,7 @@ class WorldMapTest extends DuskTestCase
 
     public function test_world_map_responsive_design()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')

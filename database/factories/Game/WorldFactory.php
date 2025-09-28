@@ -20,7 +20,7 @@ class WorldFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->words(3, true) . ' World',
+            'name' => $this->faker->words(3, true).' World',
             'description' => $this->faker->paragraph(),
             'is_active' => true,
         ];
@@ -31,7 +31,7 @@ class WorldFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => false,
         ]);
     }

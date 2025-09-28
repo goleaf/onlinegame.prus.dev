@@ -4,16 +4,15 @@ namespace App\Services;
 
 use App\Models\Game\Notification;
 use App\Models\Game\Player;
-use App\Models\User;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class NotificationService
 {
     protected CachingUtil $cachingUtil;
+
     protected LoggingUtil $loggingUtil;
 
     public function __construct()
@@ -56,7 +55,7 @@ class NotificationService
                 'notification_id' => $notification->id,
                 'player_id' => $player->id,
                 'type' => $type,
-                'priority' => $priority
+                'priority' => $priority,
             ]);
 
             // Clear cache
@@ -69,8 +68,9 @@ class NotificationService
             $this->loggingUtil->error('Failed to send notification', [
                 'player_id' => $player->id,
                 'type' => $type,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -87,7 +87,7 @@ class NotificationService
     ): bool {
         try {
             $user = $player->user;
-            if (!$user || !$user->email) {
+            if (! $user || ! $user->email) {
                 return false;
             }
 
@@ -95,7 +95,7 @@ class NotificationService
                 'player' => $player,
                 'user' => $user,
                 'notification_type' => $type,
-            ]), function ($message) use ($user, $subject) {
+            ]), function ($message) use ($user, $subject): void {
                 $message->to($user->email, $user->name)
                     ->subject($subject);
             });
@@ -104,7 +104,7 @@ class NotificationService
                 'player_id' => $player->id,
                 'user_email' => $user->email,
                 'type' => $type,
-                'subject' => $subject
+                'subject' => $subject,
             ]);
 
             return true;
@@ -113,8 +113,9 @@ class NotificationService
             $this->loggingUtil->error('Failed to send email notification', [
                 'player_id' => $player->id,
                 'type' => $type,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -130,7 +131,7 @@ class NotificationService
 
         $this->loggingUtil->debug('Notification marked as read', [
             'notification_id' => $notification->id,
-            'player_id' => $notification->player_id
+            'player_id' => $notification->player_id,
         ]);
 
         // Clear cache
@@ -150,7 +151,7 @@ class NotificationService
 
         $this->loggingUtil->info('All notifications marked as read', [
             'player_id' => $player->id,
-            'updated_count' => $updated
+            'updated_count' => $updated,
         ]);
 
         // Clear cache
@@ -252,7 +253,7 @@ class NotificationService
 
         $this->loggingUtil->info('Old notifications cleaned up', [
             'deleted_count' => $deleted,
-            'days_kept' => $daysToKeep
+            'days_kept' => $daysToKeep,
         ]);
 
         // Clear cache
@@ -281,7 +282,7 @@ class NotificationService
             } catch (\Exception $e) {
                 $this->loggingUtil->error('Failed to send system notification to player', [
                     'player_id' => $player->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -289,7 +290,7 @@ class NotificationService
         $this->loggingUtil->info('System notification sent', [
             'type' => $type,
             'total_players' => $players->count(),
-            'sent_count' => $sent
+            'sent_count' => $sent,
         ]);
 
         return $sent;
@@ -341,7 +342,7 @@ class NotificationService
                     'village_name' => '',
                     'attacker_name' => '',
                     'attack_time' => '',
-                ]
+                ],
             ],
             'alliance_war' => [
                 'title' => 'Alliance War Started',
@@ -351,7 +352,7 @@ class NotificationService
                     'alliance_name' => '',
                     'enemy_alliance' => '',
                     'war_duration' => '',
-                ]
+                ],
             ],
             'quest_completed' => [
                 'title' => 'Quest Completed!',
@@ -361,7 +362,7 @@ class NotificationService
                     'quest_name' => '',
                     'reward' => '',
                     'experience_gained' => '',
-                ]
+                ],
             ],
             'achievement_unlocked' => [
                 'title' => 'Achievement Unlocked!',
@@ -371,7 +372,7 @@ class NotificationService
                     'achievement_name' => '',
                     'achievement_description' => '',
                     'reward' => '',
-                ]
+                ],
             ],
             'maintenance_scheduled' => [
                 'title' => 'Scheduled Maintenance',
@@ -382,7 +383,7 @@ class NotificationService
                     'start_time' => '',
                     'end_time' => '',
                     'duration' => '',
-                ]
+                ],
             ],
         ];
     }
@@ -394,16 +395,16 @@ class NotificationService
         Player $player,
         string $templateKey,
         array $templateData,
-        string $priority = null
+        ?string $priority = null
     ): Notification {
         $templates = $this->createNotificationTemplates();
-        
-        if (!isset($templates[$templateKey])) {
+
+        if (! isset($templates[$templateKey])) {
             throw new \Exception("Notification template '{$templateKey}' not found");
         }
 
         $template = $templates[$templateKey];
-        
+
         // Replace template variables
         $title = $this->replaceTemplateVariables($template['title'], $templateData);
         $message = $this->replaceTemplateVariables($template['message'], $templateData);
@@ -425,9 +426,9 @@ class NotificationService
     protected function replaceTemplateVariables(string $text, array $data): string
     {
         foreach ($data as $key => $value) {
-            $text = str_replace('{' . $key . '}', $value, $text);
+            $text = str_replace('{'.$key.'}', $value, $text);
         }
-        
+
         return $text;
     }
 

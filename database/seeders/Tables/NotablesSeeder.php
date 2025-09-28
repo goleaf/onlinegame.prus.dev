@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,9 +17,7 @@ class NotablesSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
@@ -69,11 +68,11 @@ class NotablesSeeder extends Seeder
                 'creator_id' => 1,
                 'created_at' => '2025-09-27 00:39:21',
                 'updated_at' => '2025-09-27 00:39:21',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("notables")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('notables')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

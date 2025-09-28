@@ -9,7 +9,8 @@ class Coordinates
         public readonly int $y,
         public readonly ?float $latitude = null,
         public readonly ?float $longitude = null,
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
@@ -44,7 +45,7 @@ class Coordinates
 
     public function realWorldDistanceTo(Coordinates $other): ?float
     {
-        if ($this->latitude === null || $this->longitude === null || 
+        if ($this->latitude === null || $this->longitude === null ||
             $other->latitude === null || $other->longitude === null) {
             return null;
         }
@@ -69,7 +70,7 @@ class Coordinates
 
     public function getBearingTo(Coordinates $other): float
     {
-        if ($this->latitude === null || $this->longitude === null || 
+        if ($this->latitude === null || $this->longitude === null ||
             $other->latitude === null || $other->longitude === null) {
             return 0;
         }
@@ -106,7 +107,7 @@ class Coordinates
 
     public function isWithinBounds(int $minX = 0, int $maxX = 999, int $minY = 0, int $maxY = 999): bool
     {
-        return $this->x >= $minX && $this->x <= $maxX && 
+        return $this->x >= $minX && $this->x <= $maxX &&
                $this->y >= $minY && $this->y <= $maxY;
     }
 

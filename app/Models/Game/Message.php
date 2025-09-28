@@ -3,39 +3,53 @@
 namespace App\Models\Game;
 
 use App\Traits\Commentable;
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
-use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
-use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
-use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 use SmartCache\Facades\SmartCache;
 
 class Message extends Model implements Auditable
 {
-    use HasFactory, HasReference, Commentable, AuditableTrait, Lift;
+    use AuditableTrait;
+    use Commentable;
+    use HasFactory;
+    use HasReference;
 
     // Laravel Lift typed properties
     public int $id;
+
     public int $sender_id;
+
     public ?int $recipient_id;
+
     public ?int $alliance_id;
+
     public string $subject;
+
     public string $body;
+
     public string $message_type;
+
     public bool $is_read;
+
     public bool $is_deleted_by_sender;
+
     public bool $is_deleted_by_recipient;
+
     public ?int $parent_message_id;
+
     public string $priority;
+
     public ?\Carbon\Carbon $expires_at;
+
     public ?string $reference_number;
+
     public \Carbon\CarbonImmutable $created_at;
+
     public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
@@ -63,6 +77,7 @@ class Message extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -73,17 +88,26 @@ class Message extends Model implements Auditable
     protected $referencePrefix = 'MSG';
 
     // Message types
-    const TYPE_PRIVATE = 'private';
-    const TYPE_ALLIANCE = 'alliance';
-    const TYPE_SYSTEM = 'system';
-    const TYPE_BATTLE_REPORT = 'battle_report';
-    const TYPE_TRADE_OFFER = 'trade_offer';
-    const TYPE_DIPLOMACY = 'diplomacy';
+    public const TYPE_PRIVATE = 'private';
+
+    public const TYPE_ALLIANCE = 'alliance';
+
+    public const TYPE_SYSTEM = 'system';
+
+    public const TYPE_BATTLE_REPORT = 'battle_report';
+
+    public const TYPE_TRADE_OFFER = 'trade_offer';
+
+    public const TYPE_DIPLOMACY = 'diplomacy';
+
     // Priority levels
-    const PRIORITY_LOW = 'low';
-    const PRIORITY_NORMAL = 'normal';
-    const PRIORITY_HIGH = 'high';
-    const PRIORITY_URGENT = 'urgent';
+    public const PRIORITY_LOW = 'low';
+
+    public const PRIORITY_NORMAL = 'normal';
+
+    public const PRIORITY_HIGH = 'high';
+
+    public const PRIORITY_URGENT = 'urgent';
 
     public function sender(): BelongsTo
     {
@@ -118,7 +142,7 @@ class Message extends Model implements Auditable
 
     public function scopeForPlayer($query, $playerId)
     {
-        return $query->where(function ($q) use ($playerId) {
+        return $query->where(function ($q) use ($playerId): void {
             $q
                 ->where('recipient_id', $playerId)
                 ->orWhere('sender_id', $playerId);
@@ -137,12 +161,12 @@ class Message extends Model implements Auditable
 
     public function scopeNotDeleted($query, $playerId)
     {
-        return $query->where(function ($q) use ($playerId) {
-            $q->where(function ($subQ) use ($playerId) {
+        return $query->where(function ($q) use ($playerId): void {
+            $q->where(function ($subQ) use ($playerId): void {
                 $subQ
                     ->where('sender_id', $playerId)
                     ->where('is_deleted_by_sender', false);
-            })->orWhere(function ($subQ) use ($playerId) {
+            })->orWhere(function ($subQ) use ($playerId): void {
                 $subQ
                     ->where('recipient_id', $playerId)
                     ->where('is_deleted_by_recipient', false);
@@ -229,12 +253,12 @@ class Message extends Model implements Auditable
     public function getConversation($playerId, $otherPlayerId)
     {
         return self::with(['sender', 'recipient'])
-            ->where(function ($q) use ($playerId, $otherPlayerId) {
+            ->where(function ($q) use ($playerId, $otherPlayerId): void {
                 $q
                     ->where('sender_id', $playerId)
                     ->where('recipient_id', $otherPlayerId);
             })
-            ->orWhere(function ($q) use ($playerId, $otherPlayerId) {
+            ->orWhere(function ($q) use ($playerId, $otherPlayerId): void {
                 $q
                     ->where('sender_id', $otherPlayerId)
                     ->where('recipient_id', $playerId);

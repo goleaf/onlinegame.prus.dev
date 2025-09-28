@@ -2,28 +2,30 @@
 
 namespace Tests\Feature\Game;
 
-use Tests\TestCase;
-use App\Models\Game\Player;
 use App\Models\Game\Notification;
+use App\Models\Game\Player;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
 class NotificationControllerTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     protected $user;
+
     protected $player;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->player = Player::factory()->create(['user_id' => $this->user->id]);
-        
+
         Sanctum::actingAs($this->user);
     }
 
@@ -35,20 +37,20 @@ class NotificationControllerTest extends TestCase
         $response = $this->getJson('/game/api/notifications');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'data' => [
-                        '*' => [
-                            'id',
-                            'player_id',
-                            'type',
-                            'title',
-                            'message',
-                            'priority',
-                            'is_read',
-                            'created_at'
-                        ]
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'player_id',
+                        'type',
+                        'title',
+                        'message',
+                        'priority',
+                        'is_read',
+                        'created_at',
+                    ],
+                ],
+            ]);
     }
 
     /** @test */
@@ -56,11 +58,11 @@ class NotificationControllerTest extends TestCase
     {
         Notification::factory()->create([
             'player_id' => $this->player->id,
-            'type' => 'battle'
+            'type' => 'battle',
         ]);
         Notification::factory()->create([
             'player_id' => $this->player->id,
-            'type' => 'system'
+            'type' => 'system',
         ]);
 
         $response = $this->getJson('/game/api/notifications?type=battle');
@@ -74,11 +76,11 @@ class NotificationControllerTest extends TestCase
     {
         Notification::factory()->create([
             'player_id' => $this->player->id,
-            'is_read' => true
+            'is_read' => true,
         ]);
         Notification::factory()->create([
             'player_id' => $this->player->id,
-            'is_read' => false
+            'is_read' => false,
         ]);
 
         $response = $this->getJson('/game/api/notifications?is_read=false');
@@ -92,21 +94,21 @@ class NotificationControllerTest extends TestCase
     {
         $notification = Notification::factory()->create([
             'player_id' => $this->player->id,
-            'is_read' => false
+            'is_read' => false,
         ]);
 
         $response = $this->getJson("/game/api/notifications/{$notification->id}");
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'id',
-                    'player_id',
-                    'type',
-                    'title',
-                    'message',
-                    'priority',
-                    'is_read'
-                ]);
+            ->assertJsonStructure([
+                'id',
+                'player_id',
+                'type',
+                'title',
+                'message',
+                'priority',
+                'is_read',
+            ]);
 
         // Should mark as read when viewed
         $notification->refresh();
@@ -118,16 +120,16 @@ class NotificationControllerTest extends TestCase
     {
         $notification = Notification::factory()->create([
             'player_id' => $this->player->id,
-            'is_read' => false
+            'is_read' => false,
         ]);
 
         $response = $this->patchJson("/game/api/notifications/{$notification->id}/read");
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'message'
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'message',
+            ]);
 
         $notification->refresh();
         $this->assertTrue($notification->is_read);
@@ -138,23 +140,23 @@ class NotificationControllerTest extends TestCase
     {
         Notification::factory()->count(3)->create([
             'player_id' => $this->player->id,
-            'is_read' => false
+            'is_read' => false,
         ]);
 
         $response = $this->patchJson('/game/api/notifications/mark-all-read');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'message',
-                    'updated_count'
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'updated_count',
+            ]);
 
         $this->assertEquals(3, $response->json('updated_count'));
 
         $unreadCount = Notification::where('player_id', $this->player->id)
-                                  ->where('is_read', false)
-                                  ->count();
+            ->where('is_read', false)
+            ->count();
         $this->assertEquals(0, $unreadCount);
     }
 
@@ -162,19 +164,19 @@ class NotificationControllerTest extends TestCase
     public function it_can_delete_notification()
     {
         $notification = Notification::factory()->create([
-            'player_id' => $this->player->id
+            'player_id' => $this->player->id,
         ]);
 
         $response = $this->deleteJson("/game/api/notifications/{$notification->id}");
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'message'
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'message',
+            ]);
 
         $this->assertDatabaseMissing('notifications', [
-            'id' => $notification->id
+            'id' => $notification->id,
         ]);
     }
 
@@ -183,19 +185,19 @@ class NotificationControllerTest extends TestCase
     {
         Notification::factory()->count(3)->create([
             'player_id' => $this->player->id,
-            'is_read' => false
+            'is_read' => false,
         ]);
         Notification::factory()->count(2)->create([
             'player_id' => $this->player->id,
-            'is_read' => true
+            'is_read' => true,
         ]);
 
         $response = $this->getJson('/game/api/notifications/unread-count');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'unread_count'
-                ]);
+            ->assertJsonStructure([
+                'unread_count',
+            ]);
 
         $this->assertEquals(3, $response->json('unread_count'));
     }
@@ -206,24 +208,24 @@ class NotificationControllerTest extends TestCase
         Notification::factory()->count(5)->create([
             'player_id' => $this->player->id,
             'type' => 'battle',
-            'priority' => 'high'
+            'priority' => 'high',
         ]);
         Notification::factory()->count(3)->create([
             'player_id' => $this->player->id,
             'type' => 'system',
-            'priority' => 'normal'
+            'priority' => 'normal',
         ]);
 
         $response = $this->getJson('/game/api/notifications/statistics');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'total_notifications',
-                    'unread_notifications',
-                    'read_notifications',
-                    'by_type',
-                    'by_priority'
-                ]);
+            ->assertJsonStructure([
+                'total_notifications',
+                'unread_notifications',
+                'read_notifications',
+                'by_type',
+                'by_priority',
+            ]);
     }
 
     /** @test */
@@ -235,30 +237,30 @@ class NotificationControllerTest extends TestCase
             'title' => 'Village Under Attack!',
             'message' => 'Your village is being attacked',
             'priority' => 'urgent',
-            'data' => ['attacker_id' => 2, 'village_id' => 5]
+            'data' => ['attacker_id' => 2, 'village_id' => 5],
         ];
 
         $response = $this->postJson('/game/api/notifications', $notificationData);
 
         $response->assertStatus(201)
-                ->assertJsonStructure([
-                    'success',
-                    'notification' => [
-                        'id',
-                        'player_id',
-                        'type',
-                        'title',
-                        'message',
-                        'priority',
-                        'is_read'
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'notification' => [
+                    'id',
+                    'player_id',
+                    'type',
+                    'title',
+                    'message',
+                    'priority',
+                    'is_read',
+                ],
+            ]);
 
         $this->assertDatabaseHas('notifications', [
             'player_id' => $this->player->id,
             'type' => 'battle',
             'title' => 'Village Under Attack!',
-            'priority' => 'urgent'
+            'priority' => 'urgent',
         ]);
     }
 
@@ -268,12 +270,12 @@ class NotificationControllerTest extends TestCase
         $response = $this->postJson('/game/api/notifications', []);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors([
-                    'player_id',
-                    'type',
-                    'title',
-                    'message'
-                ]);
+            ->assertJsonValidationErrors([
+                'player_id',
+                'type',
+                'title',
+                'message',
+            ]);
     }
 
     /** @test */
@@ -281,7 +283,7 @@ class NotificationControllerTest extends TestCase
     {
         $otherPlayer = Player::factory()->create();
         $notification = Notification::factory()->create([
-            'player_id' => $otherPlayer->id
+            'player_id' => $otherPlayer->id,
         ]);
 
         $response = $this->getJson("/game/api/notifications/{$notification->id}");
@@ -294,7 +296,7 @@ class NotificationControllerTest extends TestCase
     {
         $otherPlayer = Player::factory()->create();
         $notification = Notification::factory()->create([
-            'player_id' => $otherPlayer->id
+            'player_id' => $otherPlayer->id,
         ]);
 
         $response = $this->deleteJson("/game/api/notifications/{$notification->id}");
@@ -307,7 +309,7 @@ class NotificationControllerTest extends TestCase
     {
         $otherPlayer = Player::factory()->create();
         $notification = Notification::factory()->create([
-            'player_id' => $otherPlayer->id
+            'player_id' => $otherPlayer->id,
         ]);
 
         $response = $this->patchJson("/game/api/notifications/{$notification->id}/read");

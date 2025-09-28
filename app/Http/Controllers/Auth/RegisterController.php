@@ -2,19 +2,27 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 use Intervention\Validation\Rules\Username;
 use JonPurvis\Squeaky\Rules\Clean;
+use LaraUtilX\Http\Controllers\CrudController;
 use Propaganistas\LaravelPhone\Rules\Phone;
 use Ziming\LaravelZxcvbn\Rules\ZxcvbnRule;
 
-class RegisterController extends Controller
+class RegisterController extends CrudController
 {
+    use ValidationHelperTrait;
+
+    public function __construct()
+    {
+        parent::__construct(new User());
+    }
+
     /**
      * Show the registration form.
      */
@@ -29,7 +37,7 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $rules = [
-            'name' => ['required', 'string', 'max:255', new Username(), new Clean],
+            'name' => ['required', 'string', 'max:255', new Username(), new Clean()],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => [
                 'required',
@@ -45,16 +53,16 @@ class RegisterController extends Controller
         ];
 
         // Add phone validation if phone number is provided
-        if (!empty($request->phone)) {
+        if (! empty($request->phone)) {
             if ($request->phone_country) {
-                $rules['phone'][] = (new Phone)->country($request->phone_country);
+                $rules['phone'][] = (new Phone())->country($request->phone_country);
             } else {
-                $rules['phone'][] = new Phone;
+                $rules['phone'][] = new Phone();
             }
             $rules['phone_country'][] = 'required_with:phone';
         }
 
-        $validated = $request->validate($rules);
+        $validated = $this->validateRequestData($request, $rules);
 
         $user = User::create([
             'name' => $validated['name'],
@@ -65,6 +73,13 @@ class RegisterController extends Controller
         ]);
 
         Auth::login($user);
+
+        LoggingUtil::info('User registration successful', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'name' => $user->name,
+            'has_phone' => ! empty($user->phone),
+        ], 'auth');
 
         return redirect()
             ->route('game.dashboard')

@@ -16,7 +16,9 @@ class GameTickServiceSimpleTest extends TestCase
     use RefreshDatabase;
 
     protected $gameTickService;
+
     protected $player;
+
     protected $village;
 
     protected function setUp(): void
@@ -222,7 +224,7 @@ class GameTickServiceSimpleTest extends TestCase
         DB::shouldReceive('commit')->never();
 
         // Mock a method to throw exception
-        $this->mock(GameTickService::class, function ($mock) {
+        $this->mock(GameTickService::class, function ($mock): void {
             $mock->shouldReceive('processGameTick')->andThrow(new \Exception('Test exception'));
         });
 

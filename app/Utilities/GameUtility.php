@@ -2,8 +2,6 @@
 
 namespace App\Utilities;
 
-use App\Services\GeographicService;
-
 /**
  * Game Utility Functions
  * Common utility functions for game operations
@@ -16,11 +14,11 @@ class GameUtility
     public static function formatNumber(int $number): string
     {
         if ($number >= 1000000000) {
-            return round($number / 1000000000, 1) . 'B';
+            return round($number / 1000000000, 1).'B';
         } elseif ($number >= 1000000) {
-            return round($number / 1000000, 1) . 'M';
+            return round($number / 1000000, 1).'M';
         } elseif ($number >= 1000) {
-            return round($number / 1000, 1) . 'K';
+            return round($number / 1000, 1).'K';
         }
 
         return (string) $number;
@@ -74,6 +72,7 @@ class GameUtility
     public static function calculateTravelTime(float $lat1, float $lon1, float $lat2, float $lon2, float $speed): int
     {
         $distance = self::calculateDistance($lat1, $lon1, $lat2, $lon2);
+
         return (int) round(($distance / $speed) * 3600); // Convert to seconds
     }
 
@@ -83,19 +82,22 @@ class GameUtility
     public static function formatDuration(int $seconds): string
     {
         if ($seconds < 60) {
-            return $seconds . 's';
+            return $seconds.'s';
         } elseif ($seconds < 3600) {
             $minutes = floor($seconds / 60);
             $remainingSeconds = $seconds % 60;
-            return $minutes . 'm' . ($remainingSeconds > 0 ? ' ' . $remainingSeconds . 's' : '');
+
+            return $minutes.'m'.($remainingSeconds > 0 ? ' '.$remainingSeconds.'s' : '');
         } elseif ($seconds < 86400) {
             $hours = floor($seconds / 3600);
             $remainingMinutes = floor(($seconds % 3600) / 60);
-            return $hours . 'h' . ($remainingMinutes > 0 ? ' ' . $remainingMinutes . 'm' : '');
+
+            return $hours.'h'.($remainingMinutes > 0 ? ' '.$remainingMinutes.'m' : '');
         } else {
             $days = floor($seconds / 86400);
             $remainingHours = floor(($seconds % 86400) / 3600);
-            return $days . 'd' . ($remainingHours > 0 ? ' ' . $remainingHours . 'h' : '');
+
+            return $days.'d'.($remainingHours > 0 ? ' '.$remainingHours.'h' : '');
         }
     }
 
@@ -175,15 +177,19 @@ class GameUtility
             switch ($buildingType) {
                 case 'woodcutter':
                     $production['wood'] += $level * 5;
+
                     break;
                 case 'clay_pit':
                     $production['clay'] += $level * 5;
+
                     break;
                 case 'iron_mine':
                     $production['iron'] += $level * 5;
+
                     break;
                 case 'crop_field':
                     $production['crop'] += $level * 5;
+
                     break;
             }
         }
@@ -195,6 +201,7 @@ class GameUtility
                     foreach ($production as $resource => $amount) {
                         $production[$resource] = (int) ($amount * (1 + $level * 0.1));
                     }
+
                     break;
             }
         }
@@ -301,7 +308,7 @@ class GameUtility
      */
     public static function generateReference(string $prefix = 'REF'): string
     {
-        return $prefix . '-' . now()->format('Ymd') . '-' . str_pad((string) mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        return $prefix.'-'.now()->format('Ymd').'-'.str_pad((string) mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
     }
 
     /**

@@ -2,23 +2,20 @@
 
 namespace App\Services;
 
-use App\Models\Game\Wonder;
-use App\Models\Game\WonderConstruction;
 use App\Models\Game\Alliance;
 use App\Models\Game\Player;
-use App\Models\Game\Village;
-use App\Services\GameIntegrationService;
-use App\Services\GameNotificationService;
-use App\Services\PerformanceMonitoringService;
+use App\Models\Game\Wonder;
+use App\Models\Game\WonderConstruction;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 use SmartCache\Facades\SmartCache;
 
 class WonderService
 {
     protected CachingUtil $cachingUtil;
+
     protected LoggingUtil $loggingUtil;
 
     public function __construct()
@@ -36,7 +33,7 @@ class WonderService
         int $targetLevel,
         array $resources
     ): WonderConstruction {
-        if (!$wonder->canUpgrade()) {
+        if (! $wonder->canUpgrade()) {
             throw new \Exception('Wonder cannot be upgraded at this time');
         }
 
@@ -83,8 +80,9 @@ class WonderService
             $this->loggingUtil->error('Failed to start wonder construction', [
                 'wonder_id' => $wonder->id,
                 'alliance_id' => $alliance->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -124,8 +122,9 @@ class WonderService
             DB::rollBack();
             $this->loggingUtil->error('Failed to complete wonder construction', [
                 'construction_id' => $construction->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -158,7 +157,7 @@ class WonderService
                 ],
                 'resources' => [
                     'total_contributed' => $wonder->getTotalResourcesContributed(),
-                    'next_level_cost' => $wonder->canUpgrade() 
+                    'next_level_cost' => $wonder->canUpgrade()
                         ? $wonder->getConstructionCost($wonder->current_level + 1)
                         : null,
                 ],
@@ -245,9 +244,9 @@ class WonderService
             }
         }
 
-        if (!empty($completed)) {
+        if (! empty($completed)) {
             $this->loggingUtil->info('Processed wonder constructions', [
-                'completed_count' => count($completed)
+                'completed_count' => count($completed),
             ]);
         }
 
@@ -326,7 +325,7 @@ class WonderService
     {
         // This would typically update player bonuses in the database
         // For now, we'll just log the application
-        
+
         $this->loggingUtil->debug('Applied bonuses to player', [
             'player_id' => $player->id,
             'bonuses' => $bonuses,
@@ -360,7 +359,7 @@ class WonderService
         }
 
         $cacheKey = "wonder_requirements_{$wonder->id}_{$targetLevel}";
-        
+
         return SmartCache::remember($cacheKey, now()->addMinutes(20), function () use ($wonder, $targetLevel) {
             return [
                 'wonder' => [
@@ -401,7 +400,7 @@ class WonderService
 
             // Send real-time update
             GameIntegrationService::sendSystemAnnouncement(
-                "Wonder Construction Started",
+                'Wonder Construction Started',
                 "Alliance {$alliance->name} has started constructing {$wonder->name} to level {$targetLevel}",
                 'high'
             );
@@ -435,7 +434,7 @@ class WonderService
             // Send notification to alliance members
             $alliance = $construction->alliance;
             $wonder = $construction->wonder;
-            
+
             GameNotificationService::sendAllianceNotification(
                 $alliance->id,
                 'wonder_construction_completed',
@@ -449,7 +448,7 @@ class WonderService
 
             // Send real-time update
             GameIntegrationService::sendSystemAnnouncement(
-                "Wonder Construction Completed",
+                'Wonder Construction Completed',
                 "Alliance {$alliance->name} has completed {$wonder->name} construction to level {$wonder->level}",
                 'high'
             );

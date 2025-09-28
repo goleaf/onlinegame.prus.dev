@@ -16,8 +16,11 @@ class MarketManagerTest extends DuskTestCase
     use DatabaseMigrations;
 
     protected $user;
+
     protected $player;
+
     protected $world;
+
     protected $village;
 
     protected function setUp(): void
@@ -70,7 +73,7 @@ class MarketManagerTest extends DuskTestCase
 
     public function test_market_manager_loads()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/market')
@@ -82,7 +85,7 @@ class MarketManagerTest extends DuskTestCase
 
     public function test_current_resources_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/market')
@@ -97,7 +100,7 @@ class MarketManagerTest extends DuskTestCase
 
     public function test_create_trade_form()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/market')
@@ -111,7 +114,7 @@ class MarketManagerTest extends DuskTestCase
 
     public function test_trade_form_filling()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/market')
@@ -128,7 +131,7 @@ class MarketManagerTest extends DuskTestCase
 
     public function test_my_trades_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/market')
@@ -139,7 +142,7 @@ class MarketManagerTest extends DuskTestCase
 
     public function test_available_trades_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/market')
@@ -150,7 +153,7 @@ class MarketManagerTest extends DuskTestCase
 
     public function test_trade_history_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/market')
@@ -161,7 +164,7 @@ class MarketManagerTest extends DuskTestCase
 
     public function test_create_trade_button()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/market')

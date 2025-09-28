@@ -154,8 +154,8 @@ trait GameValidationTrait
     protected function validateTaskData(array $data)
     {
         $rules = [
-            'title' => ['required', 'string', 'max:255', new Clean],
-            'description' => ['nullable', 'string', 'max:1000', new Clean],
+            'title' => ['required', 'string', 'max:255', new Clean()],
+            'description' => ['nullable', 'string', 'max:1000', new Clean()],
             'type' => 'required|in:building,combat,resource,exploration,alliance',
             'status' => 'required|in:available,active,completed,expired',
             'progress' => 'integer|min:0|max:100',
@@ -175,7 +175,7 @@ trait GameValidationTrait
     protected function validatePlayerData(array $data)
     {
         $rules = [
-            'name' => ['required', 'string', 'max:255', 'unique:players,name', new Username(), new Clean],
+            'name' => ['required', 'string', 'max:255', 'unique:players,name', new Username(), new Clean()],
             'tribe' => 'required|in:roman,teuton,gaul',
             'alliance_id' => 'nullable|exists:alliances,id',
             'world_id' => 'required|exists:worlds,id',
@@ -191,9 +191,9 @@ trait GameValidationTrait
     protected function validateAllianceData(array $data)
     {
         $rules = [
-            'name' => ['required', 'string', 'max:255', 'unique:alliances,name', new Username(), new Clean],
-            'tag' => ['required', 'string', 'max:10', 'unique:alliances,tag', new Username(), new Clean],
-            'description' => ['nullable', 'string', 'max:1000', new Clean],
+            'name' => ['required', 'string', 'max:255', 'unique:alliances,name', new Username(), new Clean()],
+            'tag' => ['required', 'string', 'max:10', 'unique:alliances,tag', new Username(), new Clean()],
+            'description' => ['nullable', 'string', 'max:1000', new Clean()],
             'world_id' => 'required|exists:worlds,id',
         ];
 
@@ -210,11 +210,11 @@ trait GameValidationTrait
             'phone_country' => ['nullable', 'string', 'size:2'],
         ];
 
-        if (!empty($data['phone'])) {
+        if (! empty($data['phone'])) {
             if ($country) {
-                $rules['phone'][] = (new Phone)->country($country);
+                $rules['phone'][] = (new Phone())->country($country);
             } else {
-                $rules['phone'][] = new Phone;
+                $rules['phone'][] = new Phone();
             }
             $rules['phone_country'][] = 'required_with:phone';
         }
@@ -245,8 +245,8 @@ trait GameValidationTrait
     protected function validateQuestData(array $data)
     {
         $rules = [
-            'name' => ['required', 'string', 'max:255', new Clean],
-            'description' => ['required', 'string', 'max:1000', new Clean],
+            'name' => ['required', 'string', 'max:255', new Clean()],
+            'description' => ['required', 'string', 'max:1000', new Clean()],
             'category' => 'required|in:tutorial,main,side,daily,weekly,special',
             'difficulty' => 'required|in:easy,medium,hard,expert',
             'requirements' => 'nullable|json',
@@ -264,8 +264,8 @@ trait GameValidationTrait
     protected function validateAchievementData(array $data)
     {
         $rules = [
-            'name' => ['required', 'string', 'max:255', new Clean],
-            'description' => ['required', 'string', 'max:1000', new Clean],
+            'name' => ['required', 'string', 'max:255', new Clean()],
+            'description' => ['required', 'string', 'max:1000', new Clean()],
             'category' => 'required|in:combat,building,resource,exploration,alliance,special',
             'points' => 'required|integer|min:1|max:1000',
             'requirements' => 'required|json',
@@ -484,17 +484,17 @@ trait GameValidationTrait
     protected function validateBusinessData(array $data)
     {
         $rules = [
-            'business_name' => ['required', 'string', 'max:255', new Clean],
+            'business_name' => ['required', 'string', 'max:255', new Clean()],
             'business_type' => 'required|in:sole_proprietorship,partnership,corporation,llc',
-            'tax_number' => ['nullable', 'string', 'max:50', new Clean],
-            'registration_number' => ['nullable', 'string', 'max:50', new Clean],
-            'business_address' => ['nullable', 'string', 'max:500', new Clean],
-            'business_city' => ['nullable', 'string', 'max:100', new Clean],
+            'tax_number' => ['nullable', 'string', 'max:50', new Clean()],
+            'registration_number' => ['nullable', 'string', 'max:50', new Clean()],
+            'business_address' => ['nullable', 'string', 'max:500', new Clean()],
+            'business_city' => ['nullable', 'string', 'max:100', new Clean()],
             'business_country' => ['required', 'string', 'size:2'],
             'business_phone' => 'nullable|string|max:20',
             'business_email' => 'nullable|email|max:255',
             'business_website' => 'nullable|url|max:255',
-            'business_description' => ['nullable', 'string', 'max:1000', new Clean],
+            'business_description' => ['nullable', 'string', 'max:1000', new Clean()],
             'bank_iban' => 'nullable|string|max:34',
             'bank_bic' => 'nullable|string|max:11',
             'product_isbn' => 'nullable|string|max:17',
@@ -502,16 +502,16 @@ trait GameValidationTrait
         ];
 
         // Add conditional validation
-        if (!empty($data['bank_iban'])) {
+        if (! empty($data['bank_iban'])) {
             $rules['bank_iban'][] = new Iban();
         }
-        if (!empty($data['bank_bic'])) {
+        if (! empty($data['bank_bic'])) {
             $rules['bank_bic'][] = new Bic();
         }
-        if (!empty($data['product_isbn'])) {
+        if (! empty($data['product_isbn'])) {
             $rules['product_isbn'][] = new Isbn();
         }
-        if (!empty($data['product_ean'])) {
+        if (! empty($data['product_ean'])) {
             $rules['product_ean'][] = new Ean();
         }
 
@@ -524,28 +524,28 @@ trait GameValidationTrait
     protected function validateTechnicalData(array $data)
     {
         $rules = [
-            'api_token' => ['nullable', 'string', 'max:255', new Clean],
+            'api_token' => ['nullable', 'string', 'max:255', new Clean()],
             'webhook_url' => 'nullable|url|max:255',
             'integration_key' => 'nullable|string|max:100',
             'jwt_secret' => 'nullable|string|max:500',
             'base64_encoded_data' => 'nullable|string|max:10000',
             'data_uri' => 'nullable|string|max:10000',
-            'tech_description' => ['nullable', 'string', 'max:1000', new Clean],
+            'tech_description' => ['nullable', 'string', 'max:1000', new Clean()],
             'preferred_language' => 'required|string|in:en,es,fr,de,it,pt,ru,ja,ko,zh',
             'timezone' => 'required|string|max:50',
         ];
 
         // Add conditional validation
-        if (!empty($data['jwt_secret'])) {
+        if (! empty($data['jwt_secret'])) {
             $rules['jwt_secret'][] = new Jwt();
         }
-        if (!empty($data['base64_encoded_data'])) {
+        if (! empty($data['base64_encoded_data'])) {
             $rules['base64_encoded_data'][] = new Base64();
         }
-        if (!empty($data['data_uri'])) {
+        if (! empty($data['data_uri'])) {
             $rules['data_uri'][] = new DataUri();
         }
-        if (!empty($data['integration_key'])) {
+        if (! empty($data['integration_key'])) {
             $rules['integration_key'][] = new Ulid();
         }
 

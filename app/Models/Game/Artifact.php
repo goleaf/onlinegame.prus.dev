@@ -2,19 +2,17 @@
 
 namespace App\Models\Game;
 
-use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use SmartCache\Facades\SmartCache;
-use sbamtr\LaravelQueryEnrich\QE;
-use function sbamtr\LaravelQueryEnrich\c;
 use MohamedSaid\Referenceable\Traits\HasReference;
+use SmartCache\Facades\SmartCache;
 
 class Artifact extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'name',
@@ -49,11 +47,14 @@ class Artifact extends Model
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
+
     protected $referenceTemplate = [
         'format' => 'ART-{YEAR}{MONTH}{SEQ}',
         'sequence_length' => 4,
     ];
+
     protected $referencePrefix = 'ART';
 
     // Relationships
@@ -115,9 +116,9 @@ class Artifact extends Model
 
     public function scopeNotExpired($query)
     {
-        return $query->where(function ($q) {
+        return $query->where(function ($q): void {
             $q->whereNull('expires_at')
-              ->orWhere('expires_at', '>', now());
+                ->orWhere('expires_at', '>', now());
         });
     }
 
@@ -168,7 +169,7 @@ class Artifact extends Model
 
     public function getRarityColorAttribute(): string
     {
-        return match($this->rarity) {
+        return match ($this->rarity) {
             'common' => 'gray',
             'uncommon' => 'green',
             'rare' => 'blue',
@@ -181,7 +182,7 @@ class Artifact extends Model
 
     public function getTypeIconAttribute(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             'weapon' => 'sword',
             'armor' => 'shield',
             'tool' => 'wrench',
@@ -195,7 +196,7 @@ class Artifact extends Model
     // Methods
     public function activate(): bool
     {
-        if (!$this->canActivate()) {
+        if (! $this->canActivate()) {
             return false;
         }
 
@@ -205,6 +206,7 @@ class Artifact extends Model
         ]);
 
         $this->applyEffects();
+
         return true;
     }
 
@@ -220,6 +222,7 @@ class Artifact extends Model
         ]);
 
         $this->removeEffects();
+
         return true;
     }
 
@@ -237,7 +240,7 @@ class Artifact extends Model
             return false;
         }
 
-        if (!$this->meetsRequirements()) {
+        if (! $this->meetsRequirements()) {
             return false;
         }
 
@@ -251,7 +254,7 @@ class Artifact extends Model
         }
 
         foreach ($this->requirements as $requirement) {
-            if (!$this->checkRequirement($requirement)) {
+            if (! $this->checkRequirement($requirement)) {
                 return false;
             }
         }
@@ -319,33 +322,43 @@ class Artifact extends Model
         switch ($effect['type']) {
             case 'resource_bonus':
                 $this->applyResourceBonusEffect($effect);
+
                 break;
             case 'combat_bonus':
                 $this->applyCombatBonusEffect($effect);
+
                 break;
             case 'building_bonus':
                 $this->applyBuildingBonusEffect($effect);
+
                 break;
             case 'troop_bonus':
                 $this->applyTroopBonusEffect($effect);
+
                 break;
             case 'defense_bonus':
                 $this->applyDefenseBonusEffect($effect);
+
                 break;
             case 'attack_bonus':
                 $this->applyAttackBonusEffect($effect);
+
                 break;
             case 'speed_bonus':
                 $this->applySpeedBonusEffect($effect);
+
                 break;
             case 'production_bonus':
                 $this->applyProductionBonusEffect($effect);
+
                 break;
             case 'trade_bonus':
                 $this->applyTradeBonusEffect($effect);
+
                 break;
             case 'diplomacy_bonus':
                 $this->applyDiplomacyBonusEffect($effect);
+
                 break;
         }
     }
@@ -391,9 +404,9 @@ class Artifact extends Model
         $this->delete();
     }
 
-    public function transfer(Player $newOwner, Village $newVillage = null): bool
+    public function transfer(Player $newOwner, ?Village $newVillage = null): bool
     {
-        if (!$this->canTransfer()) {
+        if (! $this->canTransfer()) {
             return false;
         }
 
@@ -407,10 +420,10 @@ class Artifact extends Model
 
     public function canTransfer(): bool
     {
-        return $this->status === 'active' && !$this->isExpired;
+        return $this->status === 'active' && ! $this->isExpired;
     }
 
-    public function discover(Player $discoverer, Village $village = null): void
+    public function discover(Player $discoverer, ?Village $village = null): void
     {
         $this->update([
             'owner_id' => $discoverer->id,
@@ -449,7 +462,7 @@ class Artifact extends Model
     public function getTotalPowerAttribute(): int
     {
         $basePower = $this->power_level;
-        $rarityMultiplier = match($this->rarity) {
+        $rarityMultiplier = match ($this->rarity) {
             'common' => 1.0,
             'uncommon' => 1.2,
             'rare' => 1.5,
@@ -494,7 +507,7 @@ class Artifact extends Model
         $type = $options['type'] ?? $types[array_rand($types)];
         $rarity = $options['rarity'] ?? $rarities[array_rand($rarities)];
 
-        $powerLevel = match($rarity) {
+        $powerLevel = match ($rarity) {
             'common' => rand(1, 10),
             'uncommon' => rand(10, 25),
             'rare' => rand(25, 50),
@@ -544,7 +557,7 @@ class Artifact extends Model
         $name = $typeNames[array_rand($typeNames)];
         $prefix = $rarityPrefixes[$rarity] ?? '';
 
-        return $prefix . $name;
+        return $prefix.$name;
     }
 
     public static function generateArtifactDescription(string $type, string $rarity): string
@@ -570,7 +583,7 @@ class Artifact extends Model
         $baseDescription = $descriptions[$type] ?? 'A mysterious object with unknown properties.';
         $rarityDescription = $rarityDescriptions[$rarity] ?? '';
 
-        return $baseDescription . ' ' . $rarityDescription;
+        return $baseDescription.' '.$rarityDescription;
     }
 
     public static function generateArtifactEffects(string $type, string $rarity): array
@@ -581,50 +594,56 @@ class Artifact extends Model
             case 'weapon':
                 $effects[] = [
                     'type' => 'combat_bonus',
-                    'value' => rand(5, 25) * (match($rarity) {
+                    'value' => rand(5, 25) * (match ($rarity) {
                         'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
                     }),
                 ];
+
                 break;
             case 'armor':
                 $effects[] = [
                     'type' => 'defense_bonus',
-                    'value' => rand(5, 25) * (match($rarity) {
+                    'value' => rand(5, 25) * (match ($rarity) {
                         'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
                     }),
                 ];
+
                 break;
             case 'tool':
                 $effects[] = [
                     'type' => 'building_speed',
-                    'value' => rand(10, 50) * (match($rarity) {
+                    'value' => rand(10, 50) * (match ($rarity) {
                         'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
                     }),
                 ];
+
                 break;
             case 'mystical':
                 $effects[] = [
                     'type' => 'resource_production',
-                    'value' => rand(15, 75) * (match($rarity) {
+                    'value' => rand(15, 75) * (match ($rarity) {
                         'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
                     }),
                 ];
+
                 break;
             case 'relic':
                 $effects[] = [
                     'type' => 'research_speed',
-                    'value' => rand(20, 100) * (match($rarity) {
+                    'value' => rand(20, 100) * (match ($rarity) {
                         'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
                     }),
                 ];
+
                 break;
             case 'crystal':
                 $effects[] = [
                     'type' => 'storage_capacity',
-                    'value' => rand(25, 125) * (match($rarity) {
+                    'value' => rand(25, 125) * (match ($rarity) {
                         'common' => 1, 'uncommon' => 1.5, 'rare' => 2, 'epic' => 3, 'legendary' => 4, 'mythic' => 5
                     }),
                 ];
+
                 break;
         }
 
@@ -638,7 +657,7 @@ class Artifact extends Model
         if ($rarity === 'epic' || $rarity === 'legendary' || $rarity === 'mythic') {
             $requirements[] = [
                 'type' => 'level',
-                'value' => match($rarity) {
+                'value' => match ($rarity) {
                     'epic' => 20, 'legendary' => 40, 'mythic' => 60
                 },
             ];
@@ -648,7 +667,7 @@ class Artifact extends Model
             $requirements[] = [
                 'type' => 'building',
                 'building' => 'academy',
-                'level' => match($rarity) {
+                'level' => match ($rarity) {
                     'legendary' => 15, 'mythic' => 20
                 },
             ];
@@ -662,31 +681,31 @@ class Artifact extends Model
      */
     public static function getCachedArtifactsByFilters($playerId = null, $filters = [])
     {
-        $cacheKey = "artifacts_{$playerId}_" . md5(serialize($filters));
-        
+        $cacheKey = "artifacts_{$playerId}_".md5(serialize($filters));
+
         return SmartCache::remember($cacheKey, now()->addMinutes(12), function () use ($playerId, $filters) {
             $query = static::with(['owner', 'village']);
-            
+
             if ($playerId) {
                 $query->where('owner_id', $playerId);
             }
-            
+
             if (isset($filters['type'])) {
                 $query->where('type', $filters['type']);
             }
-            
+
             if (isset($filters['rarity'])) {
                 $query->where('rarity', $filters['rarity']);
             }
-            
+
             if (isset($filters['status'])) {
                 $query->where('status', $filters['status']);
             }
-            
+
             if (isset($filters['active'])) {
                 $query->where('status', 'active');
             }
-            
+
             return $query->get();
         });
     }

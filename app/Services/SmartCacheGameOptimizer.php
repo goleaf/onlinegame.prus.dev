@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use SmartCache\Facades\SmartCache;
 
 /**
@@ -46,6 +45,7 @@ class SmartCacheGameOptimizer
         }
 
         $this->performanceMetrics['smart_game_data_loading'] = microtime(true) - $startTime;
+
         return $results;
     }
 
@@ -68,6 +68,7 @@ class SmartCacheGameOptimizer
         }
 
         $results['execution_time'] = microtime(true) - $startTime;
+
         return $results;
     }
 
@@ -76,7 +77,7 @@ class SmartCacheGameOptimizer
      */
     public function optimizeAdvancedQueries(string $queryType, array $params = []): mixed
     {
-        $cacheKey = "smart_query_{$queryType}_" . md5(serialize($params));
+        $cacheKey = "smart_query_{$queryType}_".md5(serialize($params));
         $strategy = $this->cacheStrategies['statistics'];
 
         return SmartCache::remember(
@@ -130,6 +131,7 @@ class SmartCacheGameOptimizer
         }
 
         $results['execution_time'] = microtime(true) - $startTime;
+
         return $results;
     }
 
@@ -149,18 +151,22 @@ class SmartCacheGameOptimizer
             switch ($operation) {
                 case 'warmup':
                     $this->warmupUserData($userId);
+
                     break;
                 case 'invalidate':
                     $this->intelligentCacheInvalidation($userId);
+
                     break;
                 case 'optimize':
                     $this->optimizeGameData($userId, array_keys($this->cacheStrategies));
+
                     break;
             }
             $results['users_processed']++;
         }
 
         $results['execution_time'] = microtime(true) - $startTime;
+
         return $results;
     }
 
@@ -426,6 +432,6 @@ class SmartCacheGameOptimizer
 
         $bytes /= pow(1024, $pow);
 
-        return round($bytes, 2) . ' ' . $units[$pow];
+        return round($bytes, 2).' '.$units[$pow];
     }
 }

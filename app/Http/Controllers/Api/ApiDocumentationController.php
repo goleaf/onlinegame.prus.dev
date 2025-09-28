@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use LaraUtilX\Http\Controllers\CrudController;
+use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\CachingUtil;
 
 /**
@@ -15,8 +15,15 @@ use LaraUtilX\Utilities\CachingUtil;
  * @tag Documentation
  * @tag API Info
  */
-class ApiDocumentationController extends Controller
+class ApiDocumentationController extends CrudController
 {
+    use ApiResponseTrait;
+
+    public function __construct()
+    {
+        parent::__construct(new User());
+    }
+
     /**
      * Get API information
      *
@@ -49,8 +56,8 @@ class ApiDocumentationController extends Controller
      */
     public function getApiInfo(): JsonResponse
     {
-        $cacheKey = "api_info_" . now()->format('Y-m-d-H');
-        
+        $cacheKey = 'api_info_'.now()->format('Y-m-d-H');
+
         $data = CachingUtil::remember($cacheKey, now()->addMinutes(30), function () {
             return [
                 'name' => 'Online Game API',
@@ -58,30 +65,30 @@ class ApiDocumentationController extends Controller
                 'description' => 'A comprehensive REST API for managing game players, villages, and game mechanics',
                 'features' => [
                     'Player Management',
-                    'Village Management', 
+                    'Village Management',
                     'Building Upgrades',
                     'Resource Management',
                     'Authentication',
-                    'Real-time Updates'
+                    'Real-time Updates',
                 ],
                 'endpoints' => [
                     'total' => 6,
                     'authenticated' => 6,
-                    'public' => 0
+                    'public' => 0,
                 ],
                 'authentication' => [
                     'type' => 'Bearer Token',
-                    'provider' => 'Laravel Sanctum'
+                    'provider' => 'Laravel Sanctum',
                 ],
                 'documentation' => [
                     'ui_url' => '/docs/api',
                     'openapi_url' => '/docs/api.json',
-                    'generated_by' => 'Scramble'
-                ]
+                    'generated_by' => 'Scramble',
+                ],
             ];
         });
-        
-        return response()->json($data);
+
+        return $this->successResponse($data, 'API information retrieved successfully.');
     }
 
     /**
@@ -101,7 +108,6 @@ class ApiDocumentationController extends Controller
      *   "uptime": "99.9%",
      *   "response_time": "45ms"
      * }
-     *
      * @response 503 {
      *   "status": "unhealthy",
      *   "timestamp": "2023-01-01T00:00:00.000000Z",
@@ -145,25 +151,20 @@ class ApiDocumentationController extends Controller
             $overallStatus = ($databaseHealthy && $cacheHealthy && $queueHealthy) ? 'healthy' : 'unhealthy';
             $statusCode = $overallStatus === 'healthy' ? 200 : 503;
 
-            return response()->json([
+            return $this->successResponse([
                 'status' => $overallStatus,
                 'timestamp' => now()->toISOString(),
                 'version' => '1.0.0',
                 'services' => [
                     'database' => $databaseHealthy ? 'healthy' : 'unhealthy',
                     'cache' => $cacheHealthy ? 'healthy' : 'unhealthy',
-                    'queue' => $queueHealthy ? 'healthy' : 'unhealthy'
+                    'queue' => $queueHealthy ? 'healthy' : 'unhealthy',
                 ],
                 'uptime' => '99.9%',
-                'response_time' => '45ms'
-            ], $statusCode);
+                'response_time' => '45ms',
+            ], 'Health status retrieved successfully.', $statusCode);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'unhealthy',
-                'timestamp' => now()->toISOString(),
-                'version' => '1.0.0',
-                'error' => $e->getMessage()
-            ], 503);
+            return $this->errorResponse('Health check failed: '.$e->getMessage(), 503);
         }
     }
 
@@ -202,58 +203,58 @@ class ApiDocumentationController extends Controller
      */
     public function getEndpoints(): JsonResponse
     {
-        return response()->json([
+        return $this->successResponse([
             'endpoints' => [
                 [
                     'method' => 'GET',
                     'path' => '/api/user',
                     'description' => 'Get authenticated user',
                     'authenticated' => true,
-                    'tags' => ['Authentication']
+                    'tags' => ['Authentication'],
                 ],
                 [
                     'method' => 'GET',
                     'path' => '/api/game/villages',
                     'description' => "Get player's villages",
                     'authenticated' => true,
-                    'tags' => ['Village Management']
+                    'tags' => ['Village Management'],
                 ],
                 [
                     'method' => 'POST',
                     'path' => '/api/game/create-village',
                     'description' => 'Create a new village',
                     'authenticated' => true,
-                    'tags' => ['Village Management']
+                    'tags' => ['Village Management'],
                 ],
                 [
                     'method' => 'GET',
                     'path' => '/api/game/village/{id}',
                     'description' => 'Get village details',
                     'authenticated' => true,
-                    'tags' => ['Village Management']
+                    'tags' => ['Village Management'],
                 ],
                 [
                     'method' => 'POST',
                     'path' => '/api/game/village/{id}/upgrade-building',
                     'description' => 'Upgrade building in village',
                     'authenticated' => true,
-                    'tags' => ['Village Management']
+                    'tags' => ['Village Management'],
                 ],
                 [
                     'method' => 'GET',
                     'path' => '/api/game/player/stats',
                     'description' => 'Get player statistics',
                     'authenticated' => true,
-                    'tags' => ['Player Management']
-                ]
+                    'tags' => ['Player Management'],
+                ],
             ],
             'total' => 6,
             'tags' => [
                 'Authentication',
                 'Player Management',
                 'Village Management',
-                'Documentation'
-            ]
-        ]);
+                'Documentation',
+            ],
+        ], 'API endpoints retrieved successfully.');
     }
 }

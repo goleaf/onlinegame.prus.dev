@@ -18,8 +18,9 @@ body.buildingsV2 {
   min-width: 1290px;
   overflow-y: scroll;
 }
-body.buildingsV2:before, body.buildingsV2:after {
-  content: "";
+body.buildingsV2:before,
+body.buildingsV2:after {
+  content: '';
   position: absolute;
   z-index: -1;
   top: 0;
@@ -105,7 +106,7 @@ body.buildingsV2.perspectiveBuildings div#background {
   min-height: 1090px;
 }
 body.buildingsV2.perspectiveBuildings div#background:before {
-  content: "";
+  content: '';
   position: absolute;
   top: 1090px;
   bottom: 0;

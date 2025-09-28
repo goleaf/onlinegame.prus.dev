@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,15 +17,13 @@ class PersonalAccessTokensSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
-            
+
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("personal_access_tokens")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('personal_access_tokens')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

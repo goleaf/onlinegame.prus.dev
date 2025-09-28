@@ -2,36 +2,37 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class PhoneApiController extends CrudController
 {
-    use ApiResponseTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use ValidationHelperTrait;
 
     public function __construct()
     {
-        parent::__construct();
+        parent::__construct(new User());
     }
+
     /**
      * Validate and update user phone number
      */
     public function updatePhone(Request $request): JsonResponse
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'phone' => 'nullable|string|max:20',
             'phone_country' => 'nullable|string|size:2',
         ]);
 
         $user = auth()->user();
-        if (!$user) {
+        if (! $user) {
             return $this->errorResponse('User not authenticated', 401);
         }
 
@@ -58,7 +59,7 @@ class PhoneApiController extends CrudController
     public function getPhone(): JsonResponse
     {
         $user = auth()->user();
-        if (!$user) {
+        if (! $user) {
             return $this->errorResponse('User not authenticated', 401);
         }
 

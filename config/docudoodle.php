@@ -68,7 +68,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Settings for the Ollama API which runs locally.
-    | 
+    |
     | host: The host where Ollama is running (default: localhost)
     | port: The port Ollama is listening on (default: 11434)
     |

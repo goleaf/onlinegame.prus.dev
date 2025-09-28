@@ -13,7 +13,7 @@ class SeoHelper
      */
     protected static function getSeoService(): GameSeoService
     {
-        if (!isset(self::$seoService)) {
+        if (! isset(self::$seoService)) {
             self::$seoService = app(GameSeoService::class);
         }
 
@@ -23,7 +23,7 @@ class SeoHelper
     /**
      * Set page title with site name
      */
-    public static function title(string $title, string $siteName = null): void
+    public static function title(string $title, ?string $siteName = null): void
     {
         $siteName = $siteName ?: config('seo.site_name', 'Travian Game');
         seo()->title($title, $siteName);
@@ -60,7 +60,7 @@ class SeoHelper
     /**
      * Set canonical URL
      */
-    public static function canonical(string $url = null): void
+    public static function canonical(?string $url = null): void
     {
         self::getSeoService()->setCanonicalUrl($url);
     }
@@ -150,7 +150,7 @@ class SeoHelper
             return $text;
         }
 
-        return substr($text, 0, $length - 3) . '...';
+        return substr($text, 0, $length - 3).'...';
     }
 
     /**
@@ -161,7 +161,7 @@ class SeoHelper
         $breadcrumbData = [
             '@context' => 'https://schema.org',
             '@type' => 'BreadcrumbList',
-            'itemListElement' => []
+            'itemListElement' => [],
         ];
 
         foreach ($items as $index => $item) {
@@ -169,7 +169,7 @@ class SeoHelper
                 '@type' => 'ListItem',
                 'position' => $index + 1,
                 'name' => $item['name'],
-                'item' => $item['url'] ?? null
+                'item' => $item['url'] ?? null,
             ];
         }
 
@@ -184,7 +184,7 @@ class SeoHelper
         $faqData = [
             '@context' => 'https://schema.org',
             '@type' => 'FAQPage',
-            'mainEntity' => []
+            'mainEntity' => [],
         ];
 
         foreach ($questions as $qa) {
@@ -193,8 +193,8 @@ class SeoHelper
                 'name' => $qa['question'],
                 'acceptedAnswer' => [
                     '@type' => 'Answer',
-                    'text' => $qa['answer']
-                ]
+                    'text' => $qa['answer'],
+                ],
             ];
         }
 
@@ -212,28 +212,33 @@ class SeoHelper
             case 'index':
                 $seoService->setGameIndexSeo();
                 $seoService->setGameStructuredData();
+
                 break;
 
             case 'dashboard':
                 if (isset($data['player'])) {
                     $seoService->setDashboardSeo($data['player']);
                 }
+
                 break;
 
             case 'village':
                 if (isset($data['village']) && isset($data['player'])) {
                     $seoService->setVillageSeo($data['village'], $data['player']);
                 }
+
                 break;
 
             case 'map':
                 if (isset($data['world'])) {
                     $seoService->setWorldMapSeo($data['world']);
                 }
+
                 break;
 
             case 'features':
                 $seoService->setGameFeaturesSeo();
+
                 break;
         }
     }

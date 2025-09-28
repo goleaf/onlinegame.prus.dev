@@ -3,11 +3,9 @@
 namespace App\Services\Game;
 
 use App\Models\Game\Battle;
-use App\Models\Game\Village;
 use App\Models\Game\Player;
 use App\Models\Game\UnitType;
-use App\Models\Game\Troop;
-use App\Models\Game\Resource;
+use App\Models\Game\Village;
 use App\Services\PerformanceMonitoringService;
 use Illuminate\Support\Facades\DB;
 use SmartCache\Facades\SmartCache;
@@ -17,12 +15,13 @@ class CombatService
     public function __construct(
         private ResourceService $resourceService,
         private MovementService $movementService
-    ) {}
+    ) {
+    }
 
     /**
      * Execute a battle between attacker and defender
      */
-    public function executeBattle(Village $attackerVillage, Village $defenderVillage, array $attackerTroops, array $defenderTroops = null): array
+    public function executeBattle(Village $attackerVillage, Village $defenderVillage, array $attackerTroops, ?array $defenderTroops = null): array
     {
         return PerformanceMonitoringService::monitorQueries(function () use ($attackerVillage, $defenderVillage, $attackerTroops, $defenderTroops) {
             // Get defender troops if not provided
@@ -30,29 +29,29 @@ class CombatService
                 $defenderTroops = $this->getDefenderTroops($defenderVillage);
             }
 
-        // Calculate battle strength
-        $attackerStrength = $this->calculateBattleStrength($attackerTroops, 'attack');
-        $defenderStrength = $this->calculateBattleStrength($defenderTroops, 'defense');
+            // Calculate battle strength
+            $attackerStrength = $this->calculateBattleStrength($attackerTroops, 'attack');
+            $defenderStrength = $this->calculateBattleStrength($defenderTroops, 'defense');
 
-        // Apply village bonuses
-        $attackerStrength = $this->applyVillageBonuses($attackerVillage, $attackerStrength, 'attack');
-        $defenderStrength = $this->applyVillageBonuses($defenderVillage, $defenderStrength, 'defense');
+            // Apply village bonuses
+            $attackerStrength = $this->applyVillageBonuses($attackerVillage, $attackerStrength, 'attack');
+            $defenderStrength = $this->applyVillageBonuses($defenderVillage, $defenderStrength, 'defense');
 
-        // Calculate battle result
-        $battleResult = $this->calculateBattleResult($attackerStrength, $defenderStrength);
+            // Calculate battle result
+            $battleResult = $this->calculateBattleResult($attackerStrength, $defenderStrength);
 
-        // Calculate casualties
-        $attackerCasualties = $this->calculateCasualties($attackerTroops, $battleResult['attacker_loss_percentage']);
-        $defenderCasualties = $this->calculateCasualties($defenderTroops, $battleResult['defender_loss_percentage']);
+            // Calculate casualties
+            $attackerCasualties = $this->calculateCasualties($attackerTroops, $battleResult['attacker_loss_percentage']);
+            $defenderCasualties = $this->calculateCasualties($defenderTroops, $battleResult['defender_loss_percentage']);
 
-        // Calculate loot
-        $loot = $this->calculateLoot($defenderVillage, $battleResult['success']);
+            // Calculate loot
+            $loot = $this->calculateLoot($defenderVillage, $battleResult['success']);
 
-        // Create battle record
-        $battle = $this->createBattleRecord($attackerVillage, $defenderVillage, $attackerTroops, $defenderTroops, $attackerCasualties, $defenderCasualties, $loot, $battleResult);
+            // Create battle record
+            $battle = $this->createBattleRecord($attackerVillage, $defenderVillage, $attackerTroops, $defenderTroops, $attackerCasualties, $defenderCasualties, $loot, $battleResult);
 
-        // Apply battle consequences
-        $this->applyBattleConsequences($attackerVillage, $defenderVillage, $attackerCasualties, $defenderCasualties, $loot, $battleResult);
+            // Apply battle consequences
+            $this->applyBattleConsequences($attackerVillage, $defenderVillage, $attackerCasualties, $defenderCasualties, $loot, $battleResult);
 
             return [
                 'success' => true,
@@ -73,10 +72,14 @@ class CombatService
         $totalStrength = 0;
 
         foreach ($troops as $unitTypeId => $quantity) {
-            if ($quantity <= 0) continue;
+            if ($quantity <= 0) {
+                continue;
+            }
 
             $unitType = UnitType::find($unitTypeId);
-            if (!$unitType) continue;
+            if (! $unitType) {
+                continue;
+            }
 
             $strength = $type === 'attack' ? $unitType->attack : $unitType->defense_infantry;
             $totalStrength += $strength * $quantity;
@@ -120,7 +123,7 @@ class CombatService
     private function calculateBattleResult(int $attackerStrength, int $defenderStrength): array
     {
         $totalStrength = $attackerStrength + $defenderStrength;
-        
+
         if ($totalStrength === 0) {
             return [
                 'success' => false,
@@ -163,7 +166,9 @@ class CombatService
         $casualties = [];
 
         foreach ($troops as $unitTypeId => $quantity) {
-            if ($quantity <= 0) continue;
+            if ($quantity <= 0) {
+                continue;
+            }
 
             $casualties[$unitTypeId] = (int) ($quantity * $lossPercentage / 100);
         }
@@ -176,7 +181,7 @@ class CombatService
      */
     private function calculateLoot(Village $defenderVillage, bool $success): array
     {
-        if (!$success) {
+        if (! $success) {
             return [];
         }
 
@@ -215,13 +220,13 @@ class CombatService
      */
     private function applyBattleConsequences(Village $attackerVillage, Village $defenderVillage, array $attackerCasualties, array $defenderCasualties, array $loot, array $battleResult): void
     {
-        DB::transaction(function () use ($attackerVillage, $defenderVillage, $attackerCasualties, $defenderCasualties, $loot, $battleResult) {
+        DB::transaction(function () use ($attackerVillage, $defenderVillage, $attackerCasualties, $defenderCasualties, $loot, $battleResult): void {
             // Apply casualties
             $this->applyCasualties($attackerVillage, $attackerCasualties);
             $this->applyCasualties($defenderVillage, $defenderCasualties);
 
             // Apply loot
-            if ($battleResult['success'] && !empty($loot)) {
+            if ($battleResult['success'] && ! empty($loot)) {
                 $this->resourceService->deductResources($defenderVillage, $loot);
                 $this->resourceService->addResources($attackerVillage, $loot);
             }
@@ -238,7 +243,9 @@ class CombatService
     private function applyCasualties(Village $village, array $casualties): void
     {
         foreach ($casualties as $unitTypeId => $casualtyCount) {
-            if ($casualtyCount <= 0) continue;
+            if ($casualtyCount <= 0) {
+                continue;
+            }
 
             $troop = $village->troops()->where('unit_type_id', $unitTypeId)->first();
             if ($troop) {
@@ -255,7 +262,7 @@ class CombatService
     {
         $totalTroops = $village->troops()->sum('quantity');
         $population = $village->buildings()->sum('level') * 10 + $totalTroops;
-        
+
         $village->update(['population' => $population]);
     }
 
@@ -288,7 +295,7 @@ class CombatService
             $defenderBattles = Battle::where('defender_id', $player->id)->get();
 
             $totalBattles = $attackerBattles->count() + $defenderBattles->count();
-            $victories = $attackerBattles->where('result', 'attacker_victory')->count() + 
+            $victories = $attackerBattles->where('result', 'attacker_victory')->count() +
                         $defenderBattles->where('result', 'defender_victory')->count();
             $defeats = $totalBattles - $victories;
 

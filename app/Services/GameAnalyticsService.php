@@ -2,19 +2,20 @@
 
 namespace App\Services;
 
+use App\Models\Game\Alliance;
 use App\Models\Game\Battle;
 use App\Models\Game\Movement;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
-use App\Models\Game\Alliance;
-use Illuminate\Support\Facades\DB;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class GameAnalyticsService
 {
     protected CachingUtil $cachingUtil;
+
     protected LoggingUtil $loggingUtil;
 
     public function __construct()
@@ -28,8 +29,8 @@ class GameAnalyticsService
      */
     public function getGameAnalytics(array $filters = []): array
     {
-        $cacheKey = 'game_analytics_' . md5(serialize($filters));
-        
+        $cacheKey = 'game_analytics_'.md5(serialize($filters));
+
         return $this->cachingUtil->remember($cacheKey, 300, function () use ($filters) {
             return [
                 'player_statistics' => $this->getPlayerStatistics($filters),
@@ -136,7 +137,7 @@ class GameAnalyticsService
         $villages = Village::query();
 
         if (isset($filters['alliance_id'])) {
-            $villages->whereHas('player', function ($query) use ($filters) {
+            $villages->whereHas('player', function ($query) use ($filters): void {
                 $query->where('alliance_id', $filters['alliance_id']);
             });
         }
@@ -182,6 +183,7 @@ class GameAnalyticsService
             'average_movement_duration' => $movements->avg('duration_seconds'),
             'movements_by_distance' => $movements->groupBy(function ($movement) {
                 $distance = $movement->distance ?? 0;
+
                 return match (true) {
                     $distance >= 100 => '100+',
                     $distance >= 50 => '50-99',
@@ -200,7 +202,7 @@ class GameAnalyticsService
         $query = Village::query();
 
         if (isset($filters['alliance_id'])) {
-            $query->whereHas('player', function ($query) use ($filters) {
+            $query->whereHas('player', function ($query) use ($filters): void {
                 $query->where('alliance_id', $filters['alliance_id']);
             });
         }
@@ -211,6 +213,7 @@ class GameAnalyticsService
             'total_villages' => $villages->count(),
             'villages_by_population' => $villages->groupBy(function ($village) {
                 $population = $village->population ?? 0;
+
                 return match (true) {
                     $population >= 1000 => '1000+',
                     $population >= 500 => '500-999',
@@ -298,29 +301,29 @@ class GameAnalyticsService
     public function generateReport(array $filters = []): string
     {
         $analytics = $this->getGameAnalytics($filters);
-        
+
         $report = "# Game Analytics Report\n\n";
         $report .= "Generated: {$analytics['generated_at']}\n\n";
-        
+
         $report .= "## Player Statistics\n";
         $report .= "- Total Players: {$analytics['player_statistics']['total_players']}\n";
         $report .= "- Active Players: {$analytics['player_statistics']['active_players']}\n";
         $report .= "- Alliance Members: {$analytics['player_statistics']['alliance_members']}\n\n";
-        
+
         $report .= "## Battle Analytics\n";
         $report .= "- Total Battles: {$analytics['battle_analytics']['total_battles']}\n";
         $report .= "- Attacker Victories: {$analytics['battle_analytics']['attacker_victories']}\n";
         $report .= "- Defender Victories: {$analytics['battle_analytics']['defender_victories']}\n\n";
-        
+
         $report .= "## Alliance Analytics\n";
         $report .= "- Total Alliances: {$analytics['alliance_analytics']['total_alliances']}\n";
-        $report .= "- Average Members: " . number_format($analytics['alliance_analytics']['average_members_per_alliance'], 2) . "\n\n";
-        
+        $report .= '- Average Members: '.number_format($analytics['alliance_analytics']['average_members_per_alliance'], 2)."\n\n";
+
         $this->loggingUtil->info('Generated analytics report', [
             'filters' => $filters,
-            'report_size' => strlen($report)
+            'report_size' => strlen($report),
         ]);
-        
+
         return $report;
     }
 }

@@ -3,34 +3,40 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
-use Laravel\Horizon\Horizon;
-use Laravel\Horizon\HorizonApplicationServiceProvider;
+use Illuminate\Support\ServiceProvider;
 
-class HorizonServiceProvider extends HorizonApplicationServiceProvider
-{
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
+if (class_exists(\Laravel\Horizon\HorizonApplicationServiceProvider::class)) {
+    class HorizonServiceProvider extends \Laravel\Horizon\HorizonApplicationServiceProvider
     {
-        parent::boot();
+        public function boot(): void
+        {
+            parent::boot();
 
-        // Horizon::routeSmsNotificationsTo('15556667777');
-        // Horizon::routeMailNotificationsTo('example@example.com');
-        // Horizon::routeSlackNotificationsTo('slack-webhook-url', '#channel');
+            // Horizon::routeSmsNotificationsTo('15556667777');
+            // Horizon::routeMailNotificationsTo('example@example.com');
+            // Horizon::routeSlackNotificationsTo('slack-webhook-url', '#channel');
+        }
+
+        protected function gate(): void
+        {
+            Gate::define('viewHorizon', function ($user = null) {
+                return in_array(optional($user)->email, [
+                    //
+                ]);
+            });
+        }
     }
-
-    /**
-     * Register the Horizon gate.
-     *
-     * This gate determines who can access Horizon in non-local environments.
-     */
-    protected function gate(): void
+} else {
+    class HorizonServiceProvider extends ServiceProvider
     {
-        Gate::define('viewHorizon', function ($user = null) {
-            return in_array(optional($user)->email, [
-                //
-            ]);
-        });
+        public function boot(): void
+        {
+            // Horizon is not installed; nothing to bootstrap.
+        }
+
+        protected function gate(): void
+        {
+            Gate::define('viewHorizon', fn ($user = null) => false);
+        }
     }
 }

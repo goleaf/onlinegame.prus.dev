@@ -11,19 +11,31 @@ use Livewire\Component;
 class BattleSimulator extends Component
 {
     public $attackerVillageId;
+
     public $defenderVillageId;
+
     public $attackerVillage;
+
     public $defenderVillage;
+
     public $attackingTroops = [];
+
     public $defendingTroops = [];
+
     public $simulationResults;
+
     public $iterations = 1000;
+
     public $optimizationResults;
+
     public $showOptimization = false;
+
     public $totalTroops = 100;
+
     public $availableTroops = [];
 
     protected $battleService;
+
     protected $defenseService;
 
     public function mount($attackerVillageId = null, $defenderVillageId = null)
@@ -65,7 +77,7 @@ class BattleSimulator extends Component
 
     public function loadAttackingTroops()
     {
-        if (!$this->attackerVillage) {
+        if (! $this->attackerVillage) {
             return;
         }
 
@@ -87,7 +99,7 @@ class BattleSimulator extends Component
 
     public function loadDefendingTroops()
     {
-        if (!$this->defenderVillage) {
+        if (! $this->defenderVillage) {
             return;
         }
 
@@ -126,8 +138,9 @@ class BattleSimulator extends Component
 
     public function runSimulation()
     {
-        if (empty($this->attackingTroops) || empty($this->defendingTroops) || !$this->defenderVillage) {
+        if (empty($this->attackingTroops) || empty($this->defendingTroops) || ! $this->defenderVillage) {
             session()->flash('error', 'Please select both attacker and defender villages with troops.');
+
             return;
         }
 
@@ -141,8 +154,9 @@ class BattleSimulator extends Component
 
     public function optimizeTroopComposition()
     {
-        if (!$this->defenderVillage || empty($this->availableTroops)) {
+        if (! $this->defenderVillage || empty($this->availableTroops)) {
             session()->flash('error', 'Please select a defender village and ensure troops are available.');
+
             return;
         }
 
@@ -164,7 +178,7 @@ class BattleSimulator extends Component
 
     public function getDefenseReportProperty()
     {
-        if (!$this->defenderVillage) {
+        if (! $this->defenderVillage) {
             return null;
         }
 
@@ -173,7 +187,7 @@ class BattleSimulator extends Component
 
     public function getBattleHistoryProperty()
     {
-        if (!$this->defenderVillage) {
+        if (! $this->defenderVillage) {
             return null;
         }
 
@@ -182,7 +196,7 @@ class BattleSimulator extends Component
 
     public function getRecommendationsProperty()
     {
-        if (!$this->defenderVillage) {
+        if (! $this->defenderVillage) {
             return [];
         }
 

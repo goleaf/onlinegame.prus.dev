@@ -15,9 +15,11 @@ use Tests\TestCase;
 
 class AllianceControllerTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     protected User $user;
+
     protected Player $player;
 
     protected function setUp(): void
@@ -55,14 +57,14 @@ class AllianceControllerTest extends TestCase
                         'members_count',
                         'points',
                         'created_at',
-                    ]
+                    ],
                 ],
                 'meta' => [
                     'current_page',
                     'per_page',
                     'total',
                     'last_page',
-                ]
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -108,7 +110,7 @@ class AllianceControllerTest extends TestCase
                     'leader',
                     'members',
                     'created_at',
-                ]
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -141,7 +143,7 @@ class AllianceControllerTest extends TestCase
                     'members_count',
                     'points',
                     'created_at',
-                ]
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -297,9 +299,9 @@ class AllianceControllerTest extends TestCase
                         'player' => [
                             'id',
                             'name',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -329,7 +331,7 @@ class AllianceControllerTest extends TestCase
                     'name',
                     'description',
                     'updated_at',
-                ]
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -399,7 +401,7 @@ class AllianceControllerTest extends TestCase
     public function it_uses_caching_for_alliances()
     {
         // Mock CachingUtil
-        $this->mock(CachingUtil::class, function ($mock) {
+        $this->mock(CachingUtil::class, function ($mock): void {
             $mock
                 ->shouldReceive('remember')
                 ->once()
@@ -417,7 +419,7 @@ class AllianceControllerTest extends TestCase
     public function it_uses_rate_limiting_for_alliance_creation()
     {
         // Mock RateLimiterUtil
-        $this->mock(RateLimiterUtil::class, function ($mock) {
+        $this->mock(RateLimiterUtil::class, function ($mock): void {
             $mock
                 ->shouldReceive('attempt')
                 ->once()
@@ -441,7 +443,7 @@ class AllianceControllerTest extends TestCase
     public function it_logs_alliance_operations()
     {
         // Mock LoggingUtil
-        $this->mock(LoggingUtil::class, function ($mock) {
+        $this->mock(LoggingUtil::class, function ($mock): void {
             $mock
                 ->shouldReceive('info')
                 ->once();
@@ -460,7 +462,7 @@ class AllianceControllerTest extends TestCase
         $alliance = Alliance::factory()->create(['leader_id' => $this->player->id]);
 
         // Mock CachingUtil
-        $this->mock(CachingUtil::class, function ($mock) {
+        $this->mock(CachingUtil::class, function ($mock): void {
             $mock
                 ->shouldReceive('forget')
                 ->once();

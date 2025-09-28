@@ -24,7 +24,7 @@ class FathomAnalytics
      */
     public function isConfigured(): bool
     {
-        return !empty($this->siteId);
+        return ! empty($this->siteId);
     }
 
     /**
@@ -32,7 +32,7 @@ class FathomAnalytics
      */
     public function getTrackingScript(): string
     {
-        if (!$this->isConfigured()) {
+        if (! $this->isConfigured()) {
             return '';
         }
 
@@ -106,6 +106,6 @@ class FathomAnalytics
      */
     public function getCompleteSetup(): string
     {
-        return $this->getTrackingScript() . $this->getAlpineHelperScript();
+        return $this->getTrackingScript().$this->getAlpineHelperScript();
     }
 }

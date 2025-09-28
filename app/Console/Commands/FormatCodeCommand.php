@@ -33,7 +33,7 @@ class FormatCodeCommand extends Command
         $this->newLine();
 
         // Check if PHP CS Fixer is available
-        if (!$this->isPhpCsFixerAvailable()) {
+        if (! $this->isPhpCsFixerAvailable()) {
             $this->error('❌ PHP CS Fixer is not available. Please install it globally:');
             $this->line('   composer global require friendsofphp/php-cs-fixer');
 
@@ -148,7 +148,7 @@ class FormatCodeCommand extends Command
 
         // Add path if specified
         if ($path) {
-            $command .= ' ' . escapeshellarg($path);
+            $command .= ' '.escapeshellarg($path);
         }
 
         return $command;

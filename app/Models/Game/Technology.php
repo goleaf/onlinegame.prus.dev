@@ -3,18 +3,22 @@
 namespace App\Models\Game;
 
 use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
-use SmartCache\Facades\SmartCache;
-use sbamtr\LaravelQueryEnrich\QE;
+use OwenIt\Auditing\Contracts\Auditable;
+
 use function sbamtr\LaravelQueryEnrich\c;
+
+use sbamtr\LaravelQueryEnrich\QE;
+use SmartCache\Facades\SmartCache;
 
 class Technology extends Model implements Auditable
 {
-    use HasTaxonomy, HasReference, AuditableTrait;
+    use AuditableTrait;
+    use HasReference;
+    use HasTaxonomy;
 
     protected $fillable = [
         'name',
@@ -41,6 +45,7 @@ class Technology extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -81,7 +86,7 @@ class Technology extends Model implements Auditable
                 ->from('player_technologies', 'pt4')
                 ->whereColumn('pt4.technology_id', c('technologies.id'))
                 ->where('pt4.status', '=', 'researching')
-                ->as('researching_count')
+                ->as('researching_count'),
         ]);
     }
 
@@ -130,11 +135,11 @@ class Technology extends Model implements Auditable
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where(function ($subQ) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm): void {
                 $subQ
-                    ->where('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('category', 'like', '%' . $searchTerm . '%');
+                    ->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('category', 'like', '%'.$searchTerm.'%');
             });
         });
     }
@@ -142,7 +147,7 @@ class Technology extends Model implements Auditable
     public function scopeWithPlayerInfo($query)
     {
         return $query->with([
-            'players:id,name,points'
+            'players:id,name,points',
         ]);
     }
 
@@ -180,7 +185,7 @@ class Technology extends Model implements Auditable
      */
     public static function getCachedTechnologies($playerId = null, $filters = [])
     {
-        $cacheKey = "technologies_{$playerId}_" . md5(serialize($filters));
+        $cacheKey = "technologies_{$playerId}_".md5(serialize($filters));
 
         return SmartCache::remember($cacheKey, now()->addMinutes(25), function () use ($playerId, $filters) {
             $query = static::active()->withStats();

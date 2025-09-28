@@ -3,21 +3,25 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class ArtifactEffect extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory;
+    use HasReference;
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
+
     protected $referenceTemplate = [
         'format' => 'AE-{YEAR}{MONTH}{SEQ}',
         'sequence_length' => 4,
     ];
+
     protected $referencePrefix = 'AE';
 
     protected $fillable = [
@@ -79,7 +83,7 @@ class ArtifactEffect extends Model
     {
         return $query
             ->where('is_active', true)
-            ->where(function ($q) {
+            ->where(function ($q): void {
                 $q
                     ->whereNull('expires_at')
                     ->orWhere('expires_at', '>', now());
@@ -115,11 +119,12 @@ class ArtifactEffect extends Model
 
     public function deactivate(): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
         $this->update(['is_active' => false]);
+
         return true;
     }
 
@@ -164,7 +169,7 @@ class ArtifactEffect extends Model
 
     public function getRemainingTimeAttribute(): ?int
     {
-        if (!$this->expires_at) {
+        if (! $this->expires_at) {
             return null;
         }
 

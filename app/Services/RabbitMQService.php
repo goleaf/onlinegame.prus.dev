@@ -13,21 +13,21 @@ class RabbitMQService
     public function publishGameEvent(string $eventType, array $data, string $handler = 'game_event'): void
     {
         $startTime = microtime(true);
-        
+
         ds('RabbitMQService: Publishing game event', [
             'service' => 'RabbitMQService',
             'method' => 'publishGameEvent',
             'event_type' => $eventType,
             'handler' => $handler,
             'data_size' => count($data),
-            'publish_time' => now()
+            'publish_time' => now(),
         ]);
-        
+
         try {
             $message = [
                 'event_type' => $eventType,
                 'timestamp' => now()->toISOString(),
-                'data' => $data
+                'data' => $data,
             ];
 
             $publishStart = microtime(true);
@@ -38,32 +38,32 @@ class RabbitMQService
             $publishTime = round((microtime(true) - $publishStart) * 1000, 2);
 
             $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-            
+
             ds('RabbitMQService: Game event published successfully', [
                 'event_type' => $eventType,
                 'handler' => $handler,
                 'publish_time_ms' => $publishTime,
-                'total_time_ms' => $totalTime
+                'total_time_ms' => $totalTime,
             ]);
 
             Log::info('Game event published', [
                 'event_type' => $eventType,
-                'handler' => $handler
+                'handler' => $handler,
             ]);
         } catch (\Exception $e) {
             $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-            
+
             ds('RabbitMQService: Game event publishing failed', [
                 'event_type' => $eventType,
                 'handler' => $handler,
                 'error' => $e->getMessage(),
                 'exception' => get_class($e),
-                'total_time_ms' => $totalTime
+                'total_time_ms' => $totalTime,
             ]);
-            
+
             Log::error('Failed to publish game event', [
                 'event_type' => $eventType,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -77,7 +77,7 @@ class RabbitMQService
             $message = [
                 'notification_type' => $notificationType,
                 'timestamp' => now()->toISOString(),
-                'data' => $data
+                'data' => $data,
             ];
 
             SimpleMQ::queue('game_events')
@@ -87,12 +87,12 @@ class RabbitMQService
 
             Log::info('Notification published', [
                 'notification_type' => $notificationType,
-                'handler' => $handler
+                'handler' => $handler,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to publish notification', [
                 'notification_type' => $notificationType,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -105,7 +105,7 @@ class RabbitMQService
         $this->publishGameEvent('player_action', [
             'player_id' => $playerId,
             'action' => $action,
-            'details' => $details
+            'details' => $details,
         ]);
     }
 
@@ -117,7 +117,7 @@ class RabbitMQService
         $this->publishGameEvent('building_completed', [
             'village_id' => $villageId,
             'building_id' => $buildingId,
-            'building_type' => $buildingType
+            'building_type' => $buildingType,
         ]);
     }
 
@@ -129,7 +129,7 @@ class RabbitMQService
         $this->publishGameEvent('battle_result', [
             'attacker_id' => $attackerId,
             'defender_id' => $defenderId,
-            'battle_data' => $battleData
+            'battle_data' => $battleData,
         ]);
     }
 
@@ -140,7 +140,7 @@ class RabbitMQService
     {
         $this->publishGameEvent('resource_update', [
             'village_id' => $villageId,
-            'resources' => $resources
+            'resources' => $resources,
         ]);
     }
 
@@ -152,7 +152,7 @@ class RabbitMQService
         $this->publishNotification('email', [
             'email' => $email,
             'subject' => $subject,
-            'data' => $data
+            'data' => $data,
         ]);
     }
 
@@ -164,7 +164,7 @@ class RabbitMQService
         $this->publishNotification('in_game', [
             'player_id' => $playerId,
             'message' => $message,
-            'data' => $data
+            'data' => $data,
         ]);
     }
 }

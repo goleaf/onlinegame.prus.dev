@@ -2,17 +2,18 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Config;
+use App\Utilities\LoggingUtil;
 use LaraUtilX\LLMProviders\Contracts\LLMProviderInterface;
 use LaraUtilX\LLMProviders\Gemini\GeminiProvider;
 use LaraUtilX\LLMProviders\OpenAI\OpenAIProvider;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class AIService
 {
     protected ?LLMProviderInterface $provider = null;
+
     protected string $defaultProvider;
+
     protected array $providers = [];
 
     public function __construct()
@@ -56,28 +57,28 @@ class AIService
     public function generateGameContent(string $prompt, array $options = [])
     {
         $startTime = microtime(true);
-        
+
         ds('AIService: Game content generation started', [
             'service' => 'AIService',
             'method' => 'generateGameContent',
             'prompt_length' => strlen($prompt),
             'options' => $options,
             'default_provider' => $this->defaultProvider,
-            'generation_time' => now()
+            'generation_time' => now(),
         ]);
-        
-        $cacheKey = 'ai_game_content_' . md5($prompt . serialize($options));
+
+        $cacheKey = 'ai_game_content_'.md5($prompt.serialize($options));
 
         return CachingUtil::get($cacheKey, function () use ($prompt, $options, $startTime) {
             $messages = [
                 [
                     'role' => 'system',
-                    'content' => 'You are an AI assistant for a medieval strategy game. Generate creative, engaging content that fits the game world.'
+                    'content' => 'You are an AI assistant for a medieval strategy game. Generate creative, engaging content that fits the game world.',
                 ],
                 [
                     'role' => 'user',
-                    'content' => $prompt
-                ]
+                    'content' => $prompt,
+                ],
             ];
 
             $aiStart = microtime(true);
@@ -91,7 +92,7 @@ class AIService
             $aiTime = round((microtime(true) - $aiStart) * 1000, 2);
 
             $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-            
+
             ds('AIService: Game content generation completed', [
                 'prompt_length' => strlen($prompt),
                 'response_length' => strlen($response->content),
@@ -99,7 +100,7 @@ class AIService
                 'provider' => $this->defaultProvider,
                 'ai_generation_time_ms' => $aiTime,
                 'total_time_ms' => $totalTime,
-                'cache_hit' => false
+                'cache_hit' => false,
             ]);
 
             LoggingUtil::info('AI game content generated', [
@@ -122,7 +123,7 @@ class AIService
 
         $response = $this->generateGameContent($prompt, [
             'temperature' => 0.8,
-            'max_tokens' => 200
+            'max_tokens' => 200,
         ]);
 
         return array_filter(array_map('trim', explode("\n", $response)));
@@ -137,7 +138,7 @@ class AIService
 
         $response = $this->generateGameContent($prompt, [
             'temperature' => 0.8,
-            'max_tokens' => 200
+            'max_tokens' => 200,
         ]);
 
         return array_filter(array_map('trim', explode("\n", $response)));
@@ -148,12 +149,12 @@ class AIService
      */
     public function generateQuestDescription(string $questType, array $context = [])
     {
-        $contextStr = !empty($context) ? 'Context: ' . implode(', ', $context) : '';
+        $contextStr = ! empty($context) ? 'Context: '.implode(', ', $context) : '';
         $prompt = "Generate a detailed quest description for a '{$questType}' quest in a medieval strategy game. {$contextStr} Make it engaging and immersive.";
 
         return $this->generateGameContent($prompt, [
             'temperature' => 0.7,
-            'max_tokens' => 300
+            'max_tokens' => 300,
         ]);
     }
 
@@ -170,7 +171,7 @@ class AIService
 
         return $this->generateGameContent($prompt, [
             'temperature' => 0.8,
-            'max_tokens' => 400
+            'max_tokens' => 400,
         ]);
     }
 
@@ -179,12 +180,12 @@ class AIService
      */
     public function generatePlayerMessage(string $messageType, array $context = [])
     {
-        $contextStr = !empty($context) ? 'Context: ' . implode(', ', $context) : '';
+        $contextStr = ! empty($context) ? 'Context: '.implode(', ', $context) : '';
         $prompt = "Generate a {$messageType} message for a medieval strategy game player. {$contextStr} Make it appropriate for the game world.";
 
         return $this->generateGameContent($prompt, [
             'temperature' => 0.6,
-            'max_tokens' => 200
+            'max_tokens' => 200,
         ]);
     }
 
@@ -193,12 +194,12 @@ class AIService
      */
     public function generateWorldEvent(string $eventType, array $worldData = [])
     {
-        $worldStr = !empty($worldData) ? 'World info: ' . implode(', ', $worldData) : '';
+        $worldStr = ! empty($worldData) ? 'World info: '.implode(', ', $worldData) : '';
         $prompt = "Generate a world event description for a '{$eventType}' event in a medieval strategy game. {$worldStr} Make it interesting and impactful.";
 
         return $this->generateGameContent($prompt, [
             'temperature' => 0.7,
-            'max_tokens' => 350
+            'max_tokens' => 350,
         ]);
     }
 
@@ -207,7 +208,7 @@ class AIService
      */
     public function generateStrategySuggestion(array $gameState)
     {
-        $stateStr = 'Current game state: ' . implode(', ', array_map(function ($key, $value) {
+        $stateStr = 'Current game state: '.implode(', ', array_map(function ($key, $value) {
             return "{$key}: {$value}";
         }, array_keys($gameState), $gameState));
 
@@ -215,7 +216,7 @@ class AIService
 
         return $this->generateGameContent($prompt, [
             'temperature' => 0.5,
-            'max_tokens' => 400
+            'max_tokens' => 400,
         ]);
     }
 
@@ -224,15 +225,15 @@ class AIService
      */
     public function generateWithProvider(string $provider, string $prompt, array $options = [])
     {
-        if (!isset($this->providers[$provider])) {
+        if (! isset($this->providers[$provider])) {
             throw new \InvalidArgumentException("Provider '{$provider}' not available");
         }
 
         $messages = [
             [
                 'role' => 'user',
-                'content' => $prompt
-            ]
+                'content' => $prompt,
+            ],
         ];
 
         $response = $this->providers[$provider]->generateResponse(
@@ -274,7 +275,7 @@ class AIService
      */
     public function setProvider(string $provider): void
     {
-        if (!isset($this->providers[$provider])) {
+        if (! isset($this->providers[$provider])) {
             throw new \InvalidArgumentException("Provider '{$provider}' not available");
         }
 

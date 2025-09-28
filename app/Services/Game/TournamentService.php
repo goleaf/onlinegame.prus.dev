@@ -2,23 +2,23 @@
 
 namespace App\Services\Game;
 
-use App\Models\Game\Tournament;
 use App\Models\Game\Player;
-use App\Models\Game\TournamentParticipant;
-use App\Models\Game\TournamentMatch;
+use App\Models\Game\Tournament;
 use App\Models\Game\TournamentBracket;
+use App\Models\Game\TournamentParticipant;
 use App\Services\GameIntegrationService;
 use App\Services\GameNotificationService;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
 
 class TournamentService
 {
     public function __construct(
         private GameIntegrationService $gameIntegrationService,
         private GameNotificationService $gameNotificationService
-    ) {}
+    ) {
+    }
 
     /**
      * Create a new tournament
@@ -63,7 +63,7 @@ class TournamentService
     public function registerPlayer(Tournament $tournament, Player $player): bool
     {
         // Check if registration is open
-        if (!$this->isRegistrationOpen($tournament)) {
+        if (! $this->isRegistrationOpen($tournament)) {
             return false;
         }
 
@@ -216,6 +216,7 @@ class TournamentService
     private function isRegistrationOpen(Tournament $tournament): bool
     {
         $now = now();
+
         return $now->between($tournament->registration_start, $tournament->registration_end);
     }
 
@@ -225,6 +226,7 @@ class TournamentService
     private function isTournamentFull(Tournament $tournament): bool
     {
         $currentParticipants = $tournament->participants()->count();
+
         return $currentParticipants >= $tournament->max_participants;
     }
 
@@ -275,12 +277,15 @@ class TournamentService
         switch ($tournament->format) {
             case 'single_elimination':
                 $this->generateSingleEliminationBracket($bracket, $participants);
+
                 break;
             case 'double_elimination':
                 $this->generateDoubleEliminationBracket($bracket, $participants);
+
                 break;
             case 'round_robin':
                 $this->generateRoundRobinBracket($bracket, $participants);
+
                 break;
         }
     }
@@ -340,7 +345,7 @@ class TournamentService
      */
     private function distributePrizes(Tournament $tournament, ?Player $winner): void
     {
-        if (!$winner || $tournament->prize_pool <= 0) {
+        if (! $winner || $tournament->prize_pool <= 0) {
             return;
         }
 
@@ -379,7 +384,7 @@ class TournamentService
         foreach ($participants as $participant) {
             $message = "Tournament '{$tournament->name}' has ended.";
             if ($winner && $participant->player->id === $winner->id) {
-                $message .= " Congratulations! You won!";
+                $message .= ' Congratulations! You won!';
             }
 
             $this->gameNotificationService->sendTournamentNotification(

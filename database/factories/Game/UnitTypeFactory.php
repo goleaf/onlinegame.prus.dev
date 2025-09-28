@@ -46,7 +46,7 @@ class UnitTypeFactory extends Factory
      */
     public function special(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_special' => true,
             'attack' => $this->faker->numberBetween(100, 300),
             'defense_infantry' => $this->faker->numberBetween(100, 300),
@@ -59,7 +59,7 @@ class UnitTypeFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => false,
         ]);
     }
@@ -69,7 +69,7 @@ class UnitTypeFactory extends Factory
      */
     public function tribe(string $tribe): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'tribe' => $tribe,
         ]);
     }

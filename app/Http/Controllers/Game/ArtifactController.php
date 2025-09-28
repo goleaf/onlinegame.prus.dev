@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\Artifact;
-use App\Models\Game\ArtifactEffect;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
+use App\Utilities\LoggingUtil;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Artifact Management
@@ -33,7 +30,7 @@ class ArtifactController extends CrudController
 {
     use ApiResponseTrait;
 
-    protected $model;
+    protected Model $model;
 
     protected array $validationRules = [
         'name' => 'required|string|max:255',
@@ -48,7 +45,9 @@ class ArtifactController extends CrudController
     ];
 
     protected array $searchableFields = ['name', 'description', 'type', 'rarity'];
+
     protected array $relationships = ['owner', 'village', 'artifactEffects'];
+
     protected int $perPage = 15;
 
     public function __construct()
@@ -106,7 +105,7 @@ class ArtifactController extends CrudController
     public function index(Request $request): JsonResponse
     {
         try {
-            $cacheKey = 'artifacts_index_' . md5(serialize($request->all()));
+            $cacheKey = 'artifacts_index_'.md5(serialize($request->all()));
 
             $artifacts = CachingUtil::remember($cacheKey, 300, function () use ($request) {
                 $query = Artifact::with($this->relationships);
@@ -130,7 +129,7 @@ class ArtifactController extends CrudController
                     $filters[] = ['field' => 'is_server_wide', 'operator' => 'equals', 'value' => $request->boolean('server_wide')];
                 }
 
-                if (!empty($filters)) {
+                if (! empty($filters)) {
                     $query = FilteringUtil::applyFilters($query, $filters);
                 }
 
@@ -208,7 +207,6 @@ class ArtifactController extends CrudController
      *     }
      *   ]
      * }
-     *
      * @response 404 {
      *   "message": "Artifact not found"
      * }
@@ -277,7 +275,6 @@ class ArtifactController extends CrudController
      *     "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     *
      * @response 422 {
      *   "message": "The given data was invalid.",
      *   "errors": {
@@ -291,7 +288,7 @@ class ArtifactController extends CrudController
     public function store(Request $request): JsonResponse
     {
         try {
-            $validated = $request->validate($this->validationRules);
+            $validated = $this->validateRequestData($request, $this->validationRules);
 
             $artifact = Artifact::create([
                 'name' => $validated['name'],
@@ -340,6 +337,7 @@ class ArtifactController extends CrudController
      * @description Activate an artifact, applying its effects to the game world.
      *
      * @urlParam id int required The ID of the artifact to activate. Example: 1
+     *
      * @bodyParam owner_id int The ID of the player who will own the artifact. Example: 1
      * @bodyParam village_id int The ID of the village where the artifact will be placed. Example: 5
      *
@@ -354,12 +352,10 @@ class ArtifactController extends CrudController
      *     "village_id": 5
      *   }
      * }
-     *
      * @response 400 {
      *   "success": false,
      *   "message": "Artifact cannot be activated"
      * }
-     *
      * @response 404 {
      *   "message": "Artifact not found"
      * }
@@ -371,7 +367,7 @@ class ArtifactController extends CrudController
         try {
             $artifact = Artifact::findOrFail($id);
 
-            if (!$artifact->canActivate()) {
+            if (! $artifact->canActivate()) {
                 return $this->errorResponse('Artifact cannot be activated. Check requirements and status.', 400);
             }
 
@@ -432,12 +428,10 @@ class ArtifactController extends CrudController
      *       "activated_at": null
      *   }
      * }
-     *
      * @response 400 {
      *   "success": false,
      *   "message": "Artifact is not active"
      * }
-     *
      * @response 404 {
      *   "message": "Artifact not found"
      * }
@@ -683,6 +677,7 @@ class ArtifactController extends CrudController
      * @description Update an existing artifact's properties.
      *
      * @urlParam id int required The ID of the artifact to update. Example: 1
+     *
      * @bodyParam name string The new name of the artifact. Example: "Enhanced Sword of Power"
      * @bodyParam description string The new description. Example: "An even more powerful version"
      * @bodyParam power_level int The new power level (1-100). Example: 90
@@ -701,7 +696,6 @@ class ArtifactController extends CrudController
      *       "updated_at": "2023-01-01T00:00:00.000000Z"
      *   }
      * }
-     *
      * @response 404 {
      *   "message": "Artifact not found"
      * }
@@ -713,7 +707,7 @@ class ArtifactController extends CrudController
         try {
             $artifact = Artifact::findOrFail($id);
 
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'name' => 'sometimes|string|max:255',
                 'description' => 'nullable|string',
                 'power_level' => 'sometimes|integer|min:1|max:100',
@@ -760,12 +754,10 @@ class ArtifactController extends CrudController
      *   "success": true,
      *   "message": "Artifact deleted successfully"
      * }
-     *
      * @response 400 {
      *   "success": false,
      *   "message": "Cannot delete active artifact"
      * }
-     *
      * @response 404 {
      *   "message": "Artifact not found"
      * }

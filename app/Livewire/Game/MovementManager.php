@@ -8,16 +8,15 @@ use App\Models\Game\Troop;
 use App\Models\Game\Village;
 use App\Services\GeographicService;
 use Illuminate\Support\Facades\Auth;
+use LaraUtilX\Traits\ApiResponseTrait;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\PaginationUtil;
 use Livewire\WithPagination;
 
 class MovementManager extends Component
 {
-    use WithPagination, ApiResponseTrait;
+    use ApiResponseTrait;
+    use WithPagination;
 
     public $village;
 
@@ -101,7 +100,7 @@ class MovementManager extends Component
         'villageSelected',
     ];
 
-    public function mount(Village $village = null)
+    public function mount(?Village $village = null)
     {
         if ($village) {
             $this->village = $village;
@@ -154,7 +153,7 @@ class MovementManager extends Component
 
             $this->movements = $query->get();
         } catch (\Exception $e) {
-            $this->addNotification('Error loading movement data: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading movement data: '.$e->getMessage(), 'error');
             $this->movements = collect();
         }
 
@@ -196,7 +195,7 @@ class MovementManager extends Component
         ]);
 
         $targetVillage = Village::find($this->targetVillageId);
-        if (!$targetVillage) {
+        if (! $targetVillage) {
             $this->addNotification('Target village not found.', 'error');
 
             return;
@@ -257,7 +256,7 @@ class MovementManager extends Component
             'to_village' => $targetVillage->name,
             'troops_data' => $troopsData,
             'travel_time' => $this->travelTime,
-            'arrives_at' => $this->arrivalTime
+            'arrives_at' => $this->arrivalTime,
         ])->label('MovementManager Movement Created');
 
         $this->reset(['targetVillageId', 'selectedTroops', 'troopQuantities', 'movementTime', 'arrivalTime']);
@@ -273,7 +272,7 @@ class MovementManager extends Component
     public function cancelMovement($movementId)
     {
         $movement = Movement::find($movementId);
-        if (!$movement || $movement->status !== 'travelling') {
+        if (! $movement || $movement->status !== 'travelling') {
             $this->addNotification('Movement not found or cannot be cancelled.', 'error');
 
             return;
@@ -315,7 +314,7 @@ class MovementManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function setTargetVillage($villageId)
@@ -333,7 +332,7 @@ class MovementManager extends Component
     public function selectTroop($troopId, $quantity = 1)
     {
         $troop = Troop::find($troopId);
-        if (!$troop || $troop->village_id !== $this->village->id) {
+        if (! $troop || $troop->village_id !== $this->village->id) {
             $this->addNotification("Invalid troop ID: {$troopId}", 'error');
 
             return;
@@ -412,7 +411,7 @@ class MovementManager extends Component
 
     public function toggleMyMovementsFilter()
     {
-        $this->showOnlyMyMovements = !$this->showOnlyMyMovements;
+        $this->showOnlyMyMovements = ! $this->showOnlyMyMovements;
         $this->addNotification(
             $this->showOnlyMyMovements ? 'Showing only my movements' : 'Showing all movements',
             'info'
@@ -421,7 +420,7 @@ class MovementManager extends Component
 
     public function toggleTravellingFilter()
     {
-        $this->showOnlyTravelling = !$this->showOnlyTravelling;
+        $this->showOnlyTravelling = ! $this->showOnlyTravelling;
         $this->addNotification(
             $this->showOnlyTravelling ? 'Showing only travelling movements' : 'Showing all movements',
             'info'
@@ -430,7 +429,7 @@ class MovementManager extends Component
 
     public function toggleCompletedFilter()
     {
-        $this->showOnlyCompleted = !$this->showOnlyCompleted;
+        $this->showOnlyCompleted = ! $this->showOnlyCompleted;
         $this->addNotification(
             $this->showOnlyCompleted ? 'Showing only completed movements' : 'Showing all movements',
             'info'
@@ -692,7 +691,7 @@ class MovementManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -701,7 +700,7 @@ class MovementManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'

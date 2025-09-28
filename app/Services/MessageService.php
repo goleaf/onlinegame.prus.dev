@@ -62,25 +62,25 @@ class MessageService
     public function getConversation(int $playerId, int $otherPlayerId, int $limit = 50): array
     {
         $messages = Message::with(['sender', 'recipient'])
-            ->where(function ($q) use ($playerId, $otherPlayerId) {
+            ->where(function ($q) use ($playerId, $otherPlayerId): void {
                 $q
                     ->where('sender_id', $playerId)
                     ->where('recipient_id', $otherPlayerId);
             })
-            ->orWhere(function ($q) use ($playerId, $otherPlayerId) {
+            ->orWhere(function ($q) use ($playerId, $otherPlayerId): void {
                 $q
                     ->where('sender_id', $otherPlayerId)
                     ->where('recipient_id', $playerId);
             })
             ->where('message_type', 'private')
-            ->where(function ($q) use ($playerId) {
+            ->where(function ($q) use ($playerId): void {
                 $q
-                    ->where(function ($subQ) use ($playerId) {
+                    ->where(function ($subQ) use ($playerId): void {
                         $subQ
                             ->where('sender_id', $playerId)
                             ->where('is_deleted_by_sender', false);
                     })
-                    ->orWhere(function ($subQ) use ($playerId) {
+                    ->orWhere(function ($subQ) use ($playerId): void {
                         $subQ
                             ->where('recipient_id', $playerId)
                             ->where('is_deleted_by_recipient', false);
@@ -92,12 +92,12 @@ class MessageService
 
         return [
             'messages' => $messages,
-            'total' => Message::where(function ($q) use ($playerId, $otherPlayerId) {
+            'total' => Message::where(function ($q) use ($playerId, $otherPlayerId): void {
                 $q
                     ->where('sender_id', $playerId)
                     ->where('recipient_id', $otherPlayerId);
             })
-                ->orWhere(function ($q) use ($playerId, $otherPlayerId) {
+                ->orWhere(function ($q) use ($playerId, $otherPlayerId): void {
                     $q
                         ->where('sender_id', $otherPlayerId)
                         ->where('recipient_id', $playerId);
@@ -183,8 +183,9 @@ class MessageService
             ->where('is_deleted_by_recipient', false)
             ->first();
 
-        if ($message && !$message->is_read) {
+        if ($message && ! $message->is_read) {
             $message->update(['is_read' => true]);
+
             return true;
         }
 
@@ -197,14 +198,14 @@ class MessageService
     public function deleteMessage(int $messageId, int $playerId): bool
     {
         $message = Message::where('id', $messageId)
-            ->where(function ($q) use ($playerId) {
+            ->where(function ($q) use ($playerId): void {
                 $q
                     ->where('sender_id', $playerId)
                     ->orWhere('recipient_id', $playerId);
             })
             ->first();
 
-        if (!$message) {
+        if (! $message) {
             return false;
         }
 
@@ -240,8 +241,8 @@ class MessageService
             'total_sent' => Message::where('sender_id', $playerId)
                 ->where('is_deleted_by_sender', false)
                 ->count(),
-            'alliance_messages' => Message::whereHas('alliance', function ($q) use ($playerId) {
-                $q->whereHas('members', function ($memberQ) use ($playerId) {
+            'alliance_messages' => Message::whereHas('alliance', function ($q) use ($playerId): void {
+                $q->whereHas('members', function ($memberQ) use ($playerId): void {
                     $memberQ->where('player_id', $playerId);
                 });
             })->count(),
@@ -282,7 +283,7 @@ class MessageService
     private function generateReferenceNumber(): string
     {
         do {
-            $reference = 'MSG-' . strtoupper(Str::random(8));
+            $reference = 'MSG-'.strtoupper(Str::random(8));
         } while (Message::where('reference_number', $reference)->exists());
 
         return $reference;
@@ -363,7 +364,7 @@ class MessageService
             ->where('id', $villageId)
             ->first();
 
-        if (!$sourceVillage || !$sourceVillage->latitude || !$sourceVillage->longitude) {
+        if (! $sourceVillage || ! $sourceVillage->latitude || ! $sourceVillage->longitude) {
             return $sentMessages;
         }
 
@@ -381,6 +382,7 @@ class MessageService
                     $village->latitude,
                     $village->longitude
                 );
+
                 return $distance <= $alertRadius;
             });
 
@@ -441,18 +443,18 @@ class MessageService
     private function getGeographicAlertBody(\App\Models\Game\Village $sourceVillage, float $distance, float $bearing, array $alertData): string
     {
         $direction = $this->getDirectionFromBearing($bearing);
-        
+
         $body = "Geographic Alert from {$sourceVillage->name}\n\n";
-        $body .= "📍 Distance: " . number_format($distance, 2) . " km\n";
+        $body .= '📍 Distance: '.number_format($distance, 2)." km\n";
         $body .= "🧭 Direction: {$direction} ({$bearing}°)\n";
         $body .= "🏘️ Village: {$sourceVillage->name}\n";
         $body .= "👤 Player: {$sourceVillage->player->name}\n";
-        
-        if (!empty($alertData['details'])) {
+
+        if (! empty($alertData['details'])) {
             $body .= "\n📋 Details: {$alertData['details']}\n";
         }
-        
-        $body .= "\n⏰ Time: " . now()->format('Y-m-d H:i:s') . "\n";
+
+        $body .= "\n⏰ Time: ".now()->format('Y-m-d H:i:s')."\n";
         $body .= "\nStay alert and prepare your defenses!";
 
         return $body;
@@ -465,10 +467,11 @@ class MessageService
     {
         $directions = [
             'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
-            'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'
+            'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW',
         ];
-        
+
         $index = round($bearing / 22.5) % 16;
+
         return $directions[$index];
     }
 }

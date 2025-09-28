@@ -40,7 +40,7 @@ class BuildingFactory extends Factory
      */
     public function upgrading(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'upgrade_started_at' => now(),
             'upgrade_completed_at' => now()->addHours($this->faker->numberBetween(1, 24)),
         ]);
@@ -51,7 +51,7 @@ class BuildingFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => false,
         ]);
     }
@@ -61,7 +61,7 @@ class BuildingFactory extends Factory
      */
     public function atPosition(int $x, int $y): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'x' => $x,
             'y' => $y,
         ]);

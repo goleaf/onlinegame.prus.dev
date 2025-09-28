@@ -5,39 +5,57 @@ namespace App\Models\Game;
 use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use App\Traits\Commentable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
-use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
 use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
-use IndexZer0\EloquentFiltering\Filter\Types\Types;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class Report extends Model implements Auditable
 {
-    use HasFactory, HasTaxonomy, HasReference, AuditableTrait, Commentable, Lift;
+    use AuditableTrait;
+    use Commentable;
+    use HasFactory;
+    use HasReference;
+    use HasTaxonomy;
 
     // Laravel Lift typed properties
     public int $id;
+
     public int $world_id;
+
     public ?int $attacker_id;
+
     public ?int $defender_id;
+
     public ?int $from_village_id;
+
     public ?int $to_village_id;
+
     public string $title;
+
     public ?string $content;
+
     public string $type;
+
     public string $status;
+
     public ?array $battle_data;
+
     public ?array $attachments;
+
     public bool $is_read;
+
     public bool $is_important;
+
     public ?\Carbon\Carbon $read_at;
+
     public ?string $reference_number;
+
     public \Carbon\CarbonImmutable $created_at;
+
     public \Carbon\CarbonImmutable $updated_at;
 
     protected $fillable = [
@@ -68,6 +86,7 @@ class Report extends Model implements Auditable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -150,7 +169,7 @@ class Report extends Model implements Auditable
 
     public function scopeForPlayer($query, $playerId)
     {
-        return $query->where(function ($q) use ($playerId) {
+        return $query->where(function ($q) use ($playerId): void {
             $q
                 ->where('attacker_id', $playerId)
                 ->orWhere('defender_id', $playerId);

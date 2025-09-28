@@ -3,15 +3,18 @@
 namespace App\Models\Game;
 
 use App\Traits\Commentable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class ChatMessage extends Model implements Auditable
 {
-    use HasFactory, HasReference, AuditableTrait, Commentable;
+    use AuditableTrait;
+    use Commentable;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'sender_id',
@@ -30,18 +33,26 @@ class ChatMessage extends Model implements Auditable
     ];
 
     // Channel types
-    const CHANNEL_GLOBAL = 'global';
-    const CHANNEL_ALLIANCE = 'alliance';
-    const CHANNEL_PRIVATE = 'private';
-    const CHANNEL_TRADE = 'trade';
-    const CHANNEL_DIPLOMACY = 'diplomacy';
+    public const CHANNEL_GLOBAL = 'global';
+
+    public const CHANNEL_ALLIANCE = 'alliance';
+
+    public const CHANNEL_PRIVATE = 'private';
+
+    public const CHANNEL_TRADE = 'trade';
+
+    public const CHANNEL_DIPLOMACY = 'diplomacy';
 
     // Message types
-    const TYPE_TEXT = 'text';
-    const TYPE_SYSTEM = 'system';
-    const TYPE_ANNOUNCEMENT = 'announcement';
-    const TYPE_EMOTE = 'emote';
-    const TYPE_COMMAND = 'command';
+    public const TYPE_TEXT = 'text';
+
+    public const TYPE_SYSTEM = 'system';
+
+    public const TYPE_ANNOUNCEMENT = 'announcement';
+
+    public const TYPE_EMOTE = 'emote';
+
+    public const TYPE_COMMAND = 'command';
 
     public function sender(): BelongsTo
     {
@@ -244,7 +255,7 @@ class ChatMessage extends Model implements Auditable
     private static function generateReferenceNumber(): string
     {
         do {
-            $reference = 'CHAT-' . strtoupper(\Str::random(8));
+            $reference = 'CHAT-'.strtoupper(\Str::random(8));
         } while (self::where('reference_number', $reference)->exists());
 
         return $reference;
@@ -255,23 +266,23 @@ class ChatMessage extends Model implements Auditable
      */
     public static function getCachedMessages($channelId = null, $filters = [])
     {
-        $cacheKey = "chat_messages_{$channelId}_" . md5(serialize($filters));
-        
+        $cacheKey = "chat_messages_{$channelId}_".md5(serialize($filters));
+
         return SmartCache::remember($cacheKey, now()->addMinutes(3), function () use ($channelId, $filters) {
             $query = static::with(['sender']);
-            
+
             if ($channelId) {
                 $query->where('channel_id', $channelId);
             }
-            
+
             if (isset($filters['type'])) {
                 $query->where('message_type', $filters['type']);
             }
-            
+
             if (isset($filters['recent'])) {
                 $query->where('created_at', '>', now()->subHours($filters['recent']));
             }
-            
+
             return $query->orderBy('created_at', 'desc')->get();
         });
     }

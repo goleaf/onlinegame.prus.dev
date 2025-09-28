@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,13 +17,11 @@ class MarketTradesSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
-                'player_id' => 1,
+                'player_id' => 7,
                 'village_id' => 1,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -36,7 +35,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'player_id' => 1,
+                'player_id' => 7,
                 'village_id' => 1,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -50,7 +49,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'player_id' => 1,
+                'player_id' => 7,
                 'village_id' => 1,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -64,7 +63,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 4,
-                'player_id' => 1,
+                'player_id' => 7,
                 'village_id' => 1,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -78,7 +77,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 5,
-                'player_id' => 2,
+                'player_id' => 7,
                 'village_id' => 2,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -92,7 +91,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 6,
-                'player_id' => 2,
+                'player_id' => 7,
                 'village_id' => 2,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -106,7 +105,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 7,
-                'player_id' => 2,
+                'player_id' => 7,
                 'village_id' => 2,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -120,7 +119,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 8,
-                'player_id' => 2,
+                'player_id' => 7,
                 'village_id' => 2,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -134,7 +133,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 9,
-                'player_id' => 3,
+                'player_id' => 7,
                 'village_id' => 3,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -148,7 +147,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 10,
-                'player_id' => 3,
+                'player_id' => 7,
                 'village_id' => 3,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -162,7 +161,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 11,
-                'player_id' => 3,
+                'player_id' => 7,
                 'village_id' => 3,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -176,7 +175,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 12,
-                'player_id' => 3,
+                'player_id' => 7,
                 'village_id' => 3,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -190,7 +189,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 13,
-                'player_id' => 3,
+                'player_id' => 7,
                 'village_id' => 4,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -204,7 +203,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 14,
-                'player_id' => 3,
+                'player_id' => 7,
                 'village_id' => 4,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -218,7 +217,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 15,
-                'player_id' => 3,
+                'player_id' => 7,
                 'village_id' => 4,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -232,7 +231,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 16,
-                'player_id' => 3,
+                'player_id' => 7,
                 'village_id' => 4,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -246,7 +245,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 17,
-                'player_id' => 4,
+                'player_id' => 7,
                 'village_id' => 5,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -260,7 +259,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 18,
-                'player_id' => 4,
+                'player_id' => 7,
                 'village_id' => 5,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -274,7 +273,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 19,
-                'player_id' => 4,
+                'player_id' => 7,
                 'village_id' => 5,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -288,7 +287,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 20,
-                'player_id' => 4,
+                'player_id' => 7,
                 'village_id' => 5,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -302,7 +301,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 21,
-                'player_id' => 5,
+                'player_id' => 7,
                 'village_id' => 6,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -316,7 +315,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 22,
-                'player_id' => 5,
+                'player_id' => 7,
                 'village_id' => 6,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -330,7 +329,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 23,
-                'player_id' => 5,
+                'player_id' => 7,
                 'village_id' => 6,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -344,7 +343,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 24,
-                'player_id' => 5,
+                'player_id' => 7,
                 'village_id' => 6,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -358,7 +357,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 25,
-                'player_id' => 6,
+                'player_id' => 7,
                 'village_id' => 7,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -372,7 +371,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 26,
-                'player_id' => 6,
+                'player_id' => 7,
                 'village_id' => 7,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -386,7 +385,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 27,
-                'player_id' => 6,
+                'player_id' => 7,
                 'village_id' => 7,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -400,7 +399,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 28,
-                'player_id' => 6,
+                'player_id' => 7,
                 'village_id' => 7,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -526,7 +525,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 37,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 10,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -540,7 +539,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 38,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 10,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -554,7 +553,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 39,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 10,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -568,7 +567,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 40,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 10,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -582,7 +581,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 41,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 11,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -596,7 +595,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 42,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 11,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -610,7 +609,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 43,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 11,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -624,7 +623,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 44,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 11,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -638,7 +637,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 45,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 12,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -652,7 +651,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 46,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 12,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -666,7 +665,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 47,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 12,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -680,7 +679,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 48,
-                'player_id' => 8,
+                'player_id' => 7,
                 'village_id' => 12,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -694,7 +693,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 49,
-                'player_id' => 9,
+                'player_id' => 7,
                 'village_id' => 13,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -708,7 +707,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 50,
-                'player_id' => 9,
+                'player_id' => 7,
                 'village_id' => 13,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -722,7 +721,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 51,
-                'player_id' => 9,
+                'player_id' => 7,
                 'village_id' => 13,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -736,7 +735,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 52,
-                'player_id' => 9,
+                'player_id' => 7,
                 'village_id' => 13,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -750,7 +749,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 53,
-                'player_id' => 9,
+                'player_id' => 7,
                 'village_id' => 14,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -764,7 +763,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 54,
-                'player_id' => 9,
+                'player_id' => 7,
                 'village_id' => 14,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -778,7 +777,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 55,
-                'player_id' => 9,
+                'player_id' => 7,
                 'village_id' => 14,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -792,7 +791,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 56,
-                'player_id' => 9,
+                'player_id' => 7,
                 'village_id' => 14,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -806,7 +805,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 57,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 15,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -820,7 +819,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 58,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 15,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -834,7 +833,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 59,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 15,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -848,7 +847,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 60,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 15,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -862,7 +861,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 61,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 16,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -876,7 +875,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 62,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 16,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -890,7 +889,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 63,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 16,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -904,7 +903,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 64,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 16,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -918,7 +917,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 65,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 17,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -932,7 +931,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 66,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 17,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -946,7 +945,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 67,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 17,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -960,7 +959,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 68,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 17,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -974,7 +973,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 69,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 18,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -988,7 +987,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 70,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 18,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1002,7 +1001,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 71,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 18,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1016,7 +1015,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 72,
-                'player_id' => 10,
+                'player_id' => 7,
                 'village_id' => 18,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1030,7 +1029,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 73,
-                'player_id' => 11,
+                'player_id' => 7,
                 'village_id' => 19,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1044,7 +1043,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 74,
-                'player_id' => 11,
+                'player_id' => 7,
                 'village_id' => 19,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1058,7 +1057,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 75,
-                'player_id' => 11,
+                'player_id' => 7,
                 'village_id' => 19,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1072,7 +1071,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 76,
-                'player_id' => 11,
+                'player_id' => 7,
                 'village_id' => 19,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1086,7 +1085,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 77,
-                'player_id' => 11,
+                'player_id' => 7,
                 'village_id' => 20,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1100,7 +1099,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 78,
-                'player_id' => 11,
+                'player_id' => 7,
                 'village_id' => 20,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1114,7 +1113,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 79,
-                'player_id' => 11,
+                'player_id' => 7,
                 'village_id' => 20,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1128,7 +1127,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 80,
-                'player_id' => 11,
+                'player_id' => 7,
                 'village_id' => 20,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1142,7 +1141,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 81,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 21,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1156,7 +1155,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 82,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 21,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1170,7 +1169,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 83,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 21,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1184,7 +1183,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 84,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 21,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1198,7 +1197,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 85,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 22,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1212,7 +1211,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 86,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 22,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1226,7 +1225,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 87,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 22,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1240,7 +1239,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 88,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 22,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1254,7 +1253,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 89,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 23,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1268,7 +1267,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 90,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 23,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1282,7 +1281,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 91,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 23,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1296,7 +1295,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 92,
-                'player_id' => 12,
+                'player_id' => 7,
                 'village_id' => 23,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1310,7 +1309,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 93,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 24,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1324,7 +1323,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 94,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 24,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1338,7 +1337,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 95,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 24,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1352,7 +1351,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 96,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 24,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1366,7 +1365,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 97,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 25,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1380,7 +1379,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 98,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 25,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1394,7 +1393,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 99,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 25,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1408,7 +1407,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 100,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 25,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1422,7 +1421,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 101,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 26,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1436,7 +1435,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 102,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 26,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1450,7 +1449,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 103,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 26,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1464,7 +1463,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 104,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 26,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1478,7 +1477,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 105,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 27,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1492,7 +1491,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 106,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 27,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1506,7 +1505,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 107,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 27,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1520,7 +1519,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 108,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 27,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1534,7 +1533,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 109,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 28,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1548,7 +1547,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 110,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 28,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1562,7 +1561,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 111,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 28,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1576,7 +1575,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 112,
-                'player_id' => 13,
+                'player_id' => 7,
                 'village_id' => 28,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1590,7 +1589,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 113,
-                'player_id' => 14,
+                'player_id' => 7,
                 'village_id' => 29,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1604,7 +1603,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 114,
-                'player_id' => 14,
+                'player_id' => 7,
                 'village_id' => 29,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1618,7 +1617,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 115,
-                'player_id' => 14,
+                'player_id' => 7,
                 'village_id' => 29,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1632,7 +1631,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 116,
-                'player_id' => 14,
+                'player_id' => 7,
                 'village_id' => 29,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1646,7 +1645,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 117,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 30,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1660,7 +1659,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 118,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 30,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1674,7 +1673,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 119,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 30,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1688,7 +1687,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 120,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 30,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1702,7 +1701,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 121,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 31,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1716,7 +1715,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 122,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 31,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1730,7 +1729,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 123,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 31,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1744,7 +1743,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 124,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 31,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1758,7 +1757,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 125,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 32,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1772,7 +1771,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 126,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 32,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1786,7 +1785,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 127,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 32,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1800,7 +1799,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 128,
-                'player_id' => 15,
+                'player_id' => 7,
                 'village_id' => 32,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1814,7 +1813,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 129,
-                'player_id' => 16,
+                'player_id' => 7,
                 'village_id' => 33,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1828,7 +1827,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 130,
-                'player_id' => 16,
+                'player_id' => 7,
                 'village_id' => 33,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1842,7 +1841,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 131,
-                'player_id' => 16,
+                'player_id' => 7,
                 'village_id' => 33,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1856,7 +1855,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 132,
-                'player_id' => 16,
+                'player_id' => 7,
                 'village_id' => 33,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1870,7 +1869,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 133,
-                'player_id' => 17,
+                'player_id' => 7,
                 'village_id' => 34,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1884,7 +1883,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 134,
-                'player_id' => 17,
+                'player_id' => 7,
                 'village_id' => 34,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1898,7 +1897,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 135,
-                'player_id' => 17,
+                'player_id' => 7,
                 'village_id' => 34,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1912,7 +1911,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 136,
-                'player_id' => 17,
+                'player_id' => 7,
                 'village_id' => 34,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1926,7 +1925,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 137,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 35,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1940,7 +1939,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 138,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 35,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -1954,7 +1953,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 139,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 35,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -1968,7 +1967,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 140,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 35,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -1982,7 +1981,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 141,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 36,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -1996,7 +1995,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 142,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 36,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2010,7 +2009,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 143,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 36,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2024,7 +2023,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 144,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 36,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2038,7 +2037,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 145,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 37,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2052,7 +2051,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 146,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 37,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2066,7 +2065,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 147,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 37,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2080,7 +2079,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 148,
-                'player_id' => 18,
+                'player_id' => 7,
                 'village_id' => 37,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2094,7 +2093,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 149,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 38,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2108,7 +2107,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 150,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 38,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2122,7 +2121,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 151,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 38,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2136,7 +2135,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 152,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 38,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2150,7 +2149,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 153,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 39,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2164,7 +2163,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 154,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 39,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2178,7 +2177,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 155,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 39,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2192,7 +2191,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 156,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 39,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2206,7 +2205,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 157,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 40,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2220,7 +2219,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 158,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 40,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2234,7 +2233,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 159,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 40,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2248,7 +2247,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 160,
-                'player_id' => 19,
+                'player_id' => 7,
                 'village_id' => 40,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2262,7 +2261,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 161,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 41,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2276,7 +2275,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 162,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 41,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2290,7 +2289,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 163,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 41,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2304,7 +2303,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 164,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 41,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2318,7 +2317,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 165,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 42,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2332,7 +2331,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 166,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 42,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2346,7 +2345,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 167,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 42,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2360,7 +2359,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 168,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 42,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2374,7 +2373,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 169,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 43,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2388,7 +2387,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 170,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 43,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2402,7 +2401,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 171,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 43,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2416,7 +2415,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 172,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 43,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2430,7 +2429,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 173,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 44,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2444,7 +2443,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 174,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 44,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2458,7 +2457,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 175,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 44,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2472,7 +2471,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 176,
-                'player_id' => 20,
+                'player_id' => 7,
                 'village_id' => 44,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2486,7 +2485,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 177,
-                'player_id' => 21,
+                'player_id' => 7,
                 'village_id' => 45,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2500,7 +2499,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 178,
-                'player_id' => 21,
+                'player_id' => 7,
                 'village_id' => 45,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2514,7 +2513,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 179,
-                'player_id' => 21,
+                'player_id' => 7,
                 'village_id' => 45,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2528,7 +2527,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 180,
-                'player_id' => 21,
+                'player_id' => 7,
                 'village_id' => 45,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2542,7 +2541,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 181,
-                'player_id' => 21,
+                'player_id' => 7,
                 'village_id' => 46,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2556,7 +2555,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 182,
-                'player_id' => 21,
+                'player_id' => 7,
                 'village_id' => 46,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2570,7 +2569,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 183,
-                'player_id' => 21,
+                'player_id' => 7,
                 'village_id' => 46,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2584,7 +2583,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 184,
-                'player_id' => 21,
+                'player_id' => 7,
                 'village_id' => 46,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2598,7 +2597,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 185,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 47,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2612,7 +2611,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 186,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 47,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2626,7 +2625,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 187,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 47,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2640,7 +2639,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 188,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 47,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2654,7 +2653,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 189,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 48,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2668,7 +2667,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 190,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 48,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2682,7 +2681,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 191,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 48,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2696,7 +2695,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 192,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 48,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2710,7 +2709,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 193,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 49,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2724,7 +2723,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 194,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 49,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2738,7 +2737,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 195,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 49,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2752,7 +2751,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 196,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 49,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2766,7 +2765,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 197,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 50,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2780,7 +2779,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 198,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 50,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2794,7 +2793,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 199,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 50,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2808,7 +2807,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 200,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 50,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2822,7 +2821,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 201,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 51,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2836,7 +2835,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 202,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 51,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2850,7 +2849,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 203,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 51,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2864,7 +2863,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 204,
-                'player_id' => 22,
+                'player_id' => 7,
                 'village_id' => 51,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2878,7 +2877,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 205,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 52,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2892,7 +2891,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 206,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 52,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2906,7 +2905,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 207,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 52,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2920,7 +2919,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 208,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 52,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2934,7 +2933,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 209,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 53,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -2948,7 +2947,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 210,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 53,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -2962,7 +2961,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 211,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 53,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -2976,7 +2975,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 212,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 53,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -2990,7 +2989,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 213,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 54,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3004,7 +3003,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 214,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 54,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3018,7 +3017,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 215,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 54,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3032,7 +3031,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 216,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 54,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3046,7 +3045,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 217,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 55,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3060,7 +3059,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 218,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 55,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3074,7 +3073,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 219,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 55,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3088,7 +3087,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 220,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 55,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3102,7 +3101,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 221,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 56,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3116,7 +3115,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 222,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 56,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3130,7 +3129,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 223,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 56,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3144,7 +3143,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 224,
-                'player_id' => 23,
+                'player_id' => 7,
                 'village_id' => 56,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3158,7 +3157,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 225,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 57,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3172,7 +3171,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 226,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 57,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3186,7 +3185,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 227,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 57,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3200,7 +3199,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 228,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 57,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3214,7 +3213,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 229,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 58,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3228,7 +3227,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 230,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 58,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3242,7 +3241,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 231,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 58,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3256,7 +3255,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 232,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 58,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3270,7 +3269,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 233,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 59,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3284,7 +3283,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 234,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 59,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3298,7 +3297,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 235,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 59,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3312,7 +3311,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 236,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 59,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3326,7 +3325,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 237,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 60,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3340,7 +3339,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 238,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 60,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3354,7 +3353,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 239,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 60,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3368,7 +3367,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 240,
-                'player_id' => 24,
+                'player_id' => 7,
                 'village_id' => 60,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3382,7 +3381,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 241,
-                'player_id' => 25,
+                'player_id' => 7,
                 'village_id' => 61,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3396,7 +3395,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 242,
-                'player_id' => 25,
+                'player_id' => 7,
                 'village_id' => 61,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3410,7 +3409,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 243,
-                'player_id' => 25,
+                'player_id' => 7,
                 'village_id' => 61,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3424,7 +3423,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 244,
-                'player_id' => 25,
+                'player_id' => 7,
                 'village_id' => 61,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3438,7 +3437,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 245,
-                'player_id' => 26,
+                'player_id' => 7,
                 'village_id' => 62,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3452,7 +3451,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 246,
-                'player_id' => 26,
+                'player_id' => 7,
                 'village_id' => 62,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3466,7 +3465,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 247,
-                'player_id' => 26,
+                'player_id' => 7,
                 'village_id' => 62,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3480,7 +3479,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 248,
-                'player_id' => 26,
+                'player_id' => 7,
                 'village_id' => 62,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3494,7 +3493,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 249,
-                'player_id' => 26,
+                'player_id' => 7,
                 'village_id' => 63,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3508,7 +3507,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 250,
-                'player_id' => 26,
+                'player_id' => 7,
                 'village_id' => 63,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3522,7 +3521,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 251,
-                'player_id' => 26,
+                'player_id' => 7,
                 'village_id' => 63,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3536,7 +3535,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 252,
-                'player_id' => 26,
+                'player_id' => 7,
                 'village_id' => 63,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3550,7 +3549,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 253,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 64,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3564,7 +3563,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 254,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 64,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3578,7 +3577,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 255,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 64,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3592,7 +3591,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 256,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 64,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3606,7 +3605,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 257,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 65,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3620,7 +3619,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 258,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 65,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3634,7 +3633,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 259,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 65,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3648,7 +3647,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 260,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 65,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3662,7 +3661,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 261,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 66,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3676,7 +3675,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 262,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 66,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3690,7 +3689,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 263,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 66,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3704,7 +3703,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 264,
-                'player_id' => 27,
+                'player_id' => 7,
                 'village_id' => 66,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3718,7 +3717,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 265,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 67,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3732,7 +3731,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 266,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 67,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3746,7 +3745,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 267,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 67,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3760,7 +3759,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 268,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 67,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3774,7 +3773,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 269,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 68,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3788,7 +3787,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 270,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 68,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3802,7 +3801,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 271,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 68,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3816,7 +3815,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 272,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 68,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3830,7 +3829,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 273,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 69,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3844,7 +3843,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 274,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 69,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3858,7 +3857,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 275,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 69,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3872,7 +3871,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 276,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 69,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3886,7 +3885,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 277,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 70,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3900,7 +3899,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 278,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 70,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3914,7 +3913,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 279,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 70,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3928,7 +3927,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 280,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 70,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3942,7 +3941,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 281,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 71,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -3956,7 +3955,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 282,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 71,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -3970,7 +3969,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 283,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 71,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -3984,7 +3983,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 284,
-                'player_id' => 28,
+                'player_id' => 7,
                 'village_id' => 71,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -3998,7 +3997,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 285,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 72,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4012,7 +4011,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 286,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 72,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4026,7 +4025,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 287,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 72,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4040,7 +4039,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 288,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 72,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4054,7 +4053,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 289,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 73,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4068,7 +4067,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 290,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 73,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4082,7 +4081,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 291,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 73,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4096,7 +4095,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 292,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 73,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4110,7 +4109,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 293,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 74,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4124,7 +4123,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 294,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 74,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4138,7 +4137,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 295,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 74,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4152,7 +4151,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 296,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 74,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4166,7 +4165,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 297,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 75,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4180,7 +4179,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 298,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 75,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4194,7 +4193,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 299,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 75,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4208,7 +4207,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 300,
-                'player_id' => 29,
+                'player_id' => 7,
                 'village_id' => 75,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4222,7 +4221,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 301,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 76,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4236,7 +4235,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 302,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 76,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4250,7 +4249,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 303,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 76,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4264,7 +4263,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 304,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 76,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4278,7 +4277,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 305,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 77,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4292,7 +4291,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 306,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 77,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4306,7 +4305,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 307,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 77,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4320,7 +4319,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 308,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 77,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4334,7 +4333,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 309,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 78,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4348,7 +4347,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 310,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 78,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4362,7 +4361,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 311,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 78,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4376,7 +4375,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 312,
-                'player_id' => 30,
+                'player_id' => 7,
                 'village_id' => 78,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4390,7 +4389,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 313,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 79,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4404,7 +4403,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 314,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 79,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4418,7 +4417,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 315,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 79,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4432,7 +4431,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 316,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 79,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4446,7 +4445,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 317,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 80,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4460,7 +4459,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 318,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 80,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4474,7 +4473,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 319,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 80,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4488,7 +4487,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 320,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 80,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4502,7 +4501,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 321,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 81,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4516,7 +4515,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 322,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 81,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4530,7 +4529,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 323,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 81,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4544,7 +4543,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 324,
-                'player_id' => 31,
+                'player_id' => 7,
                 'village_id' => 81,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4558,7 +4557,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 325,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 82,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4572,7 +4571,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 326,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 82,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4586,7 +4585,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 327,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 82,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4600,7 +4599,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 328,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 82,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4614,7 +4613,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 329,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 83,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4628,7 +4627,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 330,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 83,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4642,7 +4641,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 331,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 83,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4656,7 +4655,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 332,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 83,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4670,7 +4669,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 333,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 84,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4684,7 +4683,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 334,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 84,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4698,7 +4697,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 335,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 84,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4712,7 +4711,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 336,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 84,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4726,7 +4725,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 337,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 85,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4740,7 +4739,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 338,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 85,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4754,7 +4753,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 339,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 85,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4768,7 +4767,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 340,
-                'player_id' => 32,
+                'player_id' => 7,
                 'village_id' => 85,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4782,7 +4781,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 341,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 86,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4796,7 +4795,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 342,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 86,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4810,7 +4809,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 343,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 86,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4824,7 +4823,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 344,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 86,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4838,7 +4837,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 345,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 87,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4852,7 +4851,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 346,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 87,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4866,7 +4865,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 347,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 87,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4880,7 +4879,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 348,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 87,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4894,7 +4893,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 349,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 88,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4908,7 +4907,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 350,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 88,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4922,7 +4921,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 351,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 88,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4936,7 +4935,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 352,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 88,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -4950,7 +4949,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 353,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 89,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -4964,7 +4963,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 354,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 89,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -4978,7 +4977,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 355,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 89,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -4992,7 +4991,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 356,
-                'player_id' => 33,
+                'player_id' => 7,
                 'village_id' => 89,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5006,7 +5005,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 357,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 90,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5020,7 +5019,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 358,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 90,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5034,7 +5033,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 359,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 90,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5048,7 +5047,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 360,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 90,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5062,7 +5061,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 361,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 91,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5076,7 +5075,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 362,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 91,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5090,7 +5089,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 363,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 91,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5104,7 +5103,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 364,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 91,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5118,7 +5117,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 365,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 92,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5132,7 +5131,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 366,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 92,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5146,7 +5145,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 367,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 92,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5160,7 +5159,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 368,
-                'player_id' => 34,
+                'player_id' => 7,
                 'village_id' => 92,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5174,7 +5173,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 369,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 93,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5188,7 +5187,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 370,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 93,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5202,7 +5201,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 371,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 93,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5216,7 +5215,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 372,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 93,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5230,7 +5229,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 373,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 94,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5244,7 +5243,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 374,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 94,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5258,7 +5257,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 375,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 94,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5272,7 +5271,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 376,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 94,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5286,7 +5285,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 377,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 95,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5300,7 +5299,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 378,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 95,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5314,7 +5313,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 379,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 95,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5328,7 +5327,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 380,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 95,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5342,7 +5341,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 381,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 96,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5356,7 +5355,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 382,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 96,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5370,7 +5369,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 383,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 96,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5384,7 +5383,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 384,
-                'player_id' => 35,
+                'player_id' => 7,
                 'village_id' => 96,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5398,7 +5397,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 385,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 97,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5412,7 +5411,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 386,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 97,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5426,7 +5425,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 387,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 97,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5440,7 +5439,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 388,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 97,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5454,7 +5453,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 389,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 98,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5468,7 +5467,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 390,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 98,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5482,7 +5481,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 391,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 98,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5496,7 +5495,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 392,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 98,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5510,7 +5509,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 393,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 99,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5524,7 +5523,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 394,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 99,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5538,7 +5537,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 395,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 99,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5552,7 +5551,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 396,
-                'player_id' => 36,
+                'player_id' => 7,
                 'village_id' => 99,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5566,7 +5565,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 397,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 100,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5580,7 +5579,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 398,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 100,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5594,7 +5593,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 399,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 100,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5608,7 +5607,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 400,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 100,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5622,7 +5621,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 401,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 101,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5636,7 +5635,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 402,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 101,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5650,7 +5649,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 403,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 101,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5664,7 +5663,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 404,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 101,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5678,7 +5677,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 405,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 102,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5692,7 +5691,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 406,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 102,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5706,7 +5705,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 407,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 102,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5720,7 +5719,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 408,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 102,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5734,7 +5733,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 409,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 103,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5748,7 +5747,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 410,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 103,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5762,7 +5761,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 411,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 103,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5776,7 +5775,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 412,
-                'player_id' => 37,
+                'player_id' => 7,
                 'village_id' => 103,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5790,7 +5789,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 413,
-                'player_id' => 38,
+                'player_id' => 7,
                 'village_id' => 104,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5804,7 +5803,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 414,
-                'player_id' => 38,
+                'player_id' => 7,
                 'village_id' => 104,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5818,7 +5817,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 415,
-                'player_id' => 38,
+                'player_id' => 7,
                 'village_id' => 104,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5832,7 +5831,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 416,
-                'player_id' => 38,
+                'player_id' => 7,
                 'village_id' => 104,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5846,7 +5845,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 417,
-                'player_id' => 39,
+                'player_id' => 7,
                 'village_id' => 105,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5860,7 +5859,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 418,
-                'player_id' => 39,
+                'player_id' => 7,
                 'village_id' => 105,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5874,7 +5873,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 419,
-                'player_id' => 39,
+                'player_id' => 7,
                 'village_id' => 105,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5888,7 +5887,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 420,
-                'player_id' => 39,
+                'player_id' => 7,
                 'village_id' => 105,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5902,7 +5901,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 421,
-                'player_id' => 39,
+                'player_id' => 7,
                 'village_id' => 106,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5916,7 +5915,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 422,
-                'player_id' => 39,
+                'player_id' => 7,
                 'village_id' => 106,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5930,7 +5929,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 423,
-                'player_id' => 39,
+                'player_id' => 7,
                 'village_id' => 106,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -5944,7 +5943,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 424,
-                'player_id' => 39,
+                'player_id' => 7,
                 'village_id' => 106,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -5958,7 +5957,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 425,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 107,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -5972,7 +5971,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 426,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 107,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -5986,7 +5985,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 427,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 107,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6000,7 +5999,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 428,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 107,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6014,7 +6013,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 429,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 108,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6028,7 +6027,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 430,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 108,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6042,7 +6041,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 431,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 108,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6056,7 +6055,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 432,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 108,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6070,7 +6069,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 433,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 109,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6084,7 +6083,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 434,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 109,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6098,7 +6097,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 435,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 109,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6112,7 +6111,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 436,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 109,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6126,7 +6125,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 437,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 110,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6140,7 +6139,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 438,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 110,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6154,7 +6153,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 439,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 110,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6168,7 +6167,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 440,
-                'player_id' => 40,
+                'player_id' => 7,
                 'village_id' => 110,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6182,7 +6181,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 441,
-                'player_id' => 41,
+                'player_id' => 7,
                 'village_id' => 111,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6196,7 +6195,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 442,
-                'player_id' => 41,
+                'player_id' => 7,
                 'village_id' => 111,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6210,7 +6209,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 443,
-                'player_id' => 41,
+                'player_id' => 7,
                 'village_id' => 111,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6224,7 +6223,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 444,
-                'player_id' => 41,
+                'player_id' => 7,
                 'village_id' => 111,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6238,7 +6237,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 445,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 112,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6252,7 +6251,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 446,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 112,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6266,7 +6265,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 447,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 112,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6280,7 +6279,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 448,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 112,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6294,7 +6293,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 449,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 113,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6308,7 +6307,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 450,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 113,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6322,7 +6321,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 451,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 113,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6336,7 +6335,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 452,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 113,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6350,7 +6349,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 453,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 114,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6364,7 +6363,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 454,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 114,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6378,7 +6377,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 455,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 114,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6392,7 +6391,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 456,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 114,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6406,7 +6405,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 457,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 115,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6420,7 +6419,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 458,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 115,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6434,7 +6433,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 459,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 115,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6448,7 +6447,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 460,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 115,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6462,7 +6461,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 461,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 116,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6476,7 +6475,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 462,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 116,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6490,7 +6489,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 463,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 116,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6504,7 +6503,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 464,
-                'player_id' => 42,
+                'player_id' => 7,
                 'village_id' => 116,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6518,7 +6517,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 465,
-                'player_id' => 43,
+                'player_id' => 7,
                 'village_id' => 117,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6532,7 +6531,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 466,
-                'player_id' => 43,
+                'player_id' => 7,
                 'village_id' => 117,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6546,7 +6545,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 467,
-                'player_id' => 43,
+                'player_id' => 7,
                 'village_id' => 117,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6560,7 +6559,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 468,
-                'player_id' => 43,
+                'player_id' => 7,
                 'village_id' => 117,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6574,7 +6573,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 469,
-                'player_id' => 43,
+                'player_id' => 7,
                 'village_id' => 118,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6588,7 +6587,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 470,
-                'player_id' => 43,
+                'player_id' => 7,
                 'village_id' => 118,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6602,7 +6601,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 471,
-                'player_id' => 43,
+                'player_id' => 7,
                 'village_id' => 118,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6616,7 +6615,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 472,
-                'player_id' => 43,
+                'player_id' => 7,
                 'village_id' => 118,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6630,7 +6629,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 473,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 119,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6644,7 +6643,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 474,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 119,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6658,7 +6657,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 475,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 119,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6672,7 +6671,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 476,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 119,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6686,7 +6685,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 477,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 120,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6700,7 +6699,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 478,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 120,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6714,7 +6713,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 479,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 120,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6728,7 +6727,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 480,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 120,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6742,7 +6741,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 481,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 121,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6756,7 +6755,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 482,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 121,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6770,7 +6769,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 483,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 121,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6784,7 +6783,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 484,
-                'player_id' => 44,
+                'player_id' => 7,
                 'village_id' => 121,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6798,7 +6797,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 485,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 122,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6812,7 +6811,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 486,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 122,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6826,7 +6825,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 487,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 122,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6840,7 +6839,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 488,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 122,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6854,7 +6853,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 489,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 123,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6868,7 +6867,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 490,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 123,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6882,7 +6881,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 491,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 123,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6896,7 +6895,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 492,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 123,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6910,7 +6909,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 493,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 124,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6924,7 +6923,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 494,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 124,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6938,7 +6937,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 495,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 124,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -6952,7 +6951,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 496,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 124,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -6966,7 +6965,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 497,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 125,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -6980,7 +6979,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 498,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 125,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -6994,7 +6993,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 499,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 125,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7008,7 +7007,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 500,
-                'player_id' => 45,
+                'player_id' => 7,
                 'village_id' => 125,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7022,7 +7021,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 501,
-                'player_id' => 46,
+                'player_id' => 7,
                 'village_id' => 126,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7036,7 +7035,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 502,
-                'player_id' => 46,
+                'player_id' => 7,
                 'village_id' => 126,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7050,7 +7049,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 503,
-                'player_id' => 46,
+                'player_id' => 7,
                 'village_id' => 126,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7064,7 +7063,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 504,
-                'player_id' => 46,
+                'player_id' => 7,
                 'village_id' => 126,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7078,7 +7077,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 505,
-                'player_id' => 46,
+                'player_id' => 7,
                 'village_id' => 127,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7092,7 +7091,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 506,
-                'player_id' => 46,
+                'player_id' => 7,
                 'village_id' => 127,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7106,7 +7105,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 507,
-                'player_id' => 46,
+                'player_id' => 7,
                 'village_id' => 127,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7120,7 +7119,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 508,
-                'player_id' => 46,
+                'player_id' => 7,
                 'village_id' => 127,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7134,7 +7133,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 509,
-                'player_id' => 47,
+                'player_id' => 7,
                 'village_id' => 128,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7148,7 +7147,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 510,
-                'player_id' => 47,
+                'player_id' => 7,
                 'village_id' => 128,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7162,7 +7161,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 511,
-                'player_id' => 47,
+                'player_id' => 7,
                 'village_id' => 128,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7176,7 +7175,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 512,
-                'player_id' => 47,
+                'player_id' => 7,
                 'village_id' => 128,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7190,7 +7189,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 513,
-                'player_id' => 47,
+                'player_id' => 7,
                 'village_id' => 129,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7204,7 +7203,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 514,
-                'player_id' => 47,
+                'player_id' => 7,
                 'village_id' => 129,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7218,7 +7217,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 515,
-                'player_id' => 47,
+                'player_id' => 7,
                 'village_id' => 129,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7232,7 +7231,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 516,
-                'player_id' => 47,
+                'player_id' => 7,
                 'village_id' => 129,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7246,7 +7245,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 517,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 130,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7260,7 +7259,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 518,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 130,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7274,7 +7273,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 519,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 130,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7288,7 +7287,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 520,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 130,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7302,7 +7301,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 521,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 131,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7316,7 +7315,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 522,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 131,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7330,7 +7329,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 523,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 131,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7344,7 +7343,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 524,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 131,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7358,7 +7357,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 525,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 132,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7372,7 +7371,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 526,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 132,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7386,7 +7385,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 527,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 132,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7400,7 +7399,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 528,
-                'player_id' => 48,
+                'player_id' => 7,
                 'village_id' => 132,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7414,7 +7413,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 529,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 133,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7428,7 +7427,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 530,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 133,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7442,7 +7441,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 531,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 133,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7456,7 +7455,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 532,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 133,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7470,7 +7469,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 533,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 134,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7484,7 +7483,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 534,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 134,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7498,7 +7497,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 535,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 134,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7512,7 +7511,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 536,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 134,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7526,7 +7525,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 537,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 135,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7540,7 +7539,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 538,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 135,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7554,7 +7553,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 539,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 135,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7568,7 +7567,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 540,
-                'player_id' => 49,
+                'player_id' => 7,
                 'village_id' => 135,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7582,7 +7581,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 541,
-                'player_id' => 50,
+                'player_id' => 7,
                 'village_id' => 136,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7596,7 +7595,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 542,
-                'player_id' => 50,
+                'player_id' => 7,
                 'village_id' => 136,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7610,7 +7609,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 543,
-                'player_id' => 50,
+                'player_id' => 7,
                 'village_id' => 136,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7624,7 +7623,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 544,
-                'player_id' => 50,
+                'player_id' => 7,
                 'village_id' => 136,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7638,7 +7637,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 545,
-                'player_id' => 50,
+                'player_id' => 7,
                 'village_id' => 137,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7652,7 +7651,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 546,
-                'player_id' => 50,
+                'player_id' => 7,
                 'village_id' => 137,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7666,7 +7665,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 547,
-                'player_id' => 50,
+                'player_id' => 7,
                 'village_id' => 137,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7680,7 +7679,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 548,
-                'player_id' => 50,
+                'player_id' => 7,
                 'village_id' => 137,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7694,7 +7693,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 549,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 138,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7708,7 +7707,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 550,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 138,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7722,7 +7721,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 551,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 138,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7736,7 +7735,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 552,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 138,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7750,7 +7749,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 553,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 139,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7764,7 +7763,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 554,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 139,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7778,7 +7777,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 555,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 139,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7792,7 +7791,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 556,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 139,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7806,7 +7805,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 557,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 140,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7820,7 +7819,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 558,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 140,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7834,7 +7833,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 559,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 140,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7848,7 +7847,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 560,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 140,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7862,7 +7861,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 561,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 141,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7876,7 +7875,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 562,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 141,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7890,7 +7889,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 563,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 141,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7904,7 +7903,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 564,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 141,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7918,7 +7917,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 565,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 142,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7932,7 +7931,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 566,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 142,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -7946,7 +7945,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 567,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 142,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -7960,7 +7959,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 568,
-                'player_id' => 51,
+                'player_id' => 7,
                 'village_id' => 142,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -7974,7 +7973,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 569,
-                'player_id' => 52,
+                'player_id' => 7,
                 'village_id' => 143,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -7988,7 +7987,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 570,
-                'player_id' => 52,
+                'player_id' => 7,
                 'village_id' => 143,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -8002,7 +8001,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 571,
-                'player_id' => 52,
+                'player_id' => 7,
                 'village_id' => 143,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -8016,7 +8015,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 572,
-                'player_id' => 52,
+                'player_id' => 7,
                 'village_id' => 143,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -8030,7 +8029,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 573,
-                'player_id' => 53,
+                'player_id' => 7,
                 'village_id' => 144,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -8044,7 +8043,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 574,
-                'player_id' => 53,
+                'player_id' => 7,
                 'village_id' => 144,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -8058,7 +8057,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 575,
-                'player_id' => 53,
+                'player_id' => 7,
                 'village_id' => 144,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -8072,7 +8071,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 576,
-                'player_id' => 53,
+                'player_id' => 7,
                 'village_id' => 144,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -8086,7 +8085,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 577,
-                'player_id' => 55,
+                'player_id' => 7,
                 'village_id' => 146,
                 'offer_type' => 'wood',
                 'offer_amount' => 8000,
@@ -8100,7 +8099,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 578,
-                'player_id' => 55,
+                'player_id' => 7,
                 'village_id' => 146,
                 'offer_type' => 'clay',
                 'offer_amount' => 8000,
@@ -8114,7 +8113,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 579,
-                'player_id' => 55,
+                'player_id' => 7,
                 'village_id' => 146,
                 'offer_type' => 'iron',
                 'offer_amount' => 8000,
@@ -8128,7 +8127,7 @@ class MarketTradesSeeder extends Seeder
             ],
             [
                 'id' => 580,
-                'player_id' => 55,
+                'player_id' => 7,
                 'village_id' => 146,
                 'offer_type' => 'crop',
                 'offer_amount' => 8000,
@@ -8139,11 +8138,11 @@ class MarketTradesSeeder extends Seeder
                 'expires_at' => '2025-09-28 01:01:10',
                 'created_at' => '2025-09-27 01:01:10',
                 'updated_at' => '2025-09-27 01:01:10',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("market_trades")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('market_trades')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

@@ -4,15 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         // Only create tables that don't exist
-        if (!Schema::hasTable('alliance_messages')) {
+        if (! Schema::hasTable('alliance_messages')) {
             Schema::create('alliance_messages', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('alliance_id')->constrained()->onDelete('cascade');
@@ -31,7 +30,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasTable('alliance_logs')) {
+        if (! Schema::hasTable('alliance_logs')) {
             Schema::create('alliance_logs', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('alliance_id')->constrained()->onDelete('cascade');
@@ -40,7 +39,7 @@ return new class extends Migration
                     'member_joined', 'member_left', 'member_kicked', 'member_promoted', 'member_demoted',
                     'alliance_created', 'alliance_disbanded', 'alliance_renamed', 'alliance_description_changed',
                     'diplomacy_proposed', 'diplomacy_accepted', 'diplomacy_declined', 'diplomacy_cancelled',
-                    'war_declared', 'war_ended', 'message_posted', 'settings_changed'
+                    'war_declared', 'war_ended', 'message_posted', 'settings_changed',
                 ]);
                 $table->text('description');
                 $table->json('data')->nullable(); // additional data about the action
@@ -55,19 +54,19 @@ return new class extends Migration
         // Add columns to existing alliance_diplomacy table if they don't exist
         if (Schema::hasTable('alliance_diplomacy')) {
             Schema::table('alliance_diplomacy', function (Blueprint $table) {
-                if (!Schema::hasColumn('alliance_diplomacy', 'message')) {
+                if (! Schema::hasColumn('alliance_diplomacy', 'message')) {
                     $table->text('message')->nullable();
                 }
-                if (!Schema::hasColumn('alliance_diplomacy', 'proposed_at')) {
+                if (! Schema::hasColumn('alliance_diplomacy', 'proposed_at')) {
                     $table->timestamp('proposed_at')->nullable();
                 }
-                if (!Schema::hasColumn('alliance_diplomacy', 'responded_at')) {
+                if (! Schema::hasColumn('alliance_diplomacy', 'responded_at')) {
                     $table->timestamp('responded_at')->nullable();
                 }
-                if (!Schema::hasColumn('alliance_diplomacy', 'expires_at')) {
+                if (! Schema::hasColumn('alliance_diplomacy', 'expires_at')) {
                     $table->timestamp('expires_at')->nullable();
                 }
-                if (!Schema::hasColumn('alliance_diplomacy', 'terms')) {
+                if (! Schema::hasColumn('alliance_diplomacy', 'terms')) {
                     $table->json('terms')->nullable();
                 }
             });
@@ -76,19 +75,19 @@ return new class extends Migration
         // Add columns to existing alliance_wars table if they don't exist
         if (Schema::hasTable('alliance_wars')) {
             Schema::table('alliance_wars', function (Blueprint $table) {
-                if (!Schema::hasColumn('alliance_wars', 'declaration_message')) {
+                if (! Schema::hasColumn('alliance_wars', 'declaration_message')) {
                     $table->text('declaration_message')->nullable();
                 }
-                if (!Schema::hasColumn('alliance_wars', 'declared_at')) {
+                if (! Schema::hasColumn('alliance_wars', 'declared_at')) {
                     $table->timestamp('declared_at')->nullable();
                 }
-                if (!Schema::hasColumn('alliance_wars', 'started_at')) {
+                if (! Schema::hasColumn('alliance_wars', 'started_at')) {
                     $table->timestamp('started_at')->nullable();
                 }
-                if (!Schema::hasColumn('alliance_wars', 'ended_at')) {
+                if (! Schema::hasColumn('alliance_wars', 'ended_at')) {
                     $table->timestamp('ended_at')->nullable();
                 }
-                if (!Schema::hasColumn('alliance_wars', 'war_stats')) {
+                if (! Schema::hasColumn('alliance_wars', 'war_stats')) {
                     $table->json('war_stats')->nullable();
                 }
             });
@@ -102,7 +101,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('alliance_logs');
         Schema::dropIfExists('alliance_messages');
-        
+
         // Remove added columns from existing tables
         if (Schema::hasTable('alliance_diplomacy')) {
             Schema::table('alliance_diplomacy', function (Blueprint $table) {

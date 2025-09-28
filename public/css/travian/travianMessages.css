@@ -29,11 +29,11 @@ div.messages table#overview th.dat a.sorting img {
 }
 
 div.messages table#overview tr.sup td {
-  background-color: #E7F0CA;
+  background-color: #e7f0ca;
 }
 
 div.messages table#overview tr.multi td {
-  background-color: #FFEFD2;
+  background-color: #ffefd2;
 }
 
 div.messages table#overview td.sel {
@@ -42,11 +42,11 @@ div.messages table#overview td.sel {
 }
 
 div.messages table#overview tr.support td {
-  background-color: #E7F0CA;
+  background-color: #e7f0ca;
 }
 
 div.messages table#overview tr.multihunter td {
-  background-color: #FFEFD2;
+  background-color: #ffefd2;
 }
 
 div.messages table#overview td.subject {
@@ -235,7 +235,7 @@ div.messages #answer #s1 {
 /* write */
 div.messages #recipient input {
   width: 316px;
-  color: #99C01A;
+  color: #99c01a;
   margin-bottom: 5px;
 }
 div.messages #recipient input.short {
@@ -353,7 +353,7 @@ div#adressbook table.friendlist td.pla:after {
   visibility: hidden;
   display: block;
   font-size: 0;
-  content: " ";
+  content: ' ';
   clear: both;
   height: 0;
 }

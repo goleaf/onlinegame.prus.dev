@@ -5,19 +5,23 @@ namespace App\Livewire;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Validator;
-use Propaganistas\LaravelPhone\Rules\Phone;
 
 class PhoneBulkOperations extends Component
 {
     use WithFileUploads;
 
     public $selectedUsers = [];
+
     public $operation = '';
+
     public $phoneData = [];
+
     public $csvFile;
+
     public $showCsvUpload = false;
+
     public $processing = false;
+
     public $results = [];
 
     protected $rules = [
@@ -49,6 +53,7 @@ class PhoneBulkOperations extends Component
     {
         if (empty($this->selectedUsers) || empty($this->operation)) {
             session()->flash('error', 'Please select users and an operation.');
+
             return;
         }
 
@@ -59,25 +64,31 @@ class PhoneBulkOperations extends Component
             switch ($this->operation) {
                 case 'export':
                     $this->exportPhoneNumbers();
+
                     break;
                 case 'validate':
                     $this->validatePhoneNumbers();
+
                     break;
                 case 'format':
                     $this->formatPhoneNumbers();
+
                     break;
                 case 'update_from_csv':
                     $this->updateFromCsv();
+
                     break;
                 case 'delete':
                     $this->deletePhoneNumbers();
+
                     break;
                 default:
                     session()->flash('error', 'Invalid operation selected.');
+
                     return;
             }
         } catch (\Exception $e) {
-            session()->flash('error', 'Operation failed: ' . $e->getMessage());
+            session()->flash('error', 'Operation failed: '.$e->getMessage());
         }
 
         $this->processing = false;
@@ -86,11 +97,11 @@ class PhoneBulkOperations extends Component
     private function exportPhoneNumbers()
     {
         $users = User::whereIn('id', $this->selectedUsers)
-                    ->whereNotNull('phone')
-                    ->get();
+            ->whereNotNull('phone')
+            ->get();
 
         $csvData = "ID,Name,Email,Phone,Country,E164,Normalized,National\n";
-        
+
         foreach ($users as $user) {
             $csvData .= sprintf(
                 "%s,%s,%s,%s,%s,%s,%s,%s\n",
@@ -110,7 +121,7 @@ class PhoneBulkOperations extends Component
             'success' => true,
             'message' => 'Phone numbers exported successfully.',
             'csv_data' => $csvData,
-            'count' => $users->count()
+            'count' => $users->count(),
         ];
 
         session()->flash('message', 'Phone numbers exported successfully.');
@@ -119,8 +130,8 @@ class PhoneBulkOperations extends Component
     private function validatePhoneNumbers()
     {
         $users = User::whereIn('id', $this->selectedUsers)
-                    ->whereNotNull('phone')
-                    ->get();
+            ->whereNotNull('phone')
+            ->get();
 
         $valid = 0;
         $invalid = 0;
@@ -142,7 +153,7 @@ class PhoneBulkOperations extends Component
             'valid' => $valid,
             'invalid' => $invalid,
             'errors' => $errors,
-            'message' => "Validation complete: {$valid} valid, {$invalid} invalid."
+            'message' => "Validation complete: {$valid} valid, {$invalid} invalid.",
         ];
 
         session()->flash('message', "Validation complete: {$valid} valid, {$invalid} invalid.");
@@ -151,8 +162,8 @@ class PhoneBulkOperations extends Component
     private function formatPhoneNumbers()
     {
         $users = User::whereIn('id', $this->selectedUsers)
-                    ->whereNotNull('phone')
-                    ->get();
+            ->whereNotNull('phone')
+            ->get();
 
         $updated = 0;
         $errors = [];
@@ -160,13 +171,13 @@ class PhoneBulkOperations extends Component
         foreach ($users as $user) {
             try {
                 $phoneNumber = phone($user->phone, $user->phone_country);
-                
+
                 $user->update([
                     'phone_e164' => $phoneNumber->formatE164(),
                     'phone_normalized' => preg_replace('/[^0-9]/', '', $user->phone),
                     'phone_national' => preg_replace('/[^0-9]/', '', $phoneNumber->formatNational()),
                 ]);
-                
+
                 $updated++;
             } catch (\Exception $e) {
                 $errors[] = "User {$user->name}: {$e->getMessage()}";
@@ -178,7 +189,7 @@ class PhoneBulkOperations extends Component
             'success' => true,
             'updated' => $updated,
             'errors' => $errors,
-            'message' => "Formatting complete: {$updated} phone numbers updated."
+            'message' => "Formatting complete: {$updated} phone numbers updated.",
         ];
 
         session()->flash('message', "Formatting complete: {$updated} phone numbers updated.");
@@ -186,8 +197,9 @@ class PhoneBulkOperations extends Component
 
     private function updateFromCsv()
     {
-        if (!$this->csvFile) {
+        if (! $this->csvFile) {
             session()->flash('error', 'Please upload a CSV file.');
+
             return;
         }
 
@@ -195,16 +207,16 @@ class PhoneBulkOperations extends Component
 
         $csvData = array_map('str_getcsv', file($this->csvFile->getRealPath()));
         $headers = array_shift($csvData);
-        
+
         $updated = 0;
         $errors = [];
 
         foreach ($csvData as $row) {
             $data = array_combine($headers, $row);
-            
+
             if (isset($data['email']) && isset($data['phone'])) {
                 $user = User::where('email', $data['email'])->first();
-                
+
                 if ($user) {
                     try {
                         $user->update([
@@ -226,7 +238,7 @@ class PhoneBulkOperations extends Component
             'success' => true,
             'updated' => $updated,
             'errors' => $errors,
-            'message' => "CSV update complete: {$updated} users updated."
+            'message' => "CSV update complete: {$updated} users updated.",
         ];
 
         session()->flash('message', "CSV update complete: {$updated} users updated.");
@@ -235,19 +247,19 @@ class PhoneBulkOperations extends Component
     private function deletePhoneNumbers()
     {
         $updated = User::whereIn('id', $this->selectedUsers)
-                      ->update([
-                          'phone' => null,
-                          'phone_country' => null,
-                          'phone_e164' => null,
-                          'phone_normalized' => null,
-                          'phone_national' => null,
-                      ]);
+            ->update([
+                'phone' => null,
+                'phone_country' => null,
+                'phone_e164' => null,
+                'phone_normalized' => null,
+                'phone_national' => null,
+            ]);
 
         $this->results = [
             'operation' => 'delete',
             'success' => true,
             'deleted' => $updated,
-            'message' => "Phone numbers deleted for {$updated} users."
+            'message' => "Phone numbers deleted for {$updated} users.",
         ];
 
         session()->flash('message', "Phone numbers deleted for {$updated} users.");
@@ -256,10 +268,10 @@ class PhoneBulkOperations extends Component
     public function render()
     {
         $users = User::whereNotNull('phone')
-                    ->when(!empty($this->selectedUsers), function ($query) {
-                        $query->whereIn('id', $this->selectedUsers);
-                    })
-                    ->paginate(20);
+            ->when(! empty($this->selectedUsers), function ($query): void {
+                $query->whereIn('id', $this->selectedUsers);
+            })
+            ->paginate(20);
 
         return view('livewire.phone-bulk-operations', [
             'users' => $users,

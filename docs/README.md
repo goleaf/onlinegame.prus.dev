@@ -7,13 +7,15 @@ A **full-featured Travian clone** built with **Laravel 12** and **Livewire 3**, 
 **Travian** is one of the most successful browser-based strategy games ever created, originally developed by Gerhard Müller and launched in 2004 by Travian Games GmbH in Munich, Germany. Set in classical antiquity during the Roman Empire era, this persistent multiplayer online strategy game has become a cultural phenomenon with:
 
 - **Over 5 million registered players** across 40+ countries
-- **Available in 40+ languages** with localized servers worldwide  
+- **Available in 40+ languages** with localized servers worldwide
 - **Continuous gameplay** running 24/7 with servers lasting 300+ days
 - **Strategic depth** combining city-building, resource management, and warfare
 - **Social complexity** requiring diplomacy, alliances, and political maneuvering
 
 ### 🏺 Historical Setting & Lore
+
 Set in ancient Europe around 50 BC, players control settlements during the expansion of the Roman Empire. The game world features:
+
 - **Classical antiquity atmosphere** with historically-inspired buildings and units
 - **Three distinct civilizations** based on real ancient peoples
 - **Mythological elements** including artifacts and legendary heroes
@@ -22,6 +24,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 ## ✅ Current Implementation Status
 
 ### 🏗️ Completed Core Systems
+
 - ✅ **User Authentication** - Laravel Breeze with role-based access
 - ✅ **World Management** - Multiple game worlds with settings
 - ✅ **Player System** - Tribe selection, statistics tracking
@@ -37,6 +40,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 ### 🎯 Implemented Game Features
 
 #### 🏘️ Village & Empire Management
+
 - **Multi-village system** with coordinate-based placement
 - **Resource production** with time-based calculations
 - **Building queue** with construction timers
@@ -44,13 +48,16 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 - **Storage systems** (Warehouses & Granaries)
 
 #### 🏗️ Building System (20+ Types Implemented)
+
 ##### Resource Production
+
 - **Woodcutter** (Levels 1-20) - Wood production optimization
 - **Clay Pit** (Levels 1-20) - Clay extraction and processing
 - **Iron Mine** (Levels 1-20) - Iron ore mining operations
 - **Cropland** (Levels 1-20) - Agricultural food production
 
 ##### Infrastructure
+
 - **Main Building** - Construction speed bonuses
 - **Warehouse** - Wood/Clay/Iron storage capacity
 - **Granary** - Crop storage and preservation
@@ -58,6 +65,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 - **Embassy** - Alliance and diplomatic center
 
 ##### Military Infrastructure
+
 - **Barracks** - Infantry unit training facility
 - **Stable** - Cavalry unit production
 - **Workshop** - Siege weapon construction
@@ -65,11 +73,13 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 - **Smithy** - Weapon and armor upgrades
 
 #### ⚔️ Three Unique Tribes System
+
 - **Romans** - Balanced civilization with engineering prowess
 - **Teutons** - Aggressive raiders with powerful infantry
 - **Gauls** - Defensive masters with fastest units
 
 #### 📊 Statistics & Progression
+
 - **Player rankings** by population and military points
 - **Village statistics** with detailed resource tracking
 - **Alliance systems** with member management
@@ -78,6 +88,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 ## 🛠️ Technology Stack & Architecture
 
 ### Backend Excellence
+
 - **Laravel 12** - Latest PHP framework with modern features
 - **Livewire 3.6.4** - Real-time reactive components without JavaScript
 - **MySQL 8.0** - Optimized database with proper indexing
@@ -85,6 +96,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 - **Queue System** - Background job processing for game mechanics
 
 ### Frontend Innovation
+
 - **Pure Livewire Architecture** - No custom JavaScript required
 - **Flux UI Components** - Modern, accessible interface elements
 - **Alpine.js Integration** - Minimal JavaScript for enhanced UX
@@ -92,6 +104,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 - **Responsive Design** - Seamless mobile and desktop experience
 
 ### Performance & Scalability
+
 - **Real-time Polling** - 5-second Livewire updates for live gameplay
 - **Database Optimization** - Efficient queries with proper indexing
 - **Caching Strategies** - Redis-based performance enhancement
@@ -99,6 +112,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 - **Memory Management** - Optimized for high concurrent player loads
 
 ### Error Handling & Debugging
+
 - **Spatie Laravel Error Solutions** - Automated error solutions and AI-powered debugging
 - **Laradumps Integration** - Advanced debugging and performance monitoring
 - **Laravel Telescope** - Application debugging and monitoring
@@ -108,6 +122,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 ## 🗺️ Development Roadmap
 
 ### 🎯 Phase 1: Core Foundation (✅ COMPLETED)
+
 - ✅ User authentication and registration system
 - ✅ World and player management
 - ✅ Basic village creation and resource system
@@ -117,6 +132,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 - ✅ Database optimization and seeding
 
 ### 🎯 Phase 2: Military & Combat System (🚧 IN PROGRESS)
+
 - 🔄 **Unit Training System** - Barracks, Stable, Workshop production
 - 🔄 **Combat Mechanics** - Attack calculations and battle resolution
 - 🔄 **Troop Movement** - Map-based army deployment
@@ -125,6 +141,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 - 🔄 **Raid Mechanics** - Resource plundering system
 
 ### 🎯 Phase 3: Advanced Gameplay (📋 PLANNED)
+
 - 📋 **World Map System** - Interactive coordinate-based map
 - 📋 **Alliance Framework** - Guild creation and management
 - 📋 **Diplomacy System** - Treaties and political relationships
@@ -133,6 +150,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 - 📋 **Hero System** - Legendary units with special abilities
 
 ### 🎯 Phase 4: Social & Communication (📋 PLANNED)
+
 - 📋 **Messaging System** - In-game mail and notifications
 - 📋 **Alliance Forums** - Internal communication boards
 - 📋 **Chat System** - Real-time player communication
@@ -140,6 +158,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 - 📋 **Friend Lists** - Social connections and status
 
 ### 🎯 Phase 5: Endgame Content (📋 PLANNED)
+
 - 📋 **Wonder of the World** - Ultimate victory condition
 - 📋 **Natarian Villages** - AI-controlled settlements
 - 📋 **Server Events** - Special competitions and challenges
@@ -147,6 +166,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 - 📋 **Achievement System** - Player progression rewards
 
 ### 🎯 Phase 6: Premium Features (📋 PLANNED)
+
 - 📋 **Gold System** - Premium currency implementation
 - 📋 **Plus Account** - Enhanced player features
 - 📋 **Resource Bonuses** - Production multipliers
@@ -156,6 +176,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 ## 📋 Detailed TODO List
 
 ### 🔥 High Priority (Current Sprint)
+
 - [ ] **Complete Unit Training System**
   - [ ] Implement all 30+ unit types for three tribes
   - [ ] Add training queues with time calculations
@@ -175,6 +196,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
   - [ ] Oasis and special terrain types
 
 ### 🎯 Medium Priority (Next Sprint)
+
 - [ ] **Alliance System**
   - [ ] Alliance creation and management
   - [ ] Member invitation and roles
@@ -194,6 +216,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
   - [ ] Progress tracking interface
 
 ### 🔮 Future Enhancements
+
 - [ ] **Mobile App Development**
   - [ ] React Native mobile application
   - [ ] Push notification system
@@ -215,6 +238,7 @@ Set in ancient Europe around 50 BC, players control settlements during the expan
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
+
 - PHP 8.2+
 - Composer 2.0+
 - Node.js 18+

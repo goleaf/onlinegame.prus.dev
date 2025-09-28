@@ -4,33 +4,46 @@ namespace App\Livewire;
 
 use App\Models\User;
 use App\Traits\GameValidationTrait;
-use Illuminate\Support\Facades\Validator;
-use Intervention\Validation\Rules\Iban;
 use Intervention\Validation\Rules\Bic;
-use Intervention\Validation\Rules\Isbn;
 use Intervention\Validation\Rules\Ean;
+use Intervention\Validation\Rules\Iban;
+use Intervention\Validation\Rules\Isbn;
 use Livewire\Component;
-use JonPurvis\Squeaky\Rules\Clean;
 
 class UserBusinessForm extends Component
 {
     use GameValidationTrait;
 
     public $user;
+
     public $business_name = '';
+
     public $business_type = '';
+
     public $tax_number = '';
+
     public $registration_number = '';
+
     public $business_address = '';
+
     public $business_city = '';
+
     public $business_country = 'US';
+
     public $business_phone = '';
+
     public $business_email = '';
+
     public $business_website = '';
+
     public $business_description = '';
+
     public $bank_iban = '';
+
     public $bank_bic = '';
+
     public $product_isbn = '';
+
     public $product_ean = '';
 
     protected $rules = [
@@ -51,10 +64,10 @@ class UserBusinessForm extends Component
         'product_ean' => 'nullable|string|max:18',
     ];
 
-    public function mount(User $user = null)
+    public function mount(?User $user = null)
     {
         $this->user = $user ?? auth()->user();
-        
+
         if ($this->user) {
             $this->business_name = $this->user->business_name ?? '';
             $this->business_type = $this->user->business_type ?? '';
@@ -77,24 +90,24 @@ class UserBusinessForm extends Component
     public function updated($propertyName)
     {
         $this->validateOnly($propertyName);
-        
+
         // Add IBAN validation when provided
-        if ($propertyName === 'bank_iban' && !empty($this->bank_iban)) {
+        if ($propertyName === 'bank_iban' && ! empty($this->bank_iban)) {
             $this->rules['bank_iban'][] = new Iban();
         }
-        
+
         // Add BIC validation when provided
-        if ($propertyName === 'bank_bic' && !empty($this->bank_bic)) {
+        if ($propertyName === 'bank_bic' && ! empty($this->bank_bic)) {
             $this->rules['bank_bic'][] = new Bic();
         }
-        
+
         // Add ISBN validation when provided
-        if ($propertyName === 'product_isbn' && !empty($this->product_isbn)) {
+        if ($propertyName === 'product_isbn' && ! empty($this->product_isbn)) {
             $this->rules['product_isbn'][] = new Isbn();
         }
-        
+
         // Add EAN validation when provided
-        if ($propertyName === 'product_ean' && !empty($this->product_ean)) {
+        if ($propertyName === 'product_ean' && ! empty($this->product_ean)) {
             $this->rules['product_ean'][] = new Ean();
         }
     }
@@ -102,18 +115,18 @@ class UserBusinessForm extends Component
     public function save()
     {
         $rules = $this->rules;
-        
+
         // Add validation based on provided fields
-        if (!empty($this->bank_iban)) {
+        if (! empty($this->bank_iban)) {
             $rules['bank_iban'][] = new Iban();
         }
-        if (!empty($this->bank_bic)) {
+        if (! empty($this->bank_bic)) {
             $rules['bank_bic'][] = new Bic();
         }
-        if (!empty($this->product_isbn)) {
+        if (! empty($this->product_isbn)) {
             $rules['product_isbn'][] = new Isbn();
         }
-        if (!empty($this->product_ean)) {
+        if (! empty($this->product_ean)) {
             $rules['product_ean'][] = new Ean();
         }
 

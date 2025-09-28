@@ -2,17 +2,20 @@
 
 namespace App\Services;
 
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 use SmartCache\Facades\SmartCache;
 
 class SeoCacheService
 {
     protected string $cachePrefix = 'seo_metadata_';
+
     protected int $cacheTtl = 3600;  // 1 hour
+
     protected CachingUtil $cachingUtil;
+
     protected LoggingUtil $loggingUtil;
 
     public function __construct()
@@ -27,11 +30,12 @@ class SeoCacheService
     public function get(string $key): ?array
     {
         try {
-            return SmartCache::remember($this->cachePrefix . $key, now()->addHour(), function () use ($key) {
-                return Cache::get($this->cachePrefix . $key);
+            return SmartCache::remember($this->cachePrefix.$key, now()->addHour(), function () use ($key) {
+                return Cache::get($this->cachePrefix.$key);
             });
         } catch (\Exception $e) {
             Log::warning("SEO cache get failed for key: {$key}", ['error' => $e->getMessage()]);
+
             return null;
         }
     }
@@ -39,16 +43,18 @@ class SeoCacheService
     /**
      * Cache SEO metadata with SmartCache optimization
      */
-    public function put(string $key, array $data, int $ttl = null): bool
+    public function put(string $key, array $data, ?int $ttl = null): bool
     {
         try {
             $ttl = $ttl ?? $this->cacheTtl;
-            SmartCache::remember($this->cachePrefix . $key, now()->addSeconds($ttl), function () use ($data) {
+            SmartCache::remember($this->cachePrefix.$key, now()->addSeconds($ttl), function () use ($data) {
                 return $data;
             });
+
             return true;
         } catch (\Exception $e) {
             Log::warning("SEO cache put failed for key: {$key}", ['error' => $e->getMessage()]);
+
             return false;
         }
     }
@@ -60,8 +66,8 @@ class SeoCacheService
     {
         $key = $type;
 
-        if (!empty($params)) {
-            $key .= '_' . md5(serialize($params));
+        if (! empty($params)) {
+            $key .= '_'.md5(serialize($params));
         }
 
         return $key;
@@ -78,7 +84,7 @@ class SeoCacheService
             'page' => $page,
             'data' => $data,
             'cached_at' => now(),
-            'expires_at' => now()->addSeconds($this->cacheTtl)
+            'expires_at' => now()->addSeconds($this->cacheTtl),
         ];
 
         return $this->put($key, $seoData);
@@ -90,6 +96,7 @@ class SeoCacheService
     public function getCachedGamePageSeo(string $page, array $data): ?array
     {
         $key = $this->generateKey('game_page', ['page' => $page, 'data' => $data]);
+
         return $this->get($key);
     }
 
@@ -101,7 +108,7 @@ class SeoCacheService
         $sitemapData = [
             'urls' => $urls,
             'generated_at' => now(),
-            'count' => count($urls)
+            'count' => count($urls),
         ];
 
         return $this->put('sitemap', $sitemapData, 86400);  // 24 hours
@@ -123,9 +130,11 @@ class SeoCacheService
         try {
             Cache::flush();
             Log::info('SEO cache cleared successfully');
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to clear SEO cache', ['error' => $e->getMessage()]);
+
             return false;
         }
     }
@@ -136,10 +145,12 @@ class SeoCacheService
     public function clear(string $key): bool
     {
         try {
-            Cache::forget($this->cachePrefix . $key);
+            Cache::forget($this->cachePrefix.$key);
+
             return true;
         } catch (\Exception $e) {
             Log::warning("Failed to clear SEO cache for key: {$key}", ['error' => $e->getMessage()]);
+
             return false;
         }
     }
@@ -161,6 +172,7 @@ class SeoCacheService
             ];
         } catch (\Exception $e) {
             Log::warning('Failed to get SEO cache stats', ['error' => $e->getMessage()]);
+
             return [];
         }
     }
@@ -179,9 +191,11 @@ class SeoCacheService
             $this->cacheSitemap([]);
 
             Log::info('SEO cache warmed up successfully');
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to warm up SEO cache', ['error' => $e->getMessage()]);
+
             return false;
         }
     }

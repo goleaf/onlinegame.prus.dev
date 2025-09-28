@@ -6,49 +6,72 @@ use App\Models\Game\Player;
 use App\Models\Game\TrainingQueue;
 use App\Models\Game\UnitType;
 use App\Models\Game\Village;
-use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
+use LaraUtilX\Traits\ApiResponseTrait;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
-use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\FilteringUtil;
 use Livewire\WithPagination;
 use SmartCache\Facades\SmartCache;
 
 class TroopManager extends Component
 {
-    use WithPagination, ApiResponseTrait;
+    use ApiResponseTrait;
+    use WithPagination;
 
     #[Reactive]
     public $village;
 
     public $troops = [];
+
     public $unitTypes = [];
+
     public $trainingQueues = [];
+
     public $selectedUnitType = null;
+
     public $trainingQuantity = 1;
+
     public $trainingCost = [];
+
     public $canTrain = false;
+
     public $notifications = [];
+
     public $isLoading = false;
+
     public $realTimeUpdates = true;
+
     public $autoRefresh = true;
+
     public $refreshInterval = 5;
+
     public $gameSpeed = 1;
+
     public $trainingProgress = [];
+
     public $troopHistory = [];
+
     public $showDetails = false;
+
     public $selectedTroop = null;
+
     public $filterByType = null;
+
     public $sortBy = 'count';
+
     public $sortOrder = 'desc';
+
     public $searchQuery = '';
+
     public $showOnlyAvailable = false;
+
     public $showOnlyTraining = false;
+
     public $trainingMode = 'single';  // single, batch, continuous
+
     public $batchSize = 10;
+
     public $continuousTraining = false;
 
     protected $listeners = [
@@ -68,7 +91,7 @@ class TroopManager extends Component
                 ->findOrFail($villageId);
         } else {
             $player = Player::where('user_id', Auth::id())
-                ->with(['villages' => function ($query) {
+                ->with(['villages' => function ($query): void {
                     $query
                         ->withStats()
                         ->with(['troops.unitType:id,name,attack_power,defense_power,speed,cost']);
@@ -157,7 +180,7 @@ class TroopManager extends Component
 
     public function calculateTrainingCost()
     {
-        if (!$this->selectedUnitType) {
+        if (! $this->selectedUnitType) {
             return;
         }
 
@@ -206,12 +229,12 @@ class TroopManager extends Component
                 $building = $this
                     ->village
                     ->buildings()
-                    ->whereHas('buildingType', function ($query) use ($buildingKey) {
+                    ->whereHas('buildingType', function ($query) use ($buildingKey): void {
                         $query->where('key', $buildingKey);
                     })
                     ->first();
 
-                if (!$building || $building->level < $level) {
+                if (! $building || $building->level < $level) {
                     $this->canTrain = false;
 
                     break;
@@ -222,7 +245,7 @@ class TroopManager extends Component
 
     public function startTraining()
     {
-        if (!$this->canTrain || !$this->selectedUnitType) {
+        if (! $this->canTrain || ! $this->selectedUnitType) {
             return;
         }
 
@@ -262,13 +285,13 @@ class TroopManager extends Component
                 'reference_number' => $trainingQueue->reference_number,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Training failed: ' . $e->getMessage(), 'error');
+            $this->addNotification('Training failed: '.$e->getMessage(), 'error');
         }
     }
 
     public function calculateTrainingTime()
     {
-        if (!$this->selectedUnitType) {
+        if (! $this->selectedUnitType) {
             return 0;
         }
 
@@ -289,7 +312,7 @@ class TroopManager extends Component
                 $this->addNotification('Training cancelled', 'info');
             }
         } catch (\Exception $e) {
-            $this->addNotification('Failed to cancel training: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to cancel training: '.$e->getMessage(), 'error');
         }
     }
 
@@ -393,7 +416,7 @@ class TroopManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -402,7 +425,7 @@ class TroopManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -429,7 +452,7 @@ class TroopManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function filterByType($type)
@@ -472,7 +495,7 @@ class TroopManager extends Component
 
     public function toggleAvailableFilter()
     {
-        $this->showOnlyAvailable = !$this->showOnlyAvailable;
+        $this->showOnlyAvailable = ! $this->showOnlyAvailable;
         $this->addNotification(
             $this->showOnlyAvailable ? 'Showing only available troops' : 'Showing all troops',
             'info'
@@ -481,7 +504,7 @@ class TroopManager extends Component
 
     public function toggleTrainingFilter()
     {
-        $this->showOnlyTraining = !$this->showOnlyTraining;
+        $this->showOnlyTraining = ! $this->showOnlyTraining;
         $this->addNotification(
             $this->showOnlyTraining ? 'Showing only training troops' : 'Showing all troops',
             'info'
@@ -502,7 +525,7 @@ class TroopManager extends Component
 
     public function toggleContinuousTraining()
     {
-        $this->continuousTraining = !$this->continuousTraining;
+        $this->continuousTraining = ! $this->continuousTraining;
         $this->addNotification(
             $this->continuousTraining ? 'Continuous training enabled' : 'Continuous training disabled',
             'info'
@@ -585,7 +608,7 @@ class TroopManager extends Component
     public function getTrainingCost($unitType, $quantity)
     {
         $unit = $this->unitTypes[$unitType] ?? null;
-        if (!$unit) {
+        if (! $unit) {
             return [];
         }
 
@@ -604,7 +627,7 @@ class TroopManager extends Component
 
         foreach ($cost as $resource => $amount) {
             $resourceModel = $resources->where('type', $resource)->first();
-            if (!$resourceModel || $resourceModel->amount < $amount) {
+            if (! $resourceModel || $resourceModel->amount < $amount) {
                 return false;
             }
         }
@@ -625,7 +648,7 @@ class TroopManager extends Component
 
     public function startContinuousTraining()
     {
-        if (!$this->continuousTraining) {
+        if (! $this->continuousTraining) {
             $this->addNotification('Continuous training not enabled', 'error');
 
             return;
@@ -649,7 +672,7 @@ class TroopManager extends Component
         }
 
         $troop = $this->troops->where('unit_type', $unitType)->first();
-        if (!$troop || $troop->count < $quantity) {
+        if (! $troop || $troop->count < $quantity) {
             $this->addNotification('Not enough troops to disband', 'error');
 
             return;

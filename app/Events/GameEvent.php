@@ -2,9 +2,7 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -12,11 +10,16 @@ use Illuminate\Queue\SerializesModels;
 
 class GameEvent implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public $userId;
+
     public $eventType;
+
     public $data;
+
     public $timestamp;
 
     /**
@@ -36,7 +39,7 @@ class GameEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('game.user.' . $this->userId),
+            new PrivateChannel('game.user.'.$this->userId),
         ];
     }
 

@@ -5,6 +5,7 @@ This guide implements SQL performance improvements based on [Oh Dear's optimizat
 ## Overview
 
 The implementation includes:
+
 - Laravel Debug Bar for local development
 - MySQL slow query log configuration
 - Query performance middleware
@@ -74,6 +75,7 @@ php artisan mysql:setup-performance
 ```
 
 This command will:
+
 - Configure slow query log
 - Enable performance schema
 - Set up query optimization
@@ -97,6 +99,7 @@ php artisan mysql:analyze-slow-queries --format=csv > slow-queries.csv
 ### 1. Laravel Debug Bar Integration
 
 The debug bar is already configured and will show:
+
 - Total query execution time
 - Number of queries executed
 - Duplicate queries (N+1 detection)
@@ -105,6 +108,7 @@ The debug bar is already configured and will show:
 ### 2. Lazy Loading Prevention
 
 Configured in `AppServiceProvider` to prevent:
+
 - N+1 queries
 - Silent attribute access
 - Missing relationship access
@@ -112,6 +116,7 @@ Configured in `AppServiceProvider` to prevent:
 ### 3. Query Performance Middleware
 
 Automatically logs:
+
 - Slow requests (>1s by default)
 - High query count requests (>50 queries)
 - Performance metrics for debugging
@@ -119,6 +124,7 @@ Automatically logs:
 ### 4. MySQL Configuration
 
 The system includes optimized MySQL settings for:
+
 - Query caching
 - Connection pooling
 - Buffer optimization
@@ -129,6 +135,7 @@ The system includes optimized MySQL settings for:
 ### Local Development
 
 1. Enable debug bar in your `.env`:
+
 ```env
 DEBUGBAR_ENABLED=true
 APP_DEBUG=true
@@ -141,17 +148,20 @@ APP_DEBUG=true
 ### Production Monitoring
 
 1. Enable slow query log:
+
 ```env
 MYSQL_SLOW_QUERY_LOG_ENABLED=true
 MYSQL_LONG_QUERY_TIME=0.5
 ```
 
 2. Monitor the log file:
+
 ```bash
 tail -f /var/log/mysql-slow-query.log
 ```
 
 3. Analyze periodically:
+
 ```bash
 php artisan mysql:analyze-slow-queries --limit=100
 ```
@@ -216,6 +226,7 @@ foreach ($posts as $post) {
 ### Application Logs
 
 The middleware automatically logs:
+
 - Slow requests with full context
 - High query count requests
 - Performance metrics
@@ -223,6 +234,7 @@ The middleware automatically logs:
 ### Database Monitoring
 
 Monitor these MySQL metrics:
+
 - `Slow_queries` - number of slow queries
 - `Questions` - total queries executed
 - `Connections` - connection count
@@ -231,6 +243,7 @@ Monitor these MySQL metrics:
 ### Alert Thresholds
 
 Recommended thresholds:
+
 - Query time > 1 second
 - Query count > 50 per request
 - Connection count > 80% of max_connections
@@ -266,6 +279,7 @@ The performance monitoring integrates seamlessly with the existing `QueryOptimiz
 ## Performance Impact
 
 The monitoring adds minimal overhead:
+
 - ~1-2ms per request for middleware
 - Debug bar only active in development
 - Slow query log has negligible impact
@@ -285,4 +299,3 @@ The monitoring adds minimal overhead:
 - [Laravel Debug Bar Documentation](https://github.com/barryvdh/laravel-debugbar)
 - [MySQL Performance Schema](https://dev.mysql.com/doc/refman/8.0/en/performance-schema.html)
 - [Percona Toolkit Documentation](https://www.percona.com/doc/percona-toolkit/LATEST/index.html)
-

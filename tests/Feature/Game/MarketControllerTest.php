@@ -8,16 +8,18 @@ use App\Models\Game\World;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
 use Tests\TestCase;
 
 class MarketControllerTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     protected User $user;
+
     protected Player $player;
+
     protected World $world;
 
     protected function setUp(): void
@@ -34,7 +36,7 @@ class MarketControllerTest extends TestCase
         ]);
 
         // Mock rate limiter
-        $this->mock(RateLimiterUtil::class, function ($mock) {
+        $this->mock(RateLimiterUtil::class, function ($mock): void {
             $mock->shouldReceive('attempt')->andReturn(true);
         });
     }
@@ -70,7 +72,7 @@ class MarketControllerTest extends TestCase
                             'exchange_rate',
                             'status',
                             'created_at',
-                        ]
+                        ],
                     ],
                     'pagination' => [
                         'total',
@@ -79,8 +81,8 @@ class MarketControllerTest extends TestCase
                         'current_page',
                         'total_pages',
                         'has_more_pages',
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
@@ -138,7 +140,7 @@ class MarketControllerTest extends TestCase
                     'exchange_rate',
                     'status',
                     'created_at',
-                ]
+                ],
             ]);
     }
 
@@ -175,7 +177,7 @@ class MarketControllerTest extends TestCase
                     'resource_amount',
                     'exchange_rate',
                     'status',
-                ]
+                ],
             ]);
 
         $this->assertDatabaseHas('market_offers', [
@@ -268,8 +270,8 @@ class MarketControllerTest extends TestCase
                         'resource_amount',
                         'exchange_rate',
                         'status',
-                    ]
-                ]
+                    ],
+                ],
             ]);
 
         $response->assertJsonCount(4, 'data');
@@ -342,7 +344,7 @@ class MarketControllerTest extends TestCase
                     'accepted_amount',
                     'received_amount',
                     'cost',
-                ]
+                ],
             ]);
 
         // Check that the offer was updated
@@ -434,7 +436,7 @@ class MarketControllerTest extends TestCase
                     'cancelled_offers',
                     'average_exchange_rates',
                     'recent_trades',
-                ]
+                ],
             ]);
 
         $response->assertJsonPath('data.total_offers', 10);
@@ -449,7 +451,7 @@ class MarketControllerTest extends TestCase
     public function it_respects_rate_limiting()
     {
         // Mock rate limiter to return false
-        $this->mock(RateLimiterUtil::class, function ($mock) {
+        $this->mock(RateLimiterUtil::class, function ($mock): void {
             $mock->shouldReceive('attempt')->andReturn(false);
         });
 

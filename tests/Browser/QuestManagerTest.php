@@ -16,8 +16,11 @@ class QuestManagerTest extends DuskTestCase
     use DatabaseMigrations;
 
     protected $user;
+
     protected $player;
+
     protected $world;
+
     protected $village;
 
     protected function setUp(): void
@@ -70,7 +73,7 @@ class QuestManagerTest extends DuskTestCase
 
     public function test_quest_manager_loads()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/quests')
@@ -82,7 +85,7 @@ class QuestManagerTest extends DuskTestCase
 
     public function test_quest_progress_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/quests')
@@ -96,7 +99,7 @@ class QuestManagerTest extends DuskTestCase
 
     public function test_available_quests_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/quests')
@@ -110,7 +113,7 @@ class QuestManagerTest extends DuskTestCase
 
     public function test_active_quests_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/quests')
@@ -121,7 +124,7 @@ class QuestManagerTest extends DuskTestCase
 
     public function test_completed_quests_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/quests')
@@ -132,7 +135,7 @@ class QuestManagerTest extends DuskTestCase
 
     public function test_start_quest_button()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/quests')
@@ -142,7 +145,7 @@ class QuestManagerTest extends DuskTestCase
 
     public function test_quest_details_modal()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/quests')

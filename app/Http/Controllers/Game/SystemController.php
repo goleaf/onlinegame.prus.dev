@@ -3,31 +3,42 @@
 namespace App\Http\Controllers\Game;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\LarautilxIntegrationService;
 use App\Traits\GameValidationTrait;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\ConfigUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\QueryParameterUtil;
 use LaraUtilX\Utilities\SchedulerUtil;
 
 class SystemController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use GameValidationTrait;
+    use ValidationHelperTrait;
 
     protected Model $model;
+
     protected ConfigUtil $configUtil;
+
     protected SchedulerUtil $schedulerUtil;
+
     protected LarautilxIntegrationService $integrationService;
+
     protected CachingUtil $cachingUtil;
+
     protected array $validationRules = [];
+
     protected array $searchableFields = [];
+
     protected array $relationships = [];
+
     protected int $perPage = 10;
 
     public function __construct(
@@ -40,8 +51,8 @@ class SystemController extends CrudController
         $this->schedulerUtil = $schedulerUtil;
         $this->integrationService = $integrationService;
         $this->cachingUtil = $cachingUtil;
-        // System Controller doesn't have a specific model
-        parent::__construct();
+        // System Controller doesn't have a specific model, using User as default
+        parent::__construct(new User());
     }
 
     /**
@@ -92,7 +103,7 @@ class SystemController extends CrudController
         } catch (\Exception $e) {
             LoggingUtil::error('Error retrieving system configuration', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ], 'system_management');
 
             return $this->errorResponse('Failed to retrieve system configuration.', 500);
@@ -105,7 +116,7 @@ class SystemController extends CrudController
     public function updateConfig(Request $request)
     {
         try {
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'key' => 'required|string',
                 'value' => 'required',
                 'section' => 'nullable|string',
@@ -191,7 +202,7 @@ class SystemController extends CrudController
             } catch (\Exception $e) {
                 $health['checks']['database'] = [
                     'status' => 'unhealthy',
-                    'message' => 'Database connection failed: ' . $e->getMessage(),
+                    'message' => 'Database connection failed: '.$e->getMessage(),
                 ];
                 $health['status'] = 'degraded';
             }
@@ -212,7 +223,7 @@ class SystemController extends CrudController
             } catch (\Exception $e) {
                 $health['checks']['cache'] = [
                     'status' => 'unhealthy',
-                    'message' => 'Cache system error: ' . $e->getMessage(),
+                    'message' => 'Cache system error: '.$e->getMessage(),
                 ];
                 $health['status'] = 'degraded';
             }
@@ -232,7 +243,7 @@ class SystemController extends CrudController
             } catch (\Exception $e) {
                 $health['checks']['storage'] = [
                     'status' => 'unhealthy',
-                    'message' => 'Storage system error: ' . $e->getMessage(),
+                    'message' => 'Storage system error: '.$e->getMessage(),
                 ];
                 $health['status'] = 'degraded';
             }
@@ -256,7 +267,7 @@ class SystemController extends CrudController
             } catch (\Exception $e) {
                 $health['checks']['game_system'] = [
                     'status' => 'unhealthy',
-                    'message' => 'Game system error: ' . $e->getMessage(),
+                    'message' => 'Game system error: '.$e->getMessage(),
                 ];
                 $health['status'] = 'degraded';
             }
@@ -272,7 +283,7 @@ class SystemController extends CrudController
             } catch (\Exception $e) {
                 $health['checks']['larautilx'] = [
                     'status' => 'unhealthy',
-                    'message' => 'Larautilx integration error: ' . $e->getMessage(),
+                    'message' => 'Larautilx integration error: '.$e->getMessage(),
                 ];
                 $health['status'] = 'degraded';
             }
@@ -334,7 +345,7 @@ class SystemController extends CrudController
                 ];
             } catch (\Exception $e) {
                 $metrics['larautilx'] = [
-                    'error' => 'Failed to get Larautilx metrics: ' . $e->getMessage(),
+                    'error' => 'Failed to get Larautilx metrics: '.$e->getMessage(),
                 ];
             }
 
@@ -360,7 +371,7 @@ class SystemController extends CrudController
     public function clearSystemCaches(Request $request)
     {
         try {
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'cache_types' => 'array',
                 'cache_types.*' => 'in:config,route,view,application,larautilx',
             ]);
@@ -373,23 +384,28 @@ class SystemController extends CrudController
                     case 'config':
                         \Artisan::call('config:clear');
                         $cleared[] = 'Configuration cache';
+
                         break;
                     case 'route':
                         \Artisan::call('route:clear');
                         $cleared[] = 'Route cache';
+
                         break;
                     case 'view':
                         \Artisan::call('view:clear');
                         $cleared[] = 'View cache';
+
                         break;
                     case 'application':
                         \Artisan::call('cache:clear');
                         $cleared[] = 'Application cache';
+
                         break;
                     case 'larautilx':
                         // Clear Larautilx-specific caches
                         $this->integrationService->clearAllCaches();
                         $cleared[] = 'Larautilx caches';
+
                         break;
                 }
             }
@@ -437,11 +453,12 @@ class SystemController extends CrudController
 
                 // Filter and limit logs
                 $filteredLogs = array_filter($logLines, function ($line) use ($level, $since) {
-                    if (empty($line))
+                    if (empty($line)) {
                         return false;
+                    }
 
                     // Simple level filtering
-                    if ($level !== 'all' && !str_contains(strtolower($line), strtolower($level))) {
+                    if ($level !== 'all' && ! str_contains(strtolower($line), strtolower($level))) {
                         return false;
                     }
 

@@ -18,20 +18,30 @@
 }
 
 /* Allgemeines aussehen mit runden ecken und co */
-#contextmenu .tl, #contextmenu .tc, #contextmenu .tr,
-#contextmenu .ml, #contextmenu .mc, #contextmenu .mr,
-#contextmenu .bl, #contextmenu .bc, #contextmenu .br {
+#contextmenu .tl,
+#contextmenu .tc,
+#contextmenu .tr,
+#contextmenu .ml,
+#contextmenu .mc,
+#contextmenu .mr,
+#contextmenu .bl,
+#contextmenu .bc,
+#contextmenu .br {
   background-color: transparent;
   background-position: left top;
 }
 
-#contextmenu .tc, #contextmenu .mc, #contextmenu .bc {
+#contextmenu .tc,
+#contextmenu .mc,
+#contextmenu .bc {
   margin-left: 4px;
   margin-right: 4px;
   width: auto;
 }
 
-#contextmenu .tl, #contextmenu .tc, #contextmenu .tr {
+#contextmenu .tl,
+#contextmenu .tc,
+#contextmenu .tr {
   height: 4px;
 }
 
@@ -61,7 +71,9 @@
   background-repeat: repeat-y;
 }
 
-#contextmenu .bl, #contextmenu .bc, #contextmenu .br {
+#contextmenu .bl,
+#contextmenu .bc,
+#contextmenu .br {
   height: 4px;
 }
 
@@ -122,7 +134,7 @@
 /* Map 2.0 Context Menu Item */
 #contextmenu .title {
   text-align: center;
-  color: #D1CFD2;
+  color: #d1cfd2;
 }
 
 #contextmenu a {
@@ -131,7 +143,7 @@
   padding-right: 13px;
   text-decoration: none;
   font-weight: normal;
-  color: #FEFEFE;
+  color: #fefefe;
   height: 17px;
 }
 
@@ -140,7 +152,7 @@
 }
 
 #contextmenu a.disabled {
-  color: #D0D0D0;
+  color: #d0d0d0;
 }
 
 #contextmenu a.disabled:hover {

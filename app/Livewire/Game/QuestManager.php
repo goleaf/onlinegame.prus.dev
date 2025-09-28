@@ -8,56 +8,90 @@ use App\Models\Game\Player;
 use App\Models\Game\Quest;
 use App\Models\Game\World;
 use Illuminate\Support\Facades\Auth;
+use LaraUtilX\Traits\ApiResponseTrait;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
-use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\PaginationUtil;
 use Livewire\WithPagination;
 
 class QuestManager extends Component
 {
-    use WithPagination, ApiResponseTrait;
+    use ApiResponseTrait;
+    use WithPagination;
 
     #[Reactive]
     public $world;
 
     public $quests = [];
+
     public $availableQuests = [];
+
     public $completedQuests = [];
+
     public $activeQuests = [];
+
     public $achievements = [];
+
     public $playerAchievements = [];
+
     public $selectedQuest = null;
+
     public $selectedAchievement = null;
+
     public $notifications = [];
+
     public $isLoading = false;
+
     public $realTimeUpdates = true;
+
     public $autoRefresh = true;
+
     public $refreshInterval = 15;
+
     public $gameSpeed = 1;
+
     public $showDetails = false;
+
     public $selectedQuestId = null;
+
     public $selectedAchievementId = null;
+
     public $filterByType = null;
+
     public $filterByDifficulty = null;
+
     public $filterByStatus = null;
+
     public $sortBy = 'created_at';
+
     public $sortOrder = 'desc';
+
     public $searchQuery = '';
+
     public $showOnlyAvailable = false;
+
     public $showOnlyActive = false;
+
     public $showOnlyCompleted = false;
+
     public $showOnlyAchievements = false;
+
     public $questStats = [];
+
     public $achievementStats = [];
+
     public $playerProgress = [];
+
     public $questHistory = [];
+
     public $achievementHistory = [];
+
     public $rewards = [];
+
     public $questCategories = [];
+
     public $questDifficulties = [];
+
     public $achievementCategories = ['building', 'combat', 'alliance', 'resource', 'special', 'milestone'];
 
     protected $listeners = [
@@ -183,7 +217,7 @@ class QuestManager extends Component
 
             $this->addNotification('Quest data loaded successfully', 'success');
         } catch (\Exception $e) {
-            $this->addNotification('Failed to load quest data: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to load quest data: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -207,7 +241,7 @@ class QuestManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function acceptQuest($questId)
@@ -215,7 +249,7 @@ class QuestManager extends Component
         $player = Player::where('user_id', Auth::id())->first();
         $quest = Quest::find($questId);
 
-        if (!$quest) {
+        if (! $quest) {
             $this->addNotification('Quest not found', 'error');
 
             return;
@@ -249,7 +283,7 @@ class QuestManager extends Component
                 'player_id' => $player->id,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to accept quest: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to accept quest: '.$e->getMessage(), 'error');
         }
     }
 
@@ -258,7 +292,7 @@ class QuestManager extends Component
         $player = Player::where('user_id', Auth::id())->first();
         $questProgress = $player->quests()->where('quest_id', $questId)->first();
 
-        if (!$questProgress) {
+        if (! $questProgress) {
             $this->addNotification('Quest not found', 'error');
 
             return;
@@ -295,7 +329,7 @@ class QuestManager extends Component
                 'rewards' => $quest->rewards,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to complete quest: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to complete quest: '.$e->getMessage(), 'error');
         }
     }
 
@@ -304,7 +338,7 @@ class QuestManager extends Component
         $player = Player::where('user_id', Auth::id())->first();
         $questProgress = $player->quests()->where('quest_id', $questId)->first();
 
-        if (!$questProgress) {
+        if (! $questProgress) {
             $this->addNotification('Quest not found', 'error');
 
             return;
@@ -328,7 +362,7 @@ class QuestManager extends Component
                 'player_id' => $player->id,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to abandon quest: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to abandon quest: '.$e->getMessage(), 'error');
         }
     }
 
@@ -337,7 +371,7 @@ class QuestManager extends Component
         $player = Player::where('user_id', Auth::id())->first();
         $achievement = Achievement::find($achievementId);
 
-        if (!$achievement) {
+        if (! $achievement) {
             $this->addNotification('Achievement not found', 'error');
 
             return;
@@ -349,7 +383,7 @@ class QuestManager extends Component
             return;
         }
 
-        if (!$this->checkAchievementRequirements($achievement, $player)) {
+        if (! $this->checkAchievementRequirements($achievement, $player)) {
             $this->addNotification('Achievement requirements not met', 'error');
 
             return;
@@ -373,7 +407,7 @@ class QuestManager extends Component
                 'rewards' => $achievement->rewards,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to claim achievement: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to claim achievement: '.$e->getMessage(), 'error');
         }
     }
 
@@ -382,7 +416,7 @@ class QuestManager extends Component
         $player = Player::where('user_id', Auth::id())->first();
         $reward = $player->rewards()->find($rewardId);
 
-        if (!$reward) {
+        if (! $reward) {
             $this->addNotification('Reward not found', 'error');
 
             return;
@@ -404,7 +438,7 @@ class QuestManager extends Component
                 'player_id' => $player->id,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to claim reward: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to claim reward: '.$e->getMessage(), 'error');
         }
     }
 
@@ -457,7 +491,7 @@ class QuestManager extends Component
         $requirements = json_decode($achievement->requirements, true) ?? [];
 
         foreach ($requirements as $requirement) {
-            if (!$this->checkRequirement($requirement, $player)) {
+            if (! $this->checkRequirement($requirement, $player)) {
                 return false;
             }
         }
@@ -543,7 +577,7 @@ class QuestManager extends Component
 
     public function toggleAvailableFilter()
     {
-        $this->showOnlyAvailable = !$this->showOnlyAvailable;
+        $this->showOnlyAvailable = ! $this->showOnlyAvailable;
         $this->addNotification(
             $this->showOnlyAvailable ? 'Showing only available quests' : 'Showing all quests',
             'info'
@@ -552,7 +586,7 @@ class QuestManager extends Component
 
     public function toggleActiveFilter()
     {
-        $this->showOnlyActive = !$this->showOnlyActive;
+        $this->showOnlyActive = ! $this->showOnlyActive;
         $this->addNotification(
             $this->showOnlyActive ? 'Showing only active quests' : 'Showing all quests',
             'info'
@@ -561,7 +595,7 @@ class QuestManager extends Component
 
     public function toggleCompletedFilter()
     {
-        $this->showOnlyCompleted = !$this->showOnlyCompleted;
+        $this->showOnlyCompleted = ! $this->showOnlyCompleted;
         $this->addNotification(
             $this->showOnlyCompleted ? 'Showing only completed quests' : 'Showing all quests',
             'info'
@@ -570,7 +604,7 @@ class QuestManager extends Component
 
     public function toggleAchievementsFilter()
     {
-        $this->showOnlyAchievements = !$this->showOnlyAchievements;
+        $this->showOnlyAchievements = ! $this->showOnlyAchievements;
         $this->addNotification(
             $this->showOnlyAchievements ? 'Showing only achievements' : 'Showing all content',
             'info'
@@ -731,7 +765,7 @@ class QuestManager extends Component
 
     public function getProgressPercentage($quest)
     {
-        if (!isset($quest['progress']) || !isset($quest['target_value'])) {
+        if (! isset($quest['progress']) || ! isset($quest['target_value'])) {
             return 0;
         }
 
@@ -740,7 +774,7 @@ class QuestManager extends Component
 
     public function getTimeRemaining($quest)
     {
-        if (!isset($quest['expires_at'])) {
+        if (! isset($quest['expires_at'])) {
             return 'No time limit';
         }
 
@@ -756,7 +790,7 @@ class QuestManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -765,7 +799,7 @@ class QuestManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'

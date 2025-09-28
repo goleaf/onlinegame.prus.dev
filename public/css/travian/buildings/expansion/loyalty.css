@@ -11,12 +11,14 @@
 /*** TRIBES ** */
 /*** BUILDINGS ** */
 /*** RESOURCES ** */
-div#loyaltyTab td, div#loyaltyTab th {
+div#loyaltyTab td,
+div#loyaltyTab th {
   vertical-align: top;
   padding: 2px 7px;
 }
 
-div#loyaltyTab table thead td, div#loyaltyTab table thead th {
+div#loyaltyTab table thead td,
+div#loyaltyTab table thead th {
   text-align: center;
 }
 
@@ -37,10 +39,10 @@ div#loyaltyTab table tbody th {
 }
 
 div#loyaltyTab table tbody td.low {
-  color: #D40000;
+  color: #d40000;
 }
 .colorBlind div#loyaltyTab table tbody td.low {
-  color: #0022AF;
+  color: #0022af;
 }
 
 div#loyaltyTab table tbody td.medium {
@@ -48,7 +50,7 @@ div#loyaltyTab table tbody td.medium {
 }
 
 div#loyaltyTab table tbody td.high {
-  color: #228B22;
+  color: #228b22;
 }
 
 div#loyaltyTab .currentLoyalty {

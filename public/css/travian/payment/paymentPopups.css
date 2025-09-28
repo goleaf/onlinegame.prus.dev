@@ -22,8 +22,8 @@
   width: 510px;
   min-height: 56px;
   margin: 0 auto 10px;
-  border: 1px solid #AD9251;
-  background-color: #F8F1D0;
+  border: 1px solid #ad9251;
+  background-color: #f8f1d0;
   position: relative;
   font-size: 12px;
 }
@@ -36,7 +36,7 @@
   height: 50px;
   float: left;
   margin: 2px 0 2px 2px;
-  border: 1px solid #AD9251;
+  border: 1px solid #ad9251;
 }
 
 .paymentPopupDialogWrapper .featureContent {
@@ -59,7 +59,7 @@
 }
 
 .paymentPopupDialogWrapper .furtherFeatures .featureInfo .featureImage {
-  border: 1px solid #AFADA4;
+  border: 1px solid #afada4;
 }
 
 /* Features mit Buchungsmöglichkeit (Rohstoffboostpopup / Goldmenü) - mit Dauer, Restzeit und Button */
@@ -82,11 +82,11 @@
 }
 
 .paymentPopupDialogWrapper .featureBooking .renewalActive {
-  color: #228B22;
+  color: #228b22;
 }
 
 .paymentPopupDialogWrapper .featureBooking .bonusEndsSoon {
-  color: #D40000;
+  color: #d40000;
 }
 
 .paymentPopupDialogWrapper .featureBooking .featureButton {
@@ -174,23 +174,38 @@
 
 /*--- PremiumFeature Images --- */
 /* production boost */
-.premiumFeatureProductionBoost .paymentPopupDialogWrapper .feature .featureImage {
+.premiumFeatureProductionBoost
+  .paymentPopupDialogWrapper
+  .feature
+  .featureImage {
   background-image: url('../../img_ltr/payment/productionBoostPopupIcons.png');
 }
 
-.premiumFeatureProductionBoost .paymentPopupDialogWrapper .feature .productionBoostWood {
+.premiumFeatureProductionBoost
+  .paymentPopupDialogWrapper
+  .feature
+  .productionBoostWood {
   background-position: 0 0;
 }
 
-.premiumFeatureProductionBoost .paymentPopupDialogWrapper .feature .productionBoostClay {
+.premiumFeatureProductionBoost
+  .paymentPopupDialogWrapper
+  .feature
+  .productionBoostClay {
   background-position: 0 -60px;
 }
 
-.premiumFeatureProductionBoost .paymentPopupDialogWrapper .feature .productionBoostIron {
+.premiumFeatureProductionBoost
+  .paymentPopupDialogWrapper
+  .feature
+  .productionBoostIron {
   background-position: 0 -120px;
 }
 
-.premiumFeatureProductionBoost .paymentPopupDialogWrapper .feature .productionBoostCrop {
+.premiumFeatureProductionBoost
+  .paymentPopupDialogWrapper
+  .feature
+  .productionBoostCrop {
   background-position: 0 -180px;
 }
 

@@ -22,11 +22,16 @@ button.layoutButton {
   z-index: 0;
 }
 button.layoutButton:before {
-  content: "";
+  content: '';
   width: 36px;
   height: 36px;
   display: block;
-  background-image: linear-gradient(to bottom, rgba(72, 99, 116, 0.95), rgba(31, 51, 73, 0.95) 35%, rgba(22, 46, 59, 0.95));
+  background-image: linear-gradient(
+    to bottom,
+    rgba(72, 99, 116, 0.95),
+    rgba(31, 51, 73, 0.95) 35%,
+    rgba(22, 46, 59, 0.95)
+  );
   border: 1px solid #283308;
   border-radius: 50%;
   box-shadow: 1px 1px 3px rgba(51, 51, 51, 0.7);
@@ -37,7 +42,7 @@ button.layoutButton:before {
   box-sizing: border-box;
 }
 button.layoutButton:after {
-  content: "";
+  content: '';
   width: 30px;
   height: 30px;
   display: block;
@@ -59,7 +64,12 @@ button.layoutButton i {
   z-index: 3;
 }
 button.layoutButton.disabled:before {
-  background-image: linear-gradient(to bottom, rgba(72, 99, 116, 0.6), rgba(31, 51, 73, 0.6) 35%, rgba(22, 46, 59, 0.6));
+  background-image: linear-gradient(
+    to bottom,
+    rgba(72, 99, 116, 0.6),
+    rgba(31, 51, 73, 0.6) 35%,
+    rgba(22, 46, 59, 0.6)
+  );
   border: 1px solid rgba(40, 51, 8, 0.6);
   opacity: 0.95;
 }
@@ -68,17 +78,27 @@ button.layoutButton:active:not(.disabled) i {
 }
 button.layoutButton.green:not(.disabled):after {
   background-image: linear-gradient(to bottom, #587c1e, #7cb029);
-  box-shadow: inset 0 0 1px 1px rgba(40, 51, 8, 0.5), inset 0 2px 2px 1px #b1dd4f, inset 0 -2px 2px 0 #2c4a0c;
+  box-shadow:
+    inset 0 0 1px 1px rgba(40, 51, 8, 0.5),
+    inset 0 2px 2px 1px #b1dd4f,
+    inset 0 -2px 2px 0 #2c4a0c;
   background-color: #7cb029;
 }
-button.layoutButton.green:not(.disabled):hover:after, button.layoutButton.green:not(.disabled):focus:after {
-  box-shadow: inset 0 0 1px 1px rgba(40, 51, 8, 0.5), inset 0 2px 2px 1px #e8f4cd, inset 0 -2px 2px 0 #395a13;
+button.layoutButton.green:not(.disabled):hover:after,
+button.layoutButton.green:not(.disabled):focus:after {
+  box-shadow:
+    inset 0 0 1px 1px rgba(40, 51, 8, 0.5),
+    inset 0 2px 2px 1px #e8f4cd,
+    inset 0 -2px 2px 0 #395a13;
   background-color: #7cb029;
   background-image: none;
   border-color: #506030;
 }
 button.layoutButton.green:not(.disabled):active:after {
-  box-shadow: inset 0 0 1px 1px rgba(40, 51, 8, 0.5), inset 0 1px 2px 1px #2c4a0c, inset 0 -2px 2px 0 #b1dd4f;
+  box-shadow:
+    inset 0 0 1px 1px rgba(40, 51, 8, 0.5),
+    inset 0 1px 2px 1px #2c4a0c,
+    inset 0 -2px 2px 0 #b1dd4f;
   background-image: linear-gradient(to bottom, #587c1e, #7cb029);
 }
 button.layoutButton.green.disabled:after {
@@ -89,16 +109,40 @@ button.layoutButton.green.disabled img {
   opacity: 0.6;
 }
 button.layoutButton.gold:not(.disabled):after {
-  background-image: linear-gradient(to bottom, #fdf5cb, #f8eeb0 40%, #f0dc7c 45%, #e6ce64 85%, #caac50);
-  box-shadow: inset 0 0 1px 1px rgba(82, 67, 32, 0.5), inset 0 2px 2px 1px #faf8ec, inset 0 -2px 2px 0 #524320;
+  background-image: linear-gradient(
+    to bottom,
+    #fdf5cb,
+    #f8eeb0 40%,
+    #f0dc7c 45%,
+    #e6ce64 85%,
+    #caac50
+  );
+  box-shadow:
+    inset 0 0 1px 1px rgba(82, 67, 32, 0.5),
+    inset 0 2px 2px 1px #faf8ec,
+    inset 0 -2px 2px 0 #524320;
 }
-button.layoutButton.gold:not(.disabled):hover:after, button.layoutButton.gold:not(.disabled):focus:after {
+button.layoutButton.gold:not(.disabled):hover:after,
+button.layoutButton.gold:not(.disabled):focus:after {
   background-image: linear-gradient(to bottom, #fff7cd, #fbe786);
-  box-shadow: inset 0 0 1px 1px rgba(82, 67, 32, 0.5), inset 0 2px 2px 1px #ffffff, inset 0 -2px 2px 0 #b89745;
+  box-shadow:
+    inset 0 0 1px 1px rgba(82, 67, 32, 0.5),
+    inset 0 2px 2px 1px #ffffff,
+    inset 0 -2px 2px 0 #b89745;
 }
 button.layoutButton.gold:not(.disabled):active:after {
-  background-image: linear-gradient(to bottom, #fdf5cb, #f8eeb0 40%, #f0dc7c 45%, #e6ce64 85%, #caac50);
-  box-shadow: inset 0 0 1px 1px rgba(82, 67, 32, 0.5), inset 0 1px 2px 1px #524320, inset 0 -2px 2px 0 #f8eeb0;
+  background-image: linear-gradient(
+    to bottom,
+    #fdf5cb,
+    #f8eeb0 40%,
+    #f0dc7c 45%,
+    #e6ce64 85%,
+    #caac50
+  );
+  box-shadow:
+    inset 0 0 1px 1px rgba(82, 67, 32, 0.5),
+    inset 0 1px 2px 1px #524320,
+    inset 0 -2px 2px 0 #f8eeb0;
 }
 button.layoutButton.gold.disabled:after {
   background-image: linear-gradient(to bottom, #e1d9b1, #aa9f79);
@@ -113,7 +157,8 @@ button.layoutButton.overviewWhite i {
 button.layoutButton.allianceForumWhite i {
   background-position: left -42px;
 }
-button.layoutButton.embassyOverviewWhite i, button.layoutButton.editWhite i {
+button.layoutButton.embassyOverviewWhite i,
+button.layoutButton.editWhite i {
   background-position: left -84px;
 }
 button.layoutButton.editBlack i {
@@ -160,7 +205,7 @@ button.layoutButton.bulbWhite i {
   overflow: visible;
 }
 button.layoutButton.bulbWhite i:after {
-  content: "";
+  content: '';
   position: absolute;
   right: 9px;
   pointer-events: none;

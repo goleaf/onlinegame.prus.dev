@@ -34,14 +34,23 @@ class RealTimeVillageManager extends Component
     public $selectedUnitTypeId = null;
 
     public $resources = [];
+
     public $buildings = [];
+
     public $availableBuildings = [];
+
     public $buildingQueues = [];
+
     public $trainingQueues = [];
+
     public $availableUnits = [];
+
     public $selectedBuildingType = null;
+
     public $selectedUnitType = null;
+
     public $showBuildingModal = false;
+
     public $showTrainingModal = false;
 
     #[Url]
@@ -51,28 +60,50 @@ class RealTimeVillageManager extends Component
     public $refreshInterval = 5;
 
     public $isLoading = false;
+
     public $realTimeUpdates = true;
+
     public $buildingGrid = [];
+
     public $resourceProductionRates = [];
+
     public $storageCapacities = [];
+
     public $population = 0;
+
     public $maxPopulation = 0;
+
     public $culturePoints = 0;
+
     // Enhanced Livewire features
     public $pollingEnabled = true;
+
     public $lastUpdateTime;
+
     public $connectionStatus = 'connected';
+
     public $buildingProgress = [];
+
     public $trainingProgress = [];
+
     public $resourceHistory = [];
+
     public $villageEvents = [];
+
     public $notifications = [];
+
     public $showResourceDetails = false;
+
     public $showBuildingDetails = false;
+
     public $selectedBuilding = null;
+
     public $upgradeCosts = [];
+
     public $upgradeTimes = [];
+
     public $productionEfficiency = 1.0;
+
     public $villageBonuses = [];
 
     protected $listeners = [
@@ -147,7 +178,7 @@ class RealTimeVillageManager extends Component
 
     public function mount(Village $village)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect('/login');
         }
 
@@ -181,7 +212,7 @@ class RealTimeVillageManager extends Component
                 'resources',
                 'buildings.buildingType:id,name,description,costs,production_bonus',
                 'buildingQueues.buildingType:id,name,description',
-                'trainingQueues.unitType:id,name,attack_power,defense_power'
+                'trainingQueues.unitType:id,name,attack_power,defense_power',
             ]);
 
             $this->resources = $this->village->resources->keyBy('type');
@@ -217,7 +248,7 @@ class RealTimeVillageManager extends Component
             $this->calculatePopulation();
             $this->loadBuildingGrid();
         } catch (\Exception $e) {
-            $this->addError('error', 'Failed to load village data: ' . $e->getMessage());
+            $this->addError('error', 'Failed to load village data: '.$e->getMessage());
         } finally {
             $this->isLoading = false;
         }
@@ -301,7 +332,7 @@ class RealTimeVillageManager extends Component
 
     public function buildBuilding($x, $y)
     {
-        if (!$this->selectedBuildingType) {
+        if (! $this->selectedBuildingType) {
             return;
         }
 
@@ -317,7 +348,7 @@ class RealTimeVillageManager extends Component
         $costs = json_decode($this->selectedBuildingType->costs, true);
         $resourceService = app(ResourceProductionService::class);
 
-        if (!$resourceService->canAfford($this->village, $costs)) {
+        if (! $resourceService->canAfford($this->village, $costs)) {
             $this->addError('error', 'Insufficient resources');
 
             return;
@@ -342,14 +373,14 @@ class RealTimeVillageManager extends Component
             $this->dispatch('buildingCreated', ['buildingId' => $building->id]);
             $this->showBuildingModal = false;
         } catch (\Exception $e) {
-            $this->addError('error', 'Failed to build: ' . $e->getMessage());
+            $this->addError('error', 'Failed to build: '.$e->getMessage());
         }
     }
 
     public function upgradeBuilding($buildingId)
     {
         $building = $this->buildings->find($buildingId);
-        if (!$building) {
+        if (! $building) {
             return;
         }
 
@@ -372,7 +403,7 @@ class RealTimeVillageManager extends Component
         $costs = $this->calculateUpgradeCosts($building);
         $resourceService = app(ResourceProductionService::class);
 
-        if (!$resourceService->canAfford($this->village, $costs)) {
+        if (! $resourceService->canAfford($this->village, $costs)) {
             $this->addError('error', 'Insufficient resources');
 
             return;
@@ -396,14 +427,14 @@ class RealTimeVillageManager extends Component
             $this->loadVillageData();
             $this->dispatch('buildingUpgradeStarted', ['queueId' => $queue->id]);
         } catch (\Exception $e) {
-            $this->addError('error', 'Failed to start upgrade: ' . $e->getMessage());
+            $this->addError('error', 'Failed to start upgrade: '.$e->getMessage());
         }
     }
 
     public function trainUnits($unitTypeId, $quantity)
     {
         $unitType = UnitType::find($unitTypeId);
-        if (!$unitType) {
+        if (! $unitType) {
             return;
         }
 
@@ -416,7 +447,7 @@ class RealTimeVillageManager extends Component
 
         $resourceService = app(ResourceProductionService::class);
 
-        if (!$resourceService->canAfford($this->village, $totalCosts)) {
+        if (! $resourceService->canAfford($this->village, $totalCosts)) {
             $this->addError('error', 'Insufficient resources');
 
             return;
@@ -441,7 +472,7 @@ class RealTimeVillageManager extends Component
             $this->dispatch('trainingStarted', ['queueId' => $queue->id]);
             $this->showTrainingModal = false;
         } catch (\Exception $e) {
-            $this->addError('error', 'Failed to start training: ' . $e->getMessage());
+            $this->addError('error', 'Failed to start training: '.$e->getMessage());
         }
     }
 

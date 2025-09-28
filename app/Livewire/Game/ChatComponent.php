@@ -2,41 +2,86 @@
 
 namespace App\Livewire\Game;
 
-use App\Models\Game\ChatMessage;
+use App\Livewire\BaseSessionComponent;
 use App\Models\Game\ChatChannel;
+use App\Models\Game\ChatMessage;
 use App\Models\Game\Player;
 use App\Services\ChatService;
 use App\Services\GameIntegrationService;
 use App\Services\GameNotificationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
-use Livewire\Component;
+use Livewire\Attributes\Session;
 use Livewire\WithPagination;
 
-class ChatComponent extends Component
+class ChatComponent extends BaseSessionComponent
 {
     use WithPagination;
 
     public $player;
+
     public $currentChannel;
+
     public $channels = [];
+
     public $messages = [];
+
     public $newMessage = '';
+
     public $isLoading = false;
+
     public $notifications = [];
+
+    // Chat-specific session properties
+    #[Session]
+    public $selectedChannelId = null;
+
+    #[Session]
     public $showChannels = true;
+
+    #[Session]
     public $showEmojis = true;
+
+    #[Session]
     public $autoScroll = true;
-    public $realTimeUpdates = true;
-    public $autoRefresh = true;
-    public $refreshInterval = 5;
-    public $messageTypes = [];
+
+    #[Session]
     public $selectedMessageType = 'text';
-    public $searchQuery = '';
+
+    #[Session]
     public $filterByType = null;
+
+    #[Session]
     public $filterByPlayer = null;
-    public $sortBy = 'created_at';
-    public $sortOrder = 'desc';
+
+    #[Session]
+    public $messageFilters = [];
+
+    #[Session]
+    public $chatLayout = 'sidebar';
+
+    #[Session]
+    public $messageDisplayMode = 'bubbles';
+
+    #[Session]
+    public $showTimestamps = true;
+
+    #[Session]
+    public $showUserAvatars = true;
+
+    #[Session]
+    public $enableSounds = true;
+
+    #[Session]
+    public $enableNotifications = true;
+
+    #[Session]
+    public $fontSize = 'medium';
+
+    #[Session]
+    public $theme = 'light';
+
+    public $messageTypes = [];
 
     protected $listeners = [
         'messageReceived',
@@ -47,9 +92,18 @@ class ChatComponent extends Component
 
     public function mount($channelId = null)
     {
+        // Initialize session properties
+        $this->initializeSessionProperties();
+
+        // Override base refresh settings with chat-specific defaults
+        $this->refreshInterval = $this->refreshInterval ?: 5;
+
         $this->loadPlayer();
         $this->loadChannels();
-        $this->loadChannel($channelId);
+
+        // Use session channel ID or provided channel ID
+        $selectedChannelId = $this->selectedChannelId ?: $channelId;
+        $this->loadChannel($selectedChannelId);
         $this->loadMessages();
         $this->initializeChatRealTime();
     }
@@ -57,9 +111,10 @@ class ChatComponent extends Component
     public function loadPlayer()
     {
         $this->player = Player::where('user_id', Auth::id())->first();
-        
-        if (!$this->player) {
+
+        if (! $this->player) {
             $this->addNotification('Player not found', 'error');
+
             return;
         }
     }
@@ -78,13 +133,13 @@ class ChatComponent extends Component
                 ->where('type', 'global')
                 ->first();
 
-            if (!$globalChannel) {
+            if (! $globalChannel) {
                 $globalChannel = ChatChannel::getGlobalChannel();
                 $this->channels[] = $globalChannel->toArray();
             }
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to load channels: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to load channels: '.$e->getMessage(), 'error');
         }
     }
 
@@ -92,13 +147,18 @@ class ChatComponent extends Component
     {
         if ($channelId) {
             $this->currentChannel = ChatChannel::find($channelId);
+            $this->selectedChannelId = $channelId; // Persist selection in session
         } else {
             // Default to global channel
             $this->currentChannel = ChatChannel::getGlobalChannel();
+            if ($this->currentChannel) {
+                $this->selectedChannelId = $this->currentChannel->id;
+            }
         }
 
-        if (!$this->currentChannel) {
+        if (! $this->currentChannel) {
             $this->addNotification('Channel not found', 'error');
+
             return;
         }
     }
@@ -124,13 +184,13 @@ class ChatComponent extends Component
 
             // Apply search
             if ($this->searchQuery) {
-                $query->where('message', 'like', '%' . $this->searchQuery . '%');
+                $query->where('message', 'like', '%'.$this->searchQuery.'%');
             }
 
             $this->messages = $query->get()->reverse()->values()->toArray();
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to load messages: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to load messages: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -141,11 +201,12 @@ class ChatComponent extends Component
         try {
             if (empty(trim($this->newMessage))) {
                 $this->addNotification('Message cannot be empty', 'error');
+
                 return;
             }
 
             $chatService = app(ChatService::class);
-            
+
             $message = $chatService->sendMessage(
                 $this->player->id,
                 $this->currentChannel->id,
@@ -159,7 +220,7 @@ class ChatComponent extends Component
             $this->addNotification('Message sent successfully', 'success');
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to send message: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to send message: '.$e->getMessage(), 'error');
         }
     }
 
@@ -167,9 +228,10 @@ class ChatComponent extends Component
     {
         try {
             $channel = ChatChannel::find($channelId);
-            
-            if (!$channel) {
+
+            if (! $channel) {
                 $this->addNotification('Channel not found', 'error');
+
                 return;
             }
 
@@ -182,7 +244,7 @@ class ChatComponent extends Component
             $this->dispatch('channelJoined', $channelId);
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to join channel: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to join channel: '.$e->getMessage(), 'error');
         }
     }
 
@@ -203,7 +265,7 @@ class ChatComponent extends Component
             $this->dispatch('channelLeft', $channelId);
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to leave channel: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to leave channel: '.$e->getMessage(), 'error');
         }
     }
 
@@ -217,7 +279,7 @@ class ChatComponent extends Component
             $this->addNotification('Channel created successfully', 'success');
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to create channel: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to create channel: '.$e->getMessage(), 'error');
         }
     }
 
@@ -225,15 +287,17 @@ class ChatComponent extends Component
     {
         try {
             $message = ChatMessage::find($messageId);
-            
-            if (!$message) {
+
+            if (! $message) {
                 $this->addNotification('Message not found', 'error');
+
                 return;
             }
 
             // Check if user can delete this message
-            if ($message->sender_id !== $this->player->id && !$this->player->isAdmin()) {
+            if ($message->sender_id !== $this->player->id && ! $this->player->isAdmin()) {
                 $this->addNotification('You cannot delete this message', 'error');
+
                 return;
             }
 
@@ -244,18 +308,18 @@ class ChatComponent extends Component
             $this->addNotification('Message deleted successfully', 'success');
 
         } catch (\Exception $e) {
-            $this->addNotification('Failed to delete message: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to delete message: '.$e->getMessage(), 'error');
         }
     }
 
     public function toggleChannels()
     {
-        $this->showChannels = !$this->showChannels;
+        $this->showChannels = ! $this->showChannels;
     }
 
     public function toggleEmojis()
     {
-        $this->showEmojis = !$this->showEmojis;
+        $this->showEmojis = ! $this->showEmojis;
     }
 
     public function refreshMessages()
@@ -348,7 +412,7 @@ class ChatComponent extends Component
             '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑',
             '🤠', '😈', '👿', '👹', '👺', '🤡', '💩', '👻',
             '💀', '☠️', '👽', '👾', '🤖', '🎃', '😺', '😸',
-            '😹', '😻', '😼', '😽', '🙀', '😿', '😾'
+            '😹', '😻', '😼', '😽', '🙀', '😿', '😾',
         ];
     }
 
@@ -361,7 +425,7 @@ class ChatComponent extends Component
             if ($this->player) {
                 // Initialize real-time features for the player
                 GameIntegrationService::initializeUserRealTime($this->player->user_id);
-                
+
                 $this->dispatch('chat-initialized', [
                     'message' => 'Chat component real-time features activated',
                     'player_id' => $this->player->id,
@@ -369,7 +433,7 @@ class ChatComponent extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to initialize chat real-time features: ' . $e->getMessage(),
+                'message' => 'Failed to initialize chat real-time features: '.$e->getMessage(),
             ]);
         }
     }
@@ -401,7 +465,7 @@ class ChatComponent extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to send chat message: ' . $e->getMessage(),
+                'message' => 'Failed to send chat message: '.$e->getMessage(),
             ]);
         }
     }
@@ -432,9 +496,144 @@ class ChatComponent extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to join channel: ' . $e->getMessage(),
+                'message' => 'Failed to join channel: '.$e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * Update chat layout preference
+     */
+    public function setChatLayout($layout)
+    {
+        $this->chatLayout = in_array($layout, ['sidebar', 'fullscreen', 'popup']) ? $layout : 'sidebar';
+        $this->addNotification("Chat layout set to {$this->chatLayout}", 'info');
+    }
+
+    /**
+     * Update message display mode
+     */
+    public function setMessageDisplayMode($mode)
+    {
+        $this->messageDisplayMode = in_array($mode, ['bubbles', 'list', 'compact']) ? $mode : 'bubbles';
+        $this->addNotification("Message display mode set to {$this->messageDisplayMode}", 'info');
+    }
+
+    /**
+     * Toggle timestamp display
+     */
+    public function toggleTimestamps()
+    {
+        $this->showTimestamps = ! $this->showTimestamps;
+        $this->addNotification(
+            $this->showTimestamps ? 'Timestamps enabled' : 'Timestamps disabled',
+            'info'
+        );
+    }
+
+    /**
+     * Toggle user avatar display
+     */
+    public function toggleUserAvatars()
+    {
+        $this->showUserAvatars = ! $this->showUserAvatars;
+        $this->addNotification(
+            $this->showUserAvatars ? 'User avatars enabled' : 'User avatars disabled',
+            'info'
+        );
+    }
+
+    /**
+     * Toggle chat sounds
+     */
+    public function toggleSounds()
+    {
+        $this->enableSounds = ! $this->enableSounds;
+        $this->addNotification(
+            $this->enableSounds ? 'Chat sounds enabled' : 'Chat sounds disabled',
+            'info'
+        );
+    }
+
+    /**
+     * Toggle chat notifications
+     */
+    public function toggleChatNotifications(): void
+    {
+        $this->enableNotifications = ! $this->enableNotifications;
+        $this->addNotification(
+            $this->enableNotifications ? 'Chat notifications enabled' : 'Chat notifications disabled',
+            'info'
+        );
+    }
+
+    /**
+     * Update font size
+     */
+    public function setFontSize($size)
+    {
+        $this->fontSize = in_array($size, ['small', 'medium', 'large']) ? $size : 'medium';
+        $this->addNotification("Font size set to {$this->fontSize}", 'info');
+    }
+
+    /**
+     * Update chat theme
+     */
+    public function setChatTheme($theme)
+    {
+        $this->theme = in_array($theme, ['light', 'dark', 'auto']) ? $theme : 'light';
+        $this->addNotification("Chat theme set to {$this->theme}", 'info');
+    }
+
+    /**
+     * Update message filters
+     */
+    public function updateMessageFilters(array $filters)
+    {
+        $this->messageFilters = array_filter($filters, fn ($value) => ! empty($value));
+        $this->loadMessages();
+        $this->addNotification('Message filters updated', 'info');
+    }
+
+    /**
+     * Clear all message filters
+     */
+    public function clearMessageFilters(): void
+    {
+        $this->messageFilters = [];
+        $this->filterByType = null;
+        $this->filterByPlayer = null;
+        $this->searchQuery = '';
+        $this->loadMessages();
+        $this->addNotification('All message filters cleared', 'info');
+    }
+
+    /**
+     * Reset all chat preferences to defaults
+     */
+    public function resetChatPreferences()
+    {
+        $this->selectedChannelId = null;
+        $this->showChannels = true;
+        $this->showEmojis = true;
+        $this->autoScroll = true;
+        $this->selectedMessageType = 'text';
+        $this->filterByType = null;
+        $this->filterByPlayer = null;
+        $this->messageFilters = [];
+        $this->chatLayout = 'sidebar';
+        $this->messageDisplayMode = 'bubbles';
+        $this->showTimestamps = true;
+        $this->showUserAvatars = true;
+        $this->enableSounds = true;
+        $this->enableNotifications = true;
+        $this->fontSize = 'medium';
+        $this->theme = 'light';
+
+        // Reset base session properties
+        $this->resetSessionProperties();
+
+        $this->addNotification('All chat preferences reset to defaults', 'info');
     }
 
     public function render()

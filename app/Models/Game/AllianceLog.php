@@ -3,8 +3,8 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AllianceLog extends Model
 {
@@ -26,22 +26,37 @@ class AllianceLog extends Model
     ];
 
     // Action types
-    const ACTION_CREATED = 'created';
-    const ACTION_UPDATED = 'updated';
-    const ACTION_DELETED = 'deleted';
-    const ACTION_MEMBER_JOINED = 'member_joined';
-    const ACTION_MEMBER_LEFT = 'member_left';
-    const ACTION_MEMBER_KICKED = 'member_kicked';
-    const ACTION_MEMBER_PROMOTED = 'member_promoted';
-    const ACTION_MEMBER_DEMOTED = 'member_demoted';
-    const ACTION_DIPLOMACY_PROPOSED = 'diplomacy_proposed';
-    const ACTION_DIPLOMACY_ACCEPTED = 'diplomacy_accepted';
-    const ACTION_DIPLOMACY_DECLINED = 'diplomacy_declined';
-    const ACTION_DIPLOMACY_CANCELLED = 'diplomacy_cancelled';
-    const ACTION_WAR_DECLARED = 'war_declared';
-    const ACTION_WAR_ENDED = 'war_ended';
-    const ACTION_MESSAGE_SENT = 'message_sent';
-    const ACTION_SETTINGS_CHANGED = 'settings_changed';
+    public const ACTION_CREATED = 'created';
+
+    public const ACTION_UPDATED = 'updated';
+
+    public const ACTION_DELETED = 'deleted';
+
+    public const ACTION_MEMBER_JOINED = 'member_joined';
+
+    public const ACTION_MEMBER_LEFT = 'member_left';
+
+    public const ACTION_MEMBER_KICKED = 'member_kicked';
+
+    public const ACTION_MEMBER_PROMOTED = 'member_promoted';
+
+    public const ACTION_MEMBER_DEMOTED = 'member_demoted';
+
+    public const ACTION_DIPLOMACY_PROPOSED = 'diplomacy_proposed';
+
+    public const ACTION_DIPLOMACY_ACCEPTED = 'diplomacy_accepted';
+
+    public const ACTION_DIPLOMACY_DECLINED = 'diplomacy_declined';
+
+    public const ACTION_DIPLOMACY_CANCELLED = 'diplomacy_cancelled';
+
+    public const ACTION_WAR_DECLARED = 'war_declared';
+
+    public const ACTION_WAR_ENDED = 'war_ended';
+
+    public const ACTION_MESSAGE_SENT = 'message_sent';
+
+    public const ACTION_SETTINGS_CHANGED = 'settings_changed';
 
     public function alliance(): BelongsTo
     {
@@ -177,7 +192,7 @@ class AllianceLog extends Model
 
     public function getFormattedData(): array
     {
-        if (!$this->data) {
+        if (! $this->data) {
             return [];
         }
 
@@ -201,7 +216,7 @@ class AllianceLog extends Model
     private static function generateReferenceNumber(): string
     {
         do {
-            $reference = 'LOG-' . strtoupper(\Str::random(8));
+            $reference = 'LOG-'.strtoupper(\Str::random(8));
         } while (self::where('reference_number', $reference)->exists());
 
         return $reference;

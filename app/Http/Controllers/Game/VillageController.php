@@ -2,24 +2,19 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\Village;
 use App\Traits\GameValidationTrait;
 use App\ValueObjects\Coordinates;
-use App\ValueObjects\VillageResources;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\FilteringUtil;
-use sbamtr\LaravelQueryEnrich\QE;
-
-use function sbamtr\LaravelQueryEnrich\c;
 
 class VillageController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait;
+    use ApiResponseTrait;
+    use GameValidationTrait;
 
     protected Model $model;
 
@@ -34,7 +29,9 @@ class VillageController extends CrudController
     ];
 
     protected array $searchableFields = ['name'];
+
     protected array $relationships = ['player', 'world', 'buildings', 'troops', 'resources'];
+
     protected int $perPage = 15;
 
     public function __construct()
@@ -75,7 +72,7 @@ class VillageController extends CrudController
             $filters[] = ['target' => 'population', 'type' => '$lte', 'value' => $request->get('max_population')];
         }
 
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             $query = $query->filter($filters);
         }
 
@@ -102,7 +99,7 @@ class VillageController extends CrudController
      */
     public function byCoordinates(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $this->validateRequestData($request, [
             'x_min' => 'required|integer|min:0|max:999',
             'x_max' => 'required|integer|min:0|max:999',
             'y_min' => 'required|integer|min:0|max:999',
@@ -162,7 +159,7 @@ class VillageController extends CrudController
     {
         $village = Village::findOrFail($villageId);
 
-        $validated = $request->validate([
+        $validated = $this->validateRequestData($request, [
             'wood' => 'integer|min:0',
             'clay' => 'integer|min:0',
             'iron' => 'integer|min:0',

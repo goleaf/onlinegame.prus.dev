@@ -11,18 +11,21 @@
 /*** TRIBES ** */
 /*** BUILDINGS ** */
 /*** RESOURCES ** */
-div.reports #reportWrapper .supportReport .supportHeader .headline, div.reports #reportWrapper .supportReport .supportHeader .participants {
+div.reports #reportWrapper .supportReport .supportHeader .headline,
+div.reports #reportWrapper .supportReport .supportHeader .participants {
   display: -ms-grid;
   display: grid;
   -ms-grid-columns: 260px 1fr;
   grid-template-columns: 260px 1fr;
 }
-div.reports #reportWrapper .supportReport .supportHeader .headline .from, div.reports #reportWrapper .supportReport .supportHeader .participants .from {
+div.reports #reportWrapper .supportReport .supportHeader .headline .from,
+div.reports #reportWrapper .supportReport .supportHeader .participants .from {
   -ms-grid-column: 1;
   grid-column-start: 1;
   padding-left: 10px;
 }
-div.reports #reportWrapper .supportReport .supportHeader .headline .to, div.reports #reportWrapper .supportReport .supportHeader .participants .to {
+div.reports #reportWrapper .supportReport .supportHeader .headline .to,
+div.reports #reportWrapper .supportReport .supportHeader .participants .to {
   -ms-grid-column: 2;
   grid-column-start: 2;
   padding-right: 10px;
@@ -36,7 +39,7 @@ div.reports #reportWrapper .supportReport .supportHeader .headline .to {
   position: relative;
   text-transform: uppercase;
   font-size: 1.5em;
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 div.reports #reportWrapper .supportReport .supportHeader .headline .from {
   z-index: 2;
@@ -53,27 +56,34 @@ div.reports #reportWrapper .supportReport .supportHeader .headline .to svg {
   stroke: rgba(0, 0, 0, 0.2);
   stroke-width: 0.75;
 }
-.rtl div.reports #reportWrapper .supportReport .supportHeader .headline .to svg {
+.rtl
+  div.reports
+  #reportWrapper
+  .supportReport
+  .supportHeader
+  .headline
+  .to
+  svg {
   transform: scaleX(-1);
 }
 div.reports #reportWrapper .supportReport .supportHeader .headline {
-  border-left: solid 1px #DFC495;
-  border-right: solid 1px #DFC495;
+  border-left: solid 1px #dfc495;
+  border-right: solid 1px #dfc495;
 }
 div.reports #reportWrapper .supportReport .supportHeader .headline .from {
-  background-color: #8CB1C8;
+  background-color: #8cb1c8;
 }
 div.reports #reportWrapper .supportReport .supportHeader .headline .to {
   background-color: #6a9ab8;
 }
 div.reports #reportWrapper .supportReport .supportHeader .headline .to svg {
-  fill: #8CB1C8;
+  fill: #8cb1c8;
 }
 div.reports #reportWrapper .supportReport .supportHeader .participants {
   font-size: 15px;
-  border: 1px solid #DDC6A2;
+  border: 1px solid #ddc6a2;
   border-bottom: none;
-  background-color: #FCF2DA;
+  background-color: #fcf2da;
 }
 .rtl div.reports #reportWrapper .supportReport .supportHeader .participants {
   font-size: 16px;
@@ -84,8 +94,20 @@ div.reports #reportWrapper .supportReport .supportHeader .participants .from {
   padding-bottom: 3px;
   line-height: 1.5em;
 }
-div.reports #reportWrapper .supportReport .supportHeader .participants .to .village,
-div.reports #reportWrapper .supportReport .supportHeader .participants .from .village {
+div.reports
+  #reportWrapper
+  .supportReport
+  .supportHeader
+  .participants
+  .to
+  .village,
+div.reports
+  #reportWrapper
+  .supportReport
+  .supportHeader
+  .participants
+  .from
+  .village {
   width: 250px;
   overflow: hidden;
   display: inline-block;
@@ -96,16 +118,23 @@ div.reports #reportWrapper .supportReport .troopHeadline {
 }
 div.reports #reportWrapper .supportReport .supportTroops {
   position: relative;
-  border: solid 1px #DFC495;
+  border: solid 1px #dfc495;
   border-bottom: none;
 }
-div.reports #reportWrapper .supportReport .supportTroops thead:first-child td, div.reports #reportWrapper .supportReport .supportTroops thead:first-child th {
+div.reports #reportWrapper .supportReport .supportTroops thead:first-child td,
+div.reports #reportWrapper .supportReport .supportTroops thead:first-child th {
   padding: 0;
 }
 div.reports #reportWrapper .supportReport .additionalInformation {
-  border: solid 1px #DFC495;
+  border: solid 1px #dfc495;
   border-top: none;
 }
-div.reports #reportWrapper .supportReport .additionalInformation tbody.infos td div {
+div.reports
+  #reportWrapper
+  .supportReport
+  .additionalInformation
+  tbody.infos
+  td
+  div {
   margin-bottom: 0;
 }

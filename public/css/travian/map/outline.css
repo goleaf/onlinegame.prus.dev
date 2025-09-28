@@ -15,11 +15,11 @@
 #mapContainer #outline a {
   font-size: 11px;
   white-space: nowrap;
-  color: #F2F2F2;
+  color: #f2f2f2;
   font-weight: normal;
 }
-.rtl #mapContainer #outline, .rtl
-#mapContainer #outline a {
+.rtl #mapContainer #outline,
+.rtl #mapContainer #outline a {
   font-size: 12px;
 }
 
@@ -57,7 +57,9 @@
 }
 
 /* Allgemeines aussehen mit runden ecken und co */
-#mapContainer #outline .tl, #mapContainer #outline .tc, #mapContainer #outline .tr {
+#mapContainer #outline .tl,
+#mapContainer #outline .tc,
+#mapContainer #outline .tr {
   background-color: transparent;
   background-position: left top;
 }
@@ -68,7 +70,9 @@
   width: auto;
 }
 
-#mapContainer #outline .tl, #mapContainer #outline .tc, #mapContainer #outline .tr {
+#mapContainer #outline .tl,
+#mapContainer #outline .tc,
+#mapContainer #outline .tr {
   height: 4px;
 }
 

@@ -72,7 +72,7 @@ class ReportFactory extends Factory
      */
     public function unread(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_read' => false,
             'read_at' => null,
         ]);
@@ -83,7 +83,7 @@ class ReportFactory extends Factory
      */
     public function read(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_read' => true,
             'read_at' => $this->faker->dateTimeBetween('-1 week', 'now'),
         ]);
@@ -94,7 +94,7 @@ class ReportFactory extends Factory
      */
     public function important(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_important' => true,
         ]);
     }
@@ -104,7 +104,7 @@ class ReportFactory extends Factory
      */
     public function unimportant(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_important' => false,
         ]);
     }
@@ -114,7 +114,7 @@ class ReportFactory extends Factory
      */
     public function type(string $type): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => $type,
         ]);
     }
@@ -124,7 +124,7 @@ class ReportFactory extends Factory
      */
     public function status(string $status): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => $status,
         ]);
     }
@@ -134,7 +134,7 @@ class ReportFactory extends Factory
      */
     public function forWorld(World $world): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'world_id' => $world->id,
         ]);
     }
@@ -144,7 +144,7 @@ class ReportFactory extends Factory
      */
     public function betweenPlayers(Player $attacker, Player $defender): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'attacker_id' => $attacker->id,
             'defender_id' => $defender->id,
         ]);
@@ -155,7 +155,7 @@ class ReportFactory extends Factory
      */
     public function betweenVillages(Village $fromVillage, Village $toVillage): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'from_village_id' => $fromVillage->id,
             'to_village_id' => $toVillage->id,
         ]);
@@ -166,7 +166,7 @@ class ReportFactory extends Factory
      */
     public function victory(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'victory',
             'battle_data' => [
                 'attacker_losses' => $this->faker->numberBetween(0, 100),
@@ -187,7 +187,7 @@ class ReportFactory extends Factory
      */
     public function defeat(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'defeat',
             'battle_data' => [
                 'attacker_losses' => $this->faker->numberBetween(500, 2000),
@@ -208,7 +208,7 @@ class ReportFactory extends Factory
      */
     public function draw(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'status' => 'draw',
             'battle_data' => [
                 'attacker_losses' => $this->faker->numberBetween(200, 800),

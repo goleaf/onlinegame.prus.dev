@@ -12,10 +12,13 @@ use Tests\TestCase;
 
 class GameControllerTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     protected User $user;
+
     protected Player $player;
+
     protected World $world;
 
     protected function setUp(): void
@@ -32,7 +35,7 @@ class GameControllerTest extends TestCase
         ]);
 
         // Mock rate limiter
-        $this->mock(RateLimiterUtil::class, function ($mock) {
+        $this->mock(RateLimiterUtil::class, function ($mock): void {
             $mock->shouldReceive('attempt')->andReturn(true);
         });
     }
@@ -100,7 +103,7 @@ class GameControllerTest extends TestCase
                     'buildings',
                     'troops',
                     'alliance',
-                ]
+                ],
             ]);
     }
 
@@ -132,8 +135,8 @@ class GameControllerTest extends TestCase
                         'rank',
                         'villages_count',
                         'alliance_name',
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
@@ -159,9 +162,9 @@ class GameControllerTest extends TestCase
                             'level',
                             'count',
                             'total_production',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]);
     }
 
@@ -189,9 +192,9 @@ class GameControllerTest extends TestCase
                             'capacity',
                             'warning_type',
                             'hours_until_full',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]);
     }
 
@@ -201,7 +204,7 @@ class GameControllerTest extends TestCase
     public function it_handles_dashboard_errors_gracefully()
     {
         // Mock an error in the dashboard data loading
-        $this->mock(\App\Services\GameQueryEnrichService::class, function ($mock) {
+        $this->mock(\App\Services\GameQueryEnrichService::class, function ($mock): void {
             $mock->shouldReceive('getPlayerDashboardData')->andThrow(new \Exception('Database error'));
         });
 
@@ -220,7 +223,7 @@ class GameControllerTest extends TestCase
     public function it_handles_api_errors_gracefully()
     {
         // Mock an error in the API
-        $this->mock(\App\Services\GameQueryEnrichService::class, function ($mock) {
+        $this->mock(\App\Services\GameQueryEnrichService::class, function ($mock): void {
             $mock->shouldReceive('getPlayerDashboardData')->andThrow(new \Exception('API error'));
         });
 
@@ -242,7 +245,7 @@ class GameControllerTest extends TestCase
     public function it_respects_rate_limiting_for_player_stats()
     {
         // Mock rate limiter to return false
-        $this->mock(RateLimiterUtil::class, function ($mock) {
+        $this->mock(RateLimiterUtil::class, function ($mock): void {
             $mock->shouldReceive('attempt')->andReturn(false);
         });
 
@@ -264,7 +267,7 @@ class GameControllerTest extends TestCase
     public function it_respects_rate_limiting_for_leaderboard()
     {
         // Mock rate limiter to return false
-        $this->mock(RateLimiterUtil::class, function ($mock) {
+        $this->mock(RateLimiterUtil::class, function ($mock): void {
             $mock->shouldReceive('attempt')->andReturn(false);
         });
 

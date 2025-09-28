@@ -11,7 +11,8 @@
 /*** TRIBES ** */
 /*** BUILDINGS ** */
 /*** RESOURCES ** */
-div.sidebar div#sidebarBoxAllianceNoNews div.sidebarBoxBaseBox div.baseBox, div.sidebar div#sidebarBoxAllianceNoNews div.sidebarBoxInnerBox div.innerBox {
+div.sidebar div#sidebarBoxAllianceNoNews div.sidebarBoxBaseBox div.baseBox,
+div.sidebar div#sidebarBoxAllianceNoNews div.sidebarBoxInnerBox div.innerBox {
   background: none;
 }
 div.sidebar div#sidebarBoxAllianceNoNews div.header:after {
@@ -29,7 +30,7 @@ div.sidebar div#sidebarBoxAlliance div.sidebarBoxInnerBox ul li {
 }
 div.sidebar div#sidebarBoxAlliance div.sidebarBoxInnerBox ul li a {
   display: inline;
-  color: #99C01A;
+  color: #99c01a;
 }
 div.sidebar div#sidebarBoxAlliance div.sidebarBoxInnerBox a {
   font-weight: bold;

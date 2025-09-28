@@ -715,7 +715,7 @@ class GameSeeder extends Seeder
             $alliance = Alliance::create([
                 'world_id' => $mainWorld->id,
                 'tag' => strtoupper($this->faker->lexify('???')),
-                'name' => $this->faker->company() . ' Alliance',
+                'name' => $this->faker->company().' Alliance',
                 'description' => $this->faker->paragraph(),
                 'leader_id' => $leader->id,
                 'points' => rand(1000, 100000),
@@ -732,7 +732,7 @@ class GameSeeder extends Seeder
                 $rank = $index === 0 ? 'leader' : ($index < 3 ? 'elder' : 'member');
 
                 // Check if player already has an alliance membership
-                if (!$member->allianceMembership()->exists()) {
+                if (! $member->allianceMembership()->exists()) {
                     $member->allianceMembership()->create([
                         'alliance_id' => $alliance->id,
                         'rank' => $rank,

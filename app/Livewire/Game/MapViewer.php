@@ -5,19 +5,25 @@ namespace App\Livewire\Game;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Services\GeographicService;
-use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class MapViewer extends Component
 {
     public $world;
+
     public $centerX = 0;
+
     public $centerY = 0;
+
     public $zoom = 1;
+
     public $villages = [];
+
     public $selectedVillage = null;
+
     public $showVillageInfo = false;
+
     public $mapSize = 20;  // 20x20 grid around center
 
     protected $listeners = ['refreshMap', 'villageSelected', 'mapMoved'];
@@ -44,7 +50,7 @@ class MapViewer extends Component
 
     public function loadMapData()
     {
-        if (!$this->world) {
+        if (! $this->world) {
             return;
         }
 
@@ -86,14 +92,15 @@ class MapViewer extends Component
     public function calculateDistance($x, $y)
     {
         $geoService = app(GeographicService::class);
+
         return $geoService->calculateGameDistance($this->centerX, $this->centerY, $x, $y);
     }
 
     /**
      * Calculate real-world distance from center to a point
      *
-     * @param int $x
-     * @param int $y
+     * @param  int  $x
+     * @param  int  $y
      * @return float
      */
     public function calculateRealWorldDistance($x, $y)

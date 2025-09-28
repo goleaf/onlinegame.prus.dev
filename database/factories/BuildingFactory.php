@@ -40,7 +40,7 @@ class BuildingFactory extends Factory
      */
     public function level1(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'level' => 1,
             'upgrade_started_at' => null,
             'upgrade_completed_at' => null,
@@ -52,7 +52,7 @@ class BuildingFactory extends Factory
      */
     public function highLevel(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'level' => $this->faker->numberBetween(10, 20),
         ]);
     }
@@ -62,7 +62,7 @@ class BuildingFactory extends Factory
      */
     public function upgrading(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'upgrade_started_at' => now(),
             'upgrade_completed_at' => now()->addHours($this->faker->numberBetween(1, 24)),
         ]);
@@ -73,7 +73,7 @@ class BuildingFactory extends Factory
      */
     public function completed(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'upgrade_started_at' => now()->subHours($this->faker->numberBetween(1, 24)),
             'upgrade_completed_at' => now(),
         ]);
@@ -84,7 +84,7 @@ class BuildingFactory extends Factory
      */
     public function atCoordinates(int $x, int $y): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'x' => $x,
             'y' => $y,
         ]);

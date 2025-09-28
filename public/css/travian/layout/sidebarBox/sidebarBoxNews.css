@@ -44,14 +44,14 @@ div.sidebar div.sidebarBoxNews div.footer a {
   font-weight: bold;
   white-space: nowrap;
   top: -20px;
-  color: #99C01A;
+  color: #99c01a;
 }
 div.sidebar div.sidebarBoxNews div.footer a:visited {
-  color: #99C01A;
+  color: #99c01a;
 }
 div.sidebar div.sidebarBoxNews div.footer a:active {
-  color: #FF8000;
+  color: #ff8000;
 }
 div.sidebar div.sidebarBoxNews div.footer a:hover {
-  color: #00BC00;
+  color: #00bc00;
 }

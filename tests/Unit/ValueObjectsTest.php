@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
-use App\ValueObjects\Coordinates;
-use App\ValueObjects\ResourceAmounts;
-use App\ValueObjects\PlayerStats;
 use App\ValueObjects\BattleResult;
+use App\ValueObjects\Coordinates;
+use App\ValueObjects\PlayerStats;
+use App\ValueObjects\ResourceAmounts;
 use App\ValueObjects\TroopCounts;
 use App\ValueObjects\VillageResources;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ class ValueObjectsTest extends TestCase
     {
         $coord1 = new Coordinates(x: 0, y: 0);
         $coord2 = new Coordinates(x: 3, y: 4);
-        
+
         $this->assertEquals(5.0, $coord1->distanceTo($coord2));
     }
 
@@ -24,7 +24,7 @@ class ValueObjectsTest extends TestCase
     {
         $coord1 = new Coordinates(x: 0, y: 0, latitude: 0, longitude: 0);
         $coord2 = new Coordinates(x: 0, y: 0, latitude: 0, longitude: 1);
-        
+
         // Approximately 111 km for 1 degree longitude at equator
         $distance = $coord1->realWorldDistanceTo($coord2);
         $this->assertGreaterThan(100, $distance);
@@ -35,13 +35,13 @@ class ValueObjectsTest extends TestCase
     {
         $resources1 = new ResourceAmounts(wood: 100, clay: 200, iron: 300, crop: 400);
         $resources2 = new ResourceAmounts(wood: 50, clay: 100, iron: 150, crop: 200);
-        
+
         $added = $resources1->add($resources2);
         $this->assertEquals(150, $added->wood);
         $this->assertEquals(300, $added->clay);
         $this->assertEquals(450, $added->iron);
         $this->assertEquals(600, $added->crop);
-        
+
         $subtracted = $resources1->subtract($resources2);
         $this->assertEquals(50, $subtracted->wood);
         $this->assertEquals(100, $subtracted->clay);
@@ -54,7 +54,7 @@ class ValueObjectsTest extends TestCase
         $available = new ResourceAmounts(wood: 100, clay: 200, iron: 300, crop: 400);
         $required = new ResourceAmounts(wood: 50, clay: 100, iron: 150, crop: 200);
         $tooMuch = new ResourceAmounts(wood: 150, clay: 100, iron: 150, crop: 200);
-        
+
         $this->assertTrue($available->canAfford($required));
         $this->assertFalse($available->canAfford($tooMuch));
     }
@@ -70,7 +70,7 @@ class ValueObjectsTest extends TestCase
             isActive: true,
             isOnline: true
         );
-        
+
         $this->assertEquals(14000, $stats->getTotalMilitaryPoints());
         $this->assertEquals(10000.0, $stats->getPointsPerVillage());
         $this->assertEquals(500.0, $stats->getPopulationPerVillage());
@@ -88,7 +88,7 @@ class ValueObjectsTest extends TestCase
             loot: $loot,
             duration: 3600 // 1 hour
         );
-        
+
         $this->assertTrue($result->isVictory());
         $this->assertEquals(300, $result->getTotalLosses());
         $this->assertEquals(17.67, round($result->getBattleEfficiency(), 2));
@@ -109,7 +109,7 @@ class ValueObjectsTest extends TestCase
             spies: 2,
             settlers: 1
         );
-        
+
         $this->assertEquals(271, $troops->getTotal());
         $this->assertEquals(225, $troops->getInfantryCount());
         $this->assertEquals(35, $troops->getCavalryCount());
@@ -123,9 +123,9 @@ class ValueObjectsTest extends TestCase
         $amounts = new ResourceAmounts(wood: 1000, clay: 2000, iron: 1500, crop: 800);
         $production = new ResourceAmounts(wood: 100, clay: 200, iron: 150, crop: 80);
         $capacity = new ResourceAmounts(wood: 2000, clay: 4000, iron: 3000, crop: 1600);
-        
+
         $resources = new VillageResources($amounts, $production, $capacity);
-        
+
         $this->assertEquals(5300, $resources->getTotalAmount());
         $this->assertEquals(530, $resources->getTotalProduction());
         $this->assertEquals(10600, $resources->getTotalCapacity());
@@ -138,11 +138,11 @@ class ValueObjectsTest extends TestCase
     {
         $original = new ResourceAmounts(wood: 100, clay: 200);
         $modified = $original->add(new ResourceAmounts(wood: 50, clay: 100));
-        
+
         // Original should remain unchanged
         $this->assertEquals(100, $original->wood);
         $this->assertEquals(200, $original->clay);
-        
+
         // Modified should have new values
         $this->assertEquals(150, $modified->wood);
         $this->assertEquals(300, $modified->clay);
@@ -153,9 +153,8 @@ class ValueObjectsTest extends TestCase
         $center = new Coordinates(x: 0, y: 0);
         $nearby = new Coordinates(x: 3, y: 4);
         $far = new Coordinates(x: 10, y: 10);
-        
+
         $this->assertTrue($nearby->isWithinRadius($center, 10));
         $this->assertFalse($far->isWithinRadius($center, 10));
     }
 }
-

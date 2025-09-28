@@ -7,6 +7,7 @@ Successfully integrated a comprehensive Alliance War system into the Travian gam
 ## ✅ What Was Implemented
 
 ### 1. AllianceWar Model
+
 - **Complete War Management**: Track wars between alliances with detailed metadata
 - **War Status Tracking**: Active, completed, and various war states
 - **War Scoring System**: Dynamic scoring based on battle outcomes
@@ -14,6 +15,7 @@ Successfully integrated a comprehensive Alliance War system into the Travian gam
 - **Winner/Loser Determination**: Automatic determination based on war score
 
 ### 2. War Features
+
 - **War Declaration**: Alliances can declare war on each other
 - **Battle Integration**: Wars track all battles between participating alliances
 - **War Progress**: Real-time war progress and scoring
@@ -21,6 +23,7 @@ Successfully integrated a comprehensive Alliance War system into the Travian gam
 - **Alliance Participation**: Track which alliances are involved in wars
 
 ### 3. Advanced Query Scopes
+
 - **Active Wars**: Filter for currently active wars
 - **Completed Wars**: Filter for finished wars
 - **Alliance Wars**: Find all wars involving specific alliances
@@ -30,6 +33,7 @@ Successfully integrated a comprehensive Alliance War system into the Travian gam
 ## 🎮 Alliance War System Features
 
 ### War Management
+
 ```php
 // Declare war between alliances
 $war = AllianceWar::create([
@@ -51,6 +55,7 @@ $winner = $war->winner; // Returns Alliance or null
 ```
 
 ### War Scoring System
+
 ```php
 // Get war score for specific alliance
 $attackerScore = $war->getWarScoreForAlliance($attackerAlliance);
@@ -66,6 +71,7 @@ $progress = $war->progress_percentage; // 0-100%
 ```
 
 ### Battle Integration
+
 ```php
 // Get all battles in a war
 $battles = $war->battles;
@@ -82,6 +88,7 @@ $battle = Battle::create([
 ## 🔧 Database Schema
 
 ### AllianceWar Table
+
 ```sql
 CREATE TABLE alliance_wars (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -95,7 +102,7 @@ CREATE TABLE alliance_wars (
     war_data JSON,
     created_at TIMESTAMP NULL,
     updated_at TIMESTAMP NULL,
-    
+
     FOREIGN KEY (attacker_alliance_id) REFERENCES alliances(id),
     FOREIGN KEY (defender_alliance_id) REFERENCES alliances(id),
     INDEX idx_attacker_alliance (attacker_alliance_id),
@@ -108,18 +115,21 @@ CREATE TABLE alliance_wars (
 ## 🎯 War Mechanics
 
 ### War Declaration
+
 - **Alliance Leaders**: Only alliance leaders can declare war
 - **War Reasons**: Required reason for war declaration
 - **Cooldown Period**: Prevent spam war declarations
 - **Alliance Size**: Minimum alliance size requirements
 
 ### War Scoring
+
 - **Battle Outcomes**: Wars scored based on battle results
 - **Territory Control**: Additional points for controlling key areas
 - **Resource Raids**: Points for successful resource raids
 - **Defensive Victories**: Bonus points for successful defenses
 
 ### War Resolution
+
 - **Automatic End**: Wars end when one alliance reaches victory threshold
 - **Manual End**: Alliance leaders can negotiate peace
 - **Time Limit**: Wars automatically end after maximum duration
@@ -128,6 +138,7 @@ CREATE TABLE alliance_wars (
 ## 📊 War Statistics
 
 ### Alliance War Records
+
 - **War History**: Complete record of all wars participated in
 - **Win/Loss Ratio**: Track alliance performance in wars
 - **War Duration**: Average war length and longest wars
@@ -135,6 +146,7 @@ CREATE TABLE alliance_wars (
 - **Territory Changes**: Track territory gained/lost in wars
 
 ### War Leaderboards
+
 - **Most Wars**: Alliances with most war participation
 - **Best Win Rate**: Alliances with highest win percentage
 - **Longest Wars**: Record for longest ongoing wars
@@ -143,6 +155,7 @@ CREATE TABLE alliance_wars (
 ## 🚀 Integration Points
 
 ### With Existing Systems
+
 - **Alliance System**: Seamless integration with alliance management
 - **Battle System**: Wars track all battles between participating alliances
 - **Village System**: Wars affect village ownership and control
@@ -150,6 +163,7 @@ CREATE TABLE alliance_wars (
 - **Resource System**: Wars impact resource production and trade
 
 ### With Game Mechanics
+
 - **Territory Control**: Wars determine village and territory ownership
 - **Resource Raids**: War participants can raid enemy resources
 - **Defensive Bonuses**: Defending alliances get combat bonuses
@@ -159,6 +173,7 @@ CREATE TABLE alliance_wars (
 ## 🎮 Gameplay Impact
 
 ### Strategic Depth
+
 - **Alliance Diplomacy**: Wars add political complexity
 - **Territorial Control**: Wars determine map control
 - **Resource Management**: Wars affect resource availability
@@ -166,6 +181,7 @@ CREATE TABLE alliance_wars (
 - **Long-term Planning**: Wars add persistent strategic elements
 
 ### Player Engagement
+
 - **Large-scale Battles**: Wars enable massive multiplayer battles
 - **Alliance Loyalty**: Wars strengthen alliance bonds
 - **Competitive Play**: Wars add competitive elements
@@ -175,12 +191,14 @@ CREATE TABLE alliance_wars (
 ## 📈 Performance Considerations
 
 ### Database Optimization
+
 - **Indexed Queries**: Optimized database queries for war data
 - **Caching Strategy**: Cache frequently accessed war data
 - **Batch Processing**: Efficient batch processing of war updates
 - **Data Archiving**: Archive completed wars for performance
 
 ### Scalability
+
 - **Concurrent Wars**: Support multiple simultaneous wars
 - **Large Alliances**: Handle wars between large alliances
 - **Battle Volume**: Efficient processing of high battle volumes
@@ -189,6 +207,7 @@ CREATE TABLE alliance_wars (
 ## 🛠️ Future Enhancements
 
 ### Planned Features
+
 - **War Alliances**: Multiple alliances can join wars
 - **War Objectives**: Specific war goals and victory conditions
 - **War Rewards**: Special rewards for war participation
@@ -196,6 +215,7 @@ CREATE TABLE alliance_wars (
 - **War Analytics**: Detailed war statistics and analysis
 
 ### Advanced Features
+
 - **War Negotiations**: In-game peace negotiations
 - **War Propaganda**: Alliance messaging during wars
 - **War Espionage**: Intelligence gathering during wars
@@ -205,6 +225,7 @@ CREATE TABLE alliance_wars (
 ## 📋 Summary
 
 The Alliance War System provides:
+
 - ✅ **Complete War Management** - Full war lifecycle tracking
 - ✅ **Battle Integration** - Seamless integration with battle system
 - ✅ **War Scoring** - Dynamic scoring and progress tracking
@@ -214,4 +235,3 @@ The Alliance War System provides:
 - ✅ **Strategic Depth** - Enhanced gameplay and player engagement
 
 This integration significantly enhances the strategic depth and multiplayer experience of the Travian game, enabling large-scale alliance warfare with comprehensive tracking and management systems.
-

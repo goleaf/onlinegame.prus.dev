@@ -4,7 +4,6 @@ namespace App\Forms;
 
 use App\Models\Game\Alliance;
 use App\Models\Game\World;
-use App\Models\User;
 use Intervention\Validation\Rules\Username;
 use Metalogico\Formello\Formello;
 

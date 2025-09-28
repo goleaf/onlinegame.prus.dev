@@ -34,11 +34,11 @@ div.map2 {
 }
 
 #mapContainer:before {
-  content: "";
+  content: '';
   display: block;
   width: calc(100% + 25px);
   height: calc(100% + 16px);
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   position: absolute;
   top: 0;
   left: -25px;
@@ -88,20 +88,30 @@ div.map2 {
   position: absolute;
 }
 
-#mapContainer .innerShadow .innerShadow-tl, #mapContainer .innerShadow .innerShadow-tc, #mapContainer .innerShadow .innerShadow-tr,
-#mapContainer .innerShadow .innerShadow-ml, #mapContainer .innerShadow .innerShadow-mc, #mapContainer .innerShadow .innerShadow-mr,
-#mapContainer .innerShadow .innerShadow-bl, #mapContainer .innerShadow .innerShadow-bc, #mapContainer .innerShadow .innerShadow-br {
+#mapContainer .innerShadow .innerShadow-tl,
+#mapContainer .innerShadow .innerShadow-tc,
+#mapContainer .innerShadow .innerShadow-tr,
+#mapContainer .innerShadow .innerShadow-ml,
+#mapContainer .innerShadow .innerShadow-mc,
+#mapContainer .innerShadow .innerShadow-mr,
+#mapContainer .innerShadow .innerShadow-bl,
+#mapContainer .innerShadow .innerShadow-bc,
+#mapContainer .innerShadow .innerShadow-br {
   background-color: transparent;
   background-position: left top;
 }
 
-#mapContainer .innerShadow .innerShadow-tc, #mapContainer .innerShadow .innerShadow-mc, #mapContainer .innerShadow .innerShadow-bc {
+#mapContainer .innerShadow .innerShadow-tc,
+#mapContainer .innerShadow .innerShadow-mc,
+#mapContainer .innerShadow .innerShadow-bc {
   margin-left: 8px;
   margin-right: 8px;
   width: auto;
 }
 
-#mapContainer .innerShadow .innerShadow-tl, #mapContainer .innerShadow .innerShadow-tc, #mapContainer .innerShadow .innerShadow-tr {
+#mapContainer .innerShadow .innerShadow-tl,
+#mapContainer .innerShadow .innerShadow-tc,
+#mapContainer .innerShadow .innerShadow-tr {
   height: 8px;
 }
 
@@ -131,7 +141,9 @@ div.map2 {
   background-repeat: repeat-y;
 }
 
-#mapContainer .innerShadow .innerShadow-bl, #mapContainer .innerShadow .innerShadow-bc, #mapContainer .innerShadow .innerShadow-br {
+#mapContainer .innerShadow .innerShadow-bl,
+#mapContainer .innerShadow .innerShadow-bc,
+#mapContainer .innerShadow .innerShadow-br {
   height: 8px;
 }
 
@@ -149,7 +161,7 @@ div.map2 {
 }
 
 #mapContainer img.image {
-  background-color: #C3EDAE;
+  background-color: #c3edae;
 }
 
 /* Dialog images getrennt wegem IE */

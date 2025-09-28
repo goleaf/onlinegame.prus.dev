@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,14 +17,12 @@ class PlayerNotesSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
-                'reference_number' => 'PN-2025090002',
-                'player_id' => 1,
+
+                'player_id' => 7,
                 'target_player_id' => 2,
                 'title' => 'Test Note',
                 'content' => 'Test note content',
@@ -31,11 +30,11 @@ class PlayerNotesSeeder extends Seeder
                 'is_public' => 0,
                 'created_at' => '2025-09-27 01:06:42',
                 'updated_at' => '2025-09-27 01:06:42',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("player_notes")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('player_notes')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

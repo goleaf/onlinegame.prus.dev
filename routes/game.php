@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Game\AIController;
 use App\Http\Controllers\Game\APIDocumentationController;
-use App\Http\Controllers\Game\ChatController;
 use App\Http\Controllers\Game\GameController;
 use App\Http\Controllers\Game\LarautilxController;
 use App\Http\Controllers\Game\LarautilxDashboardController;
@@ -14,7 +13,7 @@ use App\Http\Controllers\Game\UserController;
 use App\Http\Controllers\Game\VillageController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'game.auth'])->group(function () {
+Route::middleware(['auth', 'game.auth'])->group(function (): void {
     // Main game dashboard
     Route::get('/game', [GameController::class, 'dashboard'])->name('game.dashboard');
 
@@ -47,7 +46,7 @@ Route::middleware(['auth', 'game.auth'])->group(function () {
 
     // Map
     Route::get('/game/map', [GameController::class, 'map'])->name('game.map');
-    
+
     // Advanced Map with Geographic Features
     Route::get('/game/advanced-map', function () {
         return view('game.advanced-map');
@@ -102,7 +101,7 @@ Route::middleware(['auth', 'game.auth'])->group(function () {
 });
 
 // Secure API routes with rate limiting
-Route::middleware(['auth', 'game.auth', 'game.rate_limit'])->group(function () {
+Route::middleware(['auth', 'game.auth', 'game.rate_limit'])->group(function (): void {
     // Building management
     Route::post('/game/api/building/upgrade', [SecureGameController::class, 'upgradeBuilding'])->name('game.api.building.upgrade');
 
@@ -117,14 +116,14 @@ Route::middleware(['auth', 'game.auth', 'game.rate_limit'])->group(function () {
 });
 
 // Larautilx CRUD API routes
-Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () {
+Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function (): void {
     // Player management
     Route::get('/players', [PlayerController::class, 'getAllRecords'])->name('game.api.players.index');
     Route::get('/players/{id}', [PlayerController::class, 'getRecordById'])->name('game.api.players.show');
     Route::post('/players', [PlayerController::class, 'storeRecord'])->name('game.api.players.store');
     Route::put('/players/{id}', [PlayerController::class, 'updateRecord'])->name('game.api.players.update');
     Route::delete('/players/{id}', [PlayerController::class, 'deleteRecord'])->name('game.api.players.destroy');
-    
+
     // Player advanced routes
     Route::get('/players/stats/{playerId}', [PlayerController::class, 'getPlayerStats'])->name('game.api.players.stats');
     Route::get('/players/top', [PlayerController::class, 'getTopPlayers'])->name('game.api.players.top');
@@ -137,7 +136,7 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::post('/villages', [VillageController::class, 'storeRecord'])->name('game.api.villages.store');
     Route::put('/villages/{id}', [VillageController::class, 'updateRecord'])->name('game.api.villages.update');
     Route::delete('/villages/{id}', [VillageController::class, 'deleteRecord'])->name('game.api.villages.destroy');
-    
+
     // Village advanced routes
     Route::get('/villages/with-stats', [VillageController::class, 'getVillagesWithStats'])->name('game.api.villages.with-stats');
     Route::get('/villages/by-coordinates', [VillageController::class, 'getVillagesByCoordinates'])->name('game.api.villages.by-coordinates');
@@ -151,7 +150,7 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::post('/tasks', [TaskController::class, 'storeRecord'])->name('game.api.tasks.store');
     Route::put('/tasks/{id}', [TaskController::class, 'updateRecord'])->name('game.api.tasks.update');
     Route::delete('/tasks/{id}', [TaskController::class, 'deleteRecord'])->name('game.api.tasks.destroy');
-    
+
     // Task advanced routes
     Route::get('/tasks/with-stats', [TaskController::class, 'getTasksWithStats'])->name('game.api.tasks.with-stats');
     Route::post('/tasks/{taskId}/start', [TaskController::class, 'startTask'])->name('game.api.tasks.start');
@@ -159,27 +158,27 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::put('/tasks/{taskId}/progress', [TaskController::class, 'updateProgress'])->name('game.api.tasks.progress');
     Route::get('/tasks/player/{playerId}/stats', [TaskController::class, 'getPlayerTaskStats'])->name('game.api.tasks.player-stats');
     Route::get('/tasks/overdue', [TaskController::class, 'getOverdueTasks'])->name('game.api.tasks.overdue');
-    
+
     // Task detail view
     Route::get('/game/tasks/{task}', function ($task) {
         return view('livewire.game.task-detail', compact('task'));
     })->name('game.tasks.detail');
-    
+
     // Alliance detail view
     Route::get('/game/alliances/{alliance}', function ($alliance) {
         return view('livewire.game.alliance-detail', compact('alliance'));
     })->name('game.alliances.detail');
-    
+
     // Village detail view
     Route::get('/game/villages/{village}', function ($village) {
         return view('livewire.game.village-detail', compact('village'));
     })->name('game.villages.detail');
-    
+
     // Player detail view
     Route::get('/game/players/{player}', function ($player) {
         return view('livewire.game.player-detail', compact('player'));
     })->name('game.players.detail');
-    
+
     // Battle detail view
     Route::get('/game/battles/{battle}', function ($battle) {
         return view('livewire.game.battle-detail', compact('battle'));
@@ -203,7 +202,7 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::post('/users', [UserController::class, 'storeRecord'])->name('game.api.users.store');
     Route::put('/users/{id}', [UserController::class, 'updateRecord'])->name('game.api.users.update');
     Route::delete('/users/{id}', [UserController::class, 'deleteRecord'])->name('game.api.users.destroy');
-    
+
     // User advanced routes
     Route::get('/users/with-game-stats', [UserController::class, 'getUsersWithGameStats'])->name('game.api.users.with-game-stats');
     Route::get('/users/online', [UserController::class, 'getOnlineUsers'])->name('game.api.users.online');
@@ -238,6 +237,24 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
 
     // Larautilx dashboard
     Route::get('/larautilx/dashboard', [LarautilxDashboardController::class, 'getDashboardData'])->name('game.api.larautilx.dashboard');
+    Route::get('/larautilx/dashboard/integration-status', [LarautilxDashboardController::class, 'getIntegrationSummary'])->name('game.api.larautilx.integration-status');
+    Route::get('/larautilx/dashboard/performance', [LarautilxDashboardController::class, 'getPerformanceData'])->name('game.api.larautilx.performance');
+    Route::get('/larautilx/dashboard/health', [LarautilxDashboardController::class, 'getHealthData'])->name('game.api.larautilx.health');
+    Route::get('/larautilx/dashboard/user-activity', [LarautilxDashboardController::class, 'getUserActivityData'])->name('game.api.larautilx.user-activity');
+    Route::get('/larautilx/dashboard/system-events', [LarautilxDashboardController::class, 'getSystemEventsData'])->name('game.api.larautilx.system-events');
+    Route::get('/larautilx/dashboard/error-logs', [LarautilxDashboardController::class, 'getErrorLogsData'])->name('game.api.larautilx.error-logs');
+    Route::get('/larautilx/dashboard/performance-alerts', [LarautilxDashboardController::class, 'getPerformanceAlertsData'])->name('game.api.larautilx.performance-alerts');
+    Route::get('/larautilx/dashboard/cache-stats', [LarautilxDashboardController::class, 'getCacheStatsData'])->name('game.api.larautilx.cache-stats');
+    Route::get('/larautilx/dashboard/database-stats', [LarautilxDashboardController::class, 'getDatabaseStatsData'])->name('game.api.larautilx.database-stats');
+    Route::get('/larautilx/dashboard/queue-stats', [LarautilxDashboardController::class, 'getQueueStatsData'])->name('game.api.larautilx.queue-stats');
+    Route::get('/larautilx/dashboard/storage-stats', [LarautilxDashboardController::class, 'getStorageStatsData'])->name('game.api.larautilx.storage-stats');
+    Route::get('/larautilx/dashboard/ai-status', [LarautilxDashboardController::class, 'getAIStatusData'])->name('game.api.larautilx.ai-status');
+    Route::get('/larautilx/dashboard/config-status', [LarautilxDashboardController::class, 'getConfigStatusData'])->name('game.api.larautilx.config-status');
+    Route::get('/larautilx/dashboard/scheduler-status', [LarautilxDashboardController::class, 'getSchedulerStatusData'])->name('game.api.larautilx.scheduler-status');
+    Route::get('/larautilx/dashboard/analytics', [LarautilxDashboardController::class, 'getAnalyticsData'])->name('game.api.larautilx.analytics');
+    Route::get('/larautilx/dashboard/recommendations', [LarautilxDashboardController::class, 'getRecommendationsData'])->name('game.api.larautilx.recommendations');
+    Route::get('/larautilx/dashboard/export', [LarautilxDashboardController::class, 'getExportData'])->name('game.api.larautilx.export');
+    Route::get('/larautilx/dashboard/widgets', [LarautilxDashboardController::class, 'getWidgetsData'])->name('game.api.larautilx.widgets');
     Route::get('/larautilx/integration-summary', [LarautilxDashboardController::class, 'getIntegrationSummary'])->name('game.api.larautilx.integration-summary');
     Route::post('/larautilx/test-components', [LarautilxDashboardController::class, 'testComponents'])->name('game.api.larautilx.test-components');
 
@@ -272,7 +289,7 @@ Route::middleware(['auth', 'game.auth'])->prefix('game/api')->group(function () 
     Route::get('/chat/stats', [App\Http\Controllers\Game\ChatController::class, 'getChatStats'])->name('game.api.chat.stats');
 
     // Game Integration Routes
-    Route::prefix('integration')->group(function () {
+    Route::prefix('integration')->group(function (): void {
         Route::post('/initialize-realtime', [App\Http\Controllers\Api\GameApiController::class, 'initializeRealTime'])->name('game.integration.initialize-realtime');
         Route::get('/game-statistics', [App\Http\Controllers\Api\GameApiController::class, 'getGameStatisticsWithRealTime'])->name('game.integration.game-statistics');
         Route::post('/system-announcement', [App\Http\Controllers\Api\GameApiController::class, 'sendSystemAnnouncement'])->name('game.integration.system-announcement');

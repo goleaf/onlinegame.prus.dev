@@ -94,7 +94,7 @@ div.bbEditor div.bbToolbarWindow div {
   position: absolute;
   margin-top: 5px;
   margin-left: 197px;
-  border: 1px solid #99C01A;
+  border: 1px solid #99c01a;
   padding: 5px;
   background: #efefef;
   max-width: 240px;
@@ -107,7 +107,7 @@ div.bbEditor div.bbToolbarWindow div#message_troops > hr {
   height: 1px;
   margin-bottom: 0;
   margin-top: 0;
-  color: #C0C0C0;
+  color: #c0c0c0;
 }
 
 div.bbEditor div.preview {

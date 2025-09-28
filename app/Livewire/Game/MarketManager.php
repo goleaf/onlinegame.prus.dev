@@ -20,37 +20,69 @@ class MarketManager extends Component
     public $village;
 
     public $offers = [];
+
     public $myOffers = [];
+
     public $selectedOffer = null;
+
     public $offerTypes = ['buy', 'sell'];
+
     public $resourceTypes = ['wood', 'clay', 'iron', 'crop'];
+
     public $selectedType = 'buy';
+
     public $selectedResource = 'wood';
+
     public $offerQuantity = 1;
+
     public $offerPrice = 1;
+
     public $offerDuration = 24;  // hours
+
     public $notifications = [];
+
     public $isLoading = false;
+
     public $realTimeUpdates = true;
+
     public $autoRefresh = true;
+
     public $refreshInterval = 10;
+
     public $gameSpeed = 1;
+
     public $showDetails = false;
+
     public $selectedOfferId = null;
+
     public $filterByType = null;
+
     public $filterByResource = null;
+
     public $sortBy = 'created_at';
+
     public $sortOrder = 'desc';
+
     public $searchQuery = '';
+
     public $showOnlyActive = false;
+
     public $showOnlyMyOffers = false;
+
     public $showOnlyExpired = false;
+
     public $marketStats = [];
+
     public $tradingHistory = [];
+
     public $priceHistory = [];
+
     public $offerStats = [];
+
     public $tradingVolume = [];
+
     public $averagePrices = [];
+
     public $marketTrends = [];
 
     protected $listeners = [
@@ -127,15 +159,15 @@ class MarketManager extends Component
                             'type' => '$has',
                             'target' => 'player',
                             'value' => [
-                                ['target' => 'name', 'type' => '$like', 'value' => $this->searchQuery]
-                            ]
-                        ]
-                    ]
+                                ['target' => 'name', 'type' => '$like', 'value' => $this->searchQuery],
+                            ],
+                        ],
+                    ],
                 ];
             }
 
             // Apply eloquent filtering
-            if (!empty($activeFilters)) {
+            if (! empty($activeFilters)) {
                 $activeOffersQuery = $activeOffersQuery->filter($activeFilters);
             }
 
@@ -163,7 +195,7 @@ class MarketManager extends Component
             }
 
             // Apply eloquent filtering
-            if (!empty($myFilters)) {
+            if (! empty($myFilters)) {
                 $myOffersQuery = $myOffersQuery->filter($myFilters);
             }
 
@@ -178,7 +210,7 @@ class MarketManager extends Component
 
             $this->addNotification('Market data loaded successfully', 'success');
         } catch (\Exception $e) {
-            $this->addNotification('Failed to load market data: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to load market data: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -194,7 +226,7 @@ class MarketManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function setOfferType($type)
@@ -275,7 +307,7 @@ class MarketManager extends Component
 
     public function toggleActiveFilter()
     {
-        $this->showOnlyActive = !$this->showOnlyActive;
+        $this->showOnlyActive = ! $this->showOnlyActive;
         $this->addNotification(
             $this->showOnlyActive ? 'Showing only active offers' : 'Showing all offers',
             'info'
@@ -284,7 +316,7 @@ class MarketManager extends Component
 
     public function toggleMyOffersFilter()
     {
-        $this->showOnlyMyOffers = !$this->showOnlyMyOffers;
+        $this->showOnlyMyOffers = ! $this->showOnlyMyOffers;
         $this->addNotification(
             $this->showOnlyMyOffers ? 'Showing only my offers' : 'Showing all offers',
             'info'
@@ -293,7 +325,7 @@ class MarketManager extends Component
 
     public function toggleExpiredFilter()
     {
-        $this->showOnlyExpired = !$this->showOnlyExpired;
+        $this->showOnlyExpired = ! $this->showOnlyExpired;
         $this->addNotification(
             $this->showOnlyExpired ? 'Showing only expired offers' : 'Showing all offers',
             'info'
@@ -311,7 +343,7 @@ class MarketManager extends Component
         if ($this->selectedType === 'sell') {
             // Check if player has enough resources
             $resource = $this->village->resources->where('type', $this->selectedResource)->first();
-            if (!$resource || $resource->amount < $this->offerQuantity) {
+            if (! $resource || $resource->amount < $this->offerQuantity) {
                 $this->addNotification('Insufficient resources to create offer', 'error');
 
                 return;
@@ -350,14 +382,14 @@ class MarketManager extends Component
                 'quantity' => $offer->quantity,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to create offer: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to create offer: '.$e->getMessage(), 'error');
         }
     }
 
     public function acceptOffer($offerId)
     {
         $offer = MarketOffer::find($offerId);
-        if (!$offer) {
+        if (! $offer) {
             $this->addNotification('Offer not found', 'error');
 
             return;
@@ -384,7 +416,7 @@ class MarketManager extends Component
                 $this->sellToOffer($offer);
             }
         } catch (\Exception $e) {
-            $this->addNotification('Failed to accept offer: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to accept offer: '.$e->getMessage(), 'error');
         }
     }
 
@@ -399,14 +431,14 @@ class MarketManager extends Component
 
         foreach (['wood', 'clay', 'iron', 'crop'] as $resourceType) {
             $resource = $this->village->resources->where('type', $resourceType)->first();
-            if (!$resource || $resource->amount < $costPerResource) {
+            if (! $resource || $resource->amount < $costPerResource) {
                 $canAfford = false;
 
                 break;
             }
         }
 
-        if (!$canAfford) {
+        if (! $canAfford) {
             $this->addNotification('Insufficient resources to buy', 'error');
 
             return;
@@ -443,7 +475,7 @@ class MarketManager extends Component
     {
         // Check if player has enough resources to sell
         $resource = $this->village->resources->where('type', $offer->resource_type)->first();
-        if (!$resource || $resource->amount < $offer->quantity) {
+        if (! $resource || $resource->amount < $offer->quantity) {
             $this->addNotification('Insufficient resources to sell', 'error');
 
             return;
@@ -479,7 +511,7 @@ class MarketManager extends Component
     public function cancelOffer($offerId)
     {
         $offer = MarketOffer::find($offerId);
-        if (!$offer) {
+        if (! $offer) {
             $this->addNotification('Offer not found', 'error');
 
             return;
@@ -513,7 +545,7 @@ class MarketManager extends Component
                 'seller_id' => $offer->seller_id,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to cancel offer: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to cancel offer: '.$e->getMessage(), 'error');
         }
     }
 
@@ -751,7 +783,7 @@ class MarketManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -760,7 +792,7 @@ class MarketManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'

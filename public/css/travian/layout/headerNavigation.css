@@ -45,10 +45,12 @@ ul#navigation li:not(.gold) a {
   border-radius: 50%;
   background-image: linear-gradient(to bottom, #969ea5, #8a9096, #aab0b6);
   box-sizing: border-box;
-  box-shadow: inset 0 0 2px 3px #b6bec8, 1px 2px 3px rgba(51, 51, 51, 0.75);
+  box-shadow:
+    inset 0 0 2px 3px #b6bec8,
+    1px 2px 3px rgba(51, 51, 51, 0.75);
 }
 ul#navigation li:not(.gold) a:not(.background):before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -57,10 +59,12 @@ ul#navigation li:not(.gold) a:not(.background):before {
   z-index: 3;
   opacity: 0.9;
   border-radius: 50%;
-  box-shadow: inset 0 2px 2px 1px #f1f3f4, inset 0 -2px 2px 0 #484e55;
+  box-shadow:
+    inset 0 2px 2px 1px #f1f3f4,
+    inset 0 -2px 2px 0 #484e55;
 }
 ul#navigation li:not(.gold) a:not(.background):after {
-  content: "";
+  content: '';
   position: absolute;
   top: 5px;
   right: 5px;
@@ -77,28 +81,38 @@ ul#navigation li:not(.gold) a.active {
   height: 71px;
   z-index: 2;
   background-image: linear-gradient(to bottom, #3e6a10, #3e6a10, #9ecc47);
-  box-shadow: inset 0 0 2px 3px #94b959, 0 2px 3px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 0 2px 3px #94b959,
+    0 2px 3px rgba(0, 0, 0, 0.4);
 }
 ul#navigation li:not(.gold) a.active:before {
-  box-shadow: inset 0 2px 2px 1px #bfe184, inset 0 -2px 2px 0 #234510;
+  box-shadow:
+    inset 0 2px 2px 1px #bfe184,
+    inset 0 -2px 2px 0 #234510;
 }
 ul#navigation li:not(.gold) a.inactive {
   z-index: 5;
 }
 ul#navigation li:not(.gold) a:hover:not(.active):not(.background) {
-  box-shadow: inset 0 0 12px 3px white, 0 2px 3px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 0 12px 3px white,
+    0 2px 3px rgba(0, 0, 0, 0.4);
 }
 ul#navigation li:not(.gold) a:active:not(.active) {
   background-image: linear-gradient(to top, #969ea5, #8a9096, #aab0b6);
 }
 ul#navigation li:not(.gold) a:active:not(.active):before {
-  box-shadow: inset 0 2px 2px 1px #484e55, inset 0 -2px 2px 0 #f1f3f4;
+  box-shadow:
+    inset 0 2px 2px 1px #484e55,
+    inset 0 -2px 2px 0 #f1f3f4;
 }
 ul#navigation li:not(.gold) a:active:not(.active).active {
   background-image: linear-gradient(to top, #3e6a10, #3e6a10, #9ecc47);
 }
 ul#navigation li:not(.gold) a:active:not(.active).active:before {
-  box-shadow: inset 0 2px 2px 1px #234510, inset 0 -2px 2px 0 #bfe184;
+  box-shadow:
+    inset 0 2px 2px 1px #234510,
+    inset 0 -2px 2px 0 #bfe184;
 }
 ul#navigation li.villageResources a:after {
   background-position: -1px -1784px;

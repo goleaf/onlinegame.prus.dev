@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Game Performance Monitor
@@ -74,7 +74,7 @@ class GamePerformanceMonitor
 
         foreach ($queries as $query) {
             $totalTime += $query['time'];
-            
+
             if ($query['time'] > 100) { // More than 100ms
                 $slowQueries[] = [
                     'query' => $query['query'],
@@ -93,7 +93,7 @@ class GamePerformanceMonitor
         ];
 
         // Log slow queries
-        if (!empty($slowQueries)) {
+        if (! empty($slowQueries)) {
             Log::warning('Slow database queries detected', $metrics);
         }
 
@@ -129,8 +129,8 @@ class GamePerformanceMonitor
                 'misses' => $cacheStats['keyspace_misses'] ?? 0,
                 'hit_ratio' => self::calculateHitRatio($cacheStats),
                 'memory_used' => $cacheStats['used_memory'] ?? 0,
-                'formatted_memory' => isset($cacheStats['used_memory']) 
-                    ? self::formatBytes($cacheStats['used_memory']) 
+                'formatted_memory' => isset($cacheStats['used_memory'])
+                    ? self::formatBytes($cacheStats['used_memory'])
                     : 'N/A',
             ];
         } catch (\Exception $e) {
@@ -162,8 +162,8 @@ class GamePerformanceMonitor
      */
     private static function cachePerformanceData(string $operation, array $metrics): void
     {
-        $cacheKey = "performance:{$operation}:" . now()->format('Y-m-d-H');
-        
+        $cacheKey = "performance:{$operation}:".now()->format('Y-m-d-H');
+
         Cache::remember($cacheKey, now()->addHour(), function () use ($metrics) {
             return $metrics;
         });
@@ -193,7 +193,7 @@ class GamePerformanceMonitor
 
         $bytes /= pow(1024, $pow);
 
-        return round($bytes, 2) . ' ' . $units[$pow];
+        return round($bytes, 2).' '.$units[$pow];
     }
 
     /**

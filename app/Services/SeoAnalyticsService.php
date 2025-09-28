@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Http;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class SeoAnalyticsService
 {
     protected CachingUtil $cachingUtil;
+
     protected LoggingUtil $loggingUtil;
 
     public function __construct()
@@ -18,6 +18,7 @@ class SeoAnalyticsService
         $this->cachingUtil = new CachingUtil(3600, ['seo_analytics']);
         $this->loggingUtil = new LoggingUtil();
     }
+
     /**
      * Track SEO metrics for a page
      */
@@ -28,11 +29,11 @@ class SeoAnalyticsService
             'timestamp' => now(),
             'title_length' => strlen($metadata['title'] ?? ''),
             'description_length' => strlen($metadata['description'] ?? ''),
-            'has_images' => !empty($metadata['images']),
+            'has_images' => ! empty($metadata['images']),
             'image_count' => count($metadata['images'] ?? []),
-            'has_keywords' => !empty($metadata['keywords']),
+            'has_keywords' => ! empty($metadata['keywords']),
             'keyword_count' => count($metadata['keywords'] ?? []),
-            'has_structured_data' => !empty($metadata['structured_data']),
+            'has_structured_data' => ! empty($metadata['structured_data']),
         ];
 
         $this->storeMetrics($page, $metrics);
@@ -43,15 +44,15 @@ class SeoAnalyticsService
      */
     protected function storeMetrics(string $page, array $metrics): void
     {
-        $key = "seo_metrics_{$page}_" . date('Y-m-d');
+        $key = "seo_metrics_{$page}_".date('Y-m-d');
         $existingMetrics = $this->cachingUtil->get($key, []);
         $existingMetrics[] = $metrics;
-        
+
         // Keep only last 100 entries per day
         if (count($existingMetrics) > 100) {
             $existingMetrics = array_slice($existingMetrics, -100);
         }
-        
+
         $this->cachingUtil->put($key, $existingMetrics, 86400); // 24 hours
         $this->loggingUtil->info("SEO metrics stored for page: {$page}", $metrics);
     }
@@ -59,7 +60,7 @@ class SeoAnalyticsService
     /**
      * Get SEO performance report
      */
-    public function getPerformanceReport(string $page = null): array
+    public function getPerformanceReport(?string $page = null): array
     {
         if ($page) {
             return $this->getPageReport($page);
@@ -73,7 +74,7 @@ class SeoAnalyticsService
      */
     protected function getPageReport(string $page): array
     {
-        $key = "seo_metrics_{$page}_" . date('Y-m-d');
+        $key = "seo_metrics_{$page}_".date('Y-m-d');
         $metrics = $this->cachingUtil->get($key, []);
 
         if (empty($metrics)) {
@@ -115,10 +116,10 @@ class SeoAnalyticsService
         $overallMetrics = [];
 
         foreach ($pages as $page) {
-            $key = "seo_metrics_{$page}_" . date('Y-m-d');
+            $key = "seo_metrics_{$page}_".date('Y-m-d');
             $metrics = $this->cachingUtil->get($key, []);
-            
-            if (!empty($metrics)) {
+
+            if (! empty($metrics)) {
                 $overallMetrics[$page] = [
                     'total_requests' => count($metrics),
                     'average_title_length' => round(array_sum(array_column($metrics, 'title_length')) / count($metrics), 2),
@@ -215,7 +216,7 @@ class SeoAnalyticsService
         foreach ($pages as $page) {
             $currentDate = now();
             while ($currentDate->gte($cutoffDate)) {
-                $key = "seo_metrics_{$page}_" . $currentDate->format('Y-m-d');
+                $key = "seo_metrics_{$page}_".$currentDate->format('Y-m-d');
                 $this->cachingUtil->forget($key);
                 $currentDate->subDay();
             }
@@ -227,26 +228,26 @@ class SeoAnalyticsService
     /**
      * Export SEO metrics to array
      */
-    public function exportMetrics(string $startDate = null, string $endDate = null): array
+    public function exportMetrics(?string $startDate = null, ?string $endDate = null): array
     {
         $startDate = $startDate ?: now()->subDays(7)->format('Y-m-d');
         $endDate = $endDate ?: now()->format('Y-m-d');
-        
+
         $pages = ['home', 'game', 'dashboard', 'village', 'map'];
         $exportData = [];
 
         foreach ($pages as $page) {
             $currentDate = \Carbon\Carbon::parse($startDate);
             $endDateObj = \Carbon\Carbon::parse($endDate);
-            
+
             while ($currentDate->lte($endDateObj)) {
-                $key = "seo_metrics_{$page}_" . $currentDate->format('Y-m-d');
+                $key = "seo_metrics_{$page}_".$currentDate->format('Y-m-d');
                 $metrics = $this->cachingUtil->get($key, []);
-                
-                if (!empty($metrics)) {
+
+                if (! empty($metrics)) {
                     $exportData[$page][$currentDate->format('Y-m-d')] = $metrics;
                 }
-                
+
                 $currentDate->addDay();
             }
         }

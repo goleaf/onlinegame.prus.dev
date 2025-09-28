@@ -2,24 +2,20 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\Building;
 use App\Models\Game\BuildingQueue;
 use App\Models\Game\BuildingType;
 use App\Models\Game\Village;
 use App\Traits\GameValidationTrait;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Building Management
@@ -35,7 +31,9 @@ use LaraUtilX\Utilities\LoggingUtil;
  */
 class BuildingController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use GameValidationTrait;
+    use ValidationHelperTrait;
 
     protected Model $model;
 
@@ -47,7 +45,9 @@ class BuildingController extends CrudController
     ];
 
     protected array $searchableFields = ['level'];
+
     protected array $relationships = ['buildingType', 'village', 'buildingQueues'];
+
     protected int $perPage = 15;
 
     public function __construct()
@@ -82,7 +82,6 @@ class BuildingController extends CrudController
      *     }
      *   ]
      * }
-     *
      * @response 404 {
      *   "message": "Village not found"
      * }
@@ -153,7 +152,6 @@ class BuildingController extends CrudController
      *   "upgrade_time": 3600,
      *   "created_at": "2023-01-01T00:00:00.000000Z"
      * }
-     *
      * @response 404 {
      *   "message": "Building not found"
      * }
@@ -168,7 +166,7 @@ class BuildingController extends CrudController
 
             $buildingData = CachingUtil::remember($cacheKey, now()->addMinutes(15), function () use ($id, $playerId) {
                 $building = Building::with(['buildingType', 'village'])
-                    ->whereHas('village', function ($query) use ($playerId) {
+                    ->whereHas('village', function ($query) use ($playerId): void {
                         $query->where('player_id', $playerId);
                     })
                     ->findOrFail($id);
@@ -227,7 +225,6 @@ class BuildingController extends CrudController
      *     "completion_time": "2023-01-01T13:00:00.000000Z"
      *   }
      * }
-     *
      * @response 400 {
      *   "success": false,
      *   "message": "Building is already upgrading or insufficient resources"
@@ -241,7 +238,7 @@ class BuildingController extends CrudController
             $playerId = Auth::user()->player->id;
 
             $building = Building::with(['village', 'buildingType'])
-                ->whereHas('village', function ($query) use ($playerId) {
+                ->whereHas('village', function ($query) use ($playerId): void {
                     $query->where('player_id', $playerId);
                 })
                 ->findOrFail($id);
@@ -314,7 +311,7 @@ class BuildingController extends CrudController
             ], 'building_system');
 
             return $this->successResponse([
-                'building_queue' => $buildingQueue
+                'building_queue' => $buildingQueue,
             ], 'Building upgrade started successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -324,7 +321,7 @@ class BuildingController extends CrudController
                 'building_id' => $id,
             ], 'building_system');
 
-            return $this->errorResponse('Failed to start building upgrade: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to start building upgrade: '.$e->getMessage(), 500);
         }
     }
 
@@ -341,7 +338,6 @@ class BuildingController extends CrudController
      *   "success": true,
      *   "message": "Building upgrade cancelled and resources refunded"
      * }
-     *
      * @response 400 {
      *   "success": false,
      *   "message": "No active upgrade found for this building"
@@ -355,7 +351,7 @@ class BuildingController extends CrudController
             $playerId = Auth::user()->player->id;
 
             $building = Building::with(['village'])
-                ->whereHas('village', function ($query) use ($playerId) {
+                ->whereHas('village', function ($query) use ($playerId): void {
                     $query->where('player_id', $playerId);
                 })
                 ->findOrFail($id);
@@ -364,7 +360,7 @@ class BuildingController extends CrudController
                 ->where('status', 'active')
                 ->first();
 
-            if (!$buildingQueue) {
+            if (! $buildingQueue) {
                 return $this->errorResponse('No active upgrade found for this building', 400);
             }
 
@@ -416,7 +412,7 @@ class BuildingController extends CrudController
             ], 'building_system');
 
             return $this->successResponse([
-                'refunded_resources' => $refundAmount
+                'refunded_resources' => $refundAmount,
             ], 'Building upgrade cancelled and resources refunded successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -426,7 +422,7 @@ class BuildingController extends CrudController
                 'building_id' => $id,
             ], 'building_system');
 
-            return $this->errorResponse('Failed to cancel building upgrade: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to cancel building upgrade: '.$e->getMessage(), 500);
         }
     }
 
@@ -469,7 +465,7 @@ class BuildingController extends CrudController
                 $village = Village::where('player_id', $playerId)
                     ->findOrFail($villageId);
 
-                return BuildingQueue::whereHas('building', function ($query) use ($villageId) {
+                return BuildingQueue::whereHas('building', function ($query) use ($villageId): void {
                     $query->where('village_id', $villageId);
                 })
                     ->with(['buildingType'])
@@ -545,7 +541,7 @@ class BuildingController extends CrudController
                 'user_id' => auth()->id(),
             ], 'building_system');
 
-            return $this->errorResponse('Failed to retrieve building types: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve building types: '.$e->getMessage(), 500);
         }
     }
 }

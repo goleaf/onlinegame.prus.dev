@@ -3,7 +3,6 @@
 namespace App\Livewire\Game;
 
 use App\Models\Game\Player;
-use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Traits\FileProcessingTrait;
@@ -12,18 +11,29 @@ use Livewire\WithFileUploads;
 
 class FileUploadManager extends Component
 {
-    use WithFileUploads, FileProcessingTrait, ApiResponseTrait;
+    use ApiResponseTrait;
+    use FileProcessingTrait;
+    use WithFileUploads;
 
     public $player;
+
     public $uploadedFiles = [];
+
     public $isUploading = false;
+
     public $uploadProgress = 0;
+
     public $notifications = [];
+
     // File upload properties
     public $avatar;
+
     public $screenshots = [];
+
     public $documents = [];
+
     public $maxFileSize = 5120;  // 5MB in KB
+
     public $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx'];
 
     protected $listeners = [
@@ -76,15 +86,15 @@ class FileUploadManager extends Component
                 'screenshot_count' => 0,
                 'document_count' => 0,
                 'total_size' => 0,
-                'last_upload' => null
-            ]
+                'last_upload' => null,
+            ],
         ];
     }
 
     public function uploadAvatar()
     {
         $this->validate([
-            'avatar' => 'required|image|max:' . $this->maxFileSize,
+            'avatar' => 'required|image|max:'.$this->maxFileSize,
         ]);
 
         $this->isUploading = true;
@@ -103,7 +113,7 @@ class FileUploadManager extends Component
             $this->addNotification('Avatar uploaded successfully!', 'success');
             $this->dispatch('fileUploaded', ['type' => 'avatar', 'filename' => $filename]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to upload avatar: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to upload avatar: '.$e->getMessage(), 'error');
         } finally {
             $this->isUploading = false;
             $this->uploadProgress = 0;
@@ -113,7 +123,7 @@ class FileUploadManager extends Component
     public function uploadScreenshots()
     {
         $this->validate([
-            'screenshots.*' => 'required|image|max:' . $this->maxFileSize,
+            'screenshots.*' => 'required|image|max:'.$this->maxFileSize,
         ]);
 
         $this->isUploading = true;
@@ -134,7 +144,7 @@ class FileUploadManager extends Component
             $this->addNotification('Screenshots uploaded successfully!', 'success');
             $this->dispatch('fileUploaded', ['type' => 'screenshots', 'filenames' => $filenames]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to upload screenshots: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to upload screenshots: '.$e->getMessage(), 'error');
         } finally {
             $this->isUploading = false;
             $this->uploadProgress = 0;
@@ -144,7 +154,7 @@ class FileUploadManager extends Component
     public function uploadDocuments()
     {
         $this->validate([
-            'documents.*' => 'required|file|max:' . $this->maxFileSize,
+            'documents.*' => 'required|file|max:'.$this->maxFileSize,
         ]);
 
         $this->isUploading = true;
@@ -165,7 +175,7 @@ class FileUploadManager extends Component
             $this->addNotification('Documents uploaded successfully!', 'success');
             $this->dispatch('fileUploaded', ['type' => 'documents', 'filenames' => $filenames]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to upload documents: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to upload documents: '.$e->getMessage(), 'error');
         } finally {
             $this->isUploading = false;
             $this->uploadProgress = 0;
@@ -181,11 +191,11 @@ class FileUploadManager extends Component
             // Update file lists
             if ($type === 'screenshots') {
                 $screenshots = json_decode($this->getFile('screenshots.json', 'player_uploads') ?? '[]', true);
-                $screenshots = array_filter($screenshots, fn($f) => $f !== $filename);
+                $screenshots = array_filter($screenshots, fn ($f) => $f !== $filename);
                 \Storage::put('player_uploads/screenshots.json', json_encode($screenshots));
             } elseif ($type === 'documents') {
                 $documents = json_decode($this->getFile('documents.json', 'player_uploads') ?? '[]', true);
-                $documents = array_filter($documents, fn($f) => $f !== $filename);
+                $documents = array_filter($documents, fn ($f) => $f !== $filename);
                 \Storage::put('player_uploads/documents.json', json_encode($documents));
             }
 
@@ -193,7 +203,7 @@ class FileUploadManager extends Component
             $this->dispatch('fileDeleted', ['type' => $type, 'filename' => $filename]);
             $this->loadUploadedFiles();
         } catch (\Exception $e) {
-            $this->addNotification('Failed to delete file: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to delete file: '.$e->getMessage(), 'error');
         }
     }
 
@@ -212,7 +222,7 @@ class FileUploadManager extends Component
             $this->dispatch('fileDeleted', ['type' => $type, 'all' => true]);
             $this->loadUploadedFiles();
         } catch (\Exception $e) {
-            $this->addNotification('Failed to delete files: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to delete files: '.$e->getMessage(), 'error');
         }
     }
 
@@ -227,19 +237,20 @@ class FileUploadManager extends Component
         if (\Storage::exists($path)) {
             return \Storage::size($path);
         }
+
         return 0;
     }
 
     public function formatFileSize($bytes)
     {
         if ($bytes >= 1073741824) {
-            return number_format($bytes / 1073741824, 2) . ' GB';
+            return number_format($bytes / 1073741824, 2).' GB';
         } elseif ($bytes >= 1048576) {
-            return number_format($bytes / 1048576, 2) . ' MB';
+            return number_format($bytes / 1048576, 2).' MB';
         } elseif ($bytes >= 1024) {
-            return number_format($bytes / 1024, 2) . ' KB';
+            return number_format($bytes / 1024, 2).' KB';
         } else {
-            return $bytes . ' bytes';
+            return $bytes.' bytes';
         }
     }
 

@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
+    use ValidationHelperTrait;
+
     /**
      * Show the login form.
      */
@@ -23,22 +27,22 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $startTime = microtime(true);
-        
-        ds('LoginController: Login attempt started', [
+
+        LoggingUtil::info('LoginController: Login attempt started', [
             'controller' => 'LoginController',
             'method' => 'login',
             'email' => $request->input('email'),
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'login_time' => now()
+            'login_time' => now(),
         ]);
-        
-        $request->validate([
+
+        $validated = $this->validateRequestDataOrFail($request, [
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
-        $credentials = $request->only('email', 'password');
+        $credentials = $validated;
         $remember = $request->boolean('remember');
 
         $authStart = microtime(true);
@@ -47,15 +51,15 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-            
-            ds('LoginController: Login successful', [
+
+            LoggingUtil::info('Login successful', [
                 'user_id' => Auth::id(),
-                'email' => $request->input('email'),
+                'email' => $validated['email'],
                 'remember' => $remember,
                 'auth_time_ms' => $authTime,
                 'total_time_ms' => $totalTime,
-                'redirect_to' => route('game.dashboard')
-            ]);
+                'redirect_to' => route('game.dashboard'),
+            ], 'auth');
 
             return redirect()
                 ->intended(route('game.dashboard'))
@@ -63,12 +67,12 @@ class LoginController extends Controller
         }
 
         $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-        
-        ds('LoginController: Login failed', [
-            'email' => $request->input('email'),
+
+        LoggingUtil::warning('Login failed', [
+            'email' => $validated['email'],
             'reason' => 'Invalid credentials',
-            'total_time_ms' => $totalTime
-        ]);
+            'total_time_ms' => $totalTime,
+        ], 'auth');
 
         throw ValidationException::withMessages([
             'email' => 'The provided credentials do not match our records.',
@@ -82,26 +86,26 @@ class LoginController extends Controller
     {
         $startTime = microtime(true);
         $userId = Auth::id();
-        
-        ds('LoginController: Logout started', [
+
+        LoggingUtil::info('LoginController: Logout started', [
             'controller' => 'LoginController',
             'method' => 'logout',
             'user_id' => $userId,
-            'logout_time' => now()
+            'logout_time' => now(),
         ]);
-        
+
         Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-        
-        ds('LoginController: Logout completed', [
+
+        LoggingUtil::info('Logout completed', [
             'user_id' => $userId,
             'total_time_ms' => $totalTime,
-            'redirect_to' => route('login')
-        ]);
+            'redirect_to' => route('login'),
+        ], 'auth');
 
         return redirect()
             ->route('login')

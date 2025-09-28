@@ -15,10 +15,13 @@ use Tests\TestCase;
 
 class MessageControllerTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
+    use WithFaker;
 
     protected User $user;
+
     protected Player $player;
+
     protected MessageService $messageService;
 
     protected function setUp(): void
@@ -61,8 +64,8 @@ class MessageControllerTest extends TestCase
                         'subject',
                         'body',
                         'created_at',
-                    ]
-                ]
+                    ],
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -97,8 +100,8 @@ class MessageControllerTest extends TestCase
                         'subject',
                         'body',
                         'created_at',
-                    ]
-                ]
+                    ],
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -133,7 +136,7 @@ class MessageControllerTest extends TestCase
                     'body',
                     'priority',
                     'created_at',
-                ]
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -231,7 +234,7 @@ class MessageControllerTest extends TestCase
                     'total_messages',
                     'unread_messages',
                     'sent_messages',
-                ]
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -262,7 +265,7 @@ class MessageControllerTest extends TestCase
                 'message',
                 'data' => [
                     'updated_count',
-                ]
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -293,7 +296,7 @@ class MessageControllerTest extends TestCase
                 'message',
                 'data' => [
                     'deleted_count',
-                ]
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -319,8 +322,8 @@ class MessageControllerTest extends TestCase
                     '*' => [
                         'id',
                         'name',
-                    ]
-                ]
+                    ],
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -352,7 +355,7 @@ class MessageControllerTest extends TestCase
                     'subject',
                     'body',
                     'created_at',
-                ]
+                ],
             ]);
 
         $this->assertTrue($response->json('success'));
@@ -380,7 +383,7 @@ class MessageControllerTest extends TestCase
     public function it_uses_caching_for_inbox_messages()
     {
         // Mock CachingUtil
-        $this->mock(CachingUtil::class, function ($mock) {
+        $this->mock(CachingUtil::class, function ($mock): void {
             $mock
                 ->shouldReceive('remember')
                 ->once()
@@ -398,7 +401,7 @@ class MessageControllerTest extends TestCase
     public function it_uses_rate_limiting_for_sending_messages()
     {
         // Mock RateLimiterUtil
-        $this->mock(RateLimiterUtil::class, function ($mock) {
+        $this->mock(RateLimiterUtil::class, function ($mock): void {
             $mock
                 ->shouldReceive('attempt')
                 ->once()
@@ -424,7 +427,7 @@ class MessageControllerTest extends TestCase
     public function it_logs_message_operations()
     {
         // Mock LoggingUtil
-        $this->mock(LoggingUtil::class, function ($mock) {
+        $this->mock(LoggingUtil::class, function ($mock): void {
             $mock
                 ->shouldReceive('info')
                 ->once();

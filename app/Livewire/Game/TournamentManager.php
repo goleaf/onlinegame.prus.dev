@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Game;
 
-use App\Models\Game\Tournament;
 use App\Models\Game\Player;
+use App\Models\Game\Tournament;
 use App\Services\Game\TournamentService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -18,12 +18,19 @@ class TournamentManager extends Component
     use WithPagination;
 
     public $player;
+
     public $activeTab = 'upcoming';
+
     public $search = '';
+
     public $filterType = '';
+
     public $filterFormat = '';
+
     public $selectedTournament = null;
+
     public $showRegistrationModal = false;
+
     public $notifications = [];
 
     protected $tournamentService;
@@ -45,8 +52,8 @@ class TournamentManager extends Component
     public function mount()
     {
         $this->player = Player::where('user_id', Auth::id())->first();
-        
-        if (!$this->player) {
+
+        if (! $this->player) {
             abort(404, 'Player not found');
         }
     }
@@ -76,9 +83,10 @@ class TournamentManager extends Component
     public function registerForTournament($tournamentId)
     {
         $tournament = Tournament::find($tournamentId);
-        
-        if (!$tournament) {
+
+        if (! $tournament) {
             $this->addNotification('Tournament not found', 'error');
+
             return;
         }
 
@@ -87,7 +95,7 @@ class TournamentManager extends Component
                 "Successfully registered for tournament '{$tournament->name}'",
                 'success'
             );
-            
+
             $this->dispatch('tournamentRegistered', [
                 'tournament_id' => $tournament->id,
                 'player_id' => $this->player->id,
@@ -108,7 +116,7 @@ class TournamentManager extends Component
 
         // Apply filters
         if ($this->search) {
-            $query->where('name', 'like', '%' . $this->search . '%');
+            $query->where('name', 'like', '%'.$this->search.'%');
         }
 
         if ($this->filterType) {
@@ -123,19 +131,23 @@ class TournamentManager extends Component
         switch ($this->activeTab) {
             case 'upcoming':
                 $query->where('status', 'upcoming')
-                      ->where('registration_start', '<=', now())
-                      ->where('registration_end', '>=', now());
+                    ->where('registration_start', '<=', now())
+                    ->where('registration_end', '>=', now());
+
                 break;
             case 'active':
                 $query->where('status', 'active');
+
                 break;
             case 'completed':
                 $query->where('status', 'completed');
+
                 break;
             case 'my_tournaments':
-                $query->whereHas('participants', function ($q) {
+                $query->whereHas('participants', function ($q): void {
                     $q->where('player_id', $this->player->id);
                 });
+
                 break;
         }
 

@@ -14,9 +14,13 @@ class BuildingControllerTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $player;
+
     protected $village;
+
     protected $buildingType;
+
     protected $building;
 
     protected function setUp(): void

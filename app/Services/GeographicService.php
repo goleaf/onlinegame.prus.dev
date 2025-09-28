@@ -13,12 +13,7 @@ class GeographicService
     /**
      * Calculate the distance between two coordinates using Haversine formula
      *
-     * @param float $lat1
-     * @param float $lon1
-     * @param float $lat2
-     * @param float $lon2
-     * @param string $unit 'km', 'm', 'mi', 'ft'
-     * @return float
+     * @param  string  $unit  'km', 'm', 'mi', 'ft'
      */
     public function calculateDistance(float $lat1, float $lon1, float $lat2, float $lon2, string $unit = 'km'): float
     {
@@ -41,12 +36,6 @@ class GeographicService
 
     /**
      * Calculate distance between two game coordinates (x, y grid system)
-     *
-     * @param int $x1
-     * @param int $y1
-     * @param int $x2
-     * @param int $y2
-     * @return float
      */
     public function calculateGameDistance(int $x1, int $y1, int $x2, int $y2): float
     {
@@ -57,9 +46,6 @@ class GeographicService
      * Convert game coordinates to approximate real-world coordinates
      * This is a simplified conversion for game world mapping
      *
-     * @param int $x
-     * @param int $y
-     * @param int $worldSize
      * @return array ['lat' => float, 'lon' => float]
      */
     public function gameToRealWorld(int $x, int $y, int $worldSize = 1000): array
@@ -73,16 +59,13 @@ class GeographicService
 
         return [
             'lat' => $lat,
-            'lon' => $lon
+            'lon' => $lon,
         ];
     }
 
     /**
      * Convert real-world coordinates to game coordinates
      *
-     * @param float $lat
-     * @param float $lon
-     * @param int $worldSize
      * @return array ['x' => int, 'y' => int]
      */
     public function realWorldToGame(float $lat, float $lon, int $worldSize = 1000): array
@@ -92,18 +75,12 @@ class GeographicService
 
         return [
             'x' => max(0, min($worldSize - 1, $x)),
-            'y' => max(0, min($worldSize - 1, $y))
+            'y' => max(0, min($worldSize - 1, $y)),
         ];
     }
 
     /**
      * Calculate bearing between two points
-     *
-     * @param float $lat1
-     * @param float $lon1
-     * @param float $lat2
-     * @param float $lon2
-     * @return float
      */
     public function calculateBearing(float $lat1, float $lon1, float $lat2, float $lon2): float
     {
@@ -122,11 +99,6 @@ class GeographicService
 
     /**
      * Generate a geohash for a coordinate
-     *
-     * @param float $lat
-     * @param float $lon
-     * @param int $precision
-     * @return string
      */
     public function generateGeohash(float $lat, float $lon, int $precision = 8): string
     {
@@ -163,7 +135,7 @@ class GeographicService
                 }
             }
 
-            $even = !$even;
+            $even = ! $even;
 
             if ($bit < 4) {
                 $bit++;
@@ -180,7 +152,6 @@ class GeographicService
     /**
      * Decode a geohash to coordinates
      *
-     * @param string $geohash
      * @return array ['lat' => float, 'lon' => float]
      */
     public function decodeGeohash(string $geohash): array
@@ -191,18 +162,12 @@ class GeographicService
 
         return [
             'lat' => $coordinate->getLatitude(),
-            'lon' => $coordinate->getLongitude()
+            'lon' => $coordinate->getLongitude(),
         ];
     }
 
     /**
      * Find villages within a radius of a given coordinate
-     *
-     * @param float $centerLat
-     * @param float $centerLon
-     * @param float $radiusKm
-     * @param array $villages
-     * @return array
      */
     public function findVillagesInRadius(float $centerLat, float $centerLon, float $radiusKm, array $villages): array
     {
@@ -218,7 +183,7 @@ class GeographicService
 
             if ($distance->in('km') <= $radiusKm) {
                 $villagesInRadius[] = array_merge($village, [
-                    'distance_km' => $distance->in('km')
+                    'distance_km' => $distance->in('km'),
                 ]);
             }
         }
@@ -234,8 +199,6 @@ class GeographicService
     /**
      * Calculate travel time between two points based on distance and speed
      *
-     * @param float $distance
-     * @param float $speedKmh
      * @return int Travel time in seconds
      */
     public function calculateTravelTime(float $distance, float $speedKmh): int
@@ -245,32 +208,25 @@ class GeographicService
         }
 
         $timeHours = $distance / $speedKmh;
+
         return (int) ($timeHours * 3600);  // Convert to seconds
     }
 
     /**
      * Calculate travel time between two coordinates based on distance and speed
      *
-     * @param float $lat1
-     * @param float $lon1
-     * @param float $lat2
-     * @param float $lon2
-     * @param float $speedKmh
      * @return int Travel time in seconds
      */
     public function calculateTravelTimeFromCoordinates(float $lat1, float $lon1, float $lat2, float $lon2, float $speedKmh): int
     {
         $distance = $this->calculateDistance($lat1, $lon1, $lat2, $lon2);
+
         return $this->calculateTravelTime($distance, $speedKmh);
     }
 
     /**
      * Get bearing (direction) from one point to another
      *
-     * @param float $lat1
-     * @param float $lon1
-     * @param float $lat2
-     * @param float $lon2
      * @return float Bearing in degrees (0-360)
      */
     public function getBearing(float $lat1, float $lon1, float $lat2, float $lon2): float
@@ -288,9 +244,7 @@ class GeographicService
     /**
      * Convert coordinates to different formats
      *
-     * @param float $lat
-     * @param float $lon
-     * @param string $format 'decimal', 'dms', 'utm'
+     * @param  string  $format  'decimal', 'dms', 'utm'
      * @return array|string
      */
     public function convertCoordinateFormat(float $lat, float $lon, string $format = 'decimal')
@@ -307,21 +261,13 @@ class GeographicService
             default:
                 return [
                     'lat' => $coordinate->getLatitude(),
-                    'lon' => $coordinate->getLongitude()
+                    'lon' => $coordinate->getLongitude(),
                 ];
         }
     }
 
     /**
      * Check if a point is within a bounding box
-     *
-     * @param float $lat
-     * @param float $lon
-     * @param float $minLat
-     * @param float $maxLat
-     * @param float $minLon
-     * @param float $maxLon
-     * @return bool
      */
     public function isPointInBounds(float $lat, float $lon, float $minLat, float $maxLat, float $minLon, float $maxLon): bool
     {
@@ -331,7 +277,7 @@ class GeographicService
     /**
      * Calculate the center point of multiple coordinates
      *
-     * @param array $coordinates Array of ['lat' => float, 'lon' => float]
+     * @param  array  $coordinates  Array of ['lat' => float, 'lon' => float]
      * @return array ['lat' => float, 'lon' => float]
      */
     public function calculateCenterPoint(array $coordinates): array
@@ -351,24 +297,20 @@ class GeographicService
 
         return [
             'lat' => $totalLat / $count,
-            'lon' => $totalLon / $count
+            'lon' => $totalLon / $count,
         ];
     }
 
     /**
      * Generate a random coordinate within a bounding box
      *
-     * @param float $minLat
-     * @param float $maxLat
-     * @param float $minLon
-     * @param float $maxLon
      * @return array ['lat' => float, 'lon' => float]
      */
     public function generateRandomCoordinate(float $minLat, float $maxLat, float $minLon, float $maxLon): array
     {
         return [
             'lat' => $minLat + (mt_rand() / mt_getrandmax()) * ($maxLat - $minLat),
-            'lon' => $minLon + (mt_rand() / mt_getrandmax()) * ($maxLon - $minLon)
+            'lon' => $minLon + (mt_rand() / mt_getrandmax()) * ($maxLon - $minLon),
         ];
     }
 }

@@ -1628,7 +1628,8 @@
 .buildingV2 img .wall.g31Top {
   background-image: url('../img_ltr/lowRes/g/defaultBuildings/g31Top-ltr.png');
 }
-.buildingV1 img .wall.g31Bottom, .buildingV1 img .wall.g31bBottom,
+.buildingV1 img .wall.g31Bottom,
+.buildingV1 img .wall.g31bBottom,
 .buildingV2 img .wall.g31Bottom,
 .buildingV2 img .wall.g31bBottom {
   background-image: url('../img_ltr/lowRes/g/defaultBuildings/g31Bottom-ltr.png');
@@ -1637,7 +1638,8 @@
 .buildingV2 img .wall.roman.g31Top {
   background-image: url('../img_ltr/lowRes/g/tribeSpecificBuildings/roman/g31Top-ltr.png');
 }
-.buildingV1 img .wall.roman.g31Bottom, .buildingV1 img .wall.roman.g31bBottom,
+.buildingV1 img .wall.roman.g31Bottom,
+.buildingV1 img .wall.roman.g31bBottom,
 .buildingV2 img .wall.roman.g31Bottom,
 .buildingV2 img .wall.roman.g31bBottom {
   background-image: url('../img_ltr/lowRes/g/tribeSpecificBuildings/roman/g31Bottom-ltr.png');
@@ -1646,7 +1648,8 @@
 .buildingV2 img .wall.g32Top {
   background-image: url('../img_ltr/lowRes/g/defaultBuildings/g32Top-ltr.png');
 }
-.buildingV1 img .wall.g32Bottom, .buildingV1 img .wall.g32bBottom,
+.buildingV1 img .wall.g32Bottom,
+.buildingV1 img .wall.g32bBottom,
 .buildingV2 img .wall.g32Bottom,
 .buildingV2 img .wall.g32bBottom {
   background-image: url('../img_ltr/lowRes/g/defaultBuildings/g32Bottom-ltr.png');
@@ -1655,7 +1658,8 @@
 .buildingV2 img .wall.teuton.g32Top {
   background-image: url('../img_ltr/lowRes/g/tribeSpecificBuildings/teuton/g32Top-ltr.png');
 }
-.buildingV1 img .wall.teuton.g32Bottom, .buildingV1 img .wall.teuton.g32bBottom,
+.buildingV1 img .wall.teuton.g32Bottom,
+.buildingV1 img .wall.teuton.g32bBottom,
 .buildingV2 img .wall.teuton.g32Bottom,
 .buildingV2 img .wall.teuton.g32bBottom {
   background-image: url('../img_ltr/lowRes/g/tribeSpecificBuildings/teuton/g32Bottom-ltr.png');
@@ -1664,7 +1668,8 @@
 .buildingV2 img .wall.g33Top {
   background-image: url('../img_ltr/lowRes/g/defaultBuildings/g33Top-ltr.png');
 }
-.buildingV1 img .wall.g33Bottom, .buildingV1 img .wall.g33bBottom,
+.buildingV1 img .wall.g33Bottom,
+.buildingV1 img .wall.g33bBottom,
 .buildingV2 img .wall.g33Bottom,
 .buildingV2 img .wall.g33bBottom {
   background-image: url('../img_ltr/lowRes/g/defaultBuildings/g33Bottom-ltr.png');
@@ -1673,7 +1678,8 @@
 .buildingV2 img .wall.gaul.g33Top {
   background-image: url('../img_ltr/lowRes/g/tribeSpecificBuildings/gaul/g33Top-ltr.png');
 }
-.buildingV1 img .wall.gaul.g33Bottom, .buildingV1 img .wall.gaul.g33bBottom,
+.buildingV1 img .wall.gaul.g33Bottom,
+.buildingV1 img .wall.gaul.g33bBottom,
 .buildingV2 img .wall.gaul.g33Bottom,
 .buildingV2 img .wall.gaul.g33bBottom {
   background-image: url('../img_ltr/lowRes/g/tribeSpecificBuildings/gaul/g33Bottom-ltr.png');
@@ -1682,7 +1688,8 @@
 .buildingV2 img .wall.g42Top {
   background-image: url('../img_ltr/lowRes/g/defaultBuildings/g42Top-ltr.png');
 }
-.buildingV1 img .wall.g42Bottom, .buildingV1 img .wall.g42bBottom,
+.buildingV1 img .wall.g42Bottom,
+.buildingV1 img .wall.g42bBottom,
 .buildingV2 img .wall.g42Bottom,
 .buildingV2 img .wall.g42bBottom {
   background-image: url('../img_ltr/lowRes/g/defaultBuildings/g42Bottom-ltr.png');
@@ -1691,7 +1698,8 @@
 .buildingV2 img .wall.egyptian.g42Top {
   background-image: url('../img_ltr/lowRes/g/tribeSpecificBuildings/egyptian/g42Top-ltr.png');
 }
-.buildingV1 img .wall.egyptian.g42Bottom, .buildingV1 img .wall.egyptian.g42bBottom,
+.buildingV1 img .wall.egyptian.g42Bottom,
+.buildingV1 img .wall.egyptian.g42bBottom,
 .buildingV2 img .wall.egyptian.g42Bottom,
 .buildingV2 img .wall.egyptian.g42bBottom {
   background-image: url('../img_ltr/lowRes/g/tribeSpecificBuildings/egyptian/g42Bottom-ltr.png');
@@ -1700,7 +1708,8 @@
 .buildingV2 img .wall.g43Top {
   background-image: url('../img_ltr/lowRes/g/defaultBuildings/g43Top-ltr.png');
 }
-.buildingV1 img .wall.g43Bottom, .buildingV1 img .wall.g43bBottom,
+.buildingV1 img .wall.g43Bottom,
+.buildingV1 img .wall.g43bBottom,
 .buildingV2 img .wall.g43Bottom,
 .buildingV2 img .wall.g43bBottom {
   background-image: url('../img_ltr/lowRes/g/defaultBuildings/g43Bottom-ltr.png');
@@ -1709,7 +1718,8 @@
 .buildingV2 img .wall.hun.g43Top {
   background-image: url('../img_ltr/lowRes/g/tribeSpecificBuildings/hun/g43Top-ltr.png');
 }
-.buildingV1 img .wall.hun.g43Bottom, .buildingV1 img .wall.hun.g43bBottom,
+.buildingV1 img .wall.hun.g43Bottom,
+.buildingV1 img .wall.hun.g43bBottom,
 .buildingV2 img .wall.hun.g43Bottom,
 .buildingV2 img .wall.hun.g43bBottom {
   background-image: url('../img_ltr/lowRes/g/tribeSpecificBuildings/hun/g43Bottom-ltr.png');
@@ -1774,14 +1784,22 @@
 }
 .buildingV1body:not(.ie10) .sidebar .sidebarBox .sidebarBoxInnerBox:after,
 .buildingV2body:not(.ie10) .sidebar .sidebarBox .sidebarBoxInnerBox:after {
-  border-image: url('../img_ltr/lowRes/components/Box/default_border.png') 32 round;
+  border-image: url('../img_ltr/lowRes/components/Box/default_border.png') 32
+    round;
 }
 .buildingV1body:not(.ie10) .sidebar .sidebarBox:before,
 .buildingV2body:not(.ie10) .sidebar .sidebarBox:before {
-  border-image: url('../img_ltr/lowRes/components/Box/default_paper.png') 28 30 30 34 fill stretch;
+  border-image: url('../img_ltr/lowRes/components/Box/default_paper.png') 28 30
+    30 34 fill stretch;
 }
-.buildingV1 .sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist) .footer:before,
-.buildingV2 .sidebar .sidebarBox.toggleable:not(#sidebarBoxVillagelist) .footer:before {
+.buildingV1
+  .sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist)
+  .footer:before,
+.buildingV2
+  .sidebar
+  .sidebarBox.toggleable:not(#sidebarBoxVillagelist)
+  .footer:before {
   background-image: url('../img_ltr/lowRes/components/Box/default_toggle_fitting.png');
 }
 .buildingV1 div.sidebar div#sidebarBoxHero .heroImageButton:after,
@@ -1795,5 +1813,6 @@
 }
 .buildingV1 #sidebarBoxDailyquests .travianBirthdayRibbon div.headline:after,
 .buildingV2 #sidebarBoxDailyquests .travianBirthdayRibbon div.headline:after {
-  background: url('../img_ltr/lowRes/quests/achievement/wooden_plate.png') no-repeat;
+  background: url('../img_ltr/lowRes/quests/achievement/wooden_plate.png')
+    no-repeat;
 }

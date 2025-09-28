@@ -3,13 +3,14 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class WonderAttack extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'wonder_id',
@@ -35,6 +36,7 @@ class WonderAttack extends Model
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -113,7 +115,7 @@ class WonderAttack extends Model
 
     public function getCasualtyCount(): int
     {
-        if (!$this->casualties) {
+        if (! $this->casualties) {
             return 0;
         }
 
@@ -122,7 +124,7 @@ class WonderAttack extends Model
 
     public function getLootValue(): int
     {
-        if (!$this->loot) {
+        if (! $this->loot) {
             return 0;
         }
 

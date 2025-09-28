@@ -15,8 +15,11 @@ class MapViewerTest extends DuskTestCase
     use DatabaseMigrations;
 
     protected $user;
+
     protected $player;
+
     protected $world;
+
     protected $village;
 
     protected function setUp(): void
@@ -59,7 +62,7 @@ class MapViewerTest extends DuskTestCase
 
     public function test_map_viewer_loads()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -73,7 +76,7 @@ class MapViewerTest extends DuskTestCase
 
     public function test_map_controls_work()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -88,7 +91,7 @@ class MapViewerTest extends DuskTestCase
 
     public function test_map_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -99,7 +102,7 @@ class MapViewerTest extends DuskTestCase
 
     public function test_map_navigation_buttons()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -114,7 +117,7 @@ class MapViewerTest extends DuskTestCase
 
     public function test_map_tile_click()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -126,7 +129,7 @@ class MapViewerTest extends DuskTestCase
 
     public function test_map_navigation_works()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')
@@ -143,7 +146,7 @@ class MapViewerTest extends DuskTestCase
 
     public function test_center_map_button()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/map')

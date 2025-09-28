@@ -4,22 +4,20 @@ namespace App\Http\Controllers\Game;
 
 use App\Services\GameQueryEnrichService;
 use App\Services\ValueObjectService;
-use App\ValueObjects\PlayerStats;
-use App\ValueObjects\VillageResources;
+use App\Utilities\LoggingUtil;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\LoggingUtil;
+use LaraUtilX\Traits\FileProcessingTrait;
 use LaraUtilX\Utilities\CachingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
-use LaraUtilX\Http\Controllers\CrudController;
-use LaraUtilX\Traits\FileProcessingTrait;
 
 class GameController extends CrudController
 {
     use ApiResponseTrait;
     use FileProcessingTrait;
-    
+
     protected RateLimiterUtil $rateLimiter;
 
     public function __construct(RateLimiterUtil $rateLimiter)
@@ -37,46 +35,48 @@ class GameController extends CrudController
             'controller' => 'GameController',
             'method' => 'dashboard',
             'request_time' => now(),
-            'user_id' => Auth::id()
+            'user_id' => Auth::id(),
         ], 'game_system');
 
         try {
             $user = Auth::user();
-            if (!$user) {
+            if (! $user) {
                 LoggingUtil::warning('GameController: User not authenticated', [
-                    'redirect_to' => 'login'
+                    'redirect_to' => 'login',
                 ], 'game_system');
+
                 return redirect()->route('login');
             }
 
             $player = \App\Models\Game\Player::where('user_id', $user->id)->first();
-            if (!$player) {
+            if (! $player) {
                 LoggingUtil::warning('GameController: No player found for user', [
-                    'user_id' => $user->id
+                    'user_id' => $user->id,
                 ], 'game_system');
+
                 return view('game.no-player', compact('user'));
             }
 
             // Cache dashboard data for better performance
             $cacheKey = "player_dashboard_{$player->id}_{$player->world_id}";
-            
+
             $dashboardData = CachingUtil::remember($cacheKey, now()->addMinutes(5), function () use ($player) {
                 // Use Query Enrich service for enhanced dashboard data
                 $queryStart = microtime(true);
                 $data = GameQueryEnrichService::getPlayerDashboardData($player->id, $player->world_id);
-                
+
                 // Enhance with value objects
                 $valueObjectService = app(ValueObjectService::class);
                 $playerStats = $player->stats;
                 $data['player_stats'] = $playerStats;
                 $data['value_objects_integration'] = true;
-                
+
                 $queryTime = round((microtime(true) - $queryStart) * 1000, 2);
                 $data['query_time_ms'] = $queryTime;
-                
+
                 return $data;
             });
-            
+
             $totalTime = round((microtime(true) - $startTime) * 1000, 2);
             $dashboardData['total_time_ms'] = $totalTime;
 
@@ -85,7 +85,7 @@ class GameController extends CrudController
                 'world_id' => $player->world_id,
                 'query_time_ms' => $dashboardData['query_time_ms'] ?? 0,
                 'total_time_ms' => $totalTime,
-                'dashboard_data_keys' => array_keys($dashboardData ?? [])
+                'dashboard_data_keys' => array_keys($dashboardData ?? []),
             ], 'game_system');
 
             return view('game.dashboard', compact('dashboardData'));
@@ -94,8 +94,9 @@ class GameController extends CrudController
                 'error' => $e->getMessage(),
                 'exception' => get_class($e),
                 'trace' => $e->getTraceAsString(),
-                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2)
+                'processing_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ], 'game_system');
+
             return view('game.error', ['error' => $e->getMessage()]);
         }
     }
@@ -107,13 +108,13 @@ class GameController extends CrudController
     {
         try {
             // Rate limiting for player stats
-            $rateLimitKey = 'player_stats_' . ($request->ip() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 50, 1)) {
+            $rateLimitKey = 'player_stats_'.($request->ip() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 50, 1)) {
                 return $this->errorResponse('Too many requests. Please try again later.', 429);
             }
 
             $cacheKey = "player_stats_{$playerId}";
-            
+
             $dashboardData = CachingUtil::remember($cacheKey, now()->addMinutes(10), function () use ($playerId) {
                 return GameQueryEnrichService::getPlayerDashboardData($playerId);
             });
@@ -141,13 +142,13 @@ class GameController extends CrudController
     {
         try {
             // Rate limiting for leaderboard
-            $rateLimitKey = 'world_leaderboard_' . ($request->ip() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 20, 1)) {
+            $rateLimitKey = 'world_leaderboard_'.($request->ip() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 20, 1)) {
                 return $this->errorResponse('Too many requests. Please try again later.', 429);
             }
 
             $cacheKey = "world_leaderboard_{$worldId}";
-            
+
             $leaderboard = CachingUtil::remember($cacheKey, now()->addMinutes(15), function () use ($worldId) {
                 return GameQueryEnrichService::getWorldLeaderboard($worldId, 100)->get();
             });
@@ -176,7 +177,7 @@ class GameController extends CrudController
     {
         try {
             $cacheKey = "building_stats_{$playerId}";
-            
+
             $buildingStats = CachingUtil::remember($cacheKey, now()->addMinutes(10), function () use ($playerId) {
                 return GameQueryEnrichService::getBuildingStatistics($playerId)->get();
             });
@@ -204,7 +205,7 @@ class GameController extends CrudController
     {
         try {
             $cacheKey = "resource_warnings_{$playerId}";
-            
+
             $warnings = CachingUtil::remember($cacheKey, now()->addMinutes(5), function () use ($playerId) {
                 return GameQueryEnrichService::getResourceCapacityWarnings($playerId, 24)->get();
             });

@@ -3,17 +3,17 @@
 namespace App\Services;
 
 use App\Models\Game\Achievement;
-use App\Models\Game\PlayerAchievement;
 use App\Models\Game\Player;
+use App\Models\Game\PlayerAchievement;
 use App\Models\Game\Village;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class AchievementSystemService
 {
     protected CachingUtil $cachingUtil;
+
     protected LoggingUtil $loggingUtil;
 
     public function __construct()
@@ -41,19 +41,19 @@ class AchievementSystemService
                     $this->loggingUtil->info('Achievement awarded', [
                         'player_id' => $player->id,
                         'achievement_id' => $achievement->id,
-                        'achievement_name' => $achievement->name
+                        'achievement_name' => $achievement->name,
                     ]);
                 } catch (\Exception $e) {
                     $this->loggingUtil->error('Failed to award achievement', [
                         'player_id' => $player->id,
                         'achievement_id' => $achievement->id,
-                        'error' => $e->getMessage()
+                        'error' => $e->getMessage(),
                     ]);
                 }
             }
         }
 
-        if (!empty($awardedAchievements)) {
+        if (! empty($awardedAchievements)) {
             $this->clearPlayerAchievementCache($player);
         }
 
@@ -93,6 +93,7 @@ class AchievementSystemService
 
         } catch (\Exception $e) {
             DB::rollBack();
+
             throw $e;
         }
     }
@@ -112,7 +113,7 @@ class AchievementSystemService
 
             return Achievement::where('is_active', true)
                 ->whereNotIn('id', $earnedAchievementIds)
-                ->where(function ($query) use ($player) {
+                ->where(function ($query) use ($player): void {
                     $query->whereNull('required_level')
                         ->orWhere('required_level', '<=', $player->level);
                 })
@@ -271,7 +272,7 @@ class AchievementSystemService
         $requirements = $achievement->requirements ?? [];
 
         foreach ($requirements as $requirement) {
-            if (!$this->checkRequirement($player, $requirement, $triggerData)) {
+            if (! $this->checkRequirement($player, $requirement, $triggerData)) {
                 return false;
             }
         }
@@ -299,6 +300,7 @@ class AchievementSystemService
                     ->sum(function ($village) {
                         return $village->resources->sum('amount');
                     });
+
                 return $totalResources >= $value;
 
             case 'buildings_built':
@@ -306,6 +308,7 @@ class AchievementSystemService
                     ->sum(function ($village) {
                         return $village->buildings->sum('level');
                     });
+
                 return $buildingCount >= $value;
 
             case 'troops_trained':
@@ -313,6 +316,7 @@ class AchievementSystemService
                     ->sum(function ($village) {
                         return $village->troops->sum('amount');
                     });
+
                 return $troopCount >= $value;
 
             case 'attacks_launched':
@@ -424,7 +428,7 @@ class AchievementSystemService
                 'clay' => $achievement->resource_reward_clay,
                 'iron' => $achievement->resource_reward_iron,
                 'crop' => $achievement->resource_reward_crop,
-            ]
+            ],
         ]);
     }
 

@@ -32,8 +32,9 @@ ul#stockBar {
 .rtl ul#stockBar {
   font-size: 12px;
 }
-ul#stockBar:before, ul#stockBar:after {
-  content: "";
+ul#stockBar:before,
+ul#stockBar:after {
+  content: '';
   position: absolute;
   height: 32px;
   bottom: 4px;
@@ -73,7 +74,7 @@ ul#stockBar .stockBarButton {
   box-shadow: 1px 1px 1px rgba(37, 37, 37, 0.7);
 }
 ul#stockBar .stockBarButton:before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -91,10 +92,20 @@ ul#stockBar .stockBarButton .middle {
   box-sizing: border-box;
   border: 1px solid transparent;
   border-radius: 7px;
-  background-image: linear-gradient(to bottom, #fefdf7, #fefdf7 2px, #f3f3f3 2px, #f3f3f3, #d2d2d2, #d2d2d2 calc(100% - 2px), #a49f94 calc(100% - 2px), #a49f94);
+  background-image: linear-gradient(
+    to bottom,
+    #fefdf7,
+    #fefdf7 2px,
+    #f3f3f3 2px,
+    #f3f3f3,
+    #d2d2d2,
+    #d2d2d2 calc(100% - 2px),
+    #a49f94 calc(100% - 2px),
+    #a49f94
+  );
 }
 ul#stockBar .stockBarButton .middle a:after {
-  content: "";
+  content: '';
   position: absolute;
   top: -1px;
   right: 0;
@@ -116,7 +127,8 @@ ul#stockBar .stockBarButton:active .middle {
 ul#stockBar .stockBarButton .r5 {
   width: 66px;
 }
-ul#stockBar .stockBarButton .begin, ul#stockBar .stockBarButton .end {
+ul#stockBar .stockBarButton .begin,
+ul#stockBar .stockBarButton .end {
   display: none;
 }
 ul#stockBar li.stock {
@@ -130,7 +142,7 @@ ul#stockBar li.stock#stockBarGranaryWrapper {
   margin-left: 8px;
 }
 ul#stockBar .stock.overlayUIAffected {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
 /* Positionierungen des Hintergrundbildes */
@@ -155,7 +167,8 @@ ul#stockBar li i {
   left: 3px;
   top: 8px;
 }
-ul#stockBar li i.r4, ul#stockBar li i.r5 {
+ul#stockBar li i.r4,
+ul#stockBar li i.r5 {
   top: 4px;
 }
 ul#stockBar li img.productionBoost {
@@ -196,7 +209,7 @@ ul#stockBar .stockBarButton .value {
 }
 
 .colorBlind li#stockBarResource4 .value.alert {
-  color: #0022AF;
+  color: #0022af;
 }
 
 ul#stockBar li.stock .value {
@@ -209,7 +222,7 @@ ul#stockBar li.r5 .value {
 ul#stockBar .barBox {
   border-top: 1px solid #747474;
   border-right: 1px solid #888888;
-  background-color: #F6F6F6;
+  background-color: #f6f6f6;
   width: 52px;
   height: 2px;
   position: absolute;
@@ -225,9 +238,9 @@ ul#stockBar .barBox .bar {
   left: 0;
 }
 ul#stockBar .barBox .stockFull {
-  background-color: #CC0000;
+  background-color: #cc0000;
 }
 
 .colorBlind ul#stockBar .barBox .stockFull {
-  background-color: #0022AF;
+  background-color: #0022af;
 }

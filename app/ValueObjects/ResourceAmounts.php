@@ -9,7 +9,8 @@ readonly class ResourceAmounts
         public int $clay = 0,
         public int $iron = 0,
         public int $crop = 0
-    ) {}
+    ) {
+    }
 
     /**
      * Get total amount of all resources
@@ -78,7 +79,7 @@ readonly class ResourceAmounts
             'wood' => $this->wood,
             'clay' => $this->clay,
             'iron' => $this->iron,
-            'crop' => $this->crop
+            'crop' => $this->crop,
         ];
 
         return array_search(max($resources), $resources);
@@ -93,7 +94,7 @@ readonly class ResourceAmounts
             'wood' => $this->wood,
             'clay' => $this->clay,
             'iron' => $this->iron,
-            'crop' => $this->crop
+            'crop' => $this->crop,
         ];
 
         return array_search(min($resources), $resources);
@@ -116,7 +117,7 @@ readonly class ResourceAmounts
             'wood' => $this->wood,
             'clay' => $this->clay,
             'iron' => $this->iron,
-            'crop' => $this->crop
+            'crop' => $this->crop,
         ];
     }
 

@@ -14,11 +14,17 @@ use Livewire\Component;
 class RealTimeUpdater extends Component
 {
     public $player;
+
     public $isActive = true;
+
     public $tickInterval = 5;  // seconds
+
     public $lastTick = null;
+
     public $tickCount = 0;
+
     public $updates = [];
+
     public $errors = [];
 
     protected $listeners = [
@@ -53,7 +59,7 @@ class RealTimeUpdater extends Component
     #[On('tick')]
     public function processTick()
     {
-        if (!$this->isActive || !$this->player) {
+        if (! $this->isActive || ! $this->player) {
             return;
         }
 
@@ -85,14 +91,14 @@ class RealTimeUpdater extends Component
                 'timestamp' => $this->lastTick,
             ]);
         } catch (\Exception $e) {
-            $this->addError("Tick #{$this->tickCount} failed: " . $e->getMessage());
+            $this->addError("Tick #{$this->tickCount} failed: ".$e->getMessage());
             $this->dispatch('gameTickError', ['message' => $e->getMessage()]);
         }
     }
 
     public function updateResources()
     {
-        if (!$this->player) {
+        if (! $this->player) {
             return;
         }
 
@@ -124,7 +130,7 @@ class RealTimeUpdater extends Component
 
     public function updateBuildingQueues()
     {
-        if (!$this->player) {
+        if (! $this->player) {
             return;
         }
 
@@ -140,7 +146,7 @@ class RealTimeUpdater extends Component
 
     public function updateTrainingQueues()
     {
-        if (!$this->player) {
+        if (! $this->player) {
             return;
         }
 
@@ -178,7 +184,7 @@ class RealTimeUpdater extends Component
                 'village_id' => $building->village_id,
             ]);
         } catch (\Exception $e) {
-            $this->addError('Failed to complete building: ' . $e->getMessage());
+            $this->addError('Failed to complete building: '.$e->getMessage());
         }
     }
 
@@ -211,13 +217,13 @@ class RealTimeUpdater extends Component
                 'village_id' => $training->village_id,
             ]);
         } catch (\Exception $e) {
-            $this->addError('Failed to complete training: ' . $e->getMessage());
+            $this->addError('Failed to complete training: '.$e->getMessage());
         }
     }
 
     private function checkCompletedEvents()
     {
-        if (!$this->player) {
+        if (! $this->player) {
             return;
         }
 
@@ -244,7 +250,7 @@ class RealTimeUpdater extends Component
                 'description' => $event->description,
             ]);
         } catch (\Exception $e) {
-            $this->addError('Failed to complete event: ' . $e->getMessage());
+            $this->addError('Failed to complete event: '.$e->getMessage());
         }
     }
 

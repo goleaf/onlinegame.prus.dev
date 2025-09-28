@@ -16,11 +16,11 @@
 #mapContainer #minimapContainer a {
   font-size: 11px;
   white-space: nowrap;
-  color: #F2F2F2;
+  color: #f2f2f2;
   font-weight: normal;
 }
-.rtl #mapContainer #minimapContainer, .rtl
-#mapContainer #minimapContainer a {
+.rtl #mapContainer #minimapContainer,
+.rtl #mapContainer #minimapContainer a {
   font-size: 12px;
 }
 
@@ -46,7 +46,9 @@
 }
 
 /* Allgemeines aussehen mit runden ecken und co */
-#mapContainer #minimapContainer .bl, #mapContainer #minimapContainer .bc, #mapContainer #minimapContainer .br {
+#mapContainer #minimapContainer .bl,
+#mapContainer #minimapContainer .bc,
+#mapContainer #minimapContainer .br {
   background-color: transparent;
   background-position: left top;
 }
@@ -57,7 +59,9 @@
   width: auto;
 }
 
-#mapContainer #minimapContainer .bl, #mapContainer #minimapContainer .bc, #mapContainer #minimapContainer .br {
+#mapContainer #minimapContainer .bl,
+#mapContainer #minimapContainer .bc,
+#mapContainer #minimapContainer .br {
   height: 4px;
 }
 
@@ -131,9 +135,9 @@
 
 /* Das kleine Viereck, welches den aktuellen Sichtbereich anzeigt */
 #mapContainer #miniMap .view {
-  border: 1px solid #0000FF;
+  border: 1px solid #0000ff;
 }
 
 #mapContainer #miniMap .view .inner {
-  background-color: #A0A0FF;
+  background-color: #a0a0ff;
 }

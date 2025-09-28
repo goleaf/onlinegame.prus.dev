@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Game;
 
-use App\Models\Game\Village;
-use App\Models\Game\UnitType;
 use App\Models\Game\TrainingQueue;
+use App\Models\Game\UnitType;
+use App\Models\Game\Village;
 use App\Services\TrainingQueueService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -19,15 +19,25 @@ class TrainingQueueManager extends Component
     use WithPagination;
 
     public $village;
+
     public $selectedUnitType = null;
+
     public $trainingQuantity = 1;
+
     public $trainingCost = [];
+
     public $canTrain = false;
+
     public $trainingTime = 0;
+
     public $notifications = [];
+
     public $activeTab = 'active';
+
     public $search = '';
+
     public $filterUnitType = '';
+
     public $filterStatus = '';
 
     protected $trainingQueueService;
@@ -51,7 +61,7 @@ class TrainingQueueManager extends Component
             $this->village = $player->villages()->first();
         }
 
-        if (!$this->village) {
+        if (! $this->village) {
             abort(404, 'No village found');
         }
 
@@ -86,8 +96,9 @@ class TrainingQueueManager extends Component
 
     public function startTraining()
     {
-        if (!$this->canTrain || !$this->selectedUnitType) {
+        if (! $this->canTrain || ! $this->selectedUnitType) {
             $this->addNotification('Cannot start training', 'error');
+
             return;
         }
 
@@ -110,7 +121,7 @@ class TrainingQueueManager extends Component
                 'reference_number' => $trainingQueue->reference_number,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Training failed: ' . $e->getMessage(), 'error');
+            $this->addNotification('Training failed: '.$e->getMessage(), 'error');
         }
     }
 
@@ -131,7 +142,7 @@ class TrainingQueueManager extends Component
                 'reference_number' => $queue->reference_number,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to cancel training: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to cancel training: '.$e->getMessage(), 'error');
         }
     }
 
@@ -153,10 +164,11 @@ class TrainingQueueManager extends Component
 
     private function calculateTrainingCost()
     {
-        if (!$this->selectedUnitType) {
+        if (! $this->selectedUnitType) {
             $this->trainingCost = [];
             $this->canTrain = false;
             $this->trainingTime = 0;
+
             return;
         }
 
@@ -173,28 +185,28 @@ class TrainingQueueManager extends Component
 
     private function calculateTrainingTime(): int
     {
-        if (!$this->selectedUnitType) {
+        if (! $this->selectedUnitType) {
             return 0;
         }
 
         // Base training time (in seconds)
         $baseTime = 60; // 1 minute per unit
-        
+
         // Building bonuses
         $barracks = $this->village->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'barracks');
             })
             ->first();
 
         $stable = $this->village->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'stable');
             })
             ->first();
 
         $workshop = $this->village->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', 'workshop');
             })
             ->first();
@@ -220,14 +232,14 @@ class TrainingQueueManager extends Component
 
     private function checkCanTrain(): bool
     {
-        if (!$this->selectedUnitType || $this->trainingQuantity <= 0) {
+        if (! $this->selectedUnitType || $this->trainingQuantity <= 0) {
             return false;
         }
 
         // Check if village has enough resources
         foreach ($this->trainingCost as $resource => $cost) {
             $resourceModel = $this->village->resources()->where('type', $resource)->first();
-            if (!$resourceModel || $resourceModel->amount < $cost) {
+            if (! $resourceModel || $resourceModel->amount < $cost) {
                 return false;
             }
         }
@@ -236,12 +248,12 @@ class TrainingQueueManager extends Component
         $requirements = $this->selectedUnitType->requirements ?? [];
         foreach ($requirements as $building => $level) {
             $buildingModel = $this->village->buildings()
-                ->whereHas('buildingType', function ($query) use ($building) {
+                ->whereHas('buildingType', function ($query) use ($building): void {
                     $query->where('key', $building);
                 })
                 ->first();
 
-            if (!$buildingModel || $buildingModel->level < $level) {
+            if (! $buildingModel || $buildingModel->level < $level) {
                 return false;
             }
         }
@@ -255,7 +267,7 @@ class TrainingQueueManager extends Component
             ->where('tribe', $this->village->player->tribe);
 
         if ($this->search) {
-            $query->where('name', 'like', '%' . $this->search . '%');
+            $query->where('name', 'like', '%'.$this->search.'%');
         }
 
         return $query->orderBy('name')->get();

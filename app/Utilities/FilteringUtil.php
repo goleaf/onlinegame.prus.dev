@@ -1,6 +1,6 @@
 <?php
 
-namespace LaraUtilX\Utilities;
+namespace App\Utilities;
 
 use Illuminate\Support\Collection;
 
@@ -9,10 +9,7 @@ class FilteringUtil
     /**
      * Filter a collection by a given key value pair.
      *
-     * @param Collection $items
-     * @param string $name
-     * @param string $operator
-     * @param string $value
+     * @param  string  $value
      * @return Collection
      */
     public static function filter(Collection $items, string $name, string $operator, $value)

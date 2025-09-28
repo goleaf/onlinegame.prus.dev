@@ -3,13 +3,14 @@
 namespace App\Models\Game;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
 
 class SiegeWeapon extends Model
 {
-    use HasFactory, HasReference;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'village_id',
@@ -32,6 +33,7 @@ class SiegeWeapon extends Model
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -84,6 +86,7 @@ class SiegeWeapon extends Model
     {
         // Siege weapons become less effective as they take damage
         $healthPercentage = $this->getHealthPercentage();
+
         return $healthPercentage / 100;
     }
 }

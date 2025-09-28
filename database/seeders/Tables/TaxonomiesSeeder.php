@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,9 +17,7 @@ class TaxonomiesSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
@@ -26,7 +25,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'tutorial',
                 'type' => 'quest_category',
                 'description' => 'Tutorial and learning quests for new players',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 1,
                 'lft' => 1,
                 'rgt' => 2,
@@ -34,7 +33,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"book-open","color":"#3b82f6","order":1}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 2,
@@ -42,7 +41,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'building',
                 'type' => 'quest_category',
                 'description' => 'Quests related to building construction and upgrades',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 2,
                 'lft' => 3,
                 'rgt' => 4,
@@ -50,7 +49,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"building","color":"#10b981","order":2}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 3,
@@ -58,7 +57,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'combat',
                 'type' => 'quest_category',
                 'description' => 'Military and combat-related quests',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 3,
                 'lft' => 5,
                 'rgt' => 6,
@@ -66,7 +65,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"sword","color":"#ef4444","order":3}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 4,
@@ -74,7 +73,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'resource',
                 'type' => 'quest_category',
                 'description' => 'Quests about resource gathering and management',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 4,
                 'lft' => 7,
                 'rgt' => 8,
@@ -82,7 +81,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"coins","color":"#f59e0b","order":4}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 5,
@@ -90,7 +89,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'exploration',
                 'type' => 'quest_category',
                 'description' => 'Quests involving world exploration and discovery',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 5,
                 'lft' => 9,
                 'rgt' => 10,
@@ -98,7 +97,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"map","color":"#8b5cf6","order":5}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 6,
@@ -106,7 +105,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'diplomacy',
                 'type' => 'quest_category',
                 'description' => 'Alliance and diplomatic quests',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 6,
                 'lft' => 11,
                 'rgt' => 12,
@@ -114,7 +113,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"handshake","color":"#06b6d4","order":6}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 7,
@@ -122,7 +121,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'beginner',
                 'type' => 'quest_difficulty',
                 'description' => 'Easy quests for new players',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 1,
                 'lft' => 1,
                 'rgt' => 2,
@@ -130,7 +129,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"star","color":"#22c55e","order":1,"experience_multiplier":1}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 8,
@@ -138,7 +137,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'intermediate',
                 'type' => 'quest_difficulty',
                 'description' => 'Moderate difficulty quests',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 2,
                 'lft' => 3,
                 'rgt' => 4,
@@ -146,7 +145,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"star","color":"#f59e0b","order":2,"experience_multiplier":1.5}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 9,
@@ -154,7 +153,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'advanced',
                 'type' => 'quest_difficulty',
                 'description' => 'Challenging quests for experienced players',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 3,
                 'lft' => 5,
                 'rgt' => 6,
@@ -162,7 +161,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"star","color":"#ef4444","order":3,"experience_multiplier":2}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 10,
@@ -170,7 +169,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'expert',
                 'type' => 'quest_difficulty',
                 'description' => 'Very difficult quests for expert players',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 4,
                 'lft' => 7,
                 'rgt' => 8,
@@ -178,7 +177,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"star","color":"#8b5cf6","order":4,"experience_multiplier":3}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 11,
@@ -186,7 +185,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'legendary',
                 'type' => 'quest_difficulty',
                 'description' => 'Extremely challenging legendary quests',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 5,
                 'lft' => 9,
                 'rgt' => 10,
@@ -194,7 +193,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"star","color":"#f97316","order":5,"experience_multiplier":5}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 12,
@@ -202,7 +201,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'resource',
                 'type' => 'building_category',
                 'description' => 'Buildings that produce resources',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 1,
                 'lft' => 1,
                 'rgt' => 2,
@@ -210,7 +209,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"factory","color":"#f59e0b","order":1}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 13,
@@ -218,7 +217,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'military',
                 'type' => 'building_category',
                 'description' => 'Buildings for military purposes',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 2,
                 'lft' => 3,
                 'rgt' => 4,
@@ -226,7 +225,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"shield","color":"#ef4444","order":2}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 14,
@@ -234,7 +233,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'infrastructure',
                 'type' => 'building_category',
                 'description' => 'Basic infrastructure buildings',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 3,
                 'lft' => 5,
                 'rgt' => 6,
@@ -242,7 +241,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"home","color":"#6b7280","order":3}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 15,
@@ -250,7 +249,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'special',
                 'type' => 'building_category',
                 'description' => 'Unique and special purpose buildings',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 4,
                 'lft' => 7,
                 'rgt' => 8,
@@ -258,7 +257,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"sparkles","color":"#8b5cf6","order":4}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 16,
@@ -266,7 +265,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'defense',
                 'type' => 'building_category',
                 'description' => 'Defensive structures and fortifications',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 5,
                 'lft' => 9,
                 'rgt' => 10,
@@ -274,7 +273,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"wall","color":"#374151","order":5}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 17,
@@ -282,7 +281,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'romans',
                 'type' => 'unit_tribe',
                 'description' => 'Roman civilization units',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 1,
                 'lft' => 1,
                 'rgt' => 2,
@@ -290,7 +289,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"shield","color":"#dc2626","order":1,"specialty":"infantry"}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 18,
@@ -298,7 +297,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'teutons',
                 'type' => 'unit_tribe',
                 'description' => 'Teutonic civilization units',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 2,
                 'lft' => 3,
                 'rgt' => 4,
@@ -306,7 +305,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"sword","color":"#059669","order":2,"specialty":"cavalry"}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 19,
@@ -314,7 +313,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'gauls',
                 'type' => 'unit_tribe',
                 'description' => 'Gallic civilization units',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 3,
                 'lft' => 5,
                 'rgt' => 6,
@@ -322,7 +321,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"bow","color":"#7c3aed","order":3,"specialty":"defense"}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 20,
@@ -330,7 +329,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'egyptians',
                 'type' => 'unit_tribe',
                 'description' => 'Egyptian civilization units',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 4,
                 'lft' => 7,
                 'rgt' => 8,
@@ -338,7 +337,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"pyramid","color":"#d97706","order":4,"specialty":"archers"}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 21,
@@ -346,7 +345,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'huns',
                 'type' => 'unit_tribe',
                 'description' => 'Hunnic civilization units',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 5,
                 'lft' => 9,
                 'rgt' => 10,
@@ -354,7 +353,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"horse","color":"#be185d","order":5,"specialty":"cavalry"}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 22,
@@ -362,7 +361,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'military',
                 'type' => 'technology_category',
                 'description' => 'Technologies for military advancement',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 1,
                 'lft' => 1,
                 'rgt' => 2,
@@ -370,7 +369,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"sword","color":"#ef4444","order":1}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 23,
@@ -378,7 +377,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'economy',
                 'type' => 'technology_category',
                 'description' => 'Technologies for economic development',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 2,
                 'lft' => 3,
                 'rgt' => 4,
@@ -386,7 +385,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"coins","color":"#f59e0b","order":2}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 24,
@@ -394,7 +393,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'infrastructure',
                 'type' => 'technology_category',
                 'description' => 'Technologies for infrastructure improvement',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 3,
                 'lft' => 5,
                 'rgt' => 6,
@@ -402,7 +401,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"building","color":"#6b7280","order":3}',
                 'created_at' => '2025-09-27 00:38:53',
                 'updated_at' => '2025-09-27 00:38:53',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 25,
@@ -410,7 +409,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'research',
                 'type' => 'technology_category',
                 'description' => 'Technologies for research and development',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 4,
                 'lft' => 7,
                 'rgt' => 8,
@@ -418,7 +417,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"flask","color":"#3b82f6","order":4}',
                 'created_at' => '2025-09-27 00:38:54',
                 'updated_at' => '2025-09-27 00:38:54',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 26,
@@ -426,7 +425,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'special',
                 'type' => 'technology_category',
                 'description' => 'Unique and special technologies',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 5,
                 'lft' => 9,
                 'rgt' => 10,
@@ -434,7 +433,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"sparkles","color":"#8b5cf6","order":5}',
                 'created_at' => '2025-09-27 00:38:54',
                 'updated_at' => '2025-09-27 00:38:54',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 27,
@@ -442,7 +441,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'wood',
                 'type' => 'resource_type',
                 'description' => 'Basic building material',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 1,
                 'lft' => 1,
                 'rgt' => 2,
@@ -450,7 +449,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"tree","color":"#8b4513","order":1}',
                 'created_at' => '2025-09-27 00:38:54',
                 'updated_at' => '2025-09-27 00:38:54',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 28,
@@ -458,7 +457,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'clay',
                 'type' => 'resource_type',
                 'description' => 'Construction material',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 2,
                 'lft' => 3,
                 'rgt' => 4,
@@ -466,7 +465,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"brick","color":"#cd853f","order":2}',
                 'created_at' => '2025-09-27 00:38:54',
                 'updated_at' => '2025-09-27 00:38:54',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 29,
@@ -474,7 +473,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'iron',
                 'type' => 'resource_type',
                 'description' => 'Metal for weapons and tools',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 3,
                 'lft' => 5,
                 'rgt' => 6,
@@ -482,7 +481,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"hammer","color":"#708090","order":3}',
                 'created_at' => '2025-09-27 00:38:54',
                 'updated_at' => '2025-09-27 00:38:54',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 30,
@@ -490,7 +489,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'crop',
                 'type' => 'resource_type',
                 'description' => 'Food for population',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 4,
                 'lft' => 7,
                 'rgt' => 8,
@@ -498,7 +497,7 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"wheat","color":"#9acd32","order":4}',
                 'created_at' => '2025-09-27 00:38:54',
                 'updated_at' => '2025-09-27 00:38:54',
-                'deleted_at' => NULL,
+                'deleted_at' => null,
             ],
             [
                 'id' => 31,
@@ -506,7 +505,7 @@ class TaxonomiesSeeder extends Seeder
                 'slug' => 'gold',
                 'type' => 'resource_type',
                 'description' => 'Premium currency',
-                'parent_id' => NULL,
+                'parent_id' => null,
                 'sort_order' => 5,
                 'lft' => 9,
                 'rgt' => 10,
@@ -514,12 +513,12 @@ class TaxonomiesSeeder extends Seeder
                 'meta' => '{"icon":"coins","color":"#ffd700","order":5}',
                 'created_at' => '2025-09-27 00:38:54',
                 'updated_at' => '2025-09-27 00:38:54',
-                'deleted_at' => NULL,
-            ]
+                'deleted_at' => null,
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("taxonomies")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('taxonomies')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

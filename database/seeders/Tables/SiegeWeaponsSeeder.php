@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,13 +17,11 @@ class SiegeWeaponsSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
-                'reference_number' => NULL,
+
                 'village_id' => 1,
                 'type' => 'ram',
                 'name' => 'Battering Ram',
@@ -38,7 +37,7 @@ class SiegeWeaponsSeeder extends Seeder
             ],
             [
                 'id' => 2,
-                'reference_number' => NULL,
+
                 'village_id' => 143,
                 'type' => 'ram',
                 'name' => 'Battering Ram',
@@ -54,7 +53,7 @@ class SiegeWeaponsSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'reference_number' => NULL,
+
                 'village_id' => 144,
                 'type' => 'ram',
                 'name' => 'Battering Ram',
@@ -70,7 +69,7 @@ class SiegeWeaponsSeeder extends Seeder
             ],
             [
                 'id' => 4,
-                'reference_number' => NULL,
+
                 'village_id' => 146,
                 'type' => 'ram',
                 'name' => 'Battering Ram',
@@ -86,7 +85,7 @@ class SiegeWeaponsSeeder extends Seeder
             ],
             [
                 'id' => 5,
-                'reference_number' => NULL,
+
                 'village_id' => 147,
                 'type' => 'ram',
                 'name' => 'Battering Ram',
@@ -102,7 +101,7 @@ class SiegeWeaponsSeeder extends Seeder
             ],
             [
                 'id' => 6,
-                'reference_number' => NULL,
+
                 'village_id' => 149,
                 'type' => 'ram',
                 'name' => 'Battering Ram',
@@ -118,7 +117,7 @@ class SiegeWeaponsSeeder extends Seeder
             ],
             [
                 'id' => 7,
-                'reference_number' => NULL,
+
                 'village_id' => 152,
                 'type' => 'ram',
                 'name' => 'Battering Ram',
@@ -134,7 +133,7 @@ class SiegeWeaponsSeeder extends Seeder
             ],
             [
                 'id' => 8,
-                'reference_number' => NULL,
+
                 'village_id' => 153,
                 'type' => 'ram',
                 'name' => 'Battering Ram',
@@ -150,7 +149,7 @@ class SiegeWeaponsSeeder extends Seeder
             ],
             [
                 'id' => 9,
-                'reference_number' => NULL,
+
                 'village_id' => 154,
                 'type' => 'ram',
                 'name' => 'Battering Ram',
@@ -166,7 +165,7 @@ class SiegeWeaponsSeeder extends Seeder
             ],
             [
                 'id' => 10,
-                'reference_number' => NULL,
+
                 'village_id' => 155,
                 'type' => 'ram',
                 'name' => 'Battering Ram',
@@ -179,11 +178,11 @@ class SiegeWeaponsSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => '2025-09-27 04:25:16',
                 'updated_at' => '2025-09-27 04:25:16',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("siege_weapons")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('siege_weapons')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

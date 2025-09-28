@@ -51,7 +51,7 @@ class GeographicAnalysisServiceTest extends TestCase
             'short' => 0,
             'medium' => 0,
             'long' => 0,
-            'very_long' => 0
+            'very_long' => 0,
         ];
 
         $distances = [2, 10, 30, 80, 150]; // km

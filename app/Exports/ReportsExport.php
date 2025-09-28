@@ -2,22 +2,22 @@
 
 namespace App\Exports;
 
-use App\Models\Game\Report;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithColumnWidths;
-use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ReportsExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithColumnWidths, WithEvents
+class ReportsExport implements FromCollection, WithColumnWidths, WithEvents, WithHeadings, WithMapping, WithStyles
 {
     protected $reports;
+
     protected $world;
 
     public function __construct($reports, $world = null)
@@ -44,7 +44,7 @@ class ReportsExport implements FromCollection, WithHeadings, WithMapping, WithSt
             'Casualties',
             'Duration',
             'Date',
-            'World'
+            'World',
         ];
     }
 
@@ -61,7 +61,7 @@ class ReportsExport implements FromCollection, WithHeadings, WithMapping, WithSt
             $this->formatCasualties($report->casualties ?? []),
             $report->duration ?? 'N/A',
             $report->created_at->format('Y-m-d H:i:s'),
-            $this->world ? $this->world->name : 'N/A'
+            $this->world ? $this->world->name : 'N/A',
         ];
     }
 
@@ -89,59 +89,59 @@ class ReportsExport implements FromCollection, WithHeadings, WithMapping, WithSt
             1 => [
                 'font' => [
                     'bold' => true,
-                    'color' => ['rgb' => 'FFFFFF']
+                    'color' => ['rgb' => 'FFFFFF'],
                 ],
                 'fill' => [
                     'fillType' => Fill::FILL_SOLID,
-                    'startColor' => ['rgb' => '366092']
+                    'startColor' => ['rgb' => '366092'],
                 ],
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    'vertical' => Alignment::VERTICAL_CENTER
-                ]
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
             ],
             // Data rows
             'A:K' => [
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => Border::BORDER_THIN,
-                        'color' => ['rgb' => 'CCCCCC']
-                    ]
+                        'color' => ['rgb' => 'CCCCCC'],
+                    ],
                 ],
                 'alignment' => [
-                    'vertical' => Alignment::VERTICAL_CENTER
-                ]
-            ]
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+            ],
         ];
     }
 
     public function registerEvents(): array
     {
         return [
-            AfterSheet::class => function(AfterSheet $event) {
+            AfterSheet::class => function (AfterSheet $event): void {
                 $sheet = $event->sheet->getDelegate();
-                
+
                 // Auto-filter
                 $sheet->setAutoFilter('A1:K1');
-                
+
                 // Freeze first row
                 $sheet->freezePane('A2');
-                
+
                 // Add summary row
                 $lastRow = $sheet->getHighestRow();
                 $summaryRow = $lastRow + 2;
-                
+
                 $sheet->setCellValue("A{$summaryRow}", 'Total Reports:');
                 $sheet->setCellValue("B{$summaryRow}", $this->reports->count());
-                
+
                 $sheet->getStyle("A{$summaryRow}:B{$summaryRow}")->applyFromArray([
                     'font' => ['bold' => true],
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => 'E7E6E6']
-                    ]
+                        'startColor' => ['rgb' => 'E7E6E6'],
+                    ],
                 ]);
-            }
+            },
         ];
     }
 
@@ -154,7 +154,7 @@ class ReportsExport implements FromCollection, WithHeadings, WithMapping, WithSt
         $formatted = [];
         foreach ($resources as $type => $amount) {
             if ($amount > 0) {
-                $formatted[] = ucfirst($type) . ': ' . number_format($amount);
+                $formatted[] = ucfirst($type).': '.number_format($amount);
             }
         }
 
@@ -170,7 +170,7 @@ class ReportsExport implements FromCollection, WithHeadings, WithMapping, WithSt
         $formatted = [];
         foreach ($casualties as $unit => $count) {
             if ($count > 0) {
-                $formatted[] = ucfirst($unit) . ': ' . number_format($count);
+                $formatted[] = ucfirst($unit).': '.number_format($count);
             }
         }
 

@@ -7,13 +7,15 @@ use App\Services\SeoBreadcrumbService;
 use App\Services\SeoCacheService;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class GameSeoServiceSimpleTest extends TestCase
 {
     protected GameSeoService $gameSeoService;
+
     protected SeoCacheService $mockCacheService;
+
     protected SeoBreadcrumbService $mockBreadcrumbService;
 
     protected function setUp(): void
@@ -37,20 +39,20 @@ class GameSeoServiceSimpleTest extends TestCase
             'twitter' => [
                 'enabled' => true,
                 'site' => '@travian',
-                'creator' => '@travian'
+                'creator' => '@travian',
             ],
             'json_ld' => [
                 'enabled' => true,
                 'organization' => [
                     'name' => 'Travian Games',
-                    'url' => 'https://travian.com'
+                    'url' => 'https://travian.com',
                 ],
                 'website' => [
                     '@context' => 'https://schema.org',
                     '@type' => 'WebSite',
                     'name' => 'Travian Online Game',
-                    'url' => 'https://travian.com'
-                ]
+                    'url' => 'https://travian.com',
+                ],
             ],
             'robots' => [
                 'index' => true,
@@ -58,8 +60,8 @@ class GameSeoServiceSimpleTest extends TestCase
                 'archive' => true,
                 'snippet' => true,
                 'imageindex' => true,
-                'nocache' => false
-            ]
+                'nocache' => false,
+            ],
         ]);
     }
 
@@ -262,12 +264,12 @@ class GameSeoServiceSimpleTest extends TestCase
         $result = $method->invoke($this->gameSeoService, [
             'img/travian/existing1.jpg',
             'img/travian/nonexistent.jpg',
-            'img/travian/existing2.jpg'
+            'img/travian/existing2.jpg',
         ]);
 
         $this->assertEquals([
             'http://localhost/img/travian/existing1.jpg',
-            'http://localhost/img/travian/existing2.jpg'
+            'http://localhost/img/travian/existing2.jpg',
         ], $result);
     }
 
@@ -296,11 +298,11 @@ class GameSeoServiceSimpleTest extends TestCase
 
         $result = $method->invoke($this->gameSeoService, [
             'img/travian/nonexistent1.jpg',
-            'img/travian/nonexistent2.jpg'
+            'img/travian/nonexistent2.jpg',
         ]);
 
         $this->assertEquals([
-            'http://localhost/img/travian/placeholder.svg'
+            'http://localhost/img/travian/placeholder.svg',
         ], $result);
     }
 
@@ -375,7 +377,7 @@ class GameSeoServiceSimpleTest extends TestCase
             'archive' => false,
             'snippet' => true,
             'imageindex' => false,
-            'nocache' => true
+            'nocache' => true,
         ];
 
         // Mock seo() helper
@@ -398,7 +400,7 @@ class GameSeoServiceSimpleTest extends TestCase
     {
         $customRobots = [
             'index' => false,
-            'follow' => false
+            'follow' => false,
         ];
 
         // Mock seo() helper

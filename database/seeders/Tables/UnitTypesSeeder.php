@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,9 +17,7 @@ class UnitTypesSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
@@ -505,11 +504,11 @@ class UnitTypesSeeder extends Seeder
                 'is_active' => 1,
                 'created_at' => '2025-09-27 00:32:47',
                 'updated_at' => '2025-09-27 00:32:47',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("unit_types")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('unit_types')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

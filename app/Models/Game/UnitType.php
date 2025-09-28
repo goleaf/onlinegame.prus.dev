@@ -4,14 +4,14 @@ namespace App\Models\Game;
 
 use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use SmartCache\Facades\SmartCache;
 
 class UnitType extends Model
 {
-    use HasFactory, HasTaxonomy;
-
+    use HasFactory;
+    use HasTaxonomy;
 
     protected $fillable = [
         'name',
@@ -107,7 +107,7 @@ class UnitType extends Model
      */
     public static function getCachedUnitTypes($tribe = null, $filters = [])
     {
-        $cacheKey = "unit_types_{$tribe}_" . md5(serialize($filters));
+        $cacheKey = "unit_types_{$tribe}_".md5(serialize($filters));
 
         return SmartCache::remember($cacheKey, now()->addMinutes(15), function () use ($tribe, $filters) {
             $query = static::active()->withStats();
@@ -150,11 +150,11 @@ class UnitType extends Model
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where(function ($subQ) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm): void {
                 $subQ
-                    ->where('name', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('tribe', 'like', '%' . $searchTerm . '%');
+                    ->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('tribe', 'like', '%'.$searchTerm.'%');
             });
         });
     }
@@ -163,7 +163,7 @@ class UnitType extends Model
     {
         return $query->with([
             'troops:village_id,unit_type_id,quantity',
-            'trainingQueues:village_id,unit_type_id,quantity,is_completed'
+            'trainingQueues:village_id,unit_type_id,quantity,is_completed',
         ]);
     }
 }

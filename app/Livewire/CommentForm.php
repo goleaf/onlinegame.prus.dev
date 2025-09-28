@@ -9,7 +9,9 @@ use Livewire\Component;
 class CommentForm extends Component
 {
     public Model $model;
+
     public $content = '';
+
     public $parentId = null;
 
     #[Validate('required|string|max:2000')]

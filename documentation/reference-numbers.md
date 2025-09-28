@@ -15,47 +15,48 @@ php artisan referenceable:install
 
 ### Core Game Models
 
-| Model | Reference Format | Example | Description |
-|-------|------------------|---------|-------------|
-| Movement | `MOV-{YEAR}{MONTH}{SEQ}` | MOV-2025090001 | Attack/defense movements |
-| Battle | `BTL-{YEAR}{MONTH}{SEQ}` | BTL-2025090001 | Battle records |
-| Report | `RPT-{YEAR}{MONTH}{SEQ}` | RPT-2025090001 | Battle reports |
-| TrainingQueue | `TRN-{YEAR}{MONTH}{SEQ}` | TRN-2025090001 | Unit training orders |
-| Task | `TSK-{YEAR}{MONTH}{SEQ}` | TSK-2025090001 | Player tasks |
-| GameEvent | `EVT-{YEAR}{MONTH}{SEQ}` | EVT-2025090001 | Game events |
-| BuildingQueue | `BLD-{YEAR}{MONTH}{SEQ}` | BLD-2025090001 | Building orders |
-| Quest | `QST-{YEAR}{MONTH}{SEQ}` | QST-2025090001 | Quest templates |
+| Model         | Reference Format         | Example        | Description              |
+| ------------- | ------------------------ | -------------- | ------------------------ |
+| Movement      | `MOV-{YEAR}{MONTH}{SEQ}` | MOV-2025090001 | Attack/defense movements |
+| Battle        | `BTL-{YEAR}{MONTH}{SEQ}` | BTL-2025090001 | Battle records           |
+| Report        | `RPT-{YEAR}{MONTH}{SEQ}` | RPT-2025090001 | Battle reports           |
+| TrainingQueue | `TRN-{YEAR}{MONTH}{SEQ}` | TRN-2025090001 | Unit training orders     |
+| Task          | `TSK-{YEAR}{MONTH}{SEQ}` | TSK-2025090001 | Player tasks             |
+| GameEvent     | `EVT-{YEAR}{MONTH}{SEQ}` | EVT-2025090001 | Game events              |
+| BuildingQueue | `BLD-{YEAR}{MONTH}{SEQ}` | BLD-2025090001 | Building orders          |
+| Quest         | `QST-{YEAR}{MONTH}{SEQ}` | QST-2025090001 | Quest templates          |
 
 ### Player & Social Models
 
-| Model | Reference Format | Example | Description |
-|-------|------------------|---------|-------------|
-| Achievement | `ACH-{YEAR}{MONTH}{SEQ}` | ACH-2025090001 | Achievement templates |
-| Alliance | `ALL-{YEAR}{MONTH}{SEQ}` | ALL-2025090001 | Alliances |
-| PlayerAchievement | `PACH-{YEAR}{MONTH}{SEQ}` | PACH-2025090001 | Player achievements |
-| AllianceMember | `AM-{YEAR}{MONTH}{SEQ}` | AM-2025090001 | Alliance memberships |
-| PlayerQuest | `PQ-{YEAR}{MONTH}{SEQ}` | PQ-2025090001 | Player quest progress |
-| PlayerNote | `PN-{YEAR}{MONTH}{SEQ}` | PN-2025090001 | Player notes |
+| Model             | Reference Format          | Example         | Description           |
+| ----------------- | ------------------------- | --------------- | --------------------- |
+| Achievement       | `ACH-{YEAR}{MONTH}{SEQ}`  | ACH-2025090001  | Achievement templates |
+| Alliance          | `ALL-{YEAR}{MONTH}{SEQ}`  | ALL-2025090001  | Alliances             |
+| PlayerAchievement | `PACH-{YEAR}{MONTH}{SEQ}` | PACH-2025090001 | Player achievements   |
+| AllianceMember    | `AM-{YEAR}{MONTH}{SEQ}`   | AM-2025090001   | Alliance memberships  |
+| PlayerQuest       | `PQ-{YEAR}{MONTH}{SEQ}`   | PQ-2025090001   | Player quest progress |
+| PlayerNote        | `PN-{YEAR}{MONTH}{SEQ}`   | PN-2025090001   | Player notes          |
 
 ### System Models
 
-| Model | Reference Format | Example | Description |
-|-------|------------------|---------|-------------|
+| Model                 | Reference Format         | Example        | Description              |
+| --------------------- | ------------------------ | -------------- | ------------------------ |
 | ResourceProductionLog | `RPL-{YEAR}{MONTH}{SEQ}` | RPL-2025090001 | Resource production logs |
-| PlayerStatistic | `PS-{YEAR}{MONTH}{SEQ}` | PS-2025090001 | Player statistics |
-| GameTask | `GT-{YEAR}{MONTH}{SEQ}` | GT-2025090001 | System game tasks |
+| PlayerStatistic       | `PS-{YEAR}{MONTH}{SEQ}`  | PS-2025090001  | Player statistics        |
+| GameTask              | `GT-{YEAR}{MONTH}{SEQ}`  | GT-2025090001  | System game tasks        |
 
 ### Advanced Game Models
 
-| Model | Reference Format | Example | Description |
-|-------|------------------|---------|-------------|
-| AllianceWar | `WAR-{YEAR}{MONTH}{SEQ}` | WAR-2025090001 | Alliance wars |
-| Hero | `HERO-{YEAR}{MONTH}{SEQ}` | HERO-2025090001 | Player heroes |
-| SiegeWeapon | `SW-{YEAR}{MONTH}{SEQ}` | SW-2025090001 | Siege weapons |
+| Model       | Reference Format          | Example         | Description   |
+| ----------- | ------------------------- | --------------- | ------------- |
+| AllianceWar | `WAR-{YEAR}{MONTH}{SEQ}`  | WAR-2025090001  | Alliance wars |
+| Hero        | `HERO-{YEAR}{MONTH}{SEQ}` | HERO-2025090001 | Player heroes |
+| SiegeWeapon | `SW-{YEAR}{MONTH}{SEQ}`   | SW-2025090001   | Siege weapons |
 
 ## Database Schema
 
 All models have a `reference_number` column with:
+
 - Type: `VARCHAR(255)`
 - Unique constraint
 - Index for performance
@@ -104,20 +105,24 @@ $movements = Movement::referenceStartsWith('MOV-202509')->get();
 ## Livewire Integration
 
 ### BattleManager
+
 - Generates reference numbers for attack movements
 - Displays reference numbers in attack notifications
 
 ### MovementManager
+
 - Generates reference numbers for all movements
 - Displays reference numbers in movement lists
 
 ### TroopManager
+
 - Generates reference numbers for training queues
 - Displays reference numbers in training notifications
 
 ## UI Display
 
 Reference numbers are displayed in:
+
 - Movement lists
 - Battle reports
 - Task lists
@@ -150,6 +155,7 @@ protected $referencePrefix = 'PREFIX';
 ## Migration Status
 
 All migrations have been created and applied:
+
 - ✅ movements table
 - ✅ battles table
 - ✅ reports table
@@ -171,6 +177,7 @@ All migrations have been created and applied:
 ## Testing
 
 All models have been tested for reference number generation:
+
 - ✅ Movement: MOV-2025090002
 - ✅ Battle: BTL-2025090003
 - ✅ Report: RPT-2025090003

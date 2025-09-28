@@ -2,22 +2,19 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\Battle;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Traits\GameValidationTrait;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
-use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 /**
  * @group Battle Management
@@ -33,7 +30,9 @@ use LaraUtilX\Utilities\LoggingUtil;
  */
 class BattleController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use GameValidationTrait;
+    use ValidationHelperTrait;
 
     protected Model $model;
 
@@ -52,7 +51,9 @@ class BattleController extends CrudController
     ];
 
     protected array $searchableFields = ['result', 'occurred_at'];
+
     protected array $relationships = ['attacker', 'defender', 'village'];
+
     protected int $perPage = 15;
 
     public function __construct()
@@ -169,7 +170,7 @@ class BattleController extends CrudController
                 'user_id' => auth()->id(),
             ], 'battle_system');
 
-            return $this->errorResponse('Failed to retrieve battles: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve battles: '.$e->getMessage(), 500);
         }
     }
 
@@ -226,7 +227,6 @@ class BattleController extends CrudController
      *   "created_at": "2023-01-01T12:00:00.000000Z",
      *   "updated_at": "2023-01-01T12:00:00.000000Z"
      * }
-     *
      * @response 404 {
      *   "message": "Battle not found"
      * }
@@ -296,7 +296,7 @@ class BattleController extends CrudController
             $playerId = Auth::user()->player->id;
 
             $query = Battle::with(['attacker', 'defender', 'village'])
-                ->where(function ($q) use ($playerId) {
+                ->where(function ($q) use ($playerId): void {
                     $q
                         ->where('attacker_id', $playerId)
                         ->orWhere('defender_id', $playerId);
@@ -334,7 +334,7 @@ class BattleController extends CrudController
                 'user_id' => auth()->id(),
             ], 'battle_system');
 
-            return $this->errorResponse('Failed to retrieve player battles: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve player battles: '.$e->getMessage(), 500);
         }
     }
 
@@ -379,7 +379,7 @@ class BattleController extends CrudController
                 ->orWhere('defender_id', $playerId)
                 ->count();
 
-            $victories = Battle::where(function ($q) use ($playerId) {
+            $victories = Battle::where(function ($q) use ($playerId): void {
                 $q
                     ->where('attacker_id', $playerId)
                     ->where('result', 'victory')
@@ -387,7 +387,7 @@ class BattleController extends CrudController
                     ->where('result', 'defeat');
             })->count();
 
-            $defeats = Battle::where(function ($q) use ($playerId) {
+            $defeats = Battle::where(function ($q) use ($playerId): void {
                 $q
                     ->where('attacker_id', $playerId)
                     ->where('result', 'defeat')
@@ -395,7 +395,7 @@ class BattleController extends CrudController
                     ->where('result', 'victory');
             })->count();
 
-            $draws = Battle::where(function ($q) use ($playerId) {
+            $draws = Battle::where(function ($q) use ($playerId): void {
                 $q
                     ->where('attacker_id', $playerId)
                     ->orWhere('defender_id', $playerId);
@@ -409,6 +409,7 @@ class BattleController extends CrudController
                 ->get()
                 ->reduce(function ($carry, $battle) {
                     $loot = $battle->loot ?? [];
+
                     return [
                         'wood' => ($carry['wood'] ?? 0) + ($loot['wood'] ?? 0),
                         'clay' => ($carry['clay'] ?? 0) + ($loot['clay'] ?? 0),
@@ -430,7 +431,7 @@ class BattleController extends CrudController
                 'draws' => $draws,
                 'win_rate' => round($winRate, 2),
                 'total_loot_gained' => $totalLoot,
-                'recent_battles' => $recentBattles
+                'recent_battles' => $recentBattles,
             ];
 
             LoggingUtil::info('Battle statistics retrieved', [
@@ -447,7 +448,7 @@ class BattleController extends CrudController
                 'user_id' => auth()->id(),
             ], 'battle_system');
 
-            return $this->errorResponse('Failed to retrieve battle statistics: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve battle statistics: '.$e->getMessage(), 500);
         }
     }
 
@@ -504,7 +505,7 @@ class BattleController extends CrudController
                 'user_id' => auth()->id(),
             ], 'battle_system');
 
-            return $this->errorResponse('Failed to retrieve war battles: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve war battles: '.$e->getMessage(), 500);
         }
     }
 
@@ -539,7 +540,6 @@ class BattleController extends CrudController
      *     "updated_at": "2023-01-01T12:00:00.000000Z"
      *   }
      * }
-     *
      * @response 422 {
      *   "message": "The given data was invalid.",
      *   "errors": {
@@ -553,7 +553,7 @@ class BattleController extends CrudController
     public function store(Request $request): JsonResponse
     {
         try {
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'attacker_id' => 'required|exists:players,id',
                 'defender_id' => 'required|exists:players,id',
                 'village_id' => 'required|exists:villages,id',
@@ -586,7 +586,7 @@ class BattleController extends CrudController
                 'request_data' => $request->all(),
             ], 'battle_system');
 
-            return $this->errorResponse('Failed to create battle report: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to create battle report: '.$e->getMessage(), 500);
         }
     }
 
@@ -626,13 +626,13 @@ class BattleController extends CrudController
             $query = DB::table('battles')
                 ->select([
                     'attacker_id as player_id',
-                    'result'
+                    'result',
                 ])
                 ->union(
                     DB::table('battles')
                         ->select([
                             'defender_id as player_id',
-                            'result'
+                            'result',
                         ])
                 );
 
@@ -644,7 +644,7 @@ class BattleController extends CrudController
                     DB::raw('COUNT(*) as total_battles'),
                     DB::raw('SUM(CASE WHEN (all_battles.player_id = battles.attacker_id AND battles.result = "victory") OR (all_battles.player_id = battles.defender_id AND battles.result = "defeat") THEN 1 ELSE 0 END) as victories'),
                     DB::raw('SUM(CASE WHEN (all_battles.player_id = battles.attacker_id AND battles.result = "defeat") OR (all_battles.player_id = battles.defender_id AND battles.result = "victory") THEN 1 ELSE 0 END) as defeats'),
-                    DB::raw('SUM(CASE WHEN battles.result = "draw" THEN 1 ELSE 0 END) as draws')
+                    DB::raw('SUM(CASE WHEN battles.result = "draw" THEN 1 ELSE 0 END) as draws'),
                 ])
                 ->groupBy('players.id', 'players.name');
 
@@ -664,6 +664,7 @@ class BattleController extends CrudController
                 $player->win_rate = $player->total_battles > 0
                     ? round(($player->victories / $player->total_battles) * 100, 2)
                     : 0;
+
                 return $player;
             });
 
@@ -681,7 +682,7 @@ class BattleController extends CrudController
                 'user_id' => auth()->id(),
             ], 'battle_system');
 
-            return $this->errorResponse('Failed to retrieve battle leaderboard: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to retrieve battle leaderboard: '.$e->getMessage(), 500);
         }
     }
 }

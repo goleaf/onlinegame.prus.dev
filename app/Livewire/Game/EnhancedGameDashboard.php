@@ -5,7 +5,6 @@ namespace App\Livewire\Game;
 use App\Models\Game\GameEvent;
 use App\Models\Game\Player;
 use App\Services\GameTickService;
-use App\Services\GeographicService;
 use App\Services\ResourceProductionService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
@@ -19,7 +18,8 @@ use SmartCache\Facades\SmartCache;
 
 class EnhancedGameDashboard extends Component
 {
-    use WithPagination, ApiResponseTrait;
+    use ApiResponseTrait;
+    use WithPagination;
 
     #[Locked]
     public $player;
@@ -28,8 +28,11 @@ class EnhancedGameDashboard extends Component
     public $selectedVillageId = null;
 
     public $currentVillage;
+
     public $villages = [];
+
     public $recentEvents = [];
+
     public $gameStats = [];
 
     #[Url]
@@ -39,28 +42,50 @@ class EnhancedGameDashboard extends Component
     public $refreshInterval = 5;
 
     public $notifications = [];
+
     public $isLoading = false;
+
     public $realTimeUpdates = true;
+
     public $showNotifications = true;
+
     public $gameSpeed = 1;
+
     public $worldTime;
+
     public $resourceProductionRates = [];
+
     public $buildingQueues = [];
+
     public $trainingQueues = [];
+
     public $activeQuests = [];
+
     public $allianceInfo = null;
+
     public $worldInfo = null;
+
     // Enhanced Livewire features
     public $pollingEnabled = true;
+
     public $lastUpdateTime;
+
     public $connectionStatus = 'connected';
+
     public $gameEvents = [];
+
     public $playerStatistics = [];
+
     public $worldStatistics = [];
+
     public $allianceStatistics = [];
+
     public $achievements = [];
+
     public $recentBattles = [];
+
     public $marketOffers = [];
+
     public $diplomaticEvents = [];
 
     protected $listeners = [
@@ -82,7 +107,7 @@ class EnhancedGameDashboard extends Component
     #[Computed]
     public function totalResources()
     {
-        if (!$this->currentVillage) {
+        if (! $this->currentVillage) {
             return [];
         }
 
@@ -97,7 +122,7 @@ class EnhancedGameDashboard extends Component
     #[Computed]
     public function resourceCapacities()
     {
-        if (!$this->currentVillage) {
+        if (! $this->currentVillage) {
             return [];
         }
 
@@ -112,7 +137,7 @@ class EnhancedGameDashboard extends Component
     #[Computed]
     public function playerRanking()
     {
-        if (!$this->player) {
+        if (! $this->player) {
             return null;
         }
 
@@ -127,12 +152,12 @@ class EnhancedGameDashboard extends Component
     #[Computed]
     public function gameTimeRemaining()
     {
-        if (!$this->worldInfo) {
+        if (! $this->worldInfo) {
             return null;
         }
 
         $endDate = $this->worldInfo['end_date'] ?? null;
-        if (!$endDate) {
+        if (! $endDate) {
             return null;
         }
 
@@ -141,12 +166,12 @@ class EnhancedGameDashboard extends Component
 
     public function mount()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect('/login');
         }
 
         $this->player = Auth::user()->player;
-        if (!$this->player) {
+        if (! $this->player) {
             return redirect('/game/no-player');
         }
 
@@ -160,9 +185,9 @@ class EnhancedGameDashboard extends Component
                 return [
                     'village_name' => $village->name,
                     'coordinates' => "({$village->x_coordinate}|{$village->y_coordinate})",
-                    'real_world_coords' => $village->getRealWorldCoordinates()
+                    'real_world_coords' => $village->getRealWorldCoordinates(),
                 ];
-            })->toArray()
+            })->toArray(),
         ])->label('EnhancedGameDashboard Mount');
 
         $this->loadGameData();
@@ -174,12 +199,12 @@ class EnhancedGameDashboard extends Component
     public function boot()
     {
         // Ensure player is loaded in test environment
-        if (app()->environment('testing') && Auth::check() && !$this->player) {
+        if (app()->environment('testing') && Auth::check() && ! $this->player) {
             $this->player = Auth::user()->player;
         }
 
         // If player is null after boot, redirect to no-player page
-        if (!$this->player && Auth::check()) {
+        if (! $this->player && Auth::check()) {
             return redirect('/game/no-player');
         }
     }
@@ -210,7 +235,7 @@ class EnhancedGameDashboard extends Component
 
     public function togglePolling()
     {
-        $this->pollingEnabled = !$this->pollingEnabled;
+        $this->pollingEnabled = ! $this->pollingEnabled;
 
         if ($this->pollingEnabled) {
             $this->startPolling();
@@ -299,7 +324,7 @@ class EnhancedGameDashboard extends Component
 
     public function calculateResourceProductionRates()
     {
-        if (!$this->currentVillage) {
+        if (! $this->currentVillage) {
             return;
         }
 
@@ -309,7 +334,7 @@ class EnhancedGameDashboard extends Component
 
     public function loadBuildingQueues()
     {
-        if (!$this->currentVillage) {
+        if (! $this->currentVillage) {
             return;
         }
 
@@ -327,7 +352,7 @@ class EnhancedGameDashboard extends Component
 
     public function loadTrainingQueues()
     {
-        if (!$this->currentVillage) {
+        if (! $this->currentVillage) {
             return;
         }
 
@@ -359,7 +384,7 @@ class EnhancedGameDashboard extends Component
 
     public function loadAllianceInfo()
     {
-        if (!$this->player || !$this->player->alliance) {
+        if (! $this->player || ! $this->player->alliance) {
             return;
         }
 
@@ -401,7 +426,7 @@ class EnhancedGameDashboard extends Component
             ds('Processing game tick', [
                 'player_id' => $this->player->id,
                 'current_village' => $this->currentVillage?->name,
-                'last_update_time' => $this->lastUpdateTime
+                'last_update_time' => $this->lastUpdateTime,
             ])->label('EnhancedGameDashboard Game Tick Start');
 
             $gameTickService = app(GameTickService::class);
@@ -414,15 +439,15 @@ class EnhancedGameDashboard extends Component
             ds('Game tick processed successfully', [
                 'player_id' => $this->player->id,
                 'new_update_time' => $this->lastUpdateTime,
-                'villages_count' => $this->villages->count()
+                'villages_count' => $this->villages->count(),
             ])->label('EnhancedGameDashboard Game Tick Success');
         } catch (\Exception $e) {
             ds('Game tick error', [
                 'player_id' => $this->player->id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ])->label('EnhancedGameDashboard Game Tick Error');
-            $this->addNotification('Game tick error: ' . $e->getMessage(), 'error');
+            $this->addNotification('Game tick error: '.$e->getMessage(), 'error');
             $this->dispatch('gameTickError', ['message' => $e->getMessage()]);
         }
     }
@@ -443,7 +468,7 @@ class EnhancedGameDashboard extends Component
 
             $this->addNotification('Game data refreshed', 'info');
         } catch (\Exception $e) {
-            $this->addNotification('Failed to refresh game data: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to refresh game data: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -462,14 +487,14 @@ class EnhancedGameDashboard extends Component
             'total_villages' => $this->villages->count(),
             'village_coordinates' => $this->currentVillage ? "({$this->currentVillage->x_coordinate}|{$this->currentVillage->y_coordinate})" : null,
             'real_world_coords' => $this->currentVillage?->getRealWorldCoordinates(),
-            'geohash' => $this->currentVillage?->getGeohash()
+            'geohash' => $this->currentVillage?->getGeohash(),
         ])->label('EnhancedGameDashboard Village Selection');
 
         if ($this->currentVillage) {
             $this->calculateResourceProductionRates();
             $this->loadBuildingQueues();
             $this->loadTrainingQueues();
-            $this->addNotification('Village selected: ' . $this->currentVillage->name, 'info');
+            $this->addNotification('Village selected: '.$this->currentVillage->name, 'info');
 
             // Track village selection
             $this->dispatch('fathom-track', name: 'village selected', value: $villageId);
@@ -478,14 +503,14 @@ class EnhancedGameDashboard extends Component
                 'village_id' => $villageId,
                 'resource_production_rates' => $this->resourceProductionRates,
                 'building_queues_count' => $this->buildingQueues->count(),
-                'training_queues_count' => $this->trainingQueues->count()
+                'training_queues_count' => $this->trainingQueues->count(),
             ])->label('EnhancedGameDashboard Village Data Loaded');
         }
     }
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
 
         if ($this->autoRefresh) {
             $this->startPolling();
@@ -604,7 +629,7 @@ class EnhancedGameDashboard extends Component
     public function handleAchievementUnlocked($data)
     {
         $this->achievements = array_slice(array_merge([$data], $this->achievements), 0, 10);
-        $this->addNotification('Achievement unlocked: ' . $data['name'], 'success');
+        $this->addNotification('Achievement unlocked: '.$data['name'], 'success');
         $this->dispatch('achievement-notification', $data);
     }
 

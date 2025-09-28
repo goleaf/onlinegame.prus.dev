@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Game\Player;
 use App\Models\Game\Village;
-use App\Models\Game\World;
 use App\Models\User;
 use App\Services\GameSeoService;
 use App\Services\SeoCacheService;
@@ -16,6 +15,7 @@ class SeoIntegrationTest extends TestCase
     use RefreshDatabase;
 
     protected GameSeoService $seoService;
+
     protected SeoCacheService $cacheService;
 
     protected function setUp(): void
@@ -171,7 +171,7 @@ class SeoIntegrationTest extends TestCase
     public function seo_helper_functions_work()
     {
         $this->assertTrue(class_exists('App\Helpers\SeoHelper'));
-        
+
         // Test helper methods exist
         $this->assertTrue(method_exists('App\Helpers\SeoHelper', 'title'));
         $this->assertTrue(method_exists('App\Helpers\SeoHelper', 'description'));
@@ -192,7 +192,7 @@ class SeoIntegrationTest extends TestCase
     {
         // Add some test data
         $this->cacheService->put('test', ['data' => 'test']);
-        
+
         // Clear cache
         $result = $this->cacheService->clearAll();
         $this->assertTrue($result);
@@ -209,7 +209,7 @@ class SeoIntegrationTest extends TestCase
     public function seo_cache_stats_are_returned()
     {
         $stats = $this->cacheService->getStats();
-        
+
         $this->assertIsArray($stats);
         $this->assertArrayHasKey('cache_prefix', $stats);
         $this->assertArrayHasKey('default_ttl', $stats);

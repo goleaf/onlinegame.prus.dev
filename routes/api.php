@@ -2,25 +2,22 @@
 
 use App\Http\Controllers\Api\GameApiController;
 use App\Http\Controllers\Api\GameIntegrationController;
-use App\Http\Controllers\Api\PhoneApiController;
 use App\Http\Controllers\Api\WebSocketController;
 use App\Http\Controllers\Game\AIController;
 use App\Http\Controllers\Game\AllianceController;
-use App\Http\Controllers\Game\APIDocumentationController;
 use App\Http\Controllers\Game\ArtifactController;
 use App\Http\Controllers\Game\BattleController;
-use App\Http\Controllers\Game\QuestController;
-use App\Http\Controllers\Game\ReportController;
-use App\Http\Controllers\Game\NotificationController;
 use App\Http\Controllers\Game\LarautilxController;
 use App\Http\Controllers\Game\LarautilxDashboardController;
 use App\Http\Controllers\Game\MessageController;
+use App\Http\Controllers\Game\NotificationController;
 use App\Http\Controllers\Game\PlayerController;
+use App\Http\Controllers\Game\QuestController;
+use App\Http\Controllers\Game\ReportController;
 use App\Http\Controllers\Game\SystemController;
 use App\Http\Controllers\Game\TaskController;
 use App\Http\Controllers\Game\UserController;
 use App\Http\Controllers\Game\VillageController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,20 +34,20 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', [GameApiController::class, 'getUser']);
 
 // Game API Routes - Core Game Functionality
-Route::middleware('auth:sanctum')->prefix('game')->group(function () {
+Route::middleware('auth:sanctum')->prefix('game')->group(function (): void {
     // Basic game operations
     Route::get('/villages', [GameApiController::class, 'getVillages']);
     Route::post('/create-village', [GameApiController::class, 'createVillage']);
     Route::get('/village/{id}', [GameApiController::class, 'getVillage']);
     Route::post('/village/{id}/upgrade-building', [GameApiController::class, 'upgradeBuilding']);
     Route::get('/player/stats', [GameApiController::class, 'getPlayerStats']);
-    
+
     // Geographic Data
     Route::get('/geographic-data', [GameApiController::class, 'getGeographicData']);
     Route::get('/calculate-distance', [GameApiController::class, 'calculateDistance']);
-    
+
     // Player Management
-    Route::prefix('players')->group(function () {
+    Route::prefix('players')->group(function (): void {
         Route::get('/', [PlayerController::class, 'index']);
         Route::post('/', [PlayerController::class, 'store']);
         Route::get('/with-stats', [PlayerController::class, 'withStats']);
@@ -61,9 +58,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::delete('/{id}', [PlayerController::class, 'destroy']);
         Route::put('/{playerId}/status', [PlayerController::class, 'updateStatus']);
     });
-    
+
     // Village Management
-    Route::prefix('villages')->group(function () {
+    Route::prefix('villages')->group(function (): void {
         Route::get('/', [VillageController::class, 'index']);
         Route::post('/', [VillageController::class, 'store']);
         Route::get('/with-stats', [VillageController::class, 'withStats']);
@@ -75,9 +72,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::get('/{villageId}/nearby', [VillageController::class, 'nearby']);
         Route::put('/{villageId}/resources', [VillageController::class, 'updateResources']);
     });
-    
+
     // User Management
-    Route::prefix('users')->group(function () {
+    Route::prefix('users')->group(function (): void {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/', [UserController::class, 'store']);
         Route::get('/with-game-stats', [UserController::class, 'withGameStats']);
@@ -93,9 +90,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::get('/{userId}/game-history', [UserController::class, 'gameHistory']);
         Route::put('/{userId}/status', [UserController::class, 'updateStatus']);
     });
-    
+
     // Task Management
-    Route::prefix('tasks')->group(function () {
+    Route::prefix('tasks')->group(function (): void {
         Route::get('/', [TaskController::class, 'index']);
         Route::post('/', [TaskController::class, 'store']);
         Route::get('/with-stats', [TaskController::class, 'withStats']);
@@ -108,9 +105,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::post('/{taskId}/complete', [TaskController::class, 'complete']);
         Route::put('/{taskId}/progress', [TaskController::class, 'updateProgress']);
     });
-    
+
     // AI Integration
-    Route::prefix('ai')->group(function () {
+    Route::prefix('ai')->group(function (): void {
         Route::get('/status', [AIController::class, 'getStatus']);
         Route::post('/village-names', [AIController::class, 'generateVillageNames']);
         Route::post('/alliance-names', [AIController::class, 'generateAllianceNames']);
@@ -122,9 +119,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::post('/custom-content', [AIController::class, 'generateCustomContent']);
         Route::post('/switch-provider', [AIController::class, 'switchProvider']);
     });
-    
+
     // System Management
-    Route::prefix('system')->group(function () {
+    Route::prefix('system')->group(function (): void {
         Route::get('/health', [SystemController::class, 'health']);
         Route::get('/config', [SystemController::class, 'config']);
         Route::put('/config', [SystemController::class, 'updateConfig']);
@@ -133,9 +130,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::get('/scheduled-tasks', [SystemController::class, 'scheduledTasks']);
         Route::post('/clear-caches', [SystemController::class, 'clearCaches']);
     });
-    
+
     // Larautilx Integration
-    Route::prefix('larautilx')->group(function () {
+    Route::prefix('larautilx')->group(function (): void {
         Route::get('/status', [LarautilxController::class, 'getStatus']);
         Route::get('/docs', [LarautilxController::class, 'getDocs']);
         Route::post('/test/caching', [LarautilxController::class, 'testCaching']);
@@ -150,9 +147,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::get('/integration-summary', [LarautilxDashboardController::class, 'getIntegrationSummary']);
         Route::post('/test-components', [LarautilxDashboardController::class, 'testComponents']);
     });
-    
+
     // Artifact System
-    Route::prefix('artifacts')->group(function () {
+    Route::prefix('artifacts')->group(function (): void {
         Route::get('/', [ArtifactController::class, 'index']);
         Route::post('/', [ArtifactController::class, 'store']);
         Route::get('/server-wide', [ArtifactController::class, 'serverWide']);
@@ -164,9 +161,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::post('/{id}/deactivate', [ArtifactController::class, 'deactivate']);
         Route::get('/{id}/effects', [ArtifactController::class, 'effects']);
     });
-    
+
     // Message System
-    Route::prefix('messages')->group(function () {
+    Route::prefix('messages')->group(function (): void {
         Route::get('/inbox', [MessageController::class, 'getInbox']);
         Route::get('/sent', [MessageController::class, 'getSent']);
         Route::get('/alliance', [MessageController::class, 'getAllianceMessages']);
@@ -181,9 +178,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::post('/{messageId}/mark-read', [MessageController::class, 'markAsRead']);
         Route::delete('/{messageId}', [MessageController::class, 'deleteMessage']);
     });
-    
+
     // Alliance System
-    Route::prefix('alliances')->group(function () {
+    Route::prefix('alliances')->group(function (): void {
         Route::get('/', [AllianceController::class, 'index']);
         Route::post('/', [AllianceController::class, 'store']);
         Route::get('/{id}', [AllianceController::class, 'show']);
@@ -195,9 +192,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::get('/{id}/wars', [AllianceController::class, 'wars']);
         Route::get('/{id}/diplomacy', [AllianceController::class, 'diplomacy']);
     });
-    
+
     // Battle System
-    Route::prefix('battles')->group(function () {
+    Route::prefix('battles')->group(function (): void {
         Route::get('/', [BattleController::class, 'index']);
         Route::post('/', [BattleController::class, 'store']);
         Route::get('/my-battles', [BattleController::class, 'myBattles']);
@@ -206,9 +203,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::get('/war/{warId}', [BattleController::class, 'warBattles']);
         Route::get('/{id}', [BattleController::class, 'show']);
     });
-    
+
     // Quest & Achievement System
-    Route::prefix('quests')->group(function () {
+    Route::prefix('quests')->group(function (): void {
         Route::get('/', [QuestController::class, 'index']);
         Route::get('/my-quests', [QuestController::class, 'myQuests']);
         Route::get('/statistics', [QuestController::class, 'statistics']);
@@ -218,9 +215,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::post('/{id}/start', [QuestController::class, 'start']);
         Route::post('/{id}/complete', [QuestController::class, 'complete']);
     });
-    
+
     // Report System
-    Route::prefix('reports')->group(function () {
+    Route::prefix('reports')->group(function (): void {
         Route::get('/', [ReportController::class, 'index']);
         Route::get('/statistics', [ReportController::class, 'statistics']);
         Route::get('/unread-count', [ReportController::class, 'unreadCount']);
@@ -229,9 +226,9 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
         Route::post('/{id}/mark-read', [ReportController::class, 'markAsRead']);
         Route::delete('/{id}', [ReportController::class, 'destroy']);
     });
-    
+
     // Notification System
-    Route::prefix('notifications')->group(function () {
+    Route::prefix('notifications')->group(function (): void {
         Route::get('/', [NotificationController::class, 'index']);
         Route::post('/', [NotificationController::class, 'store']);
         Route::get('/statistics', [NotificationController::class, 'statistics']);
@@ -244,25 +241,25 @@ Route::middleware('auth:sanctum')->prefix('game')->group(function () {
 });
 
 // WebSocket/Real-time API Routes
-Route::middleware('auth:sanctum')->prefix('websocket')->group(function () {
+Route::middleware('auth:sanctum')->prefix('websocket')->group(function (): void {
     // Connection Management
     Route::post('/subscribe', [WebSocketController::class, 'subscribe']);
     Route::post('/unsubscribe', [WebSocketController::class, 'unsubscribe']);
     Route::post('/auth', [WebSocketController::class, 'auth']);
-    
+
     // Update Management
     Route::get('/updates', [WebSocketController::class, 'getUpdates']);
     Route::post('/test-message', [WebSocketController::class, 'sendTestMessage']);
-    
+
     // Statistics
     Route::get('/stats', [WebSocketController::class, 'getStats']);
-    
+
     // Admin Features
     Route::post('/broadcast-announcement', [WebSocketController::class, 'broadcastAnnouncement']);
 });
 
 // Public API Routes (no authentication required)
-Route::prefix('public')->group(function () {
+Route::prefix('public')->group(function (): void {
     Route::get('/health', function () {
         return response()->json([
             'success' => true,
@@ -274,7 +271,7 @@ Route::prefix('public')->group(function () {
             ],
         ]);
     });
-    
+
     Route::get('/statistics', function () {
         return response()->json([
             'success' => true,
@@ -288,9 +285,8 @@ Route::prefix('public')->group(function () {
     });
 });
 
-
 // Game Integration Services
-Route::middleware('auth:sanctum')->prefix('game/integration')->group(function () {
+Route::middleware('auth:sanctum')->prefix('game/integration')->group(function (): void {
     Route::post('/initialize-realtime', [GameIntegrationController::class, 'initializeRealTime']);
     Route::post('/deinitialize-realtime', [GameIntegrationController::class, 'deinitializeRealTime']);
     Route::post('/create-village', [GameIntegrationController::class, 'createVillage']);

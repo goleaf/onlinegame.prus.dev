@@ -2,18 +2,18 @@
 
 namespace App\Services\Game;
 
+use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
-use App\Models\Game\Player;
 use App\Services\GeographicService;
-use Illuminate\Support\Facades\DB;
 use SmartCache\Facades\SmartCache;
 
 class MapService
 {
     public function __construct(
         private GeographicService $geographicService
-    ) {}
+    ) {
+    }
 
     /**
      * Get map data for a world
@@ -112,13 +112,13 @@ class MapService
      */
     public function searchVillages(World $world, string $searchTerm, int $limit = 50): array
     {
-        $cacheKey = "village_search:{$world->id}:" . md5($searchTerm);
+        $cacheKey = "village_search:{$world->id}:".md5($searchTerm);
 
         return SmartCache::remember($cacheKey, 300, function () use ($world, $searchTerm, $limit) {
             $villages = Village::where('world_id', $world->id)
-                ->where(function ($query) use ($searchTerm) {
+                ->where(function ($query) use ($searchTerm): void {
                     $query->where('name', 'like', "%{$searchTerm}%")
-                        ->orWhereHas('player', function ($q) use ($searchTerm) {
+                        ->orWhereHas('player', function ($q) use ($searchTerm): void {
                             $q->where('name', 'like', "%{$searchTerm}%");
                         });
                 })
@@ -236,6 +236,7 @@ class MapService
     {
         // Base travel time calculation
         $baseTime = $distance * 60; // 1 minute per unit distance
+
         return (int) ($baseTime / $speed);
     }
 
@@ -258,7 +259,7 @@ class MapService
                 ->where('y_coordinate', $y)
                 ->exists();
 
-            if (!$existingVillage) {
+            if (! $existingVillage) {
                 $oases[] = [
                     'x' => $x,
                     'y' => $y,
@@ -277,6 +278,7 @@ class MapService
     private function getRandomOasisType(): string
     {
         $types = ['wood', 'clay', 'iron', 'crop', 'mixed'];
+
         return $types[array_rand($types)];
     }
 

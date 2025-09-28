@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,15 +17,13 @@ class ModelHasRolesSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
-            
+
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("model_has_roles")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('model_has_roles')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

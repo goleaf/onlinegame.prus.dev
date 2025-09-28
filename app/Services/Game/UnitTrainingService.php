@@ -3,17 +3,17 @@
 namespace App\Services\Game;
 
 use App\Models\Game\Player;
-use App\Models\Game\Village;
-use App\Models\Game\UnitType;
-use App\Models\Game\TrainingQueue;
 use App\Models\Game\Resource;
+use App\Models\Game\TrainingQueue;
+use App\Models\Game\UnitType;
+use App\Models\Game\Village;
 use App\Services\GameCacheService;
-use App\Services\GamePerformanceMonitor;
 use App\Services\GameErrorHandler;
+use App\Services\GamePerformanceMonitor;
 use App\Utilities\GameUtility;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Unit Training Service
@@ -48,7 +48,7 @@ class UnitTrainingService
 
             // Check if player has enough resources
             $resources = $this->getVillageResources($villageId);
-            if (!$this->hasEnoughResources($resources, $cost)) {
+            if (! $this->hasEnoughResources($resources, $cost)) {
                 throw new \Exception('Insufficient resources for training');
             }
 
@@ -104,7 +104,7 @@ class UnitTrainingService
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             GameErrorHandler::handleGameError($e, [
                 'action' => 'unit_training_start',
                 'village_id' => $villageId,
@@ -176,7 +176,7 @@ class UnitTrainingService
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             GameErrorHandler::handleGameError($e, [
                 'action' => 'unit_training_complete',
                 'training_queue_id' => $trainingQueueId,
@@ -247,7 +247,7 @@ class UnitTrainingService
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             GameErrorHandler::handleGameError($e, [
                 'action' => 'unit_training_cancel',
                 'training_queue_id' => $trainingQueueId,
@@ -351,6 +351,7 @@ class UnitTrainingService
                 return false;
             }
         }
+
         return true;
     }
 
@@ -361,10 +362,10 @@ class UnitTrainingService
     {
         $baseTime = $unitType->training_time ?? 60; // Default 60 seconds
         $quantityMultiplier = 1 + ($quantity - 1) * 0.1; // 10% increase per additional unit
-        
+
         // Apply village bonuses (barracks level, etc.)
         $villageBonus = $this->getVillageTrainingBonus($village);
-        
+
         return (int) ($baseTime * $quantityMultiplier * $villageBonus);
     }
 
@@ -378,7 +379,7 @@ class UnitTrainingService
         if ($barracks) {
             return 1 - ($barracks->level * 0.05); // 5% reduction per level
         }
-        
+
         return 1.0; // No bonus
     }
 
@@ -446,6 +447,7 @@ class UnitTrainingService
         foreach ($cost as $resource => $amount) {
             $refund[$resource] = (int) ($amount * 0.5); // 50% refund
         }
+
         return $refund;
     }
 

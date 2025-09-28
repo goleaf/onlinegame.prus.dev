@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -27,13 +26,13 @@ return new class extends Migration
             }
 
             // Add new columns
-            if (!Schema::hasColumn('alliance_messages', 'priority')) {
+            if (! Schema::hasColumn('alliance_messages', 'priority')) {
                 $table->enum('priority', ['low', 'normal', 'high', 'urgent'])->default('normal')->after('body');
             }
-            if (!Schema::hasColumn('alliance_messages', 'expires_at')) {
+            if (! Schema::hasColumn('alliance_messages', 'expires_at')) {
                 $table->timestamp('expires_at')->nullable()->after('is_announcement');
             }
-            if (!Schema::hasColumn('alliance_messages', 'reference_number')) {
+            if (! Schema::hasColumn('alliance_messages', 'reference_number')) {
                 $table->string('reference_number', 50)->unique()->nullable()->after('expires_at');
             }
 

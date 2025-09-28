@@ -48,10 +48,10 @@ class LarautilxIntegrationTest extends TestCase
     public function it_can_clear_cache_by_tags()
     {
         $tags = ['test', 'game'];
-        
+
         // This should not throw an exception
         $this->integrationService->clearCacheByTags($tags);
-        
+
         $this->assertTrue(true);
     }
 
@@ -59,10 +59,10 @@ class LarautilxIntegrationTest extends TestCase
     public function it_can_clear_player_cache()
     {
         $playerId = 1;
-        
+
         // This should not throw an exception
         $this->integrationService->clearPlayerCache($playerId);
-        
+
         $this->assertTrue(true);
     }
 
@@ -70,10 +70,10 @@ class LarautilxIntegrationTest extends TestCase
     public function it_can_clear_world_cache()
     {
         $worldId = 1;
-        
+
         // This should not throw an exception
         $this->integrationService->clearWorldCache($worldId);
-        
+
         $this->assertTrue(true);
     }
 
@@ -81,10 +81,10 @@ class LarautilxIntegrationTest extends TestCase
     public function it_can_clear_village_cache()
     {
         $villageId = 1;
-        
+
         // This should not throw an exception
         $this->integrationService->clearVillageCache($villageId);
-        
+
         $this->assertTrue(true);
     }
 
@@ -135,18 +135,18 @@ class LarautilxIntegrationTest extends TestCase
             [
                 'field' => 'name',
                 'operator' => 'equals',
-                'value' => 'test'
+                'value' => 'test',
             ],
             [
                 'field' => 'status',
                 'operator' => 'contains',
-                'value' => 'active'
+                'value' => 'active',
             ],
             [
                 'field' => 'invalid',
                 'operator' => 'invalid_operator',
-                'value' => 'test'
-            ]
+                'value' => 'test',
+            ],
         ];
 
         $validatedFilters = $this->integrationService->validateFilters($filters);
@@ -160,7 +160,7 @@ class LarautilxIntegrationTest extends TestCase
     {
         // This should not throw an exception
         $result = $this->integrationService->clearAllCaches();
-        
+
         $this->assertTrue($result);
     }
 

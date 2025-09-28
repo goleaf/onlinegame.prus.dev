@@ -2,12 +2,10 @@
 
 namespace App\Livewire\Game;
 
-use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
 use App\Services\GeographicService;
 use App\Services\LarautilxIntegrationService;
-use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Utilities\FilteringUtil;
@@ -19,16 +17,27 @@ class AdvancedMapManager extends Component
     use ApiResponseTrait;
 
     public $worlds = [];
+
     public $selectedWorld = null;
+
     public $centerX = 500;
+
     public $centerY = 500;
+
     public $radius = 20;
+
     public $filter = '';
+
     public $realWorldMode = false;
+
     public $villages = [];
+
     public $mapData = [];
+
     public $statistics = [];
+
     public $selectedVillage = null;
+
     public $isLoading = false;
 
     protected $listeners = [
@@ -40,7 +49,7 @@ class AdvancedMapManager extends Component
         'selectVillage' => 'selectVillage',
         'updateWorld' => 'updateWorld',
         'updateFilter' => 'updateFilter',
-        'updateMap' => 'updateMap'
+        'updateMap' => 'updateMap',
     ];
 
     public function mount()
@@ -70,7 +79,7 @@ class AdvancedMapManager extends Component
 
     public function loadInitialData()
     {
-        if (!$this->selectedWorld) {
+        if (! $this->selectedWorld) {
             return;
         }
 
@@ -110,7 +119,7 @@ class AdvancedMapManager extends Component
             $this->calculateStatistics();
             $this->updateMapData();
         } catch (\Exception $e) {
-            $this->addNotification('Error loading map data: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading map data: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -162,11 +171,12 @@ class AdvancedMapManager extends Component
                 pow($village['x_coordinate'] - $this->centerX, 2)
                 + pow($village['y_coordinate'] - $this->centerY, 2)
             );
+
             return $distance <= $this->radius;
         });
 
         // Apply additional filters using FilteringUtil
-        if (!empty($this->filter)) {
+        if (! empty($this->filter)) {
             switch ($this->filter) {
                 case 'player':
                     $currentPlayer = Auth::user()?->player;
@@ -178,6 +188,7 @@ class AdvancedMapManager extends Component
                             $currentPlayer->id
                         );
                     }
+
                     break;
                 case 'alliance':
                     $currentPlayer = Auth::user()?->player;
@@ -189,6 +200,7 @@ class AdvancedMapManager extends Component
                             $currentPlayer->alliance_id
                         );
                     }
+
                     break;
                 case 'enemy':
                     $currentPlayer = Auth::user()?->player;
@@ -200,6 +212,7 @@ class AdvancedMapManager extends Component
                             $currentPlayer->id
                         );
                     }
+
                     break;
                 case 'abandoned':
                     $filteredVillages = FilteringUtil::filter(
@@ -208,6 +221,7 @@ class AdvancedMapManager extends Component
                         'equals',
                         0
                     );
+
                     break;
             }
         }
@@ -219,7 +233,7 @@ class AdvancedMapManager extends Component
             'villages' => $this->mapData,
             'center' => ['x' => $this->centerX, 'y' => $this->centerY],
             'radius' => $this->radius,
-            'realWorldMode' => $this->realWorldMode
+            'realWorldMode' => $this->realWorldMode,
         ]);
     }
 
@@ -228,7 +242,7 @@ class AdvancedMapManager extends Component
         $currentPlayer = Auth::user()?->player;
 
         // Use optimized query to calculate statistics in one go
-        if (!empty($this->mapData)) {
+        if (! empty($this->mapData)) {
             $villageIds = collect($this->mapData)->pluck('id')->toArray();
 
             $stats = Village::whereIn('id', $villageIds)
@@ -245,7 +259,7 @@ class AdvancedMapManager extends Component
                     $currentPlayer?->id ?? 0,
                     $currentPlayer?->alliance_id ?? 0,
                     $currentPlayer?->id ?? 0,
-                    $currentPlayer?->alliance_id ?? 0
+                    $currentPlayer?->alliance_id ?? 0,
                 ])
                 ->first();
 
@@ -304,7 +318,7 @@ class AdvancedMapManager extends Component
 
     public function toggleRealWorldView()
     {
-        $this->realWorldMode = !$this->realWorldMode;
+        $this->realWorldMode = ! $this->realWorldMode;
         $this->updateMapData();
     }
 
@@ -347,7 +361,7 @@ class AdvancedMapManager extends Component
                 'world',
                 'buildings.buildingType',
                 'troops.unitType',
-                'resources'
+                'resources',
             ])->findOrFail($villageId);
 
             $details = [
@@ -368,7 +382,7 @@ class AdvancedMapManager extends Component
 
             return $this->successResponse($details, 'Village details retrieved successfully.');
         } catch (\Exception $e) {
-            return $this->errorResponse('Failed to retrieve village details: ' . $e->getMessage());
+            return $this->errorResponse('Failed to retrieve village details: '.$e->getMessage());
         }
     }
 
@@ -391,23 +405,24 @@ class AdvancedMapManager extends Component
 
             return $this->successResponse($nearbyVillages, 'Nearby villages retrieved successfully.');
         } catch (\Exception $e) {
-            return $this->errorResponse('Failed to find nearby villages: ' . $e->getMessage());
+            return $this->errorResponse('Failed to find nearby villages: '.$e->getMessage());
         }
     }
 
     private function calculateDistanceToVillage($village)
     {
         $currentPlayer = Auth::user()?->player;
-        if (!$currentPlayer) {
+        if (! $currentPlayer) {
             return null;
         }
 
         $playerVillage = $currentPlayer->villages->first();
-        if (!$playerVillage) {
+        if (! $playerVillage) {
             return null;
         }
 
         $geoService = app(GeographicService::class);
+
         return [
             'game_distance' => $geoService->calculateGameDistance(
                 $playerVillage->x_coordinate,
@@ -441,7 +456,7 @@ class AdvancedMapManager extends Component
     {
         $this->dispatch('notification', [
             'message' => $message,
-            'type' => $type
+            'type' => $type,
         ]);
     }
 
@@ -465,7 +480,7 @@ class AdvancedMapManager extends Component
                 'geohash' => $village->geohash,
                 'elevation' => $village->elevation,
                 'distance_from_center' => $this->calculateDistance($village->x_coordinate, $village->y_coordinate),
-                'bearing_from_center' => $this->calculateBearing($village->x_coordinate, $village->y_coordinate)
+                'bearing_from_center' => $this->calculateBearing($village->x_coordinate, $village->y_coordinate),
             ];
         })->toArray();
     }
@@ -481,6 +496,7 @@ class AdvancedMapManager extends Component
         $deltaY = $y - $this->centerY;
 
         $bearing = atan2($deltaY, $deltaX) * 180 / pi();
+
         return ($bearing + 360) % 360;
     }
 

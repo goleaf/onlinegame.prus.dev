@@ -30,9 +30,15 @@
   position: relative;
 }
 
-.boxes .boxes-tl, .boxes .boxes-tc, .boxes .boxes-tr,
-.boxes .boxes-ml, .boxes .boxes-mc, .boxes .boxes-mr,
-.boxes .boxes-bl, .boxes .boxes-bc, .boxes .boxes-br {
+.boxes .boxes-tl,
+.boxes .boxes-tc,
+.boxes .boxes-tr,
+.boxes .boxes-ml,
+.boxes .boxes-mc,
+.boxes .boxes-mr,
+.boxes .boxes-bl,
+.boxes .boxes-bc,
+.boxes .boxes-br {
   position: absolute;
 }
 
@@ -99,9 +105,15 @@
   height: 11px;
 }
 
-.boxes .boxes-tl, .boxes .boxes-tc, .boxes .boxes-tr,
-.boxes .boxes-ml, .boxes .boxes-mc, .boxes .boxes-mr,
-.boxes .boxes-bl, .boxes .boxes-bc, .boxes .boxes-br {
+.boxes .boxes-tl,
+.boxes .boxes-tc,
+.boxes .boxes-tr,
+.boxes .boxes-ml,
+.boxes .boxes-mc,
+.boxes .boxes-mr,
+.boxes .boxes-bl,
+.boxes .boxes-bc,
+.boxes .boxes-br {
   background-color: transparent;
   background-position: left top;
 }
@@ -132,7 +144,8 @@
   background-repeat: repeat-y;
 }
 
-.boxes .boxes-bl, .boxes .boxes-bc {
+.boxes .boxes-bl,
+.boxes .boxes-bc {
   background-position: left bottom;
 }
 
@@ -149,7 +162,15 @@
   background-repeat: no-repeat;
 }
 
-.boxes .boxes-tl, .boxes .boxes-tc, .boxes .boxes-tr, .boxes .boxes-ml, .boxes .boxes-mc, .boxes .boxes-mr, .boxes .boxes-bl, .boxes .boxes-bc, .boxes .boxes-br {
+.boxes .boxes-tl,
+.boxes .boxes-tc,
+.boxes .boxes-tr,
+.boxes .boxes-ml,
+.boxes .boxes-mc,
+.boxes .boxes-mr,
+.boxes .boxes-bl,
+.boxes .boxes-bc,
+.boxes .boxes-br {
   background-image: url('../../img_ltr/round/boxes/sprite.png');
 }
 
@@ -256,14 +277,24 @@
   height: 4px;
 }
 
-.boxesColor.gray .boxes-tl, .boxesColor.gray .boxes-tc, .boxesColor.gray .boxes-tr,
-.boxesColor.gray .boxes-ml, .boxesColor.gray .boxes-mc, .boxesColor.gray .boxes-mr,
-.boxesColor.gray .boxes-bl, .boxesColor.gray .boxes-bc, .boxesColor.gray .boxes-br {
+.boxesColor.gray .boxes-tl,
+.boxesColor.gray .boxes-tc,
+.boxesColor.gray .boxes-tr,
+.boxesColor.gray .boxes-ml,
+.boxesColor.gray .boxes-mc,
+.boxesColor.gray .boxes-mr,
+.boxesColor.gray .boxes-bl,
+.boxesColor.gray .boxes-bc,
+.boxesColor.gray .boxes-br {
   background-image: url('../../img_ltr/round/boxes/gray/sprite.png');
 }
 
-.boxesColor.gray .boxes-ml, .boxesColor.gray .boxes-mr, .boxesColor.gray .boxes-tc,
-.boxesColor.gray .boxes-bc, .boxesColor.gray .boxes-bc, .boxesColor.gray .boxes-mc {
+.boxesColor.gray .boxes-ml,
+.boxesColor.gray .boxes-mr,
+.boxesColor.gray .boxes-tc,
+.boxesColor.gray .boxes-bc,
+.boxesColor.gray .boxes-bc,
+.boxesColor.gray .boxes-mc {
   background-image: none;
   background-color: #e4e4e4;
 }
@@ -285,17 +316,27 @@
 }
 
 .boxesColor.darkGray .boxes-container {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
-.boxesColor.darkGray .boxes-tl, .boxesColor.darkGray .boxes-tc, .boxesColor.darkGray .boxes-tr,
-.boxesColor.darkGray .boxes-ml, .boxesColor.darkGray .boxes-mc, .boxesColor.darkGray .boxes-mr,
-.boxesColor.darkGray .boxes-bl, .boxesColor.darkGray .boxes-bc, .boxesColor.darkGray .boxes-br {
+.boxesColor.darkGray .boxes-tl,
+.boxesColor.darkGray .boxes-tc,
+.boxesColor.darkGray .boxes-tr,
+.boxesColor.darkGray .boxes-ml,
+.boxesColor.darkGray .boxes-mc,
+.boxesColor.darkGray .boxes-mr,
+.boxesColor.darkGray .boxes-bl,
+.boxesColor.darkGray .boxes-bc,
+.boxesColor.darkGray .boxes-br {
   background-image: url('../../img_ltr/round/boxes/darkGray/sprite.png');
 }
 
-.boxesColor.darkGray .boxes-ml, .boxesColor.darkGray .boxes-mr, .boxesColor.darkGray .boxes-tc,
-.boxesColor.darkGray .boxes-bc, .boxesColor.darkGray .boxes-bc, .boxesColor.darkGray .boxes-mc {
+.boxesColor.darkGray .boxes-ml,
+.boxesColor.darkGray .boxes-mr,
+.boxesColor.darkGray .boxes-tc,
+.boxesColor.darkGray .boxes-bc,
+.boxesColor.darkGray .boxes-bc,
+.boxesColor.darkGray .boxes-mc {
   background-image: none;
   background-color: #666666;
 }
@@ -317,17 +358,27 @@
 }
 
 .boxesColor.orange .boxes-container {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
-.boxesColor.orange .boxes-tl, .boxesColor.orange .boxes-tc, .boxesColor.orange .boxes-tr,
-.boxesColor.orange .boxes-ml, .boxesColor.orange .boxes-mc, .boxesColor.orange .boxes-mr,
-.boxesColor.orange .boxes-bl, .boxesColor.orange .boxes-bc, .boxesColor.orange .boxes-br {
+.boxesColor.orange .boxes-tl,
+.boxesColor.orange .boxes-tc,
+.boxesColor.orange .boxes-tr,
+.boxesColor.orange .boxes-ml,
+.boxesColor.orange .boxes-mc,
+.boxesColor.orange .boxes-mr,
+.boxesColor.orange .boxes-bl,
+.boxesColor.orange .boxes-bc,
+.boxesColor.orange .boxes-br {
   background-image: url('../../img_ltr/round/boxes/orange/sprite.png');
 }
 
-.boxesColor.orange .boxes-ml, .boxesColor.orange .boxes-mr, .boxesColor.orange .boxes-tc,
-.boxesColor.orange .boxes-bc, .boxesColor.orange .boxes-bc, .boxesColor.orange .boxes-mc {
+.boxesColor.orange .boxes-ml,
+.boxesColor.orange .boxes-mr,
+.boxesColor.orange .boxes-tc,
+.boxesColor.orange .boxes-bc,
+.boxesColor.orange .boxes-bc,
+.boxesColor.orange .boxes-mc {
   background-image: none;
   background-color: #f88c1f;
 }
@@ -349,17 +400,27 @@
 }
 
 .boxesColor.green .boxes-container {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
-.boxesColor.green .boxes-tl, .boxesColor.green .boxes-tc, .boxesColor.green .boxes-tr,
-.boxesColor.green .boxes-ml, .boxesColor.green .boxes-mc, .boxesColor.green .boxes-mr,
-.boxesColor.green .boxes-bl, .boxesColor.green .boxes-bc, .boxesColor.green .boxes-br {
+.boxesColor.green .boxes-tl,
+.boxesColor.green .boxes-tc,
+.boxesColor.green .boxes-tr,
+.boxesColor.green .boxes-ml,
+.boxesColor.green .boxes-mc,
+.boxesColor.green .boxes-mr,
+.boxesColor.green .boxes-bl,
+.boxesColor.green .boxes-bc,
+.boxesColor.green .boxes-br {
   background-image: url('../../img_ltr/round/boxes/green/sprite.png');
 }
 
-.boxesColor.green .boxes-ml, .boxesColor.green .boxes-mr, .boxesColor.green .boxes-tc,
-.boxesColor.green .boxes-bc, .boxesColor.green .boxes-bc, .boxesColor.green .boxes-mc {
+.boxesColor.green .boxes-ml,
+.boxesColor.green .boxes-mr,
+.boxesColor.green .boxes-tc,
+.boxesColor.green .boxes-bc,
+.boxesColor.green .boxes-bc,
+.boxesColor.green .boxes-mc {
   background-image: none;
   background-color: #498843;
 }
@@ -381,29 +442,49 @@
 }
 
 .boxesColor.red .boxes-container {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
-.boxesColor.red .boxes-tl, .boxesColor.red .boxes-tc, .boxesColor.red .boxes-tr,
-.boxesColor.red .boxes-ml, .boxesColor.red .boxes-mc, .boxesColor.red .boxes-mr,
-.boxesColor.red .boxes-bl, .boxesColor.red .boxes-bc, .boxesColor.red .boxes-br {
+.boxesColor.red .boxes-tl,
+.boxesColor.red .boxes-tc,
+.boxesColor.red .boxes-tr,
+.boxesColor.red .boxes-ml,
+.boxesColor.red .boxes-mc,
+.boxesColor.red .boxes-mr,
+.boxesColor.red .boxes-bl,
+.boxesColor.red .boxes-bc,
+.boxesColor.red .boxes-br {
   background-image: url('../../img_ltr/round/boxes/red/sprite.png');
 }
 
-.colorBlind .boxesColor.red .boxes-tl, .colorBlind .boxesColor.red .boxes-tc, .colorBlind .boxesColor.red .boxes-tr,
-.colorBlind .boxesColor.red .boxes-ml, .colorBlind .boxesColor.red .boxes-mc, .colorBlind .boxesColor.red .boxes-mr,
-.colorBlind .boxesColor.red .boxes-bl, .colorBlind .boxesColor.red .boxes-bc, .colorBlind .boxesColor.red .boxes-br {
+.colorBlind .boxesColor.red .boxes-tl,
+.colorBlind .boxesColor.red .boxes-tc,
+.colorBlind .boxesColor.red .boxes-tr,
+.colorBlind .boxesColor.red .boxes-ml,
+.colorBlind .boxesColor.red .boxes-mc,
+.colorBlind .boxesColor.red .boxes-mr,
+.colorBlind .boxesColor.red .boxes-bl,
+.colorBlind .boxesColor.red .boxes-bc,
+.colorBlind .boxesColor.red .boxes-br {
   background-image: url('../../img_ltr/round/boxes/red/spriteColorblind.png');
 }
 
-.boxesColor.red .boxes-ml, .boxesColor.red .boxes-mr, .boxesColor.red .boxes-tc,
-.boxesColor.red .boxes-bc, .boxesColor.red .boxes-bc, .boxesColor.red .boxes-mc {
+.boxesColor.red .boxes-ml,
+.boxesColor.red .boxes-mr,
+.boxesColor.red .boxes-tc,
+.boxesColor.red .boxes-bc,
+.boxesColor.red .boxes-bc,
+.boxesColor.red .boxes-mc {
   background-image: none;
-  background-color: #D40000;
+  background-color: #d40000;
 }
 
-.colorBlind .boxesColor.red .boxes-ml, .colorBlind .boxesColor.red .boxes-mr, .colorBlind .boxesColor.red .boxes-tc,
-.colorBlind .boxesColor.red .boxes-bc, .colorBlind .boxesColor.red .boxes-bc, .colorBlind .boxesColor.red .boxes-mc {
+.colorBlind .boxesColor.red .boxes-ml,
+.colorBlind .boxesColor.red .boxes-mr,
+.colorBlind .boxesColor.red .boxes-tc,
+.colorBlind .boxesColor.red .boxes-bc,
+.colorBlind .boxesColor.red .boxes-bc,
+.colorBlind .boxesColor.red .boxes-mc {
   background-image: none;
   background-color: #001fbc;
 }
@@ -425,16 +506,24 @@
 }
 
 .boxesColor.red-border .boxes-container {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
-.boxesColor.red-border .boxes-tl, .boxesColor.red-border .boxes-tc, .boxesColor.red-border .boxes-tr,
-.boxesColor.red-border .boxes-ml, .boxesColor.red-border .boxes-mc, .boxesColor.red-border .boxes-mr,
-.boxesColor.red-border .boxes-bl, .boxesColor.red-border .boxes-bc, .boxesColor.red-border .boxes-br {
+.boxesColor.red-border .boxes-tl,
+.boxesColor.red-border .boxes-tc,
+.boxesColor.red-border .boxes-tr,
+.boxesColor.red-border .boxes-ml,
+.boxesColor.red-border .boxes-mc,
+.boxesColor.red-border .boxes-mr,
+.boxesColor.red-border .boxes-bl,
+.boxesColor.red-border .boxes-bc,
+.boxesColor.red-border .boxes-br {
   background-image: url('../../img_ltr/round/boxes/red-border/sprite.png');
 }
 
-.boxesColor.red-border .boxes-ml, .boxesColor.red-border .boxes-mr, .boxesColor.red-border .boxes-tc,
+.boxesColor.red-border .boxes-ml,
+.boxesColor.red-border .boxes-mr,
+.boxesColor.red-border .boxes-tc,
 .boxesColor.red-border .boxes-mc {
   background-image: none;
   background-color: #e4e4e4;
@@ -478,13 +567,21 @@
   background-position: -15px 0;
 }
 
-.boxesColor.orange-border .boxes-tl, .boxesColor.orange-border .boxes-tc, .boxesColor.orange-border .boxes-tr,
-.boxesColor.orange-border .boxes-ml, .boxesColor.orange-border .boxes-mc, .boxesColor.orange-border .boxes-mr,
-.boxesColor.orange-border .boxes-bl, .boxesColor.orange-border .boxes-bc, .boxesColor.orange-border .boxes-br {
+.boxesColor.orange-border .boxes-tl,
+.boxesColor.orange-border .boxes-tc,
+.boxesColor.orange-border .boxes-tr,
+.boxesColor.orange-border .boxes-ml,
+.boxesColor.orange-border .boxes-mc,
+.boxesColor.orange-border .boxes-mr,
+.boxesColor.orange-border .boxes-bl,
+.boxesColor.orange-border .boxes-bc,
+.boxesColor.orange-border .boxes-br {
   background-image: url('../../img_ltr/round/boxes/orange-border/sprite.png');
 }
 
-.boxesColor.orange-border .boxes-ml, .boxesColor.orange-border .boxes-mr, .boxesColor.orange-border .boxes-tc,
+.boxesColor.orange-border .boxes-ml,
+.boxesColor.orange-border .boxes-mr,
+.boxesColor.orange-border .boxes-tc,
 .boxesColor.orange-border .boxes-mc {
   background-image: none;
   background-color: #e4e4e4;
@@ -529,19 +626,29 @@
 }
 
 .boxesColor.lightGreen .boxes-container {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
-.boxesColor.lightGreen .boxes-tl, .boxesColor.lightGreen .boxes-tc, .boxesColor.lightGreen .boxes-tr,
-.boxesColor.lightGreen .boxes-ml, .boxesColor.lightGreen .boxes-mc, .boxesColor.lightGreen .boxes-mr,
-.boxesColor.lightGreen .boxes-bl, .boxesColor.lightGreen .boxes-bc, .boxesColor.lightGreen .boxes-br {
+.boxesColor.lightGreen .boxes-tl,
+.boxesColor.lightGreen .boxes-tc,
+.boxesColor.lightGreen .boxes-tr,
+.boxesColor.lightGreen .boxes-ml,
+.boxesColor.lightGreen .boxes-mc,
+.boxesColor.lightGreen .boxes-mr,
+.boxesColor.lightGreen .boxes-bl,
+.boxesColor.lightGreen .boxes-bc,
+.boxesColor.lightGreen .boxes-br {
   background-image: url('../../img_ltr/round/boxes/lightGreen/sprite.png');
 }
 
-.boxesColor.lightGreen .boxes-ml, .boxesColor.lightGreen .boxes-mr, .boxesColor.lightGreen .boxes-tc,
-.boxesColor.lightGreen .boxes-bc, .boxesColor.lightGreen .boxes-bc, .boxesColor.lightGreen .boxes-mc {
+.boxesColor.lightGreen .boxes-ml,
+.boxesColor.lightGreen .boxes-mr,
+.boxesColor.lightGreen .boxes-tc,
+.boxesColor.lightGreen .boxes-bc,
+.boxesColor.lightGreen .boxes-bc,
+.boxesColor.lightGreen .boxes-mc {
   background-image: none;
-  background-color: #99C01A;
+  background-color: #99c01a;
 }
 
 .boxesColor.lightGreen .boxes-tl {
@@ -576,11 +683,11 @@
 }
 
 * html .boxes {
-  background-color: #F2F2F2;
+  background-color: #f2f2f2;
 }
 
 * html .boxesColor.gray {
-  background-color: #E5E5E5;
+  background-color: #e5e5e5;
 }
 
 * html .boxesColor.darkGray {
@@ -592,15 +699,15 @@
 }
 
 * html .boxesColor.lightGreen {
-  background-color: #99C11A;
+  background-color: #99c11a;
 }
 
 * html .boxesColor.orange {
-  background-color: #F88C1F;
+  background-color: #f88c1f;
 }
 
 * html .boxesColor.red {
-  background-color: #D40000;
+  background-color: #d40000;
 }
 
 /* Rounded corners box */
@@ -618,14 +725,14 @@
 }
 
 .roundedCornersBox.lightRed {
-  border-color: #D40000;
+  border-color: #d40000;
   background-color: #fdf2f2;
 }
 
 .roundedCornersBox.white {
   color: #333333;
   border: none;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   padding: 10px 20px;
 }
 
@@ -655,13 +762,13 @@
 
 /* Big rounded corners box (used e.g. for building upgrade section) */
 .roundedCornersBox.big {
-  background-color: #F9FBF4;
-  border: solid 1px #A1BC79;
+  background-color: #f9fbf4;
+  border: solid 1px #a1bc79;
   margin-bottom: 19px;
 }
 
 .roundedCornersBox.big h4 {
-  background: linear-gradient(to right, #cbe0ac, #F9FBF4);
+  background: linear-gradient(to right, #cbe0ac, #f9fbf4);
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   padding-left: 10px;

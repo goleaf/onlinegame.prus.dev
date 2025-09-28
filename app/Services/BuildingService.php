@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Game\Building;
 use App\Models\Game\BuildingQueue;
-use App\Services\RabbitMQService;
 use Illuminate\Support\Facades\Log;
 
 class BuildingService
@@ -37,7 +36,7 @@ class BuildingService
         }
 
         // Check requirements
-        if (!$this->checkRequirements($village, $buildingType, $level)) {
+        if (! $this->checkRequirements($village, $buildingType, $level)) {
             return false;
         }
 
@@ -55,12 +54,12 @@ class BuildingService
         foreach ($requirements as $buildingKey => $requiredLevel) {
             $building = $village
                 ->buildings()
-                ->whereHas('buildingType', function ($query) use ($buildingKey) {
+                ->whereHas('buildingType', function ($query) use ($buildingKey): void {
                     $query->where('key', $buildingKey);
                 })
                 ->first();
 
-            if (!$building || $building->level < $requiredLevel) {
+            if (! $building || $building->level < $requiredLevel) {
                 return false;
             }
         }
@@ -91,7 +90,7 @@ class BuildingService
 
     public function startUpgrade($village, $buildingType, $level = 1)
     {
-        if (!$this->canBuild($village, $buildingType, $level)) {
+        if (! $this->canBuild($village, $buildingType, $level)) {
             return false;
         }
 
@@ -151,7 +150,7 @@ class BuildingService
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Failed to start building upgrade: ' . $e->getMessage());
+            Log::error('Failed to start building upgrade: '.$e->getMessage());
 
             return false;
         }
@@ -173,7 +172,7 @@ class BuildingService
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Failed to complete building upgrade: ' . $e->getMessage());
+            Log::error('Failed to complete building upgrade: '.$e->getMessage());
 
             return false;
         }
@@ -197,7 +196,7 @@ class BuildingService
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Failed to cancel building upgrade: ' . $e->getMessage());
+            Log::error('Failed to cancel building upgrade: '.$e->getMessage());
 
             return false;
         }
@@ -228,7 +227,7 @@ class BuildingService
 
     private function calculateUpgradeProgress($building)
     {
-        if (!$building->upgrade_started_at) {
+        if (! $building->upgrade_started_at) {
             return 0;
         }
 

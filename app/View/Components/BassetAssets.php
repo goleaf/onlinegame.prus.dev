@@ -8,7 +8,9 @@ use Illuminate\View\Component;
 class BassetAssets extends Component
 {
     public array $assets;
+
     public string $type;
+
     public bool $preconnect;
 
     /**
@@ -52,7 +54,7 @@ class BassetAssets extends Component
      */
     public function getPreconnectTags(): string
     {
-        if (!$this->preconnect) {
+        if (! $this->preconnect) {
             return '';
         }
 

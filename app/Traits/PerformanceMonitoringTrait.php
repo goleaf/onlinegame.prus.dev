@@ -12,18 +12,20 @@ trait PerformanceMonitoringTrait
     protected function monitorQueries(callable $callback, string $method = 'unknown'): mixed
     {
         $componentName = class_basename(static::class);
+
         return PerformanceMonitoringService::monitorQueries($callback, "{$componentName}::{$method}");
     }
-    
+
     /**
      * Get performance statistics for this component
      */
     protected function getPerformanceStats(): array
     {
         $componentName = class_basename(static::class);
+
         return PerformanceMonitoringService::getPerformanceStats($componentName);
     }
-    
+
     /**
      * Optimize queries with eager loading
      */
@@ -31,7 +33,7 @@ trait PerformanceMonitoringTrait
     {
         return PerformanceMonitoringService::optimizeQueries($query, $relationships);
     }
-    
+
     /**
      * Get performance metrics for debugging
      */

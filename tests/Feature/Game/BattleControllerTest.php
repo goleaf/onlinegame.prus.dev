@@ -14,8 +14,11 @@ class BattleControllerTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Player $player;
+
     protected Village $village;
+
     protected Battle $battle;
 
     protected function setUp(): void
@@ -53,15 +56,15 @@ class BattleControllerTest extends TestCase
                         'result',
                         'occurred_at',
                         'created_at',
-                        'updated_at'
-                    ]
+                        'updated_at',
+                    ],
                 ],
                 'meta' => [
                     'current_page',
                     'per_page',
                     'total',
-                    'last_page'
-                ]
+                    'last_page',
+                ],
             ]);
     }
 
@@ -86,17 +89,17 @@ class BattleControllerTest extends TestCase
                     'occurred_at',
                     'attacker' => [
                         'id',
-                        'name'
+                        'name',
                     ],
                     'defender' => [
                         'id',
-                        'name'
+                        'name',
                     ],
                     'village' => [
                         'id',
-                        'name'
-                    ]
-                ]
+                        'name',
+                    ],
+                ],
             ]);
     }
 
@@ -118,9 +121,9 @@ class BattleControllerTest extends TestCase
                         'attacker_id',
                         'defender_id',
                         'result',
-                        'occurred_at'
-                    ]
-                ]
+                        'occurred_at',
+                    ],
+                ],
             ]);
     }
 
@@ -143,8 +146,8 @@ class BattleControllerTest extends TestCase
                     'draws',
                     'win_rate',
                     'total_loot_gained',
-                    'recent_battles'
-                ]
+                    'recent_battles',
+                ],
             ]);
     }
 
@@ -175,15 +178,15 @@ class BattleControllerTest extends TestCase
                     'defender_id',
                     'village_id',
                     'result',
-                    'occurred_at'
-                ]
+                    'occurred_at',
+                ],
             ]);
 
         $this->assertDatabaseHas('battles', [
             'attacker_id' => $this->player->id,
             'defender_id' => $this->player->id,
             'village_id' => $this->village->id,
-            'result' => 'victory'
+            'result' => 'victory',
         ]);
     }
 
@@ -204,7 +207,7 @@ class BattleControllerTest extends TestCase
                 'village_id',
                 'attacker_troops',
                 'defender_troops',
-                'result'
+                'result',
             ]);
     }
 
@@ -228,9 +231,9 @@ class BattleControllerTest extends TestCase
                         'victories',
                         'defeats',
                         'draws',
-                        'win_rate'
-                    ]
-                ]
+                        'win_rate',
+                    ],
+                ],
             ]);
     }
 

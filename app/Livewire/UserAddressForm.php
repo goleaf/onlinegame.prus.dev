@@ -2,10 +2,9 @@
 
 namespace App\Livewire;
 
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
 use Livewire\Attributes\Validate;
+use Livewire\Component;
 
 class UserAddressForm extends Component
 {
@@ -44,7 +43,7 @@ class UserAddressForm extends Component
 
     public function toggleEdit()
     {
-        $this->isEditing = !$this->isEditing;
+        $this->isEditing = ! $this->isEditing;
     }
 
     public function save()

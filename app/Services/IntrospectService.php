@@ -50,7 +50,8 @@ class IntrospectService
     public function getModelFillable(string $modelClass): array
     {
         try {
-            $model = new $modelClass;
+            $model = new $modelClass();
+
             return $model->getFillable();
         } catch (\Exception $e) {
             return [];
@@ -63,7 +64,8 @@ class IntrospectService
     public function getModelCasts(string $modelClass): array
     {
         try {
-            $model = new $modelClass;
+            $model = new $modelClass();
+
             return $model->getCasts();
         } catch (\Exception $e) {
             return [];
@@ -142,6 +144,7 @@ class IntrospectService
 
             // Get auth routes manually to avoid middleware issues
             $authRoutes = [];
+
             try {
                 $authRoutes = Introspect::routes()
                     ->whereUsesMiddleware('auth')
@@ -166,7 +169,7 @@ class IntrospectService
                 'api_routes' => [],
                 'auth_routes' => [],
                 'total_routes' => 0,
-                'error' => 'Route analysis failed: ' . $e->getMessage(),
+                'error' => 'Route analysis failed: '.$e->getMessage(),
             ];
         }
     }
@@ -299,7 +302,7 @@ class IntrospectService
                 $schemas[$name] = [
                     'type' => 'object',
                     'properties' => [],
-                    'error' => 'Could not generate schema: ' . $e->getMessage()
+                    'error' => 'Could not generate schema: '.$e->getMessage(),
                 ];
             }
         }
@@ -337,7 +340,7 @@ class IntrospectService
             } catch (\Exception $e) {
                 $dependencies[$name] = [
                     'class' => $class,
-                    'error' => 'Could not analyze: ' . $e->getMessage(),
+                    'error' => 'Could not analyze: '.$e->getMessage(),
                     'fillable' => $this->getModelFillable($class),
                     'casts' => $this->getModelCasts($class),
                     'relationships' => $this->getModelRelationships($class),

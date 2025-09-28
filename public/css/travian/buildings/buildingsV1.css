@@ -481,17 +481,28 @@
   width: 628px;
   height: 534px;
 }
-.buildingsV1 .wall.g31Bottom, .buildingsV1 .wall.g31bBottom {
+.buildingsV1 .wall.g31Bottom,
+.buildingsV1 .wall.g31bBottom {
   background-image: url('../../img_ltr/g/defaultBuildings/g31Bottom-ltr.png');
   width: 628px;
   height: 534px;
 }
-.buildingsV1 .wall.g31Bottom, .buildingsV1 .wall.g31bBottom, .buildingsV1 .wall.g31Top, .buildingsV1 .wall.g33Bottom, .buildingsV1 .wall.g33bBottom, .buildingsV1 .wall.g33Top, .buildingsV1 .wall.g42Bottom, .buildingsV1 .wall.g42bBottom, .buildingsV1 .wall.g42Top {
+.buildingsV1 .wall.g31Bottom,
+.buildingsV1 .wall.g31bBottom,
+.buildingsV1 .wall.g31Top,
+.buildingsV1 .wall.g33Bottom,
+.buildingsV1 .wall.g33bBottom,
+.buildingsV1 .wall.g33Top,
+.buildingsV1 .wall.g42Bottom,
+.buildingsV1 .wall.g42bBottom,
+.buildingsV1 .wall.g42Top {
   top: 6px;
   left: 2px;
   height: 523px;
 }
-.buildingsV1 .wall.g32Top, .buildingsV1 .wall.g32Bottom, .buildingsV1 .wall.g32bBottom {
+.buildingsV1 .wall.g32Top,
+.buildingsV1 .wall.g32Bottom,
+.buildingsV1 .wall.g32bBottom {
   top: -2px;
   left: -8px;
 }
@@ -506,17 +517,28 @@
   width: 675px;
   height: 534px;
 }
-.buildingsV1 .wall.g32Bottom, .buildingsV1 .wall.g32bBottom {
+.buildingsV1 .wall.g32Bottom,
+.buildingsV1 .wall.g32bBottom {
   background-image: url('../../img_ltr/g/defaultBuildings/g32Bottom-ltr.png');
   width: 675px;
   height: 534px;
 }
-.buildingsV1 .wall.g31Bottom, .buildingsV1 .wall.g31bBottom, .buildingsV1 .wall.g31Top, .buildingsV1 .wall.g33Bottom, .buildingsV1 .wall.g33bBottom, .buildingsV1 .wall.g33Top, .buildingsV1 .wall.g42Bottom, .buildingsV1 .wall.g42bBottom, .buildingsV1 .wall.g42Top {
+.buildingsV1 .wall.g31Bottom,
+.buildingsV1 .wall.g31bBottom,
+.buildingsV1 .wall.g31Top,
+.buildingsV1 .wall.g33Bottom,
+.buildingsV1 .wall.g33bBottom,
+.buildingsV1 .wall.g33Top,
+.buildingsV1 .wall.g42Bottom,
+.buildingsV1 .wall.g42bBottom,
+.buildingsV1 .wall.g42Top {
   top: 6px;
   left: 2px;
   height: 523px;
 }
-.buildingsV1 .wall.g32Top, .buildingsV1 .wall.g32Bottom, .buildingsV1 .wall.g32bBottom {
+.buildingsV1 .wall.g32Top,
+.buildingsV1 .wall.g32Bottom,
+.buildingsV1 .wall.g32bBottom {
   top: -2px;
   left: -8px;
 }
@@ -531,17 +553,28 @@
   width: 628px;
   height: 534px;
 }
-.buildingsV1 .wall.g33Bottom, .buildingsV1 .wall.g33bBottom {
+.buildingsV1 .wall.g33Bottom,
+.buildingsV1 .wall.g33bBottom {
   background-image: url('../../img_ltr/g/defaultBuildings/g33Bottom-ltr.png');
   width: 628px;
   height: 534px;
 }
-.buildingsV1 .wall.g31Bottom, .buildingsV1 .wall.g31bBottom, .buildingsV1 .wall.g31Top, .buildingsV1 .wall.g33Bottom, .buildingsV1 .wall.g33bBottom, .buildingsV1 .wall.g33Top, .buildingsV1 .wall.g42Bottom, .buildingsV1 .wall.g42bBottom, .buildingsV1 .wall.g42Top {
+.buildingsV1 .wall.g31Bottom,
+.buildingsV1 .wall.g31bBottom,
+.buildingsV1 .wall.g31Top,
+.buildingsV1 .wall.g33Bottom,
+.buildingsV1 .wall.g33bBottom,
+.buildingsV1 .wall.g33Top,
+.buildingsV1 .wall.g42Bottom,
+.buildingsV1 .wall.g42bBottom,
+.buildingsV1 .wall.g42Top {
   top: 6px;
   left: 2px;
   height: 523px;
 }
-.buildingsV1 .wall.g32Top, .buildingsV1 .wall.g32Bottom, .buildingsV1 .wall.g32bBottom {
+.buildingsV1 .wall.g32Top,
+.buildingsV1 .wall.g32Bottom,
+.buildingsV1 .wall.g32bBottom {
   top: -2px;
   left: -8px;
 }
@@ -556,17 +589,28 @@
   width: 628px;
   height: 534px;
 }
-.buildingsV1 .wall.g42Bottom, .buildingsV1 .wall.g42bBottom {
+.buildingsV1 .wall.g42Bottom,
+.buildingsV1 .wall.g42bBottom {
   background-image: url('../../img_ltr/g/defaultBuildings/g42Bottom-ltr.png');
   width: 628px;
   height: 534px;
 }
-.buildingsV1 .wall.g31Bottom, .buildingsV1 .wall.g31bBottom, .buildingsV1 .wall.g31Top, .buildingsV1 .wall.g33Bottom, .buildingsV1 .wall.g33bBottom, .buildingsV1 .wall.g33Top, .buildingsV1 .wall.g42Bottom, .buildingsV1 .wall.g42bBottom, .buildingsV1 .wall.g42Top {
+.buildingsV1 .wall.g31Bottom,
+.buildingsV1 .wall.g31bBottom,
+.buildingsV1 .wall.g31Top,
+.buildingsV1 .wall.g33Bottom,
+.buildingsV1 .wall.g33bBottom,
+.buildingsV1 .wall.g33Top,
+.buildingsV1 .wall.g42Bottom,
+.buildingsV1 .wall.g42bBottom,
+.buildingsV1 .wall.g42Top {
   top: 6px;
   left: 2px;
   height: 523px;
 }
-.buildingsV1 .wall.g32Top, .buildingsV1 .wall.g32Bottom, .buildingsV1 .wall.g32bBottom {
+.buildingsV1 .wall.g32Top,
+.buildingsV1 .wall.g32Bottom,
+.buildingsV1 .wall.g32bBottom {
   top: -2px;
   left: -8px;
 }
@@ -581,17 +625,28 @@
   width: 628px;
   height: 534px;
 }
-.buildingsV1 .wall.g43Bottom, .buildingsV1 .wall.g43bBottom {
+.buildingsV1 .wall.g43Bottom,
+.buildingsV1 .wall.g43bBottom {
   background-image: url('../../img_ltr/g/defaultBuildings/g43Bottom-ltr.png');
   width: 628px;
   height: 534px;
 }
-.buildingsV1 .wall.g31Bottom, .buildingsV1 .wall.g31bBottom, .buildingsV1 .wall.g31Top, .buildingsV1 .wall.g33Bottom, .buildingsV1 .wall.g33bBottom, .buildingsV1 .wall.g33Top, .buildingsV1 .wall.g42Bottom, .buildingsV1 .wall.g42bBottom, .buildingsV1 .wall.g42Top {
+.buildingsV1 .wall.g31Bottom,
+.buildingsV1 .wall.g31bBottom,
+.buildingsV1 .wall.g31Top,
+.buildingsV1 .wall.g33Bottom,
+.buildingsV1 .wall.g33bBottom,
+.buildingsV1 .wall.g33Top,
+.buildingsV1 .wall.g42Bottom,
+.buildingsV1 .wall.g42bBottom,
+.buildingsV1 .wall.g42Top {
   top: 6px;
   left: 2px;
   height: 523px;
 }
-.buildingsV1 .wall.g32Top, .buildingsV1 .wall.g32Bottom, .buildingsV1 .wall.g32bBottom {
+.buildingsV1 .wall.g32Top,
+.buildingsV1 .wall.g32Bottom,
+.buildingsV1 .wall.g32bBottom {
   top: -2px;
   left: -8px;
 }
@@ -1200,7 +1255,9 @@
   top: 156px;
   left: 354px;
 }
-.buildingsV1 .buildingSlot.a39.g16.ww_vp, .buildingsV1 .buildingSlot.a39.g16.b_ww, .buildingsV1 .buildingSlot.a39.g16.e_ww {
+.buildingsV1 .buildingSlot.a39.g16.ww_vp,
+.buildingsV1 .buildingSlot.a39.g16.b_ww,
+.buildingsV1 .buildingSlot.a39.g16.e_ww {
   left: 378px;
   top: 169px;
 }
@@ -1268,10 +1325,20 @@
   cursor: pointer;
   pointer-events: auto;
 }
-.buildingsV1 .buildingSlot svg.buildingShape .clickShape:hover + .hoverShape path {
+.buildingsV1
+  .buildingSlot
+  svg.buildingShape
+  .clickShape:hover
+  + .hoverShape
+  path {
   fill: rgba(255, 255, 255, 0.2);
 }
-.buildingsV1 .buildingSlot svg.buildingShape .clickShape:active + .hoverShape path {
+.buildingsV1
+  .buildingSlot
+  svg.buildingShape
+  .clickShape:active
+  + .hoverShape
+  path {
   fill: rgba(255, 255, 255, 0.35);
   -webkit-tap-highlight-color: transparent;
 }
@@ -1284,13 +1351,27 @@
 .buildingsV1 .buildingSlot svg.buildingShape .clickShapeWinter path {
   pointer-events: none;
 }
-.season-winter.buildingsV1 .buildingSlot svg.buildingShape .clickShapeWinter path {
+.season-winter.buildingsV1
+  .buildingSlot
+  svg.buildingShape
+  .clickShapeWinter
+  path {
   pointer-events: auto;
 }
-.season-winter.buildingsV1 .buildingSlot svg.buildingShape .clickShapeWinter:hover + .hoverShapeWinter path {
+.season-winter.buildingsV1
+  .buildingSlot
+  svg.buildingShape
+  .clickShapeWinter:hover
+  + .hoverShapeWinter
+  path {
   fill: rgba(255, 255, 255, 0.2);
 }
-.season-winter.buildingsV1 .buildingSlot svg.buildingShape .clickShapeWinter:active + .hoverShapeWinter path {
+.season-winter.buildingsV1
+  .buildingSlot
+  svg.buildingShape
+  .clickShapeWinter:active
+  + .hoverShapeWinter
+  path {
   fill: rgba(255, 255, 255, 0.35);
   -webkit-tap-highlight-color: transparent;
 }
@@ -1308,40 +1389,81 @@
   fill: rgba(255, 255, 255, 0.35);
   -webkit-tap-highlight-color: transparent;
 }
-.season-winter.buildingsV1 .buildingSlot svg.buildingShape .hoverShape.hoverShape path, .buildingsV1 .buildingSlot svg.buildingShape .hoverShapeWinter.hoverShape path {
+.season-winter.buildingsV1
+  .buildingSlot
+  svg.buildingShape
+  .hoverShape.hoverShape
+  path,
+.buildingsV1 .buildingSlot svg.buildingShape .hoverShapeWinter.hoverShape path {
   pointer-events: none;
   opacity: 0;
 }
 .buildingsV1 .buildingSlot svg.buildingShape .hoverShape.hoverShapeWinter path,
-.buildingsV1 .buildingSlot svg.buildingShape .hoverShapeWinter.hoverShapeWinter path {
+.buildingsV1
+  .buildingSlot
+  svg.buildingShape
+  .hoverShapeWinter.hoverShapeWinter
+  path {
   pointer-events: none;
   opacity: 0;
 }
-.season-winter.buildingsV1 .buildingSlot svg.buildingShape .hoverShape.hoverShapeWinter path, .buildingsV1 .buildingSlot svg.buildingShape .hoverShapeWinter.hoverShapeWinter path {
+.season-winter.buildingsV1
+  .buildingSlot
+  svg.buildingShape
+  .hoverShape.hoverShapeWinter
+  path,
+.buildingsV1
+  .buildingSlot
+  svg.buildingShape
+  .hoverShapeWinter.hoverShapeWinter
+  path {
   pointer-events: auto;
   opacity: 1;
 }
 .rtl.buildingsV1 .buildingSlot svg.buildingShape:not(.iso) {
   transform: scale(-1, 1);
 }
-.buildingsV1 .buildingSlot svg.buildingShape.g32Top, .buildingsV1 .buildingSlot svg.buildingShape.g32Bottom {
+.buildingsV1 .buildingSlot svg.buildingShape.g32Top,
+.buildingsV1 .buildingSlot svg.buildingShape.g32Bottom {
   top: -2px;
   left: -8px;
 }
-.buildingsV1 .buildingSlot svg.buildingShape.g31Top, .buildingsV1 .buildingSlot svg.buildingShape.g33Top, .buildingsV1 .buildingSlot svg.buildingShape.g42 {
+.buildingsV1 .buildingSlot svg.buildingShape.g31Top,
+.buildingsV1 .buildingSlot svg.buildingShape.g33Top,
+.buildingsV1 .buildingSlot svg.buildingShape.g42 {
   top: 6px;
   left: 2px;
 }
-.buildingsV1 .buildingSlot svg.buildingShape.hover > .hoverShape path, .buildingsV1 .buildingSlot svg.buildingShape.hover > .hoverShapeWinter path {
+.buildingsV1 .buildingSlot svg.buildingShape.hover > .hoverShape path,
+.buildingsV1 .buildingSlot svg.buildingShape.hover > .hoverShapeWinter path {
   fill: rgba(255, 255, 255, 0.2);
 }
-.buildingsV1 .buildingSlot svg.buildingShape.hover.wallTop > .hoverShapeWinter path, .buildingsV1 .buildingSlot svg.buildingShape.hover.wallBottom > .hoverShapeWinter path {
+.buildingsV1
+  .buildingSlot
+  svg.buildingShape.hover.wallTop
+  > .hoverShapeWinter
+  path,
+.buildingsV1
+  .buildingSlot
+  svg.buildingShape.hover.wallBottom
+  > .hoverShapeWinter
+  path {
   fill: rgba(132, 160, 190, 0.1);
 }
-.buildingsV1 .buildingSlot svg.buildingShape.active > .hoverShape path, .buildingsV1 .buildingSlot svg.buildingShape.active > .hoverShapeWinter path {
+.buildingsV1 .buildingSlot svg.buildingShape.active > .hoverShape path,
+.buildingsV1 .buildingSlot svg.buildingShape.active > .hoverShapeWinter path {
   fill: rgba(255, 255, 255, 0.35);
   -webkit-tap-highlight-color: transparent;
 }
-.buildingsV1 .buildingSlot svg.buildingShape.active.wallTop > .hoverShapeWinter path, .buildingsV1 .buildingSlot svg.buildingShape.active.wallBottom > .hoverShapeWinter path {
+.buildingsV1
+  .buildingSlot
+  svg.buildingShape.active.wallTop
+  > .hoverShapeWinter
+  path,
+.buildingsV1
+  .buildingSlot
+  svg.buildingShape.active.wallBottom
+  > .hoverShapeWinter
+  path {
   fill: rgba(132, 160, 190, 0.2);
 }

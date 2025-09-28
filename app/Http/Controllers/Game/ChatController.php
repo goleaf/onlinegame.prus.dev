@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Models\Game\ChatChannel;
 use App\Models\Game\ChatMessage;
 use App\Services\ChatService;
-use App\Services\GameIntegrationService;
-use App\Services\GameNotificationService;
 use App\Traits\GameValidationTrait;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,21 +15,28 @@ use JonPurvis\Squeaky\Rules\Clean;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
 use LaraUtilX\Traits\FileProcessingTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
 
 class ChatController extends CrudController
 {
-    use GameValidationTrait, ApiResponseTrait, ValidationHelperTrait, FileProcessingTrait;
+    use ApiResponseTrait;
+    use FileProcessingTrait;
+    use GameValidationTrait;
+    use ValidationHelperTrait;
 
     protected Model $model;
+
     protected $chatService;
+
     protected RateLimiterUtil $rateLimiter;
+
     protected array $validationRules = [];
+
     protected array $searchableFields = ['message'];
+
     protected array $relationships = ['player', 'channel'];
+
     protected int $perPage = 50;
 
     protected function getValidationRules(): array
@@ -38,7 +44,7 @@ class ChatController extends CrudController
         return [
             'channel_id' => 'nullable|exists:chat_channels,id',
             'channel_type' => 'required|in:global,alliance,private,trade,diplomacy',
-            'message' => ['required', 'string', 'max:1000', new Clean],
+            'message' => ['required', 'string', 'max:1000', new Clean()],
             'message_type' => 'required|in:text,system,announcement,emote,command',
             'recipient_id' => 'nullable|exists:players,id',
         ];
@@ -60,16 +66,17 @@ class ChatController extends CrudController
     {
         try {
             // Rate limiting for channel messages
-            $rateLimitKey = 'channel_messages_' . ($request->ip() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 100, 1)) {
+            $rateLimitKey = 'channel_messages_'.($request->ip() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 100, 1)) {
                 return $this->errorResponse('Too many requests. Please try again later.', 429);
             }
 
-            $cacheKey = "channel_messages_{$channelId}_" . md5(serialize($request->all()));
+            $cacheKey = "channel_messages_{$channelId}_".md5(serialize($request->all()));
 
             $result = CachingUtil::remember($cacheKey, now()->addMinutes(2), function () use ($request, $channelId) {
                 $limit = $request->get('limit', $this->perPage);
                 $offset = $request->get('offset', 0);
+
                 return $this->chatService->getChannelMessages($channelId, $limit, $offset);
             });
 
@@ -96,11 +103,12 @@ class ChatController extends CrudController
     public function getMessagesByType(Request $request, string $channelType): JsonResponse
     {
         try {
-            $cacheKey = "messages_by_type_{$channelType}_" . md5(serialize($request->all()));
+            $cacheKey = "messages_by_type_{$channelType}_".md5(serialize($request->all()));
 
             $result = CachingUtil::remember($cacheKey, now()->addMinutes(3), function () use ($request, $channelType) {
                 $limit = $request->get('limit', $this->perPage);
                 $offset = $request->get('offset', 0);
+
                 return $this->chatService->getMessagesByType($channelType, $limit, $offset);
             });
 
@@ -126,10 +134,10 @@ class ChatController extends CrudController
      */
     public function sendMessage(Request $request): JsonResponse
     {
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'channel_id' => 'nullable|exists:chat_channels,id',
             'channel_type' => 'required|in:global,alliance,private,trade,diplomacy',
-            'message' => ['required', 'string', 'max:1000', new Clean],
+            'message' => ['required', 'string', 'max:1000', new Clean()],
             'message_type' => 'required|in:text,system,announcement,emote,command',
         ]);
 
@@ -155,7 +163,7 @@ class ChatController extends CrudController
                 'user_id' => auth()->id(),
             ], 'chat_system');
 
-            return $this->errorResponse('Failed to send message: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to send message: '.$e->getMessage(), 500);
         }
     }
 
@@ -164,8 +172,8 @@ class ChatController extends CrudController
      */
     public function sendGlobalMessage(Request $request): JsonResponse
     {
-        $validated = $this->validateRequest($request, [
-            'message' => ['required', 'string', 'max:1000', new Clean],
+        $validated = $this->validateRequestData($request, [
+            'message' => ['required', 'string', 'max:1000', new Clean()],
             'message_type' => 'required|in:text,system,announcement,emote,command',
         ]);
 
@@ -188,7 +196,7 @@ class ChatController extends CrudController
                 'user_id' => auth()->id(),
             ], 'chat_system');
 
-            return $this->errorResponse('Failed to send global message: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to send global message: '.$e->getMessage(), 500);
         }
     }
 
@@ -199,19 +207,19 @@ class ChatController extends CrudController
     {
         try {
             // Rate limiting for alliance messages
-            $rateLimitKey = 'alliance_message_' . (auth()->id() ?? 'unknown');
-            if (!$this->rateLimiter->attempt($rateLimitKey, 20, 1)) {
+            $rateLimitKey = 'alliance_message_'.(auth()->id() ?? 'unknown');
+            if (! $this->rateLimiter->attempt($rateLimitKey, 20, 1)) {
                 return $this->errorResponse('Too many requests. Please try again later.', 429);
             }
 
             $player = Auth::user()->player;
 
-            if (!$player->alliance_id) {
+            if (! $player->alliance_id) {
                 return $this->errorResponse('Player is not in an alliance', 400);
             }
 
-            $validated = $this->validateRequest($request, [
-                'message' => ['required', 'string', 'max:1000', new Clean],
+            $validated = $this->validateRequestData($request, [
+                'message' => ['required', 'string', 'max:1000', new Clean()],
                 'message_type' => 'required|in:text,system,announcement,emote,command',
             ]);
 
@@ -249,9 +257,9 @@ class ChatController extends CrudController
     public function sendPrivateMessage(Request $request): JsonResponse
     {
         try {
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'recipient_id' => 'required|exists:players,id',
-                'message' => ['required', 'string', 'max:1000', new Clean],
+                'message' => ['required', 'string', 'max:1000', new Clean()],
             ]);
 
             $message = $this->chatService->sendPrivateMessage(
@@ -285,7 +293,7 @@ class ChatController extends CrudController
     public function sendTradeMessage(Request $request): JsonResponse
     {
         try {
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'message' => 'required|string|max:1000',
             ]);
 
@@ -318,7 +326,7 @@ class ChatController extends CrudController
     public function sendDiplomacyMessage(Request $request): JsonResponse
     {
         try {
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'message' => 'required|string|max:1000',
             ]);
 
@@ -383,7 +391,7 @@ class ChatController extends CrudController
     public function getAvailableChannels(): JsonResponse
     {
         try {
-            $cacheKey = 'available_channels_' . auth()->id();
+            $cacheKey = 'available_channels_'.auth()->id();
 
             $channels = CachingUtil::remember($cacheKey, now()->addMinutes(10), function () {
                 return $this->chatService->getAvailableChannels(Auth::user()->player->id);
@@ -439,7 +447,7 @@ class ChatController extends CrudController
     public function searchMessages(Request $request): JsonResponse
     {
         try {
-            $validated = $this->validateRequest($request, [
+            $validated = $this->validateRequestData($request, [
                 'query' => 'required|string|min:3|max:100',
                 'channel_type' => 'nullable|in:global,alliance,private,trade,diplomacy',
                 'limit' => 'nullable|integer|min:1|max:100',

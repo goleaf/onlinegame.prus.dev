@@ -16,8 +16,14 @@ div#footer {
   font-size: 11px;
   line-height: 11px;
   text-align: center;
-  color: #F2F2F2;
-  background-image: url('../../img_ltr/layout/footer.png'), radial-gradient(50% 100% ellipse at 50% 0%, rgba(46, 62, 36, 0.7), rgba(46, 62, 36, 0));
+  color: #f2f2f2;
+  background-image:
+    url('../../img_ltr/layout/footer.png'),
+    radial-gradient(
+      50% 100% ellipse at 50% 0%,
+      rgba(46, 62, 36, 0.7),
+      rgba(46, 62, 36, 0)
+    );
   background-position: top center;
   background-repeat: no-repeat;
   padding: 15px 0;
@@ -46,10 +52,10 @@ div#footer div#pageLinks div {
   padding: 0;
 }
 div#footer div#pageLinks a {
-  border-left: 1px solid #F2F2F2;
+  border-left: 1px solid #f2f2f2;
   margin: 0 10px 0 0;
   padding: 0 0 0 10px;
-  color: #F2F2F2;
+  color: #f2f2f2;
   font-weight: normal;
 }
 div#footer div#pageLinks a:first-child {

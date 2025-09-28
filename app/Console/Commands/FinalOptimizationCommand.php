@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 
 class FinalOptimizationCommand extends Command
 {
@@ -30,9 +30,10 @@ class FinalOptimizationCommand extends Command
     {
         $this->info('🚀 Starting final optimization for production readiness...');
 
-        if (!$this->option('force')) {
-            if (!$this->confirm('This will run final optimization for production. Continue?')) {
+        if (! $this->option('force')) {
+            if (! $this->confirm('This will run final optimization for production. Continue?')) {
                 $this->info('Final optimization cancelled.');
+
                 return 0;
             }
         }
@@ -44,7 +45,7 @@ class FinalOptimizationCommand extends Command
         $this->generateReports();
 
         $this->info('✅ Final optimization completed! System is production ready.');
-        
+
         return 0;
     }
 
@@ -60,7 +61,7 @@ class FinalOptimizationCommand extends Command
             $output = Artisan::output();
             $this->info($output);
         } catch (\Exception $e) {
-            $this->warn("Health check failed: " . $e->getMessage());
+            $this->warn('Health check failed: '.$e->getMessage());
         }
     }
 
@@ -77,7 +78,7 @@ class FinalOptimizationCommand extends Command
             $content = File::get($deprecatedService);
             if (strpos($content, '@deprecated') !== false) {
                 File::delete($deprecatedService);
-                $this->info("  ✓ Removed deprecated QueryOptimizationService");
+                $this->info('  ✓ Removed deprecated QueryOptimizationService');
             }
         }
 
@@ -91,7 +92,7 @@ class FinalOptimizationCommand extends Command
                 $content
             );
             File::put($sitemapFile, $updatedContent);
-            $this->info("  ✓ Updated sitemap generation comments");
+            $this->info('  ✓ Updated sitemap generation comments');
         }
 
         // Clean up TODO items in Tournament model
@@ -104,10 +105,10 @@ class FinalOptimizationCommand extends Command
                 $content
             );
             File::put($tournamentFile, $updatedContent);
-            $this->info("  ✓ Updated tournament model comments");
+            $this->info('  ✓ Updated tournament model comments');
         }
 
-        $this->info("  ✓ Deprecated code cleanup completed");
+        $this->info('  ✓ Deprecated code cleanup completed');
     }
 
     /**
@@ -128,7 +129,7 @@ class FinalOptimizationCommand extends Command
                 Artisan::call($command, ['--force' => true]);
                 $this->info("  ✓ {$description} completed.");
             } catch (\Exception $e) {
-                $this->warn("  ✗ {$description} failed: " . $e->getMessage());
+                $this->warn("  ✗ {$description} failed: ".$e->getMessage());
             }
         }
     }
@@ -143,20 +144,20 @@ class FinalOptimizationCommand extends Command
         try {
             // Run Basset optimization with force and clean
             Artisan::call('basset:optimize', ['--force' => true, '--clean' => true]);
-            $this->info("  ✓ Basset assets finalized");
+            $this->info('  ✓ Basset assets finalized');
 
             // Clear and rebuild all caches
             Cache::flush();
-            $this->info("  ✓ All caches cleared");
+            $this->info('  ✓ All caches cleared');
 
             // Optimize OPcache if available
             if (function_exists('opcache_reset')) {
                 opcache_reset();
-                $this->info("  ✓ OPcache reset");
+                $this->info('  ✓ OPcache reset');
             }
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Asset finalization failed: " . $e->getMessage());
+            $this->warn('  ✗ Asset finalization failed: '.$e->getMessage());
         }
     }
 
@@ -170,13 +171,13 @@ class FinalOptimizationCommand extends Command
         try {
             // Generate sitemap
             Artisan::call('seo:generate-sitemap');
-            $this->info("  ✓ Sitemap generated");
+            $this->info('  ✓ Sitemap generated');
 
             // Create production readiness report
             $this->createProductionReport();
 
         } catch (\Exception $e) {
-            $this->warn("  ✗ Report generation failed: " . $e->getMessage());
+            $this->warn('  ✗ Report generation failed: '.$e->getMessage());
         }
     }
 
@@ -213,7 +214,7 @@ class FinalOptimizationCommand extends Command
             ],
         ];
 
-        $reportPath = storage_path('app/production-readiness-' . date('Y-m-d-H-i-s') . '.json');
+        $reportPath = storage_path('app/production-readiness-'.date('Y-m-d-H-i-s').'.json');
         File::put($reportPath, json_encode($report, JSON_PRETTY_PRINT));
 
         $this->info("  ✓ Production readiness report: {$reportPath}");

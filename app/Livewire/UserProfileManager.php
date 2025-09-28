@@ -17,20 +17,29 @@ class UserProfileManager extends Component
     use WithFileUploads;
 
     public User $user;
+
     public $name;
+
     public $email;
+
     public $phone = '';
+
     public $phone_country = 'US';
+
     public $showPhoneForm = false;
+
     public $showPasswordForm = false;
+
     public $currentPassword = '';
+
     public $newPassword = '';
+
     public $newPasswordConfirmation = '';
 
     protected function rules()
     {
         return [
-            'name' => ['required', 'string', 'max:255', new Username(), new Clean],
+            'name' => ['required', 'string', 'max:255', new Username(), new Clean()],
             'email' => 'required|email|unique:users,email',
             'phone' => ['nullable', 'string'],
             'phone_country' => ['nullable', 'string', 'size:2'],
@@ -48,7 +57,7 @@ class UserProfileManager extends Component
         ];
     }
 
-    public function mount(User $user = null)
+    public function mount(?User $user = null)
     {
         $this->user = $user ?? auth()->user();
 
@@ -65,23 +74,23 @@ class UserProfileManager extends Component
     {
         // Update email uniqueness rule to exclude current user
         if ($propertyName === 'email') {
-            $this->rules['email'] = 'required|email|unique:users,email,' . $this->user->id;
+            $this->rules['email'] = 'required|email|unique:users,email,'.$this->user->id;
         }
 
         $this->validateOnly($propertyName);
 
-        if ($propertyName === 'phone' && !empty($this->phone)) {
-            $this->rules['phone'][] = (new Phone)->country($this->phone_country);
+        if ($propertyName === 'phone' && ! empty($this->phone)) {
+            $this->rules['phone'][] = (new Phone())->country($this->phone_country);
         }
     }
 
     public function updateProfile()
     {
         $rules = $this->rules;
-        $rules['email'] = 'required|email|unique:users,email,' . $this->user->id;
+        $rules['email'] = 'required|email|unique:users,email,'.$this->user->id;
 
-        if (!empty($this->phone)) {
-            $rules['phone'][] = (new Phone)->country($this->phone_country);
+        if (! empty($this->phone)) {
+            $rules['phone'][] = (new Phone())->country($this->phone_country);
         }
 
         $this->validate($rules);
@@ -113,8 +122,9 @@ class UserProfileManager extends Component
         ]);
 
         // Verify current password
-        if (!\Hash::check($this->currentPassword, $this->user->password)) {
+        if (! \Hash::check($this->currentPassword, $this->user->password)) {
             $this->addError('currentPassword', 'Current password is incorrect.');
+
             return;
         }
 
@@ -139,8 +149,8 @@ class UserProfileManager extends Component
 
     public function togglePasswordForm()
     {
-        $this->showPasswordForm = !$this->showPasswordForm;
-        if (!$this->showPasswordForm) {
+        $this->showPasswordForm = ! $this->showPasswordForm;
+        if (! $this->showPasswordForm) {
             $this->reset(['currentPassword', 'newPassword', 'newPasswordConfirmation']);
         }
     }
@@ -152,8 +162,8 @@ class UserProfileManager extends Component
             'phone_country' => ['nullable', 'string', 'size:2'],
         ];
 
-        if (!empty($this->phone)) {
-            $rules['phone'][] = (new Phone)->country($this->phone_country);
+        if (! empty($this->phone)) {
+            $rules['phone'][] = (new Phone())->country($this->phone_country);
             $rules['phone_country'][] = 'required_with:phone';
         }
 
@@ -170,7 +180,7 @@ class UserProfileManager extends Component
 
     public function formatPhone()
     {
-        if (!empty($this->phone) && !empty($this->phone_country)) {
+        if (! empty($this->phone) && ! empty($this->phone_country)) {
             try {
                 $phoneNumber = phone($this->phone, $this->phone_country);
                 $this->phone = $phoneNumber->formatInternational();
@@ -182,7 +192,7 @@ class UserProfileManager extends Component
 
     public function togglePhoneForm()
     {
-        $this->showPhoneForm = !$this->showPhoneForm;
+        $this->showPhoneForm = ! $this->showPhoneForm;
     }
 
     public function render()
@@ -198,7 +208,7 @@ class UserProfileManager extends Component
         try {
             // Initialize real-time features for the user
             GameIntegrationService::initializeUserRealTime($this->user->id);
-            
+
             $this->dispatch('profile-initialized', [
                 'message' => 'User profile real-time features activated',
                 'user_id' => $this->user->id,
@@ -206,7 +216,7 @@ class UserProfileManager extends Component
 
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to initialize profile real-time features: ' . $e->getMessage(),
+                'message' => 'Failed to initialize profile real-time features: '.$e->getMessage(),
             ]);
         }
     }
@@ -236,7 +246,7 @@ class UserProfileManager extends Component
 
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to update profile: ' . $e->getMessage(),
+                'message' => 'Failed to update profile: '.$e->getMessage(),
             ]);
         }
     }
@@ -267,7 +277,7 @@ class UserProfileManager extends Component
 
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to update phone: ' . $e->getMessage(),
+                'message' => 'Failed to update phone: '.$e->getMessage(),
             ]);
         }
     }

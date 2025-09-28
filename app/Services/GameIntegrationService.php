@@ -2,39 +2,58 @@
 
 namespace App\Services;
 
-use App\Models\Game\Player;
-use App\Models\Game\Village;
 use App\Models\Game\Alliance;
-use App\Models\Game\Task;
+use App\Models\Game\Player;
 use App\Models\Game\Report;
-use App\Services\RealTimeGameService;
-use App\Services\GameCacheService;
-use App\Services\GameErrorHandler;
-use App\Services\GameNotificationService;
-use App\Services\GamePerformanceMonitor;
-use Illuminate\Support\Facades\Log;
+use App\Models\Game\Task;
+use App\Models\Game\Village;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use LaraUtilX\Utilities\CachingUtil;
+use LaraUtilX\Utilities\ConfigUtil;
+use LaraUtilX\Utilities\RateLimiterUtil;
 
 class GameIntegrationService
 {
     protected $realTimeService;
+
     protected $cacheService;
+
     protected $errorHandler;
+
     protected $notificationService;
+
     protected $performanceMonitor;
+
+    protected CachingUtil $cachingUtil;
+
+    protected LoggingUtil $loggingUtil;
+
+    protected RateLimiterUtil $rateLimiterUtil;
+
+    protected ConfigUtil $configUtil;
 
     public function __construct(
         RealTimeGameService $realTimeService,
         GameCacheService $cacheService,
         GameErrorHandler $errorHandler,
         GameNotificationService $notificationService,
-        GamePerformanceMonitor $performanceMonitor
+        GamePerformanceMonitor $performanceMonitor,
+        CachingUtil $cachingUtil,
+        LoggingUtil $loggingUtil,
+        RateLimiterUtil $rateLimiterUtil,
+        ConfigUtil $configUtil
     ) {
         $this->realTimeService = $realTimeService;
         $this->cacheService = $cacheService;
         $this->errorHandler = $errorHandler;
         $this->notificationService = $notificationService;
         $this->performanceMonitor = $performanceMonitor;
+        $this->cachingUtil = $cachingUtil;
+        $this->loggingUtil = $loggingUtil;
+        $this->rateLimiterUtil = $rateLimiterUtil;
+        $this->configUtil = $configUtil;
     }
 
     /**
@@ -42,6 +61,15 @@ class GameIntegrationService
      */
     public function initializeUserRealTime(int $userId): array
     {
+        $startTime = microtime(true);
+
+        ds('GameIntegrationService: Initializing user real-time features', [
+            'user_id' => $userId,
+            'service' => 'GameIntegrationService',
+            'method' => 'initializeUserRealTime',
+            'timestamp' => now(),
+        ])->label('GameIntegrationService User Initialization');
+
         try {
             $this->performanceMonitor->startTimer('user_initialization');
 
@@ -50,8 +78,8 @@ class GameIntegrationService
 
             // Initialize real-time features
             $player = Player::where('user_id', $userId)->first();
-            if (!$player) {
-                throw new \Exception('Player not found for user: ' . $userId);
+            if (! $player) {
+                throw new \Exception('Player not found for user: '.$userId);
             }
 
             // Get player's villages
@@ -73,6 +101,17 @@ class GameIntegrationService
 
             $this->performanceMonitor->endTimer('user_initialization');
 
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+
+            ds('GameIntegrationService: User real-time features initialized successfully', [
+                'user_id' => $userId,
+                'player_id' => $player->id,
+                'villages_count' => $villages->count(),
+                'total_time_ms' => $totalTime,
+                'initialization_time' => $this->performanceMonitor->getTimer('user_initialization'),
+                'memory_usage_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
+            ])->label('GameIntegrationService User Initialized');
+
             Log::info('User real-time features initialized', [
                 'user_id' => $userId,
                 'player_id' => $player->id,
@@ -87,6 +126,16 @@ class GameIntegrationService
             ];
 
         } catch (\Exception $e) {
+            $totalTime = round((microtime(true) - $startTime) * 1000, 2);
+
+            ds('GameIntegrationService: User initialization failed', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+                'trace' => $e->getTraceAsString(),
+                'total_time_ms' => $totalTime,
+            ])->label('GameIntegrationService User Initialization Error');
+
             $this->errorHandler->handleError('user_initialization', $e, [
                 'user_id' => $userId,
             ]);
@@ -172,7 +221,7 @@ class GameIntegrationService
                 'village_created',
                 [
                     'village_name' => $village->name,
-                    'coordinates' => $village->x . '|' . $village->y,
+                    'coordinates' => $village->x.'|'.$village->y,
                 ]
             );
 
@@ -192,7 +241,7 @@ class GameIntegrationService
             Log::info('Village created with integration', [
                 'village_id' => $village->id,
                 'player_id' => $village->player_id,
-                'coordinates' => $village->x . '|' . $village->y,
+                'coordinates' => $village->x.'|'.$village->y,
             ]);
 
             return [
@@ -224,7 +273,7 @@ class GameIntegrationService
                 ->where('building_type_id', $buildingTypeId)
                 ->first();
 
-            if (!$building) {
+            if (! $building) {
                 throw new \Exception('Building not found');
             }
 
@@ -250,7 +299,7 @@ class GameIntegrationService
             $this->notificationService->sendUserNotification(
                 $village->player_id,
                 'Building Upgrade Started',
-                "Upgrading {$building->buildingType->name} to level " . ($building->level + 1),
+                "Upgrading {$building->buildingType->name} to level ".($building->level + 1),
                 'building_upgrade'
             );
 
@@ -368,13 +417,13 @@ class GameIntegrationService
                 ],
                 'villages' => [
                     'total' => Village::count(),
-                    'active' => Village::whereHas('player', function ($query) {
+                    'active' => Village::whereHas('player', function ($query): void {
                         $query->where('last_activity', '>=', now()->subDay());
                     })->count(),
                 ],
                 'alliances' => [
                     'total' => Alliance::count(),
-                    'active' => Alliance::whereHas('members', function ($query) {
+                    'active' => Alliance::whereHas('members', function ($query): void {
                         $query->where('last_activity', '>=', now()->subDay());
                     })->count(),
                 ],

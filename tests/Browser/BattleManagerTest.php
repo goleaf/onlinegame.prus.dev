@@ -16,8 +16,11 @@ class BattleManagerTest extends DuskTestCase
     use DatabaseMigrations;
 
     protected $user;
+
     protected $player;
+
     protected $world;
+
     protected $village;
 
     protected function setUp(): void
@@ -73,7 +76,7 @@ class BattleManagerTest extends DuskTestCase
 
     public function test_battle_manager_loads()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/battles')
@@ -85,7 +88,7 @@ class BattleManagerTest extends DuskTestCase
 
     public function test_available_troops_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/battles')
@@ -96,7 +99,7 @@ class BattleManagerTest extends DuskTestCase
 
     public function test_attack_form_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/battles')
@@ -109,7 +112,7 @@ class BattleManagerTest extends DuskTestCase
 
     public function test_attack_form_submission()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/battles')
@@ -125,7 +128,7 @@ class BattleManagerTest extends DuskTestCase
 
     public function test_troop_selection_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/battles')
@@ -140,7 +143,7 @@ class BattleManagerTest extends DuskTestCase
 
     public function test_active_movements_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/battles')
@@ -151,7 +154,7 @@ class BattleManagerTest extends DuskTestCase
 
     public function test_battle_history_display()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/battles')
@@ -162,7 +165,7 @@ class BattleManagerTest extends DuskTestCase
 
     public function test_launch_attack_button()
     {
-        $this->browse(function (Browser $browser) {
+        $this->browse(function (Browser $browser): void {
             $browser
                 ->loginAs($this->user)
                 ->visit('/game/battles')

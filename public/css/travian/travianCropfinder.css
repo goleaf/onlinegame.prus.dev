@@ -58,7 +58,8 @@ div.cropfinder span.type {
   margin-left: 15px;
 }
 
-div.cropfinder span.type input, div.cropfinder input#only_free {
+div.cropfinder span.type input,
+div.cropfinder input#only_free {
   margin-right: 5px;
 }
 

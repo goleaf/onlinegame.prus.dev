@@ -3,9 +3,8 @@
 namespace App\Livewire\Game;
 
 use App\Services\AIService;
-use Illuminate\Support\Facades\Auth;
+use App\Utilities\LoggingUtil;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\LoggingUtil;
 use Livewire\Component;
 
 class AIManager extends Component
@@ -13,24 +12,43 @@ class AIManager extends Component
     use ApiResponseTrait;
 
     public $aiStatus = [];
+
     public $isLoading = false;
+
     public $activeTab = 'status';
+
     public $generatedContent = [];
+
     public $customPrompt = '';
+
     public $selectedProvider = 'openai';
+
     public $selectedModel = 'gpt-3.5-turbo';
+
     public $temperature = 0.7;
+
     public $maxTokens = 500;
+
     public $jsonMode = false;
+
     public $villageCount = 5;
+
     public $selectedTribe = 'roman';
+
     public $allianceCount = 5;
+
     public $questType = '';
+
     public $questContext = '';
+
     public $messageType = '';
+
     public $messageContext = '';
+
     public $eventType = '';
+
     public $eventContext = '';
+
     public $strategyGameState = '';
 
     protected $listeners = [
@@ -55,7 +73,7 @@ class AIManager extends Component
                 'error' => $e->getMessage(),
             ], 'ai_service');
 
-            $this->addNotification('Error loading AI status: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading AI status: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -80,7 +98,7 @@ class AIManager extends Component
                 'error' => $e->getMessage(),
             ], 'ai_service');
 
-            $this->addNotification('Error generating village names: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error generating village names: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -104,7 +122,7 @@ class AIManager extends Component
                 'error' => $e->getMessage(),
             ], 'ai_service');
 
-            $this->addNotification('Error generating alliance names: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error generating alliance names: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -114,13 +132,14 @@ class AIManager extends Component
     {
         if (empty($this->questType)) {
             $this->addNotification('Please enter a quest type', 'error');
+
             return;
         }
 
         $this->isLoading = true;
 
         try {
-            $context = !empty($this->questContext) ? explode(',', $this->questContext) : [];
+            $context = ! empty($this->questContext) ? explode(',', $this->questContext) : [];
             $context = array_map('trim', $context);
 
             $response = $this->makeApiRequest('POST', '/game/api/ai/quest-description', [
@@ -137,7 +156,7 @@ class AIManager extends Component
                 'error' => $e->getMessage(),
             ], 'ai_service');
 
-            $this->addNotification('Error generating quest description: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error generating quest description: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -147,13 +166,14 @@ class AIManager extends Component
     {
         if (empty($this->messageType)) {
             $this->addNotification('Please enter a message type', 'error');
+
             return;
         }
 
         $this->isLoading = true;
 
         try {
-            $context = !empty($this->messageContext) ? explode(',', $this->messageContext) : [];
+            $context = ! empty($this->messageContext) ? explode(',', $this->messageContext) : [];
             $context = array_map('trim', $context);
 
             $response = $this->makeApiRequest('POST', '/game/api/ai/player-message', [
@@ -170,7 +190,7 @@ class AIManager extends Component
                 'error' => $e->getMessage(),
             ], 'ai_service');
 
-            $this->addNotification('Error generating player message: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error generating player message: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -180,13 +200,14 @@ class AIManager extends Component
     {
         if (empty($this->eventType)) {
             $this->addNotification('Please enter an event type', 'error');
+
             return;
         }
 
         $this->isLoading = true;
 
         try {
-            $context = !empty($this->eventContext) ? explode(',', $this->eventContext) : [];
+            $context = ! empty($this->eventContext) ? explode(',', $this->eventContext) : [];
             $context = array_map('trim', $context);
 
             $response = $this->makeApiRequest('POST', '/game/api/ai/world-event', [
@@ -203,7 +224,7 @@ class AIManager extends Component
                 'error' => $e->getMessage(),
             ], 'ai_service');
 
-            $this->addNotification('Error generating world event: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error generating world event: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -213,6 +234,7 @@ class AIManager extends Component
     {
         if (empty($this->strategyGameState)) {
             $this->addNotification('Please enter game state information', 'error');
+
             return;
         }
 
@@ -241,7 +263,7 @@ class AIManager extends Component
                 'error' => $e->getMessage(),
             ], 'ai_service');
 
-            $this->addNotification('Error generating strategy suggestion: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error generating strategy suggestion: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -251,6 +273,7 @@ class AIManager extends Component
     {
         if (empty($this->customPrompt)) {
             $this->addNotification('Please enter a prompt', 'error');
+
             return;
         }
 
@@ -275,7 +298,7 @@ class AIManager extends Component
                 'error' => $e->getMessage(),
             ], 'ai_service');
 
-            $this->addNotification('Error generating custom content: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error generating custom content: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -299,7 +322,7 @@ class AIManager extends Component
                 'error' => $e->getMessage(),
             ], 'ai_service');
 
-            $this->addNotification('Error switching AI provider: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error switching AI provider: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -330,7 +353,7 @@ class AIManager extends Component
     {
         $this->dispatch('notification', [
             'message' => $message,
-            'type' => $type
+            'type' => $type,
         ]);
     }
 
@@ -338,7 +361,7 @@ class AIManager extends Component
     {
         try {
             $response = \Http::withHeaders([
-                'Authorization' => 'Bearer ' . auth()->user()->createToken('ai-management')->plainTextToken,
+                'Authorization' => 'Bearer '.auth()->user()->createToken('ai-management')->plainTextToken,
                 'Accept' => 'application/json',
             ])->$method(url($url), $data);
 
@@ -346,7 +369,7 @@ class AIManager extends Component
                 return $response->json();
             }
 
-            throw new \Exception('API request failed: ' . $response->body());
+            throw new \Exception('API request failed: '.$response->body());
         } catch (\Exception $e) {
             LoggingUtil::error('API request failed', [
                 'method' => $method,

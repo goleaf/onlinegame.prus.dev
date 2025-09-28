@@ -2,17 +2,17 @@
 
 namespace App\Livewire\Game;
 
+use App\Livewire\BaseSessionComponent;
 use App\Models\Game\GameEvent;
 use App\Models\Game\Player;
 use App\Services\GameIntegrationService;
-use App\Services\GameNotificationService;
 use App\Services\GameSeoService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
-use Livewire\Component;
+use Livewire\Attributes\Session;
 use Livewire\WithPagination;
 
-class GameDashboard extends Component
+class GameDashboard extends BaseSessionComponent
 {
     use WithPagination;
 
@@ -28,19 +28,40 @@ class GameDashboard extends Component
 
     public $gameStats = [];
 
-    public $autoRefresh = true;
+    // Game-specific session properties
+    #[Session]
+    public $selectedVillageId = null;
 
-    public $refreshInterval = 5;  // seconds
+    #[Session]
+    public $gameSpeed = 1;
+
+    #[Session]
+    public $showNotifications = true;
+
+    #[Session]
+    public $realTimeUpdates = true;
+
+    #[Session]
+    public $notificationTypes = ['success', 'info', 'warning', 'error'];
+
+    #[Session]
+    public $dashboardLayout = 'grid';
+
+    #[Session]
+    public $resourceViewMode = 'detailed';
+
+    #[Session]
+    public $buildingViewMode = 'list';
+
+    #[Session]
+    public $eventFilters = [];
+
+    #[Session]
+    public $villageFilters = [];
 
     public $notifications = [];
 
     public $isLoading = false;
-
-    public $realTimeUpdates = true;
-
-    public $showNotifications = true;
-
-    public $gameSpeed = 1;
 
     public $worldTime;
 
@@ -63,9 +84,15 @@ class GameDashboard extends Component
 
     public function mount()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect('/login');
         }
+
+        // Initialize session properties
+        $this->initializeSessionProperties();
+
+        // Override base refresh settings with game-specific defaults
+        $this->refreshInterval = $this->refreshInterval ?: 5;
 
         $this->loadGameData();
         $this->initializeRealTimeFeatures();
@@ -79,7 +106,7 @@ class GameDashboard extends Component
         try {
             // Initialize real-time features for the user
             GameIntegrationService::initializeUserRealTime(Auth::id());
-            
+
             $this->worldTime = now();
             $this->calculateResourceProductionRates();
 
@@ -97,7 +124,7 @@ class GameDashboard extends Component
 
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to initialize game dashboard real-time features: ' . $e->getMessage(),
+                'message' => 'Failed to initialize game dashboard real-time features: '.$e->getMessage(),
             ]);
         }
     }
@@ -108,21 +135,27 @@ class GameDashboard extends Component
 
         try {
             $user = Auth::user();
-            if (!$user) {
+            if (! $user) {
                 $this->loadGameStats();  // Load default stats even when no user
                 $this->isLoading = false;
 
                 return;
             }
             $this->player = Player::where('user_id', $user->id)
-                ->with(['villages' => function ($query) {
+                ->with(['villages' => function ($query): void {
                     $query->with(['resources', 'buildings', 'buildingQueues']);
                 }])
                 ->first();
 
             if ($this->player) {
                 $this->villages = $this->player->villages;
-                $this->currentVillage = $this->villages->first();
+
+                // Restore selected village from session or use first village
+                if ($this->selectedVillageId) {
+                    $this->currentVillage = $this->villages->find($this->selectedVillageId) ?? $this->villages->first();
+                } else {
+                    $this->currentVillage = $this->villages->first();
+                }
 
                 // Set SEO metadata for dashboard
                 $this->seoService->setDashboardSeo($this->player);
@@ -180,7 +213,7 @@ class GameDashboard extends Component
     #[On('tick')]
     public function processGameTick()
     {
-        if (!$this->autoRefresh) {
+        if (! $this->autoRefresh) {
             return;
         }
 
@@ -195,7 +228,7 @@ class GameDashboard extends Component
             $this->addNotification('Game tick processed successfully', 'success');
         } catch (\Exception $e) {
             $this->dispatch('gameTickError', ['message' => $e->getMessage()]);
-            $this->addNotification('Game tick error: ' . $e->getMessage(), 'error');
+            $this->addNotification('Game tick error: '.$e->getMessage(), 'error');
         }
     }
 
@@ -208,7 +241,7 @@ class GameDashboard extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -224,6 +257,7 @@ class GameDashboard extends Component
     public function selectVillage($villageId)
     {
         $this->currentVillage = $this->villages->find($villageId);
+        $this->selectedVillageId = $villageId; // Persist selection in session
         $this->dispatch('villageSelected', ['villageId' => $villageId]);
     }
 
@@ -298,7 +332,7 @@ class GameDashboard extends Component
 
     public function calculateResourceProductionRates()
     {
-        if (!$this->currentVillage) {
+        if (! $this->currentVillage) {
             return;
         }
 
@@ -315,16 +349,16 @@ class GameDashboard extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
         );
     }
 
-    public function toggleNotifications()
+    public function toggleGameNotifications(): void
     {
-        $this->showNotifications = !$this->showNotifications;
+        $this->showNotifications = ! $this->showNotifications;
         $this->addNotification(
             $this->showNotifications ? 'Notifications enabled' : 'Notifications disabled',
             'info'
@@ -335,6 +369,87 @@ class GameDashboard extends Component
     {
         $this->gameSpeed = max(0.5, min(3.0, $speed));
         $this->addNotification("Game speed set to {$this->gameSpeed}x", 'info');
+    }
+
+    /**
+     * Update dashboard layout preference
+     */
+    public function setDashboardLayout($layout)
+    {
+        $this->dashboardLayout = in_array($layout, ['grid', 'list', 'compact']) ? $layout : 'grid';
+        $this->addNotification("Dashboard layout set to {$this->dashboardLayout}", 'info');
+    }
+
+    /**
+     * Update resource view mode
+     */
+    public function setResourceViewMode($mode)
+    {
+        $this->resourceViewMode = in_array($mode, ['detailed', 'compact', 'minimal']) ? $mode : 'detailed';
+        $this->addNotification("Resource view mode set to {$this->resourceViewMode}", 'info');
+    }
+
+    /**
+     * Update building view mode
+     */
+    public function setBuildingViewMode($mode)
+    {
+        $this->buildingViewMode = in_array($mode, ['list', 'grid', 'detailed']) ? $mode : 'list';
+        $this->addNotification("Building view mode set to {$this->buildingViewMode}", 'info');
+    }
+
+    /**
+     * Update event filters
+     */
+    public function updateEventFilters(array $filters)
+    {
+        $this->eventFilters = array_filter($filters, fn ($value) => ! empty($value));
+        $this->loadRecentEvents();
+        $this->addNotification('Event filters updated', 'info');
+    }
+
+    /**
+     * Update village filters
+     */
+    public function updateVillageFilters(array $filters)
+    {
+        $this->villageFilters = array_filter($filters, fn ($value) => ! empty($value));
+        $this->addNotification('Village filters updated', 'info');
+    }
+
+    /**
+     * Toggle notification type visibility
+     */
+    public function toggleNotificationType($type)
+    {
+        if (in_array($type, $this->notificationTypes)) {
+            $this->notificationTypes = array_filter($this->notificationTypes, fn ($t) => $t !== $type);
+        } else {
+            $this->notificationTypes[] = $type;
+        }
+        $this->addNotification("Notification type {$type} " . (in_array($type, $this->notificationTypes) ? 'enabled' : 'disabled'), 'info');
+    }
+
+    /**
+     * Reset all game preferences to defaults
+     */
+    public function resetGamePreferences()
+    {
+        $this->selectedVillageId = null;
+        $this->gameSpeed = 1;
+        $this->showNotifications = true;
+        $this->realTimeUpdates = true;
+        $this->notificationTypes = ['success', 'info', 'warning', 'error'];
+        $this->dashboardLayout = 'grid';
+        $this->resourceViewMode = 'detailed';
+        $this->buildingViewMode = 'list';
+        $this->eventFilters = [];
+        $this->villageFilters = [];
+
+        // Reset base session properties
+        $this->resetSessionProperties();
+
+        $this->addNotification('All preferences reset to defaults', 'info');
     }
 
     public function getResourceIcon($type)

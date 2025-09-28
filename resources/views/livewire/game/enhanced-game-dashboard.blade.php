@@ -59,7 +59,7 @@
                     @foreach ($villages as $village)
                         <div class="village-card bg-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-600 transition-colors
                             {{ $currentVillage && $currentVillage->id === $village->id ? 'ring-2 ring-blue-500' : '' }}"
-                             wire:click="selectVillage({{ $village->id }})">
+                             wire:click.prevent="selectVillage({{ $village->id }})">
                             <div class="flex justify-between items-start mb-2">
                                 <h3 class="font-semibold">{{ $village->name }}</h3>
                                 @if ($village->is_capital)

@@ -57,11 +57,11 @@ div.warsim .fighterType .boxes-container {
 
 div.warsim .fighterType .boxes-contents {
   padding: 3px 10px;
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
 div.warsim .border {
-  border: 1px solid #C0C0C0;
+  border: 1px solid #c0c0c0;
   margin-bottom: 10px;
 }
 
@@ -73,7 +73,7 @@ div.warsim table.fill_in th {
   padding: 2px;
   font-weight: bold;
   text-align: center;
-  background-color: #D3D3D3;
+  background-color: #d3d3d3;
 }
 
 div.warsim table.fill_in td {
@@ -85,7 +85,7 @@ div.warsim table.fill_in td.details {
 }
 
 div.warsim table.fill_in td.details table {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 div.warsim table.fill_in td.details table td.ico {

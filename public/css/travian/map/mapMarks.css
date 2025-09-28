@@ -72,7 +72,7 @@
 }
 
 #mapContainer #mapMarks .tab .selected a {
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
 /* Daten Tabs welche alles nun anzeigen für ally / user */
@@ -92,7 +92,7 @@
 
 /* markierungs container */
 #mapContainer #mapMarks .collapseContainer {
-  border: 1px solid #5A5A5A;
+  border: 1px solid #5a5a5a;
   overflow: hidden;
   padding: 2px;
 }

@@ -8,7 +8,6 @@ use App\Models\Game\PlayerAchievement;
 use App\Models\Game\PlayerQuest;
 use App\Models\Game\Task;
 use App\Models\Game\World;
-use App\Services\GeographicService;
 use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use LaraUtilX\Traits\ApiResponseTrait;
@@ -17,56 +16,90 @@ use LaraUtilX\Utilities\PaginationUtil;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
-use sbamtr\LaravelQueryEnrich\QE;
-use SmartCache\Facades\SmartCache;
 
 use function sbamtr\LaravelQueryEnrich\c;
 
+use sbamtr\LaravelQueryEnrich\QE;
+use SmartCache\Facades\SmartCache;
+
 class TaskManager extends Component
 {
-    use WithPagination, ApiResponseTrait;
+    use ApiResponseTrait;
+    use WithPagination;
 
     public $world;
+
     public $player;
+
     public $isLoading = false;
+
     public $notifications = [];
+
     // Task data
     public $tasks = [];
+
     public $activeTasks = [];
+
     public $completedTasks = [];
+
     public $availableTasks = [];
+
     public $taskProgress = [];
+
     public $taskRewards = [];
+
     // Quest data
     public $quests = [];
+
     public $activeQuests = [];
+
     public $completedQuests = [];
+
     public $availableQuests = [];
+
     public $questProgress = [];
+
     // Achievement data
     public $achievements = [];
+
     public $unlockedAchievements = [];
+
     public $availableAchievements = [];
+
     public $achievementProgress = [];
+
     // View modes and filters
     public $viewMode = 'tasks';  // tasks, quests, achievements
+
     public $taskType = 'all';  // all, active, completed, available
+
     public $questType = 'all';  // all, active, completed, available
+
     public $achievementType = 'all';  // all, unlocked, available
+
     public $sortBy = 'created_at';
+
     public $sortOrder = 'desc';
+
     public $searchQuery = '';
+
     // Real-time features
     public $realTimeUpdates = true;
+
     public $autoRefresh = true;
+
     public $refreshInterval = 30;  // seconds
+
     public $lastUpdate = null;
+
     // Pagination
     public $perPage = 20;
+
     public $currentPage = 1;
 
     // Task categories
     public $taskCategories = [];
+
     public $taskTypes = [];
 
     public $questTypes = [
@@ -114,9 +147,9 @@ class TaskManager extends Component
                 return [
                     'village_name' => $village->name,
                     'coordinates' => "({$village->x_coordinate}|{$village->y_coordinate})",
-                    'real_world_coords' => $village->getRealWorldCoordinates()
+                    'real_world_coords' => $village->getRealWorldCoordinates(),
                 ];
-            })->toArray() ?? []
+            })->toArray() ?? [],
         ])->label('TaskManager Mount');
 
         if ($this->world) {
@@ -156,13 +189,13 @@ class TaskManager extends Component
                 ->with(['villages', 'alliance'])
                 ->first();
 
-            if (!$this->player) {
+            if (! $this->player) {
                 $this->addNotification('Player not found in this world', 'error');
 
                 return;
             }
         } catch (\Exception $e) {
-            $this->addNotification('Error loading player data: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading player data: '.$e->getMessage(), 'error');
         }
     }
 
@@ -188,7 +221,7 @@ class TaskManager extends Component
 
             $this->lastUpdate = now();
         } catch (\Exception $e) {
-            $this->addNotification('Error loading tasks: ' . $e->getMessage(), 'error');
+            $this->addNotification('Error loading tasks: '.$e->getMessage(), 'error');
         }
 
         $this->isLoading = false;
@@ -203,7 +236,7 @@ class TaskManager extends Component
             'task_type' => $this->taskType,
             'search_query' => $this->searchQuery,
             'sort_by' => $this->sortBy,
-            'sort_order' => $this->sortOrder
+            'sort_order' => $this->sortOrder,
         ])->label('TaskManager Load Task Data');
 
         // Use SmartCache for task data with automatic optimization
@@ -223,7 +256,7 @@ class TaskManager extends Component
         });
 
         // Apply additional filtering using FilteringUtil for complex filters
-        if (!empty($this->searchQuery)) {
+        if (! empty($this->searchQuery)) {
             $this->tasks = FilteringUtil::filter(
                 $this->tasks,
                 'title',
@@ -283,7 +316,7 @@ class TaskManager extends Component
             'active_tasks' => $this->activeTasks->count(),
             'completed_tasks' => $this->completedTasks->count(),
             'available_tasks' => $this->availableTasks->count(),
-            'task_stats' => $taskStats
+            'task_stats' => $taskStats,
         ])->label('TaskManager Task Data Loaded');
     }
 
@@ -305,11 +338,11 @@ class TaskManager extends Component
                 return $q->where('status', 'available');
             },
             $this->searchQuery => function ($q) {
-                return $q->where(function ($subQ) {
-                    $subQ->whereHas('quest', function ($questQ) {
+                return $q->where(function ($subQ): void {
+                    $subQ->whereHas('quest', function ($questQ): void {
                         $questQ
-                            ->where('name', 'like', '%' . $this->searchQuery . '%')
-                            ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
+                            ->where('name', 'like', '%'.$this->searchQuery.'%')
+                            ->orWhere('description', 'like', '%'.$this->searchQuery.'%');
                     });
                 });
             },
@@ -324,22 +357,22 @@ class TaskManager extends Component
         $questStats = PlayerQuest::where('player_id', $this->player->id)
             ->select([
                 QE::sum(QE::case()
-                        ->when(QE::eq(c('status'), 'in_progress'), 1)
-                        ->else(0))
+                    ->when(QE::eq(c('status'), 'in_progress'), 1)
+                    ->else(0))
                     ->as('active_count'),
                 QE::sum(QE::case()
-                        ->when(QE::eq(c('status'), 'completed'), 1)
-                        ->else(0))
+                    ->when(QE::eq(c('status'), 'completed'), 1)
+                    ->else(0))
                     ->as('completed_count'),
                 QE::sum(QE::case()
-                        ->when(QE::eq(c('status'), 'available'), 1)
-                        ->else(0))
+                    ->when(QE::eq(c('status'), 'available'), 1)
+                    ->else(0))
                     ->as('available_count'),
                 QE::avg(QE::case()
-                        ->when(QE::eq(c('status'), 'completed'), c('progress'))
-                        ->else(null))
+                    ->when(QE::eq(c('status'), 'completed'), c('progress'))
+                    ->else(null))
                     ->as('avg_progress'),
-                QE::max(c('updated_at'))->as('last_updated')
+                QE::max(c('updated_at'))->as('last_updated'),
             ])
             ->first();
 
@@ -378,11 +411,11 @@ class TaskManager extends Component
                 return $q->whereNull('unlocked_at');
             },
             $this->searchQuery => function ($q) {
-                return $q->where(function ($subQ) {
-                    $subQ->whereHas('achievement', function ($achievementQ) {
+                return $q->where(function ($subQ): void {
+                    $subQ->whereHas('achievement', function ($achievementQ): void {
                         $achievementQ
-                            ->where('name', 'like', '%' . $this->searchQuery . '%')
-                            ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
+                            ->where('name', 'like', '%'.$this->searchQuery.'%')
+                            ->orWhere('description', 'like', '%'.$this->searchQuery.'%');
                     });
                 });
             },
@@ -428,7 +461,7 @@ class TaskManager extends Component
             'task_id' => $taskId,
             'task' => $task,
             'task_status' => $task?->status,
-            'player_id' => $this->player?->id
+            'player_id' => $this->player?->id,
         ])->label('TaskManager Start Task');
 
         if ($task && $task->status === 'available') {
@@ -451,13 +484,13 @@ class TaskManager extends Component
                 'task_id' => $taskId,
                 'reference_number' => $task->reference_number,
                 'task_title' => $task->title,
-                'started_at' => $task->started_at
+                'started_at' => $task->started_at,
             ])->label('TaskManager Task Started');
         } else {
             ds('Task start failed', [
                 'task_id' => $taskId,
                 'reason' => 'Task not available or already active',
-                'task_status' => $task?->status
+                'task_status' => $task?->status,
             ])->label('TaskManager Task Start Failed');
             $this->addNotification('Task not available or already active', 'error');
         }
@@ -472,7 +505,7 @@ class TaskManager extends Component
             'task_id' => $taskId,
             'task' => $task,
             'task_status' => $task?->status,
-            'player_id' => $this->player?->id
+            'player_id' => $this->player?->id,
         ])->label('TaskManager Complete Task');
 
         if ($task && $task->status === 'active') {
@@ -493,13 +526,13 @@ class TaskManager extends Component
                 'reference_number' => $task->reference_number,
                 'task_title' => $task->title,
                 'completed_at' => $task->completed_at,
-                'rewards' => $task->rewards
+                'rewards' => $task->rewards,
             ])->label('TaskManager Task Completed');
         } else {
             ds('Task completion failed', [
                 'task_id' => $taskId,
                 'reason' => 'Task not active or already completed',
-                'task_status' => $task?->status
+                'task_status' => $task?->status,
             ])->label('TaskManager Task Completion Failed');
             $this->addNotification('Task not active or already completed', 'error');
         }
@@ -634,28 +667,28 @@ class TaskManager extends Component
     {
         $this->viewMode = $mode;
         $this->loadTasks();
-        $this->addNotification('Switched to ' . ($this->taskCategories[$mode] ?? $mode) . ' view', 'info');
+        $this->addNotification('Switched to '.($this->taskCategories[$mode] ?? $mode).' view', 'info');
     }
 
     public function setTaskType($type)
     {
         $this->taskType = $type;
         $this->loadTasks();
-        $this->addNotification('Task type set to ' . ($this->taskTypes[$type] ?? $type), 'info');
+        $this->addNotification('Task type set to '.($this->taskTypes[$type] ?? $type), 'info');
     }
 
     public function setQuestType($type)
     {
         $this->questType = $type;
         $this->loadTasks();
-        $this->addNotification('Quest type set to ' . ($this->questTypes[$type] ?? $type), 'info');
+        $this->addNotification('Quest type set to '.($this->questTypes[$type] ?? $type), 'info');
     }
 
     public function setAchievementType($type)
     {
         $this->achievementType = $type;
         $this->loadTasks();
-        $this->addNotification('Achievement type set to ' . ($this->achievementTypes[$type] ?? $type), 'info');
+        $this->addNotification('Achievement type set to '.($this->achievementTypes[$type] ?? $type), 'info');
     }
 
     public function sortTasks($sortBy)
@@ -699,7 +732,7 @@ class TaskManager extends Component
     // Real-time features
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -708,7 +741,7 @@ class TaskManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -832,7 +865,7 @@ class TaskManager extends Component
 
     public function formatTimeRemaining($endTime)
     {
-        if (!$endTime) {
+        if (! $endTime) {
             return 'No time limit';
         }
 

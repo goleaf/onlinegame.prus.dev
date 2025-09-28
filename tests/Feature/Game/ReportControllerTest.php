@@ -12,7 +12,9 @@ class ReportControllerTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $player;
+
     protected $report;
 
     protected function setUp(): void

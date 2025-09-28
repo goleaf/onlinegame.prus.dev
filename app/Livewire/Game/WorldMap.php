@@ -5,7 +5,6 @@ namespace App\Livewire\Game;
 use App\Models\Game\Player;
 use App\Models\Game\Village;
 use App\Models\Game\World;
-use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
@@ -17,45 +16,84 @@ class WorldMap extends Component
     public $world;
 
     public $mapData = [];
+
     public $selectedVillage = null;
+
     public $mapSize = 400;  // 400x400 grid
+
     public $viewCenter = ['x' => 200, 'y' => 200];
+
     public $zoomLevel = 1;
+
     public $showCoordinates = true;
+
     public $showVillageNames = true;
+
     public $showAlliances = true;
+
     public $filterAlliance = null;
+
     public $filterTribe = null;
+
     public $isLoading = false;
+
     public $notifications = [];
+
     public $autoRefresh = true;
+
     public $refreshInterval = 10;
+
     public $realTimeUpdates = true;
+
     public $showPlayerVillages = true;
+
     public $showEnemyVillages = true;
+
     public $showNeutralVillages = true;
+
     public $searchQuery = '';
+
     public $selectedPlayer = null;
+
     public $mapMode = 'normal';  // normal, alliance, tribe, player
+
     public $highlightedVillages = [];
+
     public $mapStats = [];
+
     // Enhanced map features
     public $showGrid = true;
+
     public $showDistance = false;
+
     public $showMovementPaths = false;
+
     public $showResourceFields = false;
+
     public $showOasis = false;
+
     public $showBarbarianVillages = true;
+
     public $showNatarianVillages = true;
+
     public $coordinateSystem = 'game';  // game, decimal, dms
+
     public $mapTheme = 'classic';  // classic, modern, dark
+
     public $showPlayerStats = false;
+
     public $showAllianceStats = false;
+
     public $showBattleHistory = false;
+
     public $showTradeRoutes = false;
+
     public $selectedCoordinates = null;
+
     public $mapBounds = ['min_x' => 0, 'max_x' => 400, 'min_y' => 0, 'max_y' => 400];
+
     public $visibleVillages = [];
+
     public $mapLayers = ['villages' => true, 'alliances' => true, 'resources' => false, 'movements' => false];
 
     protected $listeners = [
@@ -148,7 +186,7 @@ class WorldMap extends Component
 
             $this->addNotification('Map data loaded successfully', 'success');
         } catch (\Exception $e) {
-            $this->addNotification('Failed to load map data: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to load map data: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -226,17 +264,17 @@ class WorldMap extends Component
 
     public function toggleCoordinates()
     {
-        $this->showCoordinates = !$this->showCoordinates;
+        $this->showCoordinates = ! $this->showCoordinates;
     }
 
     public function toggleVillageNames()
     {
-        $this->showVillageNames = !$this->showVillageNames;
+        $this->showVillageNames = ! $this->showVillageNames;
     }
 
     public function toggleAlliances()
     {
-        $this->showAlliances = !$this->showAlliances;
+        $this->showAlliances = ! $this->showAlliances;
     }
 
     public function setFilterAlliance($allianceId)
@@ -320,7 +358,7 @@ class WorldMap extends Component
 
     public function calculateMapStats()
     {
-        if (!$this->world) {
+        if (! $this->world) {
             return;
         }
 
@@ -376,7 +414,7 @@ class WorldMap extends Component
     {
         $this->filterTribe = $tribe;
         $this->mapMode = 'tribe';
-        $this->addNotification('Filtering by tribe: ' . $tribe, 'info');
+        $this->addNotification('Filtering by tribe: '.$tribe, 'info');
     }
 
     public function filterByPlayer($playerId)
@@ -399,7 +437,7 @@ class WorldMap extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -408,7 +446,7 @@ class WorldMap extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'
@@ -508,6 +546,7 @@ class WorldMap extends Component
                 pow($village['x'] - $this->viewCenter['x'], 2)
                 + pow($village['y'] - $this->viewCenter['y'], 2)
             );
+
             return $distance <= $viewRadius;
         })->values()->toArray();
     }
@@ -522,7 +561,7 @@ class WorldMap extends Component
     public function toggleMapLayer($layer)
     {
         if (isset($this->mapLayers[$layer])) {
-            $this->mapLayers[$layer] = !$this->mapLayers[$layer];
+            $this->mapLayers[$layer] = ! $this->mapLayers[$layer];
             $this->dispatch('mapLayerToggled', ['layer' => $layer, 'enabled' => $this->mapLayers[$layer]]);
         }
     }
@@ -541,12 +580,12 @@ class WorldMap extends Component
 
     public function getVillageDistance($villageId)
     {
-        if (!$this->selectedVillage) {
+        if (! $this->selectedVillage) {
             return null;
         }
 
         $village = collect($this->mapData)->firstWhere('id', $villageId);
-        if (!$village) {
+        if (! $village) {
             return null;
         }
 
@@ -562,6 +601,7 @@ class WorldMap extends Component
     {
         if (empty($this->searchQuery)) {
             $this->loadVisibleVillages();
+
             return;
         }
 
@@ -586,15 +626,15 @@ class WorldMap extends Component
             }
 
             // Filter by village type
-            if (!$this->showPlayerVillages && $village['player_name'] !== 'Barbarian') {
+            if (! $this->showPlayerVillages && $village['player_name'] !== 'Barbarian') {
                 return false;
             }
 
-            if (!$this->showBarbarianVillages && $village['player_name'] === 'Barbarian') {
+            if (! $this->showBarbarianVillages && $village['player_name'] === 'Barbarian') {
                 return false;
             }
 
-            if (!$this->showNatarianVillages && $village['player_name'] === 'Natarian') {
+            if (! $this->showNatarianVillages && $village['player_name'] === 'Natarian') {
                 return false;
             }
 

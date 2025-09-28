@@ -12,16 +12,16 @@
 /*** BUILDINGS ** */
 /*** RESOURCES ** */
 div.reports #reportWrapper .combatStatistics {
-  border: 1px solid #DDC6A2;
+  border: 1px solid #ddc6a2;
 }
 div.reports #reportWrapper .combatStatistics .header {
   height: 36px;
   line-height: 36px;
   background-color: #778243;
-  border-bottom: 1px solid #DDC6A2;
+  border-bottom: 1px solid #ddc6a2;
 }
 div.reports #reportWrapper .combatStatistics .header h2 {
-  color: #F2F2F2;
+  color: #f2f2f2;
   text-transform: uppercase;
   font-size: 1.5em;
   margin: 0 10px;
@@ -36,19 +36,19 @@ div.reports #reportWrapper .combatStatistics table td {
 }
 div.reports #reportWrapper .combatStatistics table th:nth-child(2),
 div.reports #reportWrapper .combatStatistics table td:nth-child(2) {
-  border-left: 1px solid #DDC6A2;
-  border-right: 1px solid #DDC6A2;
+  border-left: 1px solid #ddc6a2;
+  border-right: 1px solid #ddc6a2;
 }
 div.reports #reportWrapper .combatStatistics table th {
   text-align: left;
 }
 div.reports #reportWrapper .combatStatistics table thead th {
   font-weight: bold;
-  background-color: #FCF2DA;
+  background-color: #fcf2da;
 }
 div.reports #reportWrapper .combatStatistics table tbody tr:nth-child(even) th,
 div.reports #reportWrapper .combatStatistics table tbody tr:nth-child(even) td {
-  background-color: #FCF2DA;
+  background-color: #fcf2da;
 }
 div.reports #reportWrapper .combatStatistics table tbody td {
   width: 30%;

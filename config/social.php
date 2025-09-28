@@ -112,7 +112,7 @@ return [
             'platforms' => ['twitter', 'facebook', 'discord'],
         ],
         'battle_victory' => [
-            'text' => "⚔️ Victory! I won a battle against {enemy_name} and captured {resources_captured} resources!",
+            'text' => '⚔️ Victory! I won a battle against {enemy_name} and captured {resources_captured} resources!',
             'hashtags' => ['#BattleVictory', '#Gaming', '#OnlineGame', '#Strategy'],
             'platforms' => ['twitter', 'facebook', 'discord'],
         ],
@@ -127,7 +127,7 @@ return [
             'platforms' => ['twitter', 'facebook', 'discord', 'telegram'],
         ],
         'wonder_construction' => [
-            'text' => "🏛️ Our alliance is constructing the {wonder_name} wonder! Join us in this epic project!",
+            'text' => '🏛️ Our alliance is constructing the {wonder_name} wonder! Join us in this epic project!',
             'hashtags' => ['#WonderConstruction', '#Alliance', '#Gaming', '#Strategy'],
             'platforms' => ['twitter', 'facebook', 'discord', 'telegram'],
         ],

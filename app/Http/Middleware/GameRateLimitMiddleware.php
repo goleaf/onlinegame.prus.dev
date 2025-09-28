@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Symfony\Component\HttpFoundation\Response;
-use Closure;
 
 class GameRateLimitMiddleware
 {
@@ -16,7 +16,7 @@ class GameRateLimitMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $key = 'game-actions:' . $request->ip();
+        $key = 'game-actions:'.$request->ip();
         $maxAttempts = 60;  // 60 requests per minute
         $decayMinutes = 1;
 
@@ -24,7 +24,7 @@ class GameRateLimitMiddleware
             $seconds = RateLimiter::availableIn($key);
 
             return response()->json([
-                'error' => 'Too many game actions. Please try again in ' . $seconds . ' seconds.',
+                'error' => 'Too many game actions. Please try again in '.$seconds.' seconds.',
                 'retry_after' => $seconds,
             ], 429);
         }

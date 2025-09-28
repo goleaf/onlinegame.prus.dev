@@ -6,14 +6,11 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use SmartCache\Facades\SmartCache;
 
 class CacheEvictionService
 {
     /**
      * Evict expired cache items from all configured stores
-     *
-     * @return array
      */
     public function evictAllStores(): array
     {
@@ -28,12 +25,12 @@ class CacheEvictionService
             try {
                 $results[$storeName] = $this->evictStore($storeName);
             } catch (\Exception $e) {
-                Log::error("Failed to evict cache store '{$storeName}': " . $e->getMessage());
+                Log::error("Failed to evict cache store '{$storeName}': ".$e->getMessage());
                 $results[$storeName] = [
                     'success' => false,
                     'error' => $e->getMessage(),
                     'items_removed' => 0,
-                    'size_freed' => '0 B'
+                    'size_freed' => '0 B',
                 ];
             }
         }
@@ -43,9 +40,6 @@ class CacheEvictionService
 
     /**
      * Evict expired cache items from a specific store
-     *
-     * @param string $storeName
-     * @return array
      */
     public function evictStore(string $storeName): array
     {
@@ -66,9 +60,6 @@ class CacheEvictionService
 
     /**
      * Evict expired items from database cache store
-     *
-     * @param float $startTime
-     * @return array
      */
     private function evictDatabaseStore(float $startTime): array
     {
@@ -94,15 +85,12 @@ class CacheEvictionService
             'items_before' => $totalBefore,
             'items_after' => $totalAfter,
             'duration' => round($duration, 6),
-            'size_freed' => $this->estimateSizeFreed($expiredCount)
+            'size_freed' => $this->estimateSizeFreed($expiredCount),
         ];
     }
 
     /**
      * Evict expired items from file cache store
-     *
-     * @param float $startTime
-     * @return array
      */
     private function evictFileStore(float $startTime): array
     {
@@ -110,12 +98,12 @@ class CacheEvictionService
         $itemsRemoved = 0;
         $sizeFreed = 0;
 
-        if (!is_dir($path)) {
+        if (! is_dir($path)) {
             return [
                 'success' => true,
                 'items_removed' => 0,
                 'size_freed' => '0 B',
-                'duration' => round(microtime(true) - $startTime, 6)
+                'duration' => round(microtime(true) - $startTime, 6),
             ];
         }
 
@@ -149,15 +137,12 @@ class CacheEvictionService
             'success' => true,
             'items_removed' => $itemsRemoved,
             'size_freed' => $this->formatBytes($sizeFreed),
-            'duration' => round($duration, 6)
+            'duration' => round($duration, 6),
         ];
     }
 
     /**
      * Evict expired items from Redis cache store
-     *
-     * @param float $startTime
-     * @return array
      */
     private function evictRedisStore(float $startTime): array
     {
@@ -165,7 +150,7 @@ class CacheEvictionService
         $prefix = config('cache.prefix', '');
 
         // Redis automatically handles expiration, but we can clean up manually
-        $keys = $redis->getRedis()->keys($prefix . '*');
+        $keys = $redis->getRedis()->keys($prefix.'*');
         $itemsRemoved = 0;
 
         foreach ($keys as $key) {
@@ -184,16 +169,12 @@ class CacheEvictionService
             'success' => true,
             'items_removed' => $itemsRemoved,
             'size_freed' => $this->estimateSizeFreed($itemsRemoved),
-            'duration' => round($duration, 6)
+            'duration' => round($duration, 6),
         ];
     }
 
     /**
      * Use the package's built-in command for eviction
-     *
-     * @param string $storeName
-     * @param float $startTime
-     * @return array
      */
     private function evictViaCommand(string $storeName, float $startTime): array
     {
@@ -208,21 +189,19 @@ class CacheEvictionService
                 'items_removed' => $this->parseItemsRemoved($output),
                 'size_freed' => $this->parseSizeFreed($output),
                 'duration' => round($duration, 6),
-                'output' => trim($output)
+                'output' => trim($output),
             ];
         } catch (\Exception $e) {
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
-                'duration' => round(microtime(true) - $startTime, 6)
+                'duration' => round(microtime(true) - $startTime, 6),
             ];
         }
     }
 
     /**
      * Get cache statistics for all stores
-     *
-     * @return array
      */
     public function getCacheStats(): array
     {
@@ -238,7 +217,7 @@ class CacheEvictionService
                 $stats[$storeName] = $this->getStoreStats($storeName);
             } catch (\Exception $e) {
                 $stats[$storeName] = [
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ];
             }
         }
@@ -248,9 +227,6 @@ class CacheEvictionService
 
     /**
      * Get statistics for a specific store
-     *
-     * @param string $storeName
-     * @return array
      */
     private function getStoreStats(string $storeName): array
     {
@@ -264,7 +240,7 @@ class CacheEvictionService
                     'total_items' => $total,
                     'expired_items' => $expired,
                     'active_items' => $total - $expired,
-                    'driver' => 'database'
+                    'driver' => 'database',
                 ];
 
             case 'file':
@@ -288,45 +264,40 @@ class CacheEvictionService
                 return [
                     'total_items' => $total,
                     'total_size' => $this->formatBytes($size),
-                    'driver' => 'file'
+                    'driver' => 'file',
                 ];
 
             case 'redis':
                 $redis = Cache::store('redis');
                 $prefix = config('cache.prefix', '');
-                $keys = $redis->getRedis()->keys($prefix . '*');
+                $keys = $redis->getRedis()->keys($prefix.'*');
 
                 return [
                     'total_items' => count($keys),
-                    'driver' => 'redis'
+                    'driver' => 'redis',
                 ];
 
             default:
                 return [
                     'driver' => $storeName,
-                    'note' => 'Statistics not available for this driver'
+                    'note' => 'Statistics not available for this driver',
                 ];
         }
     }
 
     /**
      * Estimate size freed based on number of items
-     *
-     * @param int $itemCount
-     * @return string
      */
     private function estimateSizeFreed(int $itemCount): string
     {
         // Rough estimate: 1KB per cache item
         $estimatedBytes = $itemCount * 1024;
+
         return $this->formatBytes($estimatedBytes);
     }
 
     /**
      * Format bytes to human readable format
-     *
-     * @param int $bytes
-     * @return string
      */
     private function formatBytes(int $bytes): string
     {
@@ -338,34 +309,30 @@ class CacheEvictionService
             $unitIndex++;
         }
 
-        return round($bytes, 2) . ' ' . $units[$unitIndex];
+        return round($bytes, 2).' '.$units[$unitIndex];
     }
 
     /**
      * Parse items removed from command output
-     *
-     * @param string $output
-     * @return int
      */
     private function parseItemsRemoved(string $output): int
     {
         if (preg_match('/Removed (\d+) expired/', $output, $matches)) {
             return (int) $matches[1];
         }
+
         return 0;
     }
 
     /**
      * Parse size freed from command output
-     *
-     * @param string $output
-     * @return string
      */
     private function parseSizeFreed(string $output): string
     {
         if (preg_match('/Estimated total size: ([^\s]+)/', $output, $matches)) {
             return $matches[1];
         }
+
         return '0 B';
     }
 }

@@ -17,9 +17,6 @@ class GeographicAnalysisService
 
     /**
      * Analyze village distribution patterns
-     *
-     * @param World $world
-     * @return array
      */
     public function analyzeVillageDistribution(World $world): array
     {
@@ -35,7 +32,7 @@ class GeographicAnalysisService
                 'coverage_percentage' => 0,
                 'density_analysis' => [],
                 'clustering_analysis' => [],
-                'geographic_bounds' => null
+                'geographic_bounds' => null,
             ];
         }
 
@@ -49,15 +46,12 @@ class GeographicAnalysisService
             'coverage_percentage' => ($villages->count() / Village::where('world_id', $world->id)->count()) * 100,
             'density_analysis' => $density,
             'clustering_analysis' => $clustering,
-            'geographic_bounds' => $bounds
+            'geographic_bounds' => $bounds,
         ];
     }
 
     /**
      * Calculate geographic bounds of villages
-     *
-     * @param Collection $villages
-     * @return array|null
      */
     protected function calculateGeographicBounds(Collection $villages): ?array
     {
@@ -76,20 +70,16 @@ class GeographicAnalysisService
             'center_lat' => $lats->avg(),
             'center_lon' => $lons->avg(),
             'span_lat' => $lats->max() - $lats->min(),
-            'span_lon' => $lons->max() - $lons->min()
+            'span_lon' => $lons->max() - $lons->min(),
         ];
     }
 
     /**
      * Calculate density analysis
-     *
-     * @param Collection $villages
-     * @param array $bounds
-     * @return array
      */
     protected function calculateDensityAnalysis(Collection $villages, array $bounds): array
     {
-        if (!$bounds) {
+        if (! $bounds) {
             return [];
         }
 
@@ -99,15 +89,12 @@ class GeographicAnalysisService
         return [
             'total_area_km2' => $totalArea,
             'village_density' => $density,
-            'density_category' => $this->categorizeDensity($density)
+            'density_category' => $this->categorizeDensity($density),
         ];
     }
 
     /**
      * Analyze village clustering
-     *
-     * @param Collection $villages
-     * @return array
      */
     protected function analyzeClustering(Collection $villages): array
     {
@@ -130,17 +117,12 @@ class GeographicAnalysisService
             'total_clusters' => count($clusters),
             'largest_cluster_size' => count($clusters) > 0 ? max(array_map('count', $clusters)) : 0,
             'average_cluster_size' => count($clusters) > 0 ? array_sum(array_map('count', $clusters)) / count($clusters) : 0,
-            'clusters' => $clusters
+            'clusters' => $clusters,
         ];
     }
 
     /**
      * Find villages in the same cluster
-     *
-     * @param Village $center
-     * @param Collection $villages
-     * @param array $processed
-     * @return array
      */
     protected function findCluster(Village $center, Collection $villages, array $processed): array
     {
@@ -169,12 +151,6 @@ class GeographicAnalysisService
 
     /**
      * Calculate area in km²
-     *
-     * @param float $north
-     * @param float $south
-     * @param float $east
-     * @param float $west
-     * @return float
      */
     protected function calculateArea(float $north, float $south, float $east, float $west): float
     {
@@ -191,29 +167,27 @@ class GeographicAnalysisService
 
     /**
      * Categorize density level
-     *
-     * @param float $density
-     * @return string
      */
     protected function categorizeDensity(float $density): string
     {
-        if ($density < 0.1)
+        if ($density < 0.1) {
             return 'Very Low';
-        if ($density < 0.5)
+        }
+        if ($density < 0.5) {
             return 'Low';
-        if ($density < 1.0)
+        }
+        if ($density < 1.0) {
             return 'Medium';
-        if ($density < 2.0)
+        }
+        if ($density < 2.0) {
             return 'High';
+        }
+
         return 'Very High';
     }
 
     /**
      * Find optimal village locations based on geographic analysis
-     *
-     * @param World $world
-     * @param int $count
-     * @return array
      */
     public function findOptimalLocations(World $world, int $count = 10): array
     {
@@ -223,7 +197,7 @@ class GeographicAnalysisService
             ->get();
 
         $bounds = $this->calculateGeographicBounds($existingVillages);
-        if (!$bounds) {
+        if (! $bounds) {
             return [];
         }
 
@@ -241,22 +215,25 @@ class GeographicAnalysisService
 
             foreach ($existingVillages as $village) {
                 $distance = $this->geoService->calculateDistance(
-                    $lat, $lon,
-                    $village->latitude, $village->longitude
+                    $lat,
+                    $lon,
+                    $village->latitude,
+                    $village->longitude
                 );
 
                 if ($distance < $minDistance) {
                     $tooClose = true;
+
                     break;
                 }
             }
 
-            if (!$tooClose) {
+            if (! $tooClose) {
                 $optimalLocations[] = [
                     'latitude' => $lat,
                     'longitude' => $lon,
                     'game_x' => $this->geoService->realWorldToGame($lat, $lon)['x'],
-                    'game_y' => $this->geoService->realWorldToGame($lat, $lon)['y']
+                    'game_y' => $this->geoService->realWorldToGame($lat, $lon)['y'],
                 ];
             }
 
@@ -268,9 +245,6 @@ class GeographicAnalysisService
 
     /**
      * Analyze travel patterns between villages
-     *
-     * @param World $world
-     * @return array
      */
     public function analyzeTravelPatterns(World $world): array
     {
@@ -288,13 +262,17 @@ class GeographicAnalysisService
                 $village2 = $villages[$j];
 
                 $distance = $this->geoService->calculateDistance(
-                    $village1->latitude, $village1->longitude,
-                    $village2->latitude, $village2->longitude
+                    $village1->latitude,
+                    $village1->longitude,
+                    $village2->latitude,
+                    $village2->longitude
                 );
 
                 $bearing = $this->geoService->calculateBearing(
-                    $village1->latitude, $village1->longitude,
-                    $village2->latitude, $village2->longitude
+                    $village1->latitude,
+                    $village1->longitude,
+                    $village2->latitude,
+                    $village2->longitude
                 );
 
                 $distances[] = $distance;
@@ -307,15 +285,12 @@ class GeographicAnalysisService
             'max_distance' => count($distances) > 0 ? max($distances) : 0,
             'min_distance' => count($distances) > 0 ? min($distances) : 0,
             'distance_distribution' => $this->categorizeDistances($distances),
-            'bearing_analysis' => $this->analyzeBearings($bearings)
+            'bearing_analysis' => $this->analyzeBearings($bearings),
         ];
     }
 
     /**
      * Categorize distances
-     *
-     * @param array $distances
-     * @return array
      */
     protected function categorizeDistances(array $distances): array
     {
@@ -324,20 +299,21 @@ class GeographicAnalysisService
             'short' => 0,  // 5-20km
             'medium' => 0,  // 20-50km
             'long' => 0,  // 50-100km
-            'very_long' => 0  // > 100km
+            'very_long' => 0,  // > 100km
         ];
 
         foreach ($distances as $distance) {
-            if ($distance < 5)
+            if ($distance < 5) {
                 $categories['very_short']++;
-            elseif ($distance < 20)
+            } elseif ($distance < 20) {
                 $categories['short']++;
-            elseif ($distance < 50)
+            } elseif ($distance < 50) {
                 $categories['medium']++;
-            elseif ($distance < 100)
+            } elseif ($distance < 100) {
                 $categories['long']++;
-            else
+            } else {
                 $categories['very_long']++;
+            }
         }
 
         return $categories;
@@ -345,9 +321,6 @@ class GeographicAnalysisService
 
     /**
      * Analyze bearing patterns
-     *
-     * @param array $bearings
-     * @return array
      */
     protected function analyzeBearings(array $bearings): array
     {
@@ -359,26 +332,27 @@ class GeographicAnalysisService
             'south' => 0,  // 157.5-202.5
             'southwest' => 0,  // 202.5-247.5
             'west' => 0,  // 247.5-292.5
-            'northwest' => 0  // 292.5-337.5
+            'northwest' => 0,  // 292.5-337.5
         ];
 
         foreach ($bearings as $bearing) {
-            if ($bearing >= 337.5 || $bearing < 22.5)
+            if ($bearing >= 337.5 || $bearing < 22.5) {
                 $directions['north']++;
-            elseif ($bearing < 67.5)
+            } elseif ($bearing < 67.5) {
                 $directions['northeast']++;
-            elseif ($bearing < 112.5)
+            } elseif ($bearing < 112.5) {
                 $directions['east']++;
-            elseif ($bearing < 157.5)
+            } elseif ($bearing < 157.5) {
                 $directions['southeast']++;
-            elseif ($bearing < 202.5)
+            } elseif ($bearing < 202.5) {
                 $directions['south']++;
-            elseif ($bearing < 247.5)
+            } elseif ($bearing < 247.5) {
                 $directions['southwest']++;
-            elseif ($bearing < 292.5)
+            } elseif ($bearing < 292.5) {
                 $directions['west']++;
-            else
+            } else {
                 $directions['northwest']++;
+            }
         }
 
         return $directions;

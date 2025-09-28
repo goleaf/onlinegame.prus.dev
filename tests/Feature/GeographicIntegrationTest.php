@@ -4,8 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Game\Village;
 use App\Models\Game\World;
-use App\Services\GeographicService;
 use App\Services\GeographicAnalysisService;
+use App\Services\GeographicService;
 use Tests\TestCase;
 
 class GeographicIntegrationTest extends TestCase
@@ -13,19 +13,19 @@ class GeographicIntegrationTest extends TestCase
     public function test_geographic_service_calculations()
     {
         $geoService = new GeographicService();
-        
+
         // Test distance calculation
         $distance = $geoService->calculateDistance(52.520008, 13.404954, 48.8566, 2.3522);
         $this->assertIsFloat($distance);
         $this->assertGreaterThan(800, $distance);
         $this->assertLessThan(1000, $distance);
-        
+
         // Test bearing calculation
         $bearing = $geoService->calculateBearing(52.520008, 13.404954, 48.8566, 2.3522);
         $this->assertIsFloat($bearing);
         $this->assertGreaterThanOrEqual(0, $bearing);
         $this->assertLessThan(360, $bearing);
-        
+
         // Test coordinate conversion
         $coords = $geoService->gameToRealWorld(500, 500);
         $this->assertIsArray($coords);
@@ -36,15 +36,15 @@ class GeographicIntegrationTest extends TestCase
     public function test_geographic_analysis_service()
     {
         $world = World::first();
-        if (!$world) {
+        if (! $world) {
             $this->markTestSkipped('No world found for testing');
         }
 
         $geoService = new GeographicService();
         $analysisService = new GeographicAnalysisService($geoService);
-        
+
         $analysis = $analysisService->analyzeVillageDistribution($world);
-        
+
         $this->assertIsArray($analysis);
         $this->assertArrayHasKey('total_villages', $analysis);
         $this->assertArrayHasKey('with_coordinates', $analysis);
@@ -57,7 +57,7 @@ class GeographicIntegrationTest extends TestCase
     public function test_village_geographic_methods()
     {
         $village = Village::whereNotNull('latitude')->whereNotNull('longitude')->first();
-        if (!$village) {
+        if (! $village) {
             $this->markTestSkipped('No village with coordinates found for testing');
         }
 
@@ -66,7 +66,7 @@ class GeographicIntegrationTest extends TestCase
         $this->assertIsArray($coords);
         $this->assertArrayHasKey('lat', $coords);
         $this->assertArrayHasKey('lon', $coords);
-        
+
         // Test geohash
         $geohash = $village->getGeohash();
         $this->assertIsString($geohash);
@@ -86,4 +86,3 @@ class GeographicIntegrationTest extends TestCase
         $this->assertTrue(in_array($response->status(), [200, 302, 401])); // 200 OK, 302 redirect, or 401 auth required
     }
 }
-

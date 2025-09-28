@@ -13,7 +13,7 @@ class GameSecurityService
     public function validateGameAction(Request $request, string $action, array $data = [])
     {
         $startTime = microtime(true);
-        
+
         ds('GameSecurityService: Validating game action', [
             'service' => 'GameSecurityService',
             'method' => 'validateGameAction',
@@ -21,20 +21,21 @@ class GameSecurityService
             'user_id' => $request->user()?->id,
             'ip_address' => $request->ip(),
             'data_keys' => array_keys($data),
-            'validation_time' => now()
+            'validation_time' => now(),
         ]);
-        
+
         // Check rate limiting
         $rateLimitStart = microtime(true);
         $rateLimitPassed = $this->checkRateLimit($request, $action);
         $rateLimitTime = round((microtime(true) - $rateLimitStart) * 1000, 2);
-        
-        if (!$rateLimitPassed) {
+
+        if (! $rateLimitPassed) {
             ds('GameSecurityService: Rate limit check failed', [
                 'action' => $action,
                 'ip_address' => $request->ip(),
-                'rate_limit_time_ms' => $rateLimitTime
+                'rate_limit_time_ms' => $rateLimitTime,
             ]);
+
             return false;
         }
 
@@ -42,13 +43,14 @@ class GameSecurityService
         $ownershipStart = microtime(true);
         $ownershipPassed = $this->checkPlayerOwnership($request, $data);
         $ownershipTime = round((microtime(true) - $ownershipStart) * 1000, 2);
-        
-        if (!$ownershipPassed) {
+
+        if (! $ownershipPassed) {
             ds('GameSecurityService: Player ownership check failed', [
                 'action' => $action,
                 'user_id' => $request->user()?->id,
-                'ownership_time_ms' => $ownershipTime
+                'ownership_time_ms' => $ownershipTime,
             ]);
+
             return false;
         }
 
@@ -57,13 +59,14 @@ class GameSecurityService
             $villageStart = microtime(true);
             $villagePassed = $this->checkVillageOwnership($request, $data['village_id']);
             $villageTime = round((microtime(true) - $villageStart) * 1000, 2);
-            
-            if (!$villagePassed) {
+
+            if (! $villagePassed) {
                 ds('GameSecurityService: Village ownership check failed', [
                     'action' => $action,
                     'village_id' => $data['village_id'],
-                    'village_time_ms' => $villageTime
+                    'village_time_ms' => $villageTime,
                 ]);
+
                 return false;
             }
         }
@@ -72,24 +75,25 @@ class GameSecurityService
         $securityStart = microtime(true);
         $securityPassed = $this->checkActionSecurity($request, $action, $data);
         $securityTime = round((microtime(true) - $securityStart) * 1000, 2);
-        
-        if (!$securityPassed) {
+
+        if (! $securityPassed) {
             ds('GameSecurityService: Action security check failed', [
                 'action' => $action,
-                'security_time_ms' => $securityTime
+                'security_time_ms' => $securityTime,
             ]);
+
             return false;
         }
 
         $totalTime = round((microtime(true) - $startTime) * 1000, 2);
-        
+
         ds('GameSecurityService: Game action validation completed successfully', [
             'action' => $action,
             'rate_limit_time_ms' => $rateLimitTime,
             'ownership_time_ms' => $ownershipTime,
             'security_time_ms' => $securityTime,
             'total_time_ms' => $totalTime,
-            'all_checks_passed' => true
+            'all_checks_passed' => true,
         ]);
 
         return true;
@@ -97,7 +101,7 @@ class GameSecurityService
 
     private function checkRateLimit(Request $request, string $action)
     {
-        $key = 'game-action:' . $request->ip() . ':' . $action;
+        $key = 'game-action:'.$request->ip().':'.$action;
         $maxAttempts = $this->getRateLimitForAction($action);
         $decayMinutes = 1;
 
@@ -133,12 +137,12 @@ class GameSecurityService
     private function checkPlayerOwnership(Request $request, array $data)
     {
         $user = $request->user();
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
         $player = Player::where('user_id', $user->id)->first();
-        if (!$player || !$player->is_active) {
+        if (! $player || ! $player->is_active) {
             return false;
         }
 
@@ -151,7 +155,7 @@ class GameSecurityService
     private function checkVillageOwnership(Request $request, int $villageId)
     {
         $player = $request->get('player');
-        if (!$player) {
+        if (! $player) {
             return false;
         }
 
@@ -159,7 +163,7 @@ class GameSecurityService
             ->where('player_id', $player->id)
             ->first();
 
-        if (!$village) {
+        if (! $village) {
             Log::warning('Unauthorized village access attempt', [
                 'user_id' => $request->user()?->id,
                 'village_id' => $villageId,
@@ -193,7 +197,7 @@ class GameSecurityService
     private function validateBuildingUpgrade(Request $request, array $data)
     {
         $village = $request->get('village');
-        if (!$village) {
+        if (! $village) {
             return false;
         }
 
@@ -203,7 +207,7 @@ class GameSecurityService
             ->where('id', $data['building_id'] ?? 0)
             ->first();
 
-        if (!$building) {
+        if (! $building) {
             return false;
         }
 
@@ -218,13 +222,13 @@ class GameSecurityService
     private function validateTroopTraining(Request $request, array $data)
     {
         $village = $request->get('village');
-        if (!$village) {
+        if (! $village) {
             return false;
         }
 
         // Check if unit type is valid for player's tribe
         $unitType = $village->player->tribe;
-        if (!in_array($data['unit_type_id'] ?? 0, $this->getValidUnitTypes($unitType))) {
+        if (! in_array($data['unit_type_id'] ?? 0, $this->getValidUnitTypes($unitType))) {
             return false;
         }
 
@@ -240,7 +244,7 @@ class GameSecurityService
     private function validateResourceSpending(Request $request, array $data)
     {
         $village = $request->get('village');
-        if (!$village) {
+        if (! $village) {
             return false;
         }
 
@@ -248,7 +252,7 @@ class GameSecurityService
         $costs = $data['costs'] ?? [];
         foreach ($costs as $resource => $amount) {
             $resourceModel = $village->resources()->where('type', $resource)->first();
-            if (!$resourceModel || $resourceModel->amount < $amount) {
+            if (! $resourceModel || $resourceModel->amount < $amount) {
                 return false;
             }
         }
@@ -259,12 +263,12 @@ class GameSecurityService
     private function validateVillageManagement(Request $request, array $data)
     {
         $village = $request->get('village');
-        if (!$village) {
+        if (! $village) {
             return false;
         }
 
         // Check if village is active
-        if (!$village->is_active) {
+        if (! $village->is_active) {
             return false;
         }
 
@@ -318,7 +322,7 @@ class GameSecurityService
 
     private function checkRapidBuildingUpgrades(Request $request)
     {
-        $key = 'building_upgrades:' . $request->ip();
+        $key = 'building_upgrades:'.$request->ip();
         $attempts = RateLimiter::attempts($key);
 
         return $attempts > 20;  // More than 20 building upgrades in the last minute
@@ -326,7 +330,7 @@ class GameSecurityService
 
     private function checkExcessiveResourceSpending(Request $request)
     {
-        $key = 'resource_spending:' . $request->ip();
+        $key = 'resource_spending:'.$request->ip();
         $attempts = RateLimiter::attempts($key);
 
         return $attempts > 50;  // More than 50 resource spending actions in the last minute
@@ -334,7 +338,7 @@ class GameSecurityService
 
     private function checkUnusualTroopTraining(Request $request)
     {
-        $key = 'troop_training:' . $request->ip();
+        $key = 'troop_training:'.$request->ip();
         $attempts = RateLimiter::attempts($key);
 
         return $attempts > 100;  // More than 100 troop training actions in the last minute

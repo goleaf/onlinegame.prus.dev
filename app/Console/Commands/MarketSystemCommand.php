@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Game\Player;
-use App\Models\Game\Village;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -41,18 +40,23 @@ class MarketSystemCommand extends Command
         switch ($action) {
             case 'generate':
                 $this->generateMarketOffers();
+
                 break;
             case 'process':
                 $this->processMarketTrades();
+
                 break;
             case 'cleanup':
                 $this->cleanupExpiredOffers();
+
                 break;
             case 'stats':
                 $this->showMarketStats();
+
                 break;
             default:
                 $this->error("Unknown action: {$action}");
+
                 return 1;
         }
 
@@ -104,7 +108,7 @@ class MarketSystemCommand extends Command
             foreach ($resourceTypes as $type) {
                 $resource = $village->resources()->where('type', $type)->first();
 
-                if (!$resource || $resource->amount < 1000) {
+                if (! $resource || $resource->amount < 1000) {
                     continue;  // Skip if not enough resources
                 }
 
@@ -171,6 +175,7 @@ class MarketSystemCommand extends Command
     protected function getRandomResourceType(string $exclude): string
     {
         $types = array_diff(['wood', 'clay', 'iron', 'crop'], [$exclude]);
+
         return $types[array_rand($types)];
     }
 
@@ -319,10 +324,12 @@ class MarketSystemCommand extends Command
             DB::commit();
 
             $this->line("  → Trade completed: {$tradeAmount} {$offer1->offer_type} ↔ {$tradeAmount} {$offer2->offer_type}");
+
             return true;
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->error('Trade failed: ' . $e->getMessage());
+            $this->error('Trade failed: '.$e->getMessage());
+
             return false;
         }
     }
@@ -333,17 +340,17 @@ class MarketSystemCommand extends Command
     protected function transferResources(int $playerId, string $resourceType, int $amount, string $operation): void
     {
         $player = Player::find($playerId);
-        if (!$player) {
+        if (! $player) {
             return;
         }
 
         $village = $player->villages()->first();
-        if (!$village) {
+        if (! $village) {
             return;
         }
 
         $resource = $village->resources()->where('type', $resourceType)->first();
-        if (!$resource) {
+        if (! $resource) {
             return;
         }
 

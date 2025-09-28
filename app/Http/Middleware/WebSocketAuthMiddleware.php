@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\RealTimeGameService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\RealTimeGameService;
 
 class WebSocketAuthMiddleware
 {
@@ -15,7 +15,7 @@ class WebSocketAuthMiddleware
     public function handle(Request $request, Closure $next)
     {
         // Check if user is authenticated
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return response()->json([
                 'success' => false,
                 'error' => 'Unauthorized - User not authenticated',

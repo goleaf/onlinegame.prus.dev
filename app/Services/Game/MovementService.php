@@ -3,10 +3,10 @@
 namespace App\Services\Game;
 
 use App\Models\Game\Movement;
-use App\Models\Game\Village;
 use App\Models\Game\Player;
 use App\Models\Game\Troop;
 use App\Models\Game\UnitType;
+use App\Models\Game\Village;
 use Illuminate\Support\Facades\DB;
 use SmartCache\Facades\SmartCache;
 
@@ -14,7 +14,8 @@ class MovementService
 {
     public function __construct(
         private MapService $mapService
-    ) {}
+    ) {
+    }
 
     /**
      * Start troop movement
@@ -23,7 +24,7 @@ class MovementService
     {
         // Validate movement
         $validation = $this->validateMovement($fromVillage, $toVillage, $troops, $movementType);
-        if (!$validation['valid']) {
+        if (! $validation['valid']) {
             return $validation;
         }
 
@@ -76,7 +77,7 @@ class MovementService
             ];
         }
 
-        DB::transaction(function () use ($movement) {
+        DB::transaction(function () use ($movement): void {
             // Update movement status
             $movement->update([
                 'status' => 'arrived',
@@ -87,15 +88,19 @@ class MovementService
             switch ($movement->movement_type) {
                 case 'attack':
                     $this->handleAttackMovement($movement);
+
                     break;
                 case 'support':
                     $this->handleSupportMovement($movement);
+
                     break;
                 case 'raid':
                     $this->handleRaidMovement($movement);
+
                     break;
                 case 'return':
                     $this->handleReturnMovement($movement);
+
                     break;
             }
         });
@@ -125,7 +130,7 @@ class MovementService
         // Calculate return time
         $returnTime = $this->calculateReturnTime($movement);
 
-        DB::transaction(function () use ($movement, $returnTime) {
+        DB::transaction(function () use ($movement, $returnTime): void {
             // Update movement status
             $movement->update([
                 'status' => 'returning',
@@ -281,6 +286,7 @@ class MovementService
 
         // Base travel time calculation
         $baseTime = $distance * 60; // 1 minute per unit distance
+
         return (int) ($baseTime / $slowestSpeed);
     }
 
@@ -291,7 +297,7 @@ class MovementService
     {
         $elapsedTime = $movement->started_at->diffInSeconds(now());
         $totalTime = $movement->started_at->diffInSeconds($movement->arrives_at);
-        
+
         // Return time is the remaining time
         return max(1, $totalTime - $elapsedTime);
     }
@@ -304,7 +310,9 @@ class MovementService
         $slowestSpeed = 1.0;
 
         foreach ($troops as $unitTypeId => $quantity) {
-            if ($quantity <= 0) continue;
+            if ($quantity <= 0) {
+                continue;
+            }
 
             $unitType = UnitType::find($unitTypeId);
             if ($unitType && $unitType->speed < $slowestSpeed) {
@@ -342,7 +350,7 @@ class MovementService
         }
 
         // Check if village has enough troops
-        if (!$this->hasEnoughTroops($fromVillage, $troops)) {
+        if (! $this->hasEnoughTroops($fromVillage, $troops)) {
             return [
                 'valid' => false,
                 'message' => 'Insufficient troops for movement',

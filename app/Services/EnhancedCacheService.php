@@ -13,7 +13,9 @@ use SmartCache\Facades\SmartCache;
 class EnhancedCacheService
 {
     protected string $prefix;
+
     protected int $defaultTtl;
+
     protected array $compressionOptions;
 
     public function __construct()
@@ -32,27 +34,27 @@ class EnhancedCacheService
     public function remember(string $key, int $ttl, callable $callback): mixed
     {
         $startTime = microtime(true);
-        
+
         ds('EnhancedCacheService: Cache remember operation', [
             'service' => 'EnhancedCacheService',
             'method' => 'remember',
             'key' => $key,
-            'full_key' => $this->prefix . $key,
+            'full_key' => $this->prefix.$key,
             'ttl_seconds' => $ttl,
-            'cache_time' => now()
+            'cache_time' => now(),
         ]);
-        
-        $fullKey = $this->prefix . $key;
+
+        $fullKey = $this->prefix.$key;
 
         $result = SmartCache::remember($fullKey, now()->addSeconds($ttl), $callback);
-        
+
         $operationTime = round((microtime(true) - $startTime) * 1000, 2);
-        
+
         ds('EnhancedCacheService: Cache remember completed', [
             'key' => $key,
             'operation_time_ms' => $operationTime,
             'result_type' => gettype($result),
-            'result_size' => is_string($result) ? strlen($result) : (is_array($result) ? count($result) : 'N/A')
+            'result_size' => is_string($result) ? strlen($result) : (is_array($result) ? count($result) : 'N/A'),
         ]);
 
         return $result;
@@ -63,7 +65,7 @@ class EnhancedCacheService
      */
     public function rememberWithTags(string $key, array $tags, int $ttl, callable $callback): mixed
     {
-        $fullKey = $this->prefix . $key;
+        $fullKey = $this->prefix.$key;
 
         // SmartCache handles optimization automatically, tags are for reference
         return SmartCache::remember($fullKey, now()->addSeconds($ttl), $callback);
@@ -85,13 +87,13 @@ class EnhancedCacheService
     public function getStats(): array
     {
         $startTime = microtime(true);
-        
+
         ds('EnhancedCacheService: Getting cache statistics', [
             'service' => 'EnhancedCacheService',
             'method' => 'getStats',
-            'stats_time' => now()
+            'stats_time' => now(),
         ]);
-        
+
         try {
             $redis = Redis::connection('cache');
             $info = $redis->info();
@@ -102,26 +104,26 @@ class EnhancedCacheService
                 'hit_rate' => $this->calculateHitRate(),
                 'compression_enabled' => true,
             ];
-            
+
             $statsTime = round((microtime(true) - $startTime) * 1000, 2);
-            
+
             ds('EnhancedCacheService: Cache statistics retrieved', [
                 'memory_used' => $stats['memory_used'],
                 'keys_count' => $stats['keys_count'],
                 'hit_rate' => $stats['hit_rate'],
-                'stats_time_ms' => $statsTime
+                'stats_time_ms' => $statsTime,
             ]);
 
             return $stats;
         } catch (\Exception $e) {
             $statsTime = round((microtime(true) - $startTime) * 1000, 2);
-            
+
             ds('EnhancedCacheService: Cache statistics failed', [
                 'error' => $e->getMessage(),
                 'exception' => get_class($e),
-                'stats_time_ms' => $statsTime
+                'stats_time_ms' => $statsTime,
             ]);
-            
+
             return [
                 'error' => 'Unable to retrieve cache statistics',
                 'message' => $e->getMessage(),
@@ -135,7 +137,7 @@ class EnhancedCacheService
     public function warmUp(array $keys): void
     {
         foreach ($keys as $key => $callback) {
-            if (!Cache::has($this->prefix . $key)) {
+            if (! Cache::has($this->prefix.$key)) {
                 $this->remember($key, $this->defaultTtl, $callback);
             }
         }
@@ -168,6 +170,7 @@ class EnhancedCacheService
             if (function_exists('lzf_decompress')) {
                 try {
                     $decompressed = lzf_decompress($data);
+
                     return igbinary_unserialize($decompressed);
                 } catch (\Exception $e) {
                     // Fallback to direct unserialize

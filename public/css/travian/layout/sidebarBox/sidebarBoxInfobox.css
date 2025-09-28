@@ -24,7 +24,12 @@ div#center div.sidebar div#sidebarBoxInfobox .header .messageShortInfo {
   right: 35px;
   top: 30px;
 }
-div#center div.sidebar div#sidebarBoxInfobox .header .messageShortInfo img.messages {
+div#center
+  div.sidebar
+  div#sidebarBoxInfobox
+  .header
+  .messageShortInfo
+  img.messages {
   width: 18px;
   height: 14px;
   position: relative;
@@ -33,7 +38,12 @@ div#center div.sidebar div#sidebarBoxInfobox .header .messageShortInfo img.messa
   background-position: left top;
   top: -1px;
 }
-div#center div.sidebar div#sidebarBoxInfobox .header .messageShortInfo img.messages.unreaded {
+div#center
+  div.sidebar
+  div#sidebarBoxInfobox
+  .header
+  .messageShortInfo
+  img.messages.unreaded {
   background-position: left -19px;
 }
 div#center div.sidebar div#sidebarBoxInfobox .content ul li {
@@ -46,7 +56,7 @@ div#center div.sidebar div#sidebarBoxInfobox .content ul li p {
   margin: 0;
 }
 div#center div.sidebar div#sidebarBoxInfobox .content a {
-  color: #99C01A;
+  color: #99c01a;
   font-weight: bold;
   padding-left: 0;
   margin-left: 0;
@@ -62,26 +72,56 @@ div#center div.sidebar div#sidebarBoxInfobox .content .infoboxDeleteButton {
 div#center div.sidebar div#sidebarBoxInfobox .content .infoboxDeleteButton img {
   margin: 5px;
 }
-div#center div.sidebar div#sidebarBoxInfobox .content .infoboxDeleteButton:hover {
+div#center
+  div.sidebar
+  div#sidebarBoxInfobox
+  .content
+  .infoboxDeleteButton:hover {
   border-radius: 2px;
-  border: 1px solid #D40000;
+  border: 1px solid #d40000;
 }
-.colorBlind div#center div.sidebar div#sidebarBoxInfobox .content .infoboxDeleteButton:hover {
-  border: 1px solid #0022AF;
+.colorBlind
+  div#center
+  div.sidebar
+  div#sidebarBoxInfobox
+  .content
+  .infoboxDeleteButton:hover {
+  border: 1px solid #0022af;
 }
 div#center div.sidebar div#sidebarBoxInfobox .content button {
   margin-top: 5px;
 }
-div#center div.sidebar div#sidebarBoxInfobox.collapsed div.sidebarBoxInnerBox div.content {
+div#center
+  div.sidebar
+  div#sidebarBoxInfobox.collapsed
+  div.sidebarBoxInnerBox
+  div.content {
   height: auto;
   overflow: visible;
 }
-div#center div.sidebar div#sidebarBoxInfobox.collapsed div.sidebarBoxInnerBox div.content ul {
+div#center
+  div.sidebar
+  div#sidebarBoxInfobox.collapsed
+  div.sidebarBoxInnerBox
+  div.content
+  ul {
   display: block;
 }
-div#center div.sidebar div#sidebarBoxInfobox.collapsed div.sidebarBoxInnerBox div.content ul li {
+div#center
+  div.sidebar
+  div#sidebarBoxInfobox.collapsed
+  div.sidebarBoxInnerBox
+  div.content
+  ul
+  li {
   display: none;
 }
-div#center div.sidebar div#sidebarBoxInfobox.collapsed div.sidebarBoxInnerBox div.content ul li.firstElement {
+div#center
+  div.sidebar
+  div#sidebarBoxInfobox.collapsed
+  div.sidebarBoxInnerBox
+  div.content
+  ul
+  li.firstElement {
   display: block;
 }

@@ -19,4 +19,3 @@ echo __('messages.hello', ['name' => 'Admin']);
 // Example with pluralization
 echo trans_choice('messages.players', 1);
 echo trans_choice('messages.players', 5);
-

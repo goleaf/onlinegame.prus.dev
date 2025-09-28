@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
-use App\Models\Game\Player;
 use App\Models\Game\Achievement;
+use App\Models\Game\Player;
 use App\Models\Game\PlayerAchievement;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class SocialMediaService
 {
     protected CachingUtil $cachingUtil;
+
     protected LoggingUtil $loggingUtil;
 
     public function __construct()
@@ -31,7 +31,7 @@ class SocialMediaService
 
         $shareData = [
             'text' => "🎉 I just unlocked the achievement '{$achievement->name}' in the game! {$achievement->description}",
-            'url' => config('app.url') . '/achievements/' . $achievement->id,
+            'url' => config('app.url').'/achievements/'.$achievement->id,
             'image' => $this->generateAchievementImage($achievement, $player),
             'hashtags' => ['#GameAchievement', '#Gaming', '#OnlineGame'],
         ];
@@ -47,19 +47,19 @@ class SocialMediaService
                     'player_id' => $player->id,
                     'achievement_id' => $achievement->id,
                     'platform' => $platform,
-                    'success' => $result['success']
+                    'success' => $result['success'],
                 ]);
             } catch (\Exception $e) {
                 $results[$platform] = [
                     'success' => false,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ];
 
                 $this->loggingUtil->error('Failed to share achievement on social media', [
                     'player_id' => $player->id,
                     'achievement_id' => $achievement->id,
                     'platform' => $platform,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -74,7 +74,7 @@ class SocialMediaService
     {
         $shareData = [
             'text' => "⚔️ Victory! I won a battle against {$battleData['enemy_name']} and captured {$battleData['resources_captured']} resources!",
-            'url' => config('app.url') . '/battles/' . $battleData['battle_id'],
+            'url' => config('app.url').'/battles/'.$battleData['battle_id'],
             'image' => $this->generateBattleImage($battleData),
             'hashtags' => ['#BattleVictory', '#Gaming', '#OnlineGame', '#Strategy'],
         ];
@@ -88,7 +88,7 @@ class SocialMediaService
             } catch (\Exception $e) {
                 $results[$platform] = [
                     'success' => false,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ];
             }
         }
@@ -103,7 +103,7 @@ class SocialMediaService
     {
         $shareData = [
             'text' => "🏘️ My village '{$villageData['village_name']}' has reached {$villageData['milestone']}! Population: {$villageData['population']}",
-            'url' => config('app.url') . '/villages/' . $villageData['village_id'],
+            'url' => config('app.url').'/villages/'.$villageData['village_id'],
             'image' => $this->generateVillageImage($villageData),
             'hashtags' => ['#VillageGrowth', '#Gaming', '#OnlineGame', '#Strategy'],
         ];
@@ -117,7 +117,7 @@ class SocialMediaService
             } catch (\Exception $e) {
                 $results[$platform] = [
                     'success' => false,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ];
             }
         }
@@ -150,35 +150,35 @@ class SocialMediaService
     protected function shareToTwitter(array $shareData, Player $player): array
     {
         $twitterConfig = config('social.twitter');
-        
-        if (!$twitterConfig || !$twitterConfig['enabled']) {
+
+        if (! $twitterConfig || ! $twitterConfig['enabled']) {
             return ['success' => false, 'error' => 'Twitter integration not configured'];
         }
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $twitterConfig['bearer_token'],
+                'Authorization' => 'Bearer '.$twitterConfig['bearer_token'],
                 'Content-Type' => 'application/json',
             ])->post('https://api.twitter.com/2/tweets', [
-                'text' => $this->formatTweetText($shareData)
+                'text' => $this->formatTweetText($shareData),
             ]);
 
             if ($response->successful()) {
                 return [
                     'success' => true,
                     'tweet_id' => $response->json('data.id'),
-                    'url' => 'https://twitter.com/user/status/' . $response->json('data.id')
+                    'url' => 'https://twitter.com/user/status/'.$response->json('data.id'),
                 ];
             } else {
                 return [
                     'success' => false,
-                    'error' => $response->json('detail', 'Unknown error')
+                    'error' => $response->json('detail', 'Unknown error'),
                 ];
             }
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
@@ -189,8 +189,8 @@ class SocialMediaService
     protected function shareToFacebook(array $shareData, Player $player): array
     {
         $facebookConfig = config('social.facebook');
-        
-        if (!$facebookConfig || !$facebookConfig['enabled']) {
+
+        if (! $facebookConfig || ! $facebookConfig['enabled']) {
             return ['success' => false, 'error' => 'Facebook integration not configured'];
         }
 
@@ -198,25 +198,25 @@ class SocialMediaService
             $response = Http::post("https://graph.facebook.com/v18.0/{$facebookConfig['page_id']}/feed", [
                 'message' => $shareData['text'],
                 'link' => $shareData['url'],
-                'access_token' => $facebookConfig['access_token']
+                'access_token' => $facebookConfig['access_token'],
             ]);
 
             if ($response->successful()) {
                 return [
                     'success' => true,
                     'post_id' => $response->json('id'),
-                    'url' => $shareData['url']
+                    'url' => $shareData['url'],
                 ];
             } else {
                 return [
                     'success' => false,
-                    'error' => $response->json('error.message', 'Unknown error')
+                    'error' => $response->json('error.message', 'Unknown error'),
                 ];
             }
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
@@ -227,8 +227,8 @@ class SocialMediaService
     protected function shareToDiscord(array $shareData, Player $player): array
     {
         $discordConfig = config('social.discord');
-        
-        if (!$discordConfig || !$discordConfig['enabled']) {
+
+        if (! $discordConfig || ! $discordConfig['enabled']) {
             return ['success' => false, 'error' => 'Discord integration not configured'];
         }
 
@@ -240,31 +240,31 @@ class SocialMediaService
                         'title' => 'Game Achievement',
                         'description' => $shareData['text'],
                         'url' => $shareData['url'],
-                        'color' => 0x00ff00,
+                        'color' => 0x00FF00,
                         'footer' => [
-                            'text' => 'Shared from Online Game'
+                            'text' => 'Shared from Online Game',
                         ],
-                        'timestamp' => now()->toISOString()
-                    ]
-                ]
+                        'timestamp' => now()->toISOString(),
+                    ],
+                ],
             ]);
 
             if ($response->successful()) {
                 return [
                     'success' => true,
                     'message_id' => $response->json('id'),
-                    'url' => $shareData['url']
+                    'url' => $shareData['url'],
                 ];
             } else {
                 return [
                     'success' => false,
-                    'error' => 'Failed to send Discord message'
+                    'error' => 'Failed to send Discord message',
                 ];
             }
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
@@ -275,8 +275,8 @@ class SocialMediaService
     protected function shareToTelegram(array $shareData, Player $player): array
     {
         $telegramConfig = config('social.telegram');
-        
-        if (!$telegramConfig || !$telegramConfig['enabled']) {
+
+        if (! $telegramConfig || ! $telegramConfig['enabled']) {
             return ['success' => false, 'error' => 'Telegram integration not configured'];
         }
 
@@ -285,25 +285,25 @@ class SocialMediaService
                 'chat_id' => $telegramConfig['channel_id'],
                 'text' => $shareData['text'],
                 'parse_mode' => 'HTML',
-                'disable_web_page_preview' => false
+                'disable_web_page_preview' => false,
             ]);
 
             if ($response->successful()) {
                 return [
                     'success' => true,
                     'message_id' => $response->json('result.message_id'),
-                    'url' => $shareData['url']
+                    'url' => $shareData['url'],
                 ];
             } else {
                 return [
                     'success' => false,
-                    'error' => $response->json('description', 'Unknown error')
+                    'error' => $response->json('description', 'Unknown error'),
                 ];
             }
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
@@ -324,10 +324,10 @@ class SocialMediaService
         $availableLength = $maxLength - $urlLength - $hashtagLength;
 
         if (strlen($text) > $availableLength) {
-            $text = substr($text, 0, $availableLength - 3) . '...';
+            $text = substr($text, 0, $availableLength - 3).'...';
         }
 
-        return $text . ' ' . $url . ' ' . $hashtags;
+        return $text.' '.$url.' '.$hashtags;
     }
 
     /**
@@ -337,7 +337,7 @@ class SocialMediaService
     {
         // This would typically generate an image using GD or similar
         // For now, we'll return a placeholder
-        return config('app.url') . '/images/achievements/' . $achievement->id . '.png';
+        return config('app.url').'/images/achievements/'.$achievement->id.'.png';
     }
 
     /**
@@ -346,7 +346,7 @@ class SocialMediaService
     protected function generateBattleImage(array $battleData): string
     {
         // This would typically generate a battle result image
-        return config('app.url') . '/images/battles/' . $battleData['battle_id'] . '.png';
+        return config('app.url').'/images/battles/'.$battleData['battle_id'].'.png';
     }
 
     /**
@@ -355,7 +355,7 @@ class SocialMediaService
     protected function generateVillageImage(array $villageData): string
     {
         // This would typically generate a village screenshot
-        return config('app.url') . '/images/villages/' . $villageData['village_id'] . '.png';
+        return config('app.url').'/images/villages/'.$villageData['village_id'].'.png';
     }
 
     /**
@@ -427,7 +427,7 @@ class SocialMediaService
                 'hashtags' => ['#GameAchievement', '#Gaming', '#OnlineGame'],
             ],
             'battle_victory' => [
-                'text' => "⚔️ Victory! I won a battle against {enemy_name} and captured {resources_captured} resources!",
+                'text' => '⚔️ Victory! I won a battle against {enemy_name} and captured {resources_captured} resources!',
                 'hashtags' => ['#BattleVictory', '#Gaming', '#OnlineGame', '#Strategy'],
             ],
             'village_milestone' => [

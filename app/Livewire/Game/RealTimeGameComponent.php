@@ -2,24 +2,60 @@
 
 namespace App\Livewire\Game;
 
-use App\Services\GameCacheService;
-use App\Services\GameNotificationService;
+use App\Livewire\BaseSessionComponent;
 use App\Services\GameIntegrationService;
+use App\Services\GameNotificationService;
 use App\Services\RealTimeGameService;
-use App\Utilities\GameUtility;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
+use Livewire\Attributes\Session;
 
-class RealTimeGameComponent extends Component
+class RealTimeGameComponent extends BaseSessionComponent
 {
     public $userId;
+
     public $updates = [];
+
     public $notifications = [];
+
     public $onlineUsers = 0;
+
     public $lastUpdate = null;
+
     public $isConnected = false;
-    public $autoRefresh = true;
-    public $refreshInterval = 30;  // seconds
+
+    // Real-time specific session properties
+    #[Session]
+    public $realTimeUpdates = true;
+
+    #[Session]
+    public $showNotifications = true;
+
+    #[Session]
+    public $updateFilters = [];
+
+    #[Session]
+    public $notificationTypes = ['success', 'info', 'warning', 'error'];
+
+    #[Session]
+    public $displayMode = 'compact';
+
+    #[Session]
+    public $showTimestamps = true;
+
+    #[Session]
+    public $enableSounds = true;
+
+    #[Session]
+    public $maxUpdates = 20;
+
+    #[Session]
+    public $maxNotifications = 10;
+
+    #[Session]
+    public $autoMarkRead = false;
+
+    #[Session]
+    public $groupSimilarUpdates = true;
 
     protected $listeners = [
         'refreshUpdates' => 'loadUpdates',
@@ -35,6 +71,12 @@ class RealTimeGameComponent extends Component
 
     public function mount()
     {
+        // Initialize session properties
+        $this->initializeSessionProperties();
+
+        // Override base refresh settings with real-time specific defaults
+        $this->refreshInterval = $this->refreshInterval ?: 30;
+
         $this->userId = Auth::id();
         $this->initializeWithIntegration();
         $this->loadUpdates();
@@ -54,7 +96,7 @@ class RealTimeGameComponent extends Component
         try {
             // Initialize real-time features for the user
             GameIntegrationService::initializeUserRealTime($this->userId);
-            
+
             $this->dispatch('realtime-initialized', [
                 'message' => 'Real-time game component initialized',
                 'user_id' => $this->userId,
@@ -63,7 +105,7 @@ class RealTimeGameComponent extends Component
 
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to initialize real-time features: ' . $e->getMessage(),
+                'message' => 'Failed to initialize real-time features: '.$e->getMessage(),
             ]);
         }
     }
@@ -135,7 +177,7 @@ class RealTimeGameComponent extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
 
         if ($this->autoRefresh) {
             $this->startAutoRefresh();
@@ -155,7 +197,7 @@ class RealTimeGameComponent extends Component
                 Livewire.emit('refreshUpdates');
                 Livewire.emit('refreshNotifications');
                 Livewire.emit('loadOnlineStats');
-            }, " . ($this->refreshInterval * 1000) . ');
+            }, ".($this->refreshInterval * 1000).');
         ');
     }
 
@@ -273,7 +315,7 @@ class RealTimeGameComponent extends Component
             if ($this->userId) {
                 // Initialize real-time features for the user
                 GameIntegrationService::initializeUserRealTime($this->userId);
-                
+
                 $this->dispatch('realtime-initialized', [
                     'message' => 'Real-time game component features activated',
                     'user_id' => $this->userId,
@@ -281,7 +323,7 @@ class RealTimeGameComponent extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to initialize real-time features: ' . $e->getMessage(),
+                'message' => 'Failed to initialize real-time features: '.$e->getMessage(),
             ]);
         }
     }
@@ -311,7 +353,7 @@ class RealTimeGameComponent extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to clear updates: ' . $e->getMessage(),
+                'message' => 'Failed to clear updates: '.$e->getMessage(),
             ]);
         }
     }
@@ -341,7 +383,7 @@ class RealTimeGameComponent extends Component
             }
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to clear notifications: ' . $e->getMessage(),
+                'message' => 'Failed to clear notifications: '.$e->getMessage(),
             ]);
         }
     }
@@ -366,7 +408,7 @@ class RealTimeGameComponent extends Component
             $this->dispatch('realTimeEventProcessed', $eventData);
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to handle real-time event: ' . $e->getMessage(),
+                'message' => 'Failed to handle real-time event: '.$e->getMessage(),
             ]);
         }
     }
@@ -397,7 +439,7 @@ class RealTimeGameComponent extends Component
             $this->dispatch('gameEventProcessed', $gameEvent);
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to handle game event: ' . $e->getMessage(),
+                'message' => 'Failed to handle game event: '.$e->getMessage(),
             ]);
         }
     }
@@ -418,7 +460,7 @@ class RealTimeGameComponent extends Component
             $this->dispatch('systemNotificationProcessed', $notification);
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to handle system notification: ' . $e->getMessage(),
+                'message' => 'Failed to handle system notification: '.$e->getMessage(),
             ]);
         }
     }
@@ -444,13 +486,131 @@ class RealTimeGameComponent extends Component
             $this->dispatch('userStatusUpdated', $statusData);
         } catch (\Exception $e) {
             $this->dispatch('error', [
-                'message' => 'Failed to handle user status update: ' . $e->getMessage(),
+                'message' => 'Failed to handle user status update: '.$e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * Update display mode
+     */
+    public function setDisplayMode($mode)
+    {
+        $this->displayMode = in_array($mode, ['compact', 'detailed', 'minimal']) ? $mode : 'compact';
+        $this->addNotification("Display mode set to {$this->displayMode}", 'info');
+    }
+
+    /**
+     * Update maximum updates to display
+     */
+    public function setMaxUpdates($max)
+    {
+        $this->maxUpdates = max(5, min(100, $max));
+        $this->loadUpdates();
+        $this->addNotification("Maximum updates set to {$this->maxUpdates}", 'info');
+    }
+
+    /**
+     * Update maximum notifications to display
+     */
+    public function setMaxNotifications($max)
+    {
+        $this->maxNotifications = max(5, min(50, $max));
+        $this->loadNotifications();
+        $this->addNotification("Maximum notifications set to {$this->maxNotifications}", 'info');
+    }
+
+    /**
+     * Toggle auto-mark as read
+     */
+    public function toggleAutoMarkRead()
+    {
+        $this->autoMarkRead = ! $this->autoMarkRead;
+        $this->addNotification(
+            $this->autoMarkRead ? 'Auto-mark as read enabled' : 'Auto-mark as read disabled',
+            'info'
+        );
+    }
+
+    /**
+     * Toggle group similar updates
+     */
+    public function toggleGroupSimilarUpdates()
+    {
+        $this->groupSimilarUpdates = ! $this->groupSimilarUpdates;
+        $this->loadUpdates();
+        $this->addNotification(
+            $this->groupSimilarUpdates ? 'Group similar updates enabled' : 'Group similar updates disabled',
+            'info'
+        );
+    }
+
+    /**
+     * Update update filters
+     */
+    public function updateUpdateFilters(array $filters)
+    {
+        $this->updateFilters = array_filter($filters, fn ($value) => ! empty($value));
+        $this->loadUpdates();
+        $this->addNotification('Update filters updated', 'info');
+    }
+
+    /**
+     * Clear all update filters
+     */
+    public function clearUpdateFilters()
+    {
+        $this->updateFilters = [];
+        $this->loadUpdates();
+        $this->addNotification('All update filters cleared', 'info');
+    }
+
+    /**
+     * Toggle notification type visibility
+     */
+    public function toggleNotificationType($type)
+    {
+        if (in_array($type, $this->notificationTypes)) {
+            $this->notificationTypes = array_filter($this->notificationTypes, fn ($t) => $t !== $type);
+        } else {
+            $this->notificationTypes[] = $type;
+        }
+        $this->loadNotifications();
+        $this->addNotification("Notification type {$type} " . (in_array($type, $this->notificationTypes) ? 'enabled' : 'disabled'), 'info');
+    }
+
+    /**
+     * Reset all real-time preferences to defaults
+     */
+    public function resetRealTimePreferences()
+    {
+        $this->realTimeUpdates = true;
+        $this->showNotifications = true;
+        $this->updateFilters = [];
+        $this->notificationTypes = ['success', 'info', 'warning', 'error'];
+        $this->displayMode = 'compact';
+        $this->showTimestamps = true;
+        $this->enableSounds = true;
+        $this->maxUpdates = 20;
+        $this->maxNotifications = 10;
+        $this->autoMarkRead = false;
+        $this->groupSimilarUpdates = true;
+
+        // Reset base session properties
+        $this->resetSessionProperties();
+
+        $this->loadUpdates();
+        $this->loadNotifications();
+        $this->addNotification('All real-time preferences reset to defaults', 'info');
     }
 
     public function dehydrate()
     {
         $this->stopAutoRefresh();
+    }
+
+    public function render()
+    {
+        return view('livewire.game.real-time-game-component');
     }
 }

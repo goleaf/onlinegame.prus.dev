@@ -34,11 +34,11 @@ return [
 
             /**
              * Custom added prompt to enhance translation quality.
-             * 
+             *
              * Example:
              * 'prompt_extension' => 'This application translates medical terms consistently throughout.'
              */
-            'prompt_extension' => ''
+            'prompt_extension' => '',
         ],
         'deepl' => [
             'driver' => Bottelet\TranslationChecker\Translator\DeeplTranslator::class,

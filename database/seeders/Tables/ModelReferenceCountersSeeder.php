@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,9 +17,7 @@ class ModelReferenceCountersSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
@@ -82,11 +81,11 @@ class ModelReferenceCountersSeeder extends Seeder
                 'value' => 3,
                 'created_at' => '2025-09-27 01:05:40',
                 'updated_at' => '2025-09-27 01:06:42',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("model_reference_counters")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('model_reference_counters')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

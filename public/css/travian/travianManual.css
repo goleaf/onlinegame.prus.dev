@@ -53,7 +53,7 @@ body.manual .mainMenu ul {
   list-style: none;
 }
 body.manual .mainMenu ul span {
-  color: #99C01A;
+  color: #99c01a;
   font-weight: bold;
 }
 body.manual a.manualBack {
@@ -212,7 +212,7 @@ body.manual table#troop_info td img {
 }
 body.manual table#troop_details {
   width: 60%;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 body.manual table.troopData {
   float: left;

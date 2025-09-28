@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -16,9 +17,7 @@ class AccessLogsSeeder extends Seeder
         /**
          * Command :
          * artisan seed:generate --table-mode --all-tables
-         *
          */
-
         $dataTables = [
             [
                 'id' => 1,
@@ -26,14 +25,14 @@ class AccessLogsSeeder extends Seeder
                 'method' => 'HEAD',
                 'url' => 'http://localhost:8001',
                 'user_agent' => 'curl/7.76.1',
-                'request_data' => NULL,
+                'request_data' => null,
                 'created_at' => '2025-09-27 01:19:32',
                 'updated_at' => '2025-09-27 01:19:32',
-            ]
+            ],
         ];
-        
+
         foreach ($dataTables as $data) {
-            DB::table("access_logs")->updateOrInsert(['id' => $data['id']], $data);
+            DB::table('access_logs')->updateOrInsert(['id' => $data['id']], $data);
         }
     }
 }

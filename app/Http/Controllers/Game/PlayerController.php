@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
 use App\Models\Game\Player;
 use App\Traits\GameValidationTrait;
-use App\ValueObjects\PlayerStats;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
+use LaraUtilX\Utilities\FilteringUtil;
 
 class PlayerController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use GameValidationTrait;
 
     protected Model $model;
 
@@ -26,7 +25,9 @@ class PlayerController extends CrudController
     ];
 
     protected array $searchableFields = ['name', 'tribe'];
+
     protected array $relationships = ['user', 'world', 'alliance', 'villages'];
+
     protected int $perPage = 20;
 
     public function __construct()
@@ -64,9 +65,26 @@ class PlayerController extends CrudController
             $query->online();
         }
 
-        // Apply search
+        // Apply filters using FilteringUtil
+        $filters = [];
         if ($request->has('search')) {
-            $query->search($request->get('search'));
+            $filters[] = ['target' => 'name', 'type' => '$like', 'value' => '%'.$request->get('search').'%'];
+        }
+        if ($request->has('is_online')) {
+            $filters[] = ['target' => 'is_online', 'type' => '$eq', 'value' => $request->boolean('is_online')];
+        }
+        if ($request->has('is_active')) {
+            $filters[] = ['target' => 'is_active', 'type' => '$eq', 'value' => $request->boolean('is_active')];
+        }
+        if ($request->has('min_points')) {
+            $filters[] = ['target' => 'points', 'type' => '$gte', 'value' => $request->get('min_points')];
+        }
+        if ($request->has('max_points')) {
+            $filters[] = ['target' => 'points', 'type' => '$lte', 'value' => $request->get('max_points')];
+        }
+
+        if (! empty($filters)) {
+            $query = $query->filter($filters);
         }
 
         // Apply sorting
@@ -134,7 +152,7 @@ class PlayerController extends CrudController
     {
         $player = Player::findOrFail($playerId);
 
-        $validated = $this->validateRequest($request, [
+        $validated = $this->validateRequestData($request, [
             'is_active' => 'boolean',
             'is_online' => 'boolean',
             'last_active_at' => 'nullable|date',
@@ -160,7 +178,7 @@ class PlayerController extends CrudController
      */
     private function getAllianceRank(Player $player)
     {
-        if (!$player->alliance_id) {
+        if (! $player->alliance_id) {
             return null;
         }
 

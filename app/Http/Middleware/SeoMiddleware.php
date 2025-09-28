@@ -4,15 +4,17 @@ namespace App\Http\Middleware;
 
 use App\Services\GameSeoService;
 use App\Services\SeoAnalyticsService;
-use Illuminate\Http\Request;
-use LaraUtilX\Utilities\LoggingUtil;
-use Symfony\Component\HttpFoundation\Response;
+use App\Utilities\LoggingUtil;
 use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class SeoMiddleware
 {
     protected GameSeoService $seoService;
+
     protected SeoAnalyticsService $analyticsService;
+
     protected LoggingUtil $loggingUtil;
 
     public function __construct(GameSeoService $seoService, SeoAnalyticsService $analyticsService)
@@ -52,12 +54,14 @@ class SeoMiddleware
             case $path === '/':
                 $this->seoService->setGameIndexSeo();
                 $this->seoService->setGameStructuredData();
+
                 break;
 
             case str_starts_with($path, 'game/dashboard'):
                 if (auth()->check() && auth()->user()->player) {
                     $this->seoService->setDashboardSeo(auth()->user()->player);
                 }
+
                 break;
 
             case str_starts_with($path, 'game/village/'):
@@ -70,16 +74,19 @@ class SeoMiddleware
                         }
                     }
                 }
+
                 break;
 
             case str_starts_with($path, 'game/map'):
                 $world = \App\Models\Game\World::first();
                 $this->seoService->setWorldMapSeo($world);
+
                 break;
 
             case str_starts_with($path, 'game/features'):
             case str_starts_with($path, 'game/about'):
                 $this->seoService->setGameFeaturesSeo();
+
                 break;
 
             default:
@@ -87,6 +94,7 @@ class SeoMiddleware
                 if (str_starts_with($path, 'game/')) {
                     $this->seoService->setGameIndexSeo();
                 }
+
                 break;
         }
     }

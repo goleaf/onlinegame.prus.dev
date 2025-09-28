@@ -16,7 +16,8 @@ class PlayerStats
         public readonly ?int $alliance_id = null,
         public readonly string $tribe = '',
         public readonly ?\DateTime $last_active_at = null,
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
@@ -64,7 +65,7 @@ class PlayerStats
 
     public function getActivityStatus(): string
     {
-        if (!$this->isActive) {
+        if (! $this->isActive) {
             return 'inactive';
         }
 

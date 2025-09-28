@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders\Tables;
 
 use Illuminate\Database\Seeder;
@@ -65,7 +66,7 @@ class PlayersSeeder extends Seeder
                 'last_login' => '2025-09-02 23:32:14',
                 'created_at' => '2025-09-25 23:37:49',
                 'updated_at' => '2025-09-27 00:51:03',
-            ]
+            ],
         ];
 
         foreach ($dataTables as $data) {

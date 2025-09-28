@@ -2,9 +2,9 @@
 
 namespace App\Services\Game;
 
-use App\Models\Game\Village;
-use App\Models\Game\Resource;
 use App\Models\Game\Building;
+use App\Models\Game\Resource;
+use App\Models\Game\Village;
 use Illuminate\Support\Facades\DB;
 use SmartCache\Facades\SmartCache;
 
@@ -51,11 +51,11 @@ class ResourceService
      */
     public function deductResources(Village $village, array $resources): bool
     {
-        if (!$this->hasEnoughResources($village, $resources)) {
+        if (! $this->hasEnoughResources($village, $resources)) {
             return false;
         }
 
-        DB::transaction(function () use ($village, $resources) {
+        DB::transaction(function () use ($village, $resources): void {
             foreach ($resources as $resourceType => $amount) {
                 $resource = $village->resources()->where('resource_type', $resourceType)->first();
                 if ($resource) {
@@ -75,7 +75,7 @@ class ResourceService
      */
     public function addResources(Village $village, array $resources): void
     {
-        DB::transaction(function () use ($village, $resources) {
+        DB::transaction(function () use ($village, $resources): void {
             foreach ($resources as $resourceType => $amount) {
                 $resource = $village->resources()->where('resource_type', $resourceType)->first();
                 if ($resource) {
@@ -98,7 +98,7 @@ class ResourceService
      */
     public function setResources(Village $village, array $resources): void
     {
-        DB::transaction(function () use ($village, $resources) {
+        DB::transaction(function () use ($village, $resources): void {
             foreach ($resources as $resourceType => $amount) {
                 $resource = $village->resources()->where('resource_type', $resourceType)->first();
                 if ($resource) {
@@ -203,7 +203,7 @@ class ResourceService
         foreach ($production as $resourceType => $amount) {
             $currentAmount = $currentResources[$resourceType] ?? 0;
             $newAmount = $currentAmount + $amount;
-            
+
             $this->setResources($village, [$resourceType => $newAmount]);
         }
     }
@@ -270,7 +270,7 @@ class ResourceService
                     'current' => $currentResources[$resourceType] ?? 0,
                     'production' => $production[$resourceType] ?? 0,
                     'capacity' => $capacity[$resourceType] ?? 1000,
-                    'percentage' => $capacity[$resourceType] > 0 ? 
+                    'percentage' => $capacity[$resourceType] > 0 ?
                         (($currentResources[$resourceType] ?? 0) / $capacity[$resourceType]) * 100 : 0,
                 ];
             }

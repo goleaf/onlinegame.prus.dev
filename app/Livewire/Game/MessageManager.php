@@ -5,39 +5,54 @@ namespace App\Livewire\Game;
 use App\Models\Game\Message;
 use App\Models\Game\Player;
 use App\Services\MessageService;
+use LaraUtilX\Traits\ApiResponseTrait;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Utilities\FilteringUtil;
-use LaraUtilX\Utilities\PaginationUtil;
 use Livewire\WithPagination;
 
 #[Title('Message Manager')]
 #[Layout('layouts.game')]
 class MessageManager extends Component
 {
-    use WithPagination, ApiResponseTrait;
+    use ApiResponseTrait;
+    use WithPagination;
 
     public $activeTab = 'inbox';
+
     public $selectedMessage = null;
+
     public $composeMode = false;
+
     public $replyMode = false;
+
     public $replyToMessage = null;
+
     // Compose form
     public $recipientId = '';
+
     public $recipientName = '';
+
     public $subject = '';
+
     public $body = '';
+
     public $priority = Message::PRIORITY_NORMAL;
+
     public $messageType = Message::TYPE_PRIVATE;
+
     // Search and filters
     public $search = '';
+
     public $filterType = 'all';
+
     public $filterPriority = 'all';
+
     public $filterRead = 'all';
+
     // Bulk actions
     public $selectedMessages = [];
+
     public $selectAll = false;
 
     protected $messageService;
@@ -82,31 +97,35 @@ class MessageManager extends Component
                 $query
                     ->where('recipient_id', auth()->user()->player->id)
                     ->where('is_deleted_by_recipient', false);
+
                 break;
             case 'sent':
                 $query
                     ->where('sender_id', auth()->user()->player->id)
                     ->where('is_deleted_by_sender', false);
+
                 break;
             case 'alliance':
                 $query
                     ->where('alliance_id', auth()->user()->player->alliance_id)
                     ->where('message_type', Message::TYPE_ALLIANCE);
+
                 break;
             case 'system':
                 $query
                     ->where('recipient_id', auth()->user()->player->id)
                     ->where('message_type', Message::TYPE_SYSTEM)
                     ->where('is_deleted_by_recipient', false);
+
                 break;
         }
 
         // Apply search filter
         if ($this->search) {
-            $query->where(function ($q) {
+            $query->where(function ($q): void {
                 $q
-                    ->where('subject', 'like', '%' . $this->search . '%')
-                    ->orWhere('body', 'like', '%' . $this->search . '%');
+                    ->where('subject', 'like', '%'.$this->search.'%')
+                    ->orWhere('body', 'like', '%'.$this->search.'%');
             });
         }
 
@@ -181,7 +200,7 @@ class MessageManager extends Component
 
             $this->recipientId = $message->sender_id;
             $this->recipientName = $message->sender->name ?? 'Unknown';
-            $this->subject = 'Re: ' . $message->subject;
+            $this->subject = 'Re: '.$message->subject;
             $this->body = '';
             $this->priority = $message->priority;
         }
@@ -201,7 +220,7 @@ class MessageManager extends Component
             'recipientId' => 'required|exists:players,id',
             'subject' => 'required|string|max:255',
             'body' => 'required|string|max:5000',
-            'priority' => 'required|in:' . implode(',', [Message::PRIORITY_LOW, Message::PRIORITY_NORMAL, Message::PRIORITY_HIGH, Message::PRIORITY_URGENT]),
+            'priority' => 'required|in:'.implode(',', [Message::PRIORITY_LOW, Message::PRIORITY_NORMAL, Message::PRIORITY_HIGH, Message::PRIORITY_URGENT]),
         ]);
 
         try {
@@ -218,7 +237,7 @@ class MessageManager extends Component
 
             session()->flash('success', 'Message sent successfully!');
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to send message: ' . $e->getMessage());
+            session()->flash('error', 'Failed to send message: '.$e->getMessage());
         }
     }
 
@@ -234,7 +253,7 @@ class MessageManager extends Component
 
             session()->flash('success', 'Message deleted successfully!');
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete message: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete message: '.$e->getMessage());
         }
     }
 
@@ -246,7 +265,7 @@ class MessageManager extends Component
 
             session()->flash('success', 'Message marked as read!');
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to mark message as read: ' . $e->getMessage());
+            session()->flash('error', 'Failed to mark message as read: '.$e->getMessage());
         }
     }
 
@@ -274,6 +293,7 @@ class MessageManager extends Component
     {
         if (empty($this->selectedMessages)) {
             session()->flash('error', 'No messages selected!');
+
             return;
         }
 
@@ -286,7 +306,7 @@ class MessageManager extends Component
 
             session()->flash('success', 'Messages marked as read!');
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to mark messages as read: ' . $e->getMessage());
+            session()->flash('error', 'Failed to mark messages as read: '.$e->getMessage());
         }
     }
 
@@ -294,6 +314,7 @@ class MessageManager extends Component
     {
         if (empty($this->selectedMessages)) {
             session()->flash('error', 'No messages selected!');
+
             return;
         }
 
@@ -306,7 +327,7 @@ class MessageManager extends Component
 
             session()->flash('success', 'Messages deleted successfully!');
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to delete messages: ' . $e->getMessage());
+            session()->flash('error', 'Failed to delete messages: '.$e->getMessage());
         }
     }
 

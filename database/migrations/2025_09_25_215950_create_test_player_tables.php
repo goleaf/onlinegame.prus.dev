@@ -4,14 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration {
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         // Only create these tables if they don't exist (for testing)
-        if (!Schema::hasTable('player_tasks')) {
+        if (! Schema::hasTable('player_tasks')) {
             Schema::create('player_tasks', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('world_id')->constrained()->onDelete('cascade');
@@ -35,7 +35,7 @@ return new class() extends Migration {
             });
         }
 
-        if (!Schema::hasTable('player_quests')) {
+        if (! Schema::hasTable('player_quests')) {
             Schema::create('player_quests', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('world_id')->constrained()->onDelete('cascade');
@@ -58,7 +58,7 @@ return new class() extends Migration {
             });
         }
 
-        if (!Schema::hasTable('player_achievements')) {
+        if (! Schema::hasTable('player_achievements')) {
             Schema::create('player_achievements', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('world_id')->constrained()->onDelete('cascade');

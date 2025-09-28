@@ -16,15 +16,18 @@ This Laravel game application now includes RabbitMQ integration for asynchronous
 The RabbitMQ integration is already installed and configured. Here's what was added:
 
 ### 1. Package Installation
+
 ```bash
 composer require usmonaliyev/laravel-simple-rabbitmq
 ```
 
 ### 2. Configuration Files
+
 - `config/simple-mq.php` - RabbitMQ connection and queue configuration
 - `routes/amqp-handlers.php` - Event handler registration
 
 ### 3. Environment Variables
+
 ```env
 # Simple RabbitMQ Configuration
 SIMPLE_MQ_CONNECTION=default
@@ -128,6 +131,7 @@ php artisan rabbitmq:test --type=custom
 ### Demo Interface
 
 Access the demo interface at `/game/rabbitmq-demo` to:
+
 - Publish test events
 - View message logs
 - Test different event types
@@ -179,6 +183,7 @@ Access the demo interface at `/game/rabbitmq-demo` to:
 ### Queue Settings
 
 The `game_events` queue is configured with:
+
 - **TTL**: 1 hour (3,600,000 ms)
 - **Max Length**: 10,000 messages
 - **Dead Letter Exchange**: None (messages expire)
@@ -196,6 +201,7 @@ The `game_events` queue is configured with:
 ### Logs
 
 All RabbitMQ events are logged with:
+
 - Event type
 - Player/village information
 - Timestamp
@@ -204,6 +210,7 @@ All RabbitMQ events are logged with:
 ### Health Checks
 
 Monitor RabbitMQ health:
+
 ```bash
 # Check queue status
 php artisan queue:monitor
@@ -303,6 +310,7 @@ php artisan route:list | grep amqp
 ## Support
 
 For issues or questions:
+
 1. Check the logs in `storage/logs/laravel.log`
 2. Review RabbitMQ server logs
 3. Test with the demo interface
@@ -311,6 +319,7 @@ For issues or questions:
 ## Changelog
 
 ### Version 1.0.0
+
 - Initial RabbitMQ integration
 - Game event publishing
 - Notification system

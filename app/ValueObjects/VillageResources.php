@@ -9,7 +9,8 @@ class VillageResources
         public readonly int $clay,
         public readonly int $iron,
         public readonly int $crop,
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
@@ -114,7 +115,7 @@ class VillageResources
 
     public function isEmpty(): bool
     {
-        return $this->wood === 0 && $this->clay === 0 && 
+        return $this->wood === 0 && $this->clay === 0 &&
                $this->iron === 0 && $this->crop === 0;
     }
 

@@ -11,14 +11,15 @@
 /*** TRIBES ** */
 /*** BUILDINGS ** */
 /*** RESOURCES ** */
-@import url("hero/propertyAttributes.css");
-@import url("hero/statusMessage.css");
-div.itemNotMoveable, span.itemNotMoveable {
-  color: #F88C1F;
+@import url('hero/propertyAttributes.css');
+@import url('hero/statusMessage.css');
+div.itemNotMoveable,
+span.itemNotMoveable {
+  color: #f88c1f;
 }
 
 span.heroAttributeInformation {
-  color: #5DCBFB;
+  color: #5dcbfb;
 }
 
 div.hero_inventory .statusWrapper {
@@ -38,7 +39,7 @@ div.hero_inventory #hero_level p {
 div.hero_inventory .bar-bg {
   background-color: #ffffff;
   height: 8px;
-  border: 1px solid #C6C6C6;
+  border: 1px solid #c6c6c6;
   padding: 1px;
   margin: 1px;
 }
@@ -63,7 +64,8 @@ div.hero_inventory #itemsToSale {
   margin: 0px 2px 0 4px;
 }
 
-div.hero_inventory .market .buy, div.hero_inventory .market .sell {
+div.hero_inventory .market .buy,
+div.hero_inventory .market .sell {
   margin-left: 15px;
 }
 
@@ -73,7 +75,8 @@ div.hero_inventory #hero_body_container {
   height: 422px;
 }
 
-div.hero_inventory #hero_body, div.hero_inventory #hero_body_content {
+div.hero_inventory #hero_body,
+div.hero_inventory #hero_body_content {
   position: absolute;
   left: 1px;
   top: 0;
@@ -115,11 +118,21 @@ div.hero_inventory #hero_body_content .content .item {
   z-index: 50;
 }
 
-div.hero_inventory #hero_body_content #shoes .item.onHero, div.hero_inventory #hero_body_content #horse .item.onHero, div.hero_inventory #hero_body_content #rightHand .item.onHero, div.hero_inventory #hero_body_content #leftHand .item.onHero, div.hero_inventory #hero_body_content #helmet .item.onHero, div.hero_inventory #hero_body_content #body .item.onHero {
+div.hero_inventory #hero_body_content #shoes .item.onHero,
+div.hero_inventory #hero_body_content #horse .item.onHero,
+div.hero_inventory #hero_body_content #rightHand .item.onHero,
+div.hero_inventory #hero_body_content #leftHand .item.onHero,
+div.hero_inventory #hero_body_content #helmet .item.onHero,
+div.hero_inventory #hero_body_content #body .item.onHero {
   background-image: none;
 }
 
-div.hero_inventory #hero_body_content #shoes .item.onHero .amount, div.hero_inventory #hero_body_content #horse .item.onHero .amount, div.hero_inventory #hero_body_content #rightHand .item.onHero .amount, div.hero_inventory #hero_body_content #leftHand .item.onHero .amount, div.hero_inventory #hero_body_content #helmet .item.onHero .amount, div.hero_inventory #hero_body_content #body .item.onHero .amount {
+div.hero_inventory #hero_body_content #shoes .item.onHero .amount,
+div.hero_inventory #hero_body_content #horse .item.onHero .amount,
+div.hero_inventory #hero_body_content #rightHand .item.onHero .amount,
+div.hero_inventory #hero_body_content #leftHand .item.onHero .amount,
+div.hero_inventory #hero_body_content #helmet .item.onHero .amount,
+div.hero_inventory #hero_body_content #body .item.onHero .amount {
   display: none;
 }
 
@@ -128,7 +141,8 @@ div.hero_inventory #hero_body_content .content #bag .item {
   height: 81px;
   display: none;
 }
-div.hero_inventory #hero_body_content .content #bag .item.onHero, div.hero_inventory #hero_body_content .content #bag .item.whileDragging {
+div.hero_inventory #hero_body_content .content #bag .item.onHero,
+div.hero_inventory #hero_body_content .content #bag .item.whileDragging {
   display: block;
 }
 
@@ -188,15 +202,18 @@ div.hero_inventory #bodyOptions {
   margin-left: -23px;
 }
 
-div.hero_inventory #hero_body_content .content .draggable:hover, div.hero_inventory #hero_body_content .content .draggable.heroMarked {
+div.hero_inventory #hero_body_content .content .draggable:hover,
+div.hero_inventory #hero_body_content .content .draggable.heroMarked {
   background-position: left bottom;
 }
 
-div.hero_inventory #hero_body_content .content .draggable.disabled:hover, div.hero_inventory #hero_body_content .content .draggable.disabled.heroMarked {
+div.hero_inventory #hero_body_content .content .draggable.disabled:hover,
+div.hero_inventory #hero_body_content .content .draggable.disabled.heroMarked {
   background-position: left top;
 }
 
-div.hero_inventory #hero_body_content .content .draggable.disabled .item, div.hero_inventory #hero_body_content .content .item.disabled {
+div.hero_inventory #hero_body_content .content .draggable.disabled .item,
+div.hero_inventory #hero_body_content .content .item.disabled {
   cursor: not-allowed;
 }
 
@@ -358,11 +375,14 @@ div.hero_inventory #attributes .resourcePick .resource label {
   -ms-grid-row-align: center;
   align-self: center;
 }
-div.hero_inventory #attributes .resourcePick .resource label input, div.hero_inventory #attributes .resourcePick .resource label span, div.hero_inventory #attributes .resourcePick .resource label i {
+div.hero_inventory #attributes .resourcePick .resource label input,
+div.hero_inventory #attributes .resourcePick .resource label span,
+div.hero_inventory #attributes .resourcePick .resource label i {
   -ms-grid-row-align: center;
   align-self: center;
 }
-div.hero_inventory #attributes .resourcePick .resource label input, div.hero_inventory #attributes .resourcePick .resource label i {
+div.hero_inventory #attributes .resourcePick .resource label input,
+div.hero_inventory #attributes .resourcePick .resource label i {
   margin-right: 5px;
 }
 div.hero_inventory #attributes .resourcePick .resource label input {
@@ -415,7 +435,7 @@ div.hero_inventory #itemsToSale .inventory {
   height: 81px;
   text-align: center;
   margin: 2px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   float: left;
   border: 1px solid #b9b9b9;
 }
@@ -439,12 +459,14 @@ div.hero_inventory #itemsToSale .inventory .item:hover {
   background-color: #eee;
 }
 
-div.hero_inventory #itemsToSale .inventory .item.disabled:hover, div.hero_auction .hero_inventory .disabled:hover {
+div.hero_inventory #itemsToSale .inventory .item.disabled:hover,
+div.hero_auction .hero_inventory .disabled:hover {
   cursor: not-allowed;
   background-color: transparent;
 }
 
-div.hero_inventory #itemsToSale .inventory .item.whileDragging, div.hero_inventory #hero_body_content .content .item.whileDragging {
+div.hero_inventory #itemsToSale .inventory .item.whileDragging,
+div.hero_inventory #hero_body_content .content .item.whileDragging {
   background-color: #fce6c4;
   z-index: 51;
   width: 81px;
@@ -487,8 +509,9 @@ div.hero_auction div#auction .currentBid {
   margin-bottom: 17px;
 }
 
-div.hero_auction div#auction td.outbid, div.hero_auction div#auction td.late {
-  color: #AA0000;
+div.hero_auction div#auction td.outbid,
+div.hero_auction div#auction td.late {
+  color: #aa0000;
 }
 
 div.hero_auction div#auction td.name {
@@ -496,7 +519,7 @@ div.hero_auction div#auction td.name {
 }
 
 div.hero_auction div#auction td.selected {
-  background-color: #E4E4E4;
+  background-color: #e4e4e4;
 }
 
 div.hero_auction div#auction td.name.selected:not(.detail) {
@@ -508,21 +531,23 @@ div.hero_auction div#auction div.submitBid {
   position: relative;
 }
 
-div.hero_auction div#auction td.finished, div.hero_auction div#auction td.notEnoughSilver {
+div.hero_auction div#auction td.finished,
+div.hero_auction div#auction td.notEnoughSilver {
   color: #707070;
   white-space: nowrap;
 }
 
-div.hero_auction div#auction td.win, div.hero_auction div#auction input.bid {
-  color: #228B22;
+div.hero_auction div#auction td.win,
+div.hero_auction div#auction input.bid {
+  color: #228b22;
 }
 
 div.hero_auction div#auction #itemsToSale .itemInInventory {
   width: 81px;
   height: 81px;
-  border: 1px solid #B9B9B9;
+  border: 1px solid #b9b9b9;
   margin: 5px 5px 3px 2px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   float: left;
   position: relative;
 }
@@ -532,7 +557,7 @@ div.hero_auction #itemsToSale {
 }
 
 div.hero_auction div#auction #itemsToSale .itemInInventory:hover {
-  background-color: #E4E4E4;
+  background-color: #e4e4e4;
 }
 
 div.hero_auction div#auction #itemsToSale div.icon {
@@ -540,14 +565,15 @@ div.hero_auction div#auction #itemsToSale div.icon {
   padding: 0 2px;
 }
 
-div.hero_auction div#auction #itemsToSale .amount, div.hero_inventory .amount {
+div.hero_auction div#auction #itemsToSale .amount,
+div.hero_inventory .amount {
   position: absolute;
   right: 0;
   min-width: 30px;
   height: 18px;
-  background-color: #B9B9B9;
+  background-color: #b9b9b9;
   text-align: center;
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
 div.hero_auction div#auction .bidHeadline {
@@ -581,7 +607,7 @@ div.hero_auction div#auction div.filter {
   float: left;
   padding: 2px;
   margin: 2px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   width: 16px;
   height: 16px;
 }
@@ -605,7 +631,7 @@ div.hero_auction div#auction table.sellings {
 }
 
 div.hero_auction div#auction div.filter.filterActive {
-  background-color: #EEFFAA;
+  background-color: #eeffaa;
 }
 
 div.hero_auction div#auction div.filter a {
@@ -613,32 +639,43 @@ div.hero_auction div#auction div.filter a {
   font-weight: normal;
 }
 
-div.hero_auction div#auction td.bids, div.hero_auction div#auction td.bid, div.hero_auction div#auction td.time, div.hero_auction div#auction td.silver, div.hero_auction div#auction td.icon, div.hero_auction div#auction td.delete {
+div.hero_auction div#auction td.bids,
+div.hero_auction div#auction td.bid,
+div.hero_auction div#auction td.time,
+div.hero_auction div#auction td.silver,
+div.hero_auction div#auction td.icon,
+div.hero_auction div#auction td.delete {
   text-align: center;
 }
 
-div.hero_auction div#auction td.time, div.hero_auction div#auction th.time {
+div.hero_auction div#auction td.time,
+div.hero_auction div#auction th.time {
   width: 13%;
   white-space: nowrap;
 }
 
-div.hero_auction div#auction td.silver, div.hero_auction div#auction th.silver {
+div.hero_auction div#auction td.silver,
+div.hero_auction div#auction th.silver {
   width: 8.5%;
 }
 
-div.hero_auction div#auction td.bid, div.hero_auction div#auction th.bid {
+div.hero_auction div#auction td.bid,
+div.hero_auction div#auction th.bid {
   width: 18%;
 }
 
-div.hero_auction div#auction td.bids, div.hero_auction div#auction th.bids {
+div.hero_auction div#auction td.bids,
+div.hero_auction div#auction th.bids {
   width: 5%;
 }
 
-div.hero_auction div#auction td.icon, div.hero_auction div#auction th.icon {
+div.hero_auction div#auction td.icon,
+div.hero_auction div#auction th.icon {
   width: 5%;
 }
 
-div.hero_auction div#auction td.delete, div.hero_auction div#auction th.delete {
+div.hero_auction div#auction td.delete,
+div.hero_auction div#auction th.delete {
   width: 5%;
 }
 
@@ -749,14 +786,14 @@ img.itemCategory_artWork {
 
 #heroEditor .attributes .container,
 #heroEditor .attributes .gender-container {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   margin: 2px 6px;
-  border-bottom: 1px solid #C0C0C0;
+  border-bottom: 1px solid #c0c0c0;
 }
 
 #heroEditor .attributes .container .info,
 #heroEditor .attributes .gender-container .info {
-  border: 1px solid #C0C0C0;
+  border: 1px solid #c0c0c0;
   border-bottom: 0;
   width: 255px;
   /*height: 24px */
@@ -814,7 +851,13 @@ img.itemCategory_artWork {
   height: 26px;
 }
 
-#heroEditor .attributes .boxes.gender .gender-container .info #genderButtons img {
+#heroEditor
+  .attributes
+  .boxes.gender
+  .gender-container
+  .info
+  #genderButtons
+  img {
   position: absolute;
   background: url('../img_ltr/hero/gender.png') transparent no-repeat;
   width: 18px;
@@ -823,7 +866,13 @@ img.itemCategory_artWork {
   top: 3px;
 }
 
-#heroEditor .attributes .boxes.gender .gender-container .info #genderButtons img.heroEditorActivateFemale {
+#heroEditor
+  .attributes
+  .boxes.gender
+  .gender-container
+  .info
+  #genderButtons
+  img.heroEditorActivateFemale {
   background-position: left -28px;
 }
 
@@ -837,7 +886,7 @@ img.itemCategory_artWork {
 }
 
 #heroEditor .attributes .container .info .details {
-  border-top: 1px solid #C0C0C0;
+  border-top: 1px solid #c0c0c0;
   background: #ececec;
   padding: 2px 7px;
   /* height: 152px */
@@ -847,7 +896,7 @@ img.itemCategory_artWork {
 
 #heroEditor .attributes .container .info .details .attribute {
   background-color: #ffffff;
-  border: 1px solid #C0C0C0;
+  border: 1px solid #c0c0c0;
   float: left;
   width: 50px;
   height: 50px;
@@ -857,14 +906,15 @@ img.itemCategory_artWork {
 }
 
 #heroEditor .attributes .container .info .details .attribute:hover {
-  background-color: #C0C0C0;
+  background-color: #c0c0c0;
 }
 
 #heroEditor .attributes .options {
   margin-top: 8px;
 }
 
-#heroEditor .head div.tl, div.hero_inventory div.tl {
+#heroEditor .head div.tl,
+div.hero_inventory div.tl {
   position: absolute;
   background-image: url('../img_ltr/round/roundCorner/tl.png');
   background-position: top left;
@@ -874,7 +924,8 @@ img.itemCategory_artWork {
   width: 100%;
 }
 
-#heroEditor .head div.tr, div.hero_inventory div.tr {
+#heroEditor .head div.tr,
+div.hero_inventory div.tr {
   background-image: url('../img_ltr/round/roundCorner/tr.png');
   background-position: top right;
   right: 0;
@@ -882,7 +933,8 @@ img.itemCategory_artWork {
   height: 33px;
 }
 
-#heroEditor .head div.bl, div.hero_inventory div.bl {
+#heroEditor .head div.bl,
+div.hero_inventory div.bl {
   position: absolute;
   background-image: url('../img_ltr/round/roundCorner/bl.png');
   background-position: top left;
@@ -892,7 +944,8 @@ img.itemCategory_artWork {
   width: 100%;
 }
 
-#heroEditor .head div.br, div.hero_inventory div.br {
+#heroEditor .head div.br,
+div.hero_inventory div.br {
   background-image: url('../img_ltr/round/roundCorner/br.png');
   background-position: top right;
   right: 0;
@@ -926,7 +979,8 @@ div.hero_adventure table tbody td.coords {
   width: 5%;
 }
 
-div.hero_adventure table .moveTime, div.hero_adventure table .timeLeft {
+div.hero_adventure table .moveTime,
+div.hero_adventure table .timeLeft {
   width: 13%;
   white-space: nowrap;
 }
@@ -939,7 +993,8 @@ div.hero_adventure table .goTo {
   width: 25%;
 }
 
-div.hero_adventure table a.gotoAdventure, div.hero_inventory .market a {
+div.hero_adventure table a.gotoAdventure,
+div.hero_inventory .market a {
   white-space: nowrap;
 }
 
@@ -2082,11 +2137,13 @@ table#heroInventoryDataDialog {
   margin-top: 5px;
 }
 
-table#heroInventoryDataDialog td, table#heroInventoryDataDialog th {
+table#heroInventoryDataDialog td,
+table#heroInventoryDataDialog th {
   font-size: 11px;
   padding: 6px 0 3px;
 }
-.rtl table#heroInventoryDataDialog td, .rtl table#heroInventoryDataDialog th {
+.rtl table#heroInventoryDataDialog td,
+.rtl table#heroInventoryDataDialog th {
   font-size: 12px;
 }
 
@@ -2094,9 +2151,10 @@ table#heroInventoryDataDialog td {
   text-align: right;
 }
 
-table#heroInventoryDataDialog tr.rowAfterUse th, table#heroInventoryDataDialog tr.rowAfterUse td {
+table#heroInventoryDataDialog tr.rowAfterUse th,
+table#heroInventoryDataDialog tr.rowAfterUse td {
   font-weight: bold;
-  color: #F88C1F;
+  color: #f88c1f;
 }
 
 /*---------- Hero - Silveraccounting ---------- */
@@ -2109,15 +2167,25 @@ div.hero_auction table#silverAccounting img.openedClosedSwitch {
   margin-right: 5px;
 }
 
-div.hero_auction table#silverAccounting tbody.blockedSilver tr#showHideBlockedSilverDetails {
+div.hero_auction
+  table#silverAccounting
+  tbody.blockedSilver
+  tr#showHideBlockedSilverDetails {
   cursor: pointer;
 }
 
-div.hero_auction table#silverAccounting tbody.blockedSilver tr#showHideBlockedSilverDetails td, div.hero_auction table#silverAccounting tbody.noBlockedSilver td, div.hero_auction table#silverAccounting tbody tr.oldBalance td {
-  background-color: #EFEFEF;
+div.hero_auction
+  table#silverAccounting
+  tbody.blockedSilver
+  tr#showHideBlockedSilverDetails
+  td,
+div.hero_auction table#silverAccounting tbody.noBlockedSilver td,
+div.hero_auction table#silverAccounting tbody tr.oldBalance td {
+  background-color: #efefef;
 }
 
-div.hero_auction table#silverAccounting tbody.noBlockedSilver td.cause, div.hero_auction table#silverAccounting tbody.noBookings td {
+div.hero_auction table#silverAccounting tbody.noBlockedSilver td.cause,
+div.hero_auction table#silverAccounting tbody.noBookings td {
   color: #777777;
 }
 
@@ -2125,17 +2193,29 @@ div.hero_auction table#silverAccounting tbody.currentBids td.cause {
   padding-left: 33px;
 }
 
-div.hero_auction table#silverAccounting tbody.currentBids td.cause img.itemCategory, div.hero_auction table#silverAccounting tbody.latestBookings td.cause img.itemCategory {
+div.hero_auction
+  table#silverAccounting
+  tbody.currentBids
+  td.cause
+  img.itemCategory,
+div.hero_auction
+  table#silverAccounting
+  tbody.latestBookings
+  td.cause
+  img.itemCategory {
   position: relative;
   top: 2px;
   margin-right: 3px;
 }
 
-div.hero_auction table#silverAccounting .date, div.hero_auction table#silverAccounting .accounting, div.hero_auction table#silverAccounting .balance {
+div.hero_auction table#silverAccounting .date,
+div.hero_auction table#silverAccounting .accounting,
+div.hero_auction table#silverAccounting .balance {
   width: 15%;
 }
 
-div.hero_auction table#silverAccounting td.accounting, div.hero_auction table#silverAccounting td.balance {
+div.hero_auction table#silverAccounting td.accounting,
+div.hero_auction table#silverAccounting td.balance {
   text-align: right;
 }
 
@@ -2152,7 +2232,7 @@ div.hero_auction span.balanceSince {
 #auction .auctionAdventureBar {
   background-color: #ffffff;
   height: 8px;
-  border: 1px solid #C6C6C6;
+  border: 1px solid #c6c6c6;
   padding: 1px;
   margin: 1px;
 }
@@ -2269,11 +2349,15 @@ div.hero_auction span.balanceSince {
 }
 
 #horseToggleBox > div .details .state:before {
-  background: -webkit-linear-gradient(left, transparent, rgba(158, 215, 87, 0.5));
+  background: -webkit-linear-gradient(
+    left,
+    transparent,
+    rgba(158, 215, 87, 0.5)
+  );
   background: -o-linear-gradient(right, transparent, rgba(158, 215, 87, 0.5));
   background: -moz-linear-gradient(right, transparent, rgba(158, 215, 87, 0.5));
   background: linear-gradient(to right, transparent, rgba(158, 215, 87, 0.5));
-  content: "";
+  content: '';
   width: 80px;
   height: 26px;
   position: absolute;
@@ -2282,11 +2366,15 @@ div.hero_auction span.balanceSince {
 }
 
 #horseToggleBox > div .details .state:after {
-  background: -webkit-linear-gradient(left, rgba(158, 215, 87, 0.5), transparent);
+  background: -webkit-linear-gradient(
+    left,
+    rgba(158, 215, 87, 0.5),
+    transparent
+  );
   background: -o-linear-gradient(right, rgba(158, 215, 87, 0.5), transparent);
   background: -moz-linear-gradient(right, rgba(158, 215, 87, 0.5), transparent);
   background: linear-gradient(to right, rgba(158, 215, 87, 0.5), transparent);
-  content: "";
+  content: '';
   width: 80px;
   height: 26px;
   position: absolute;
@@ -2357,7 +2445,8 @@ div.hero_auction span.balanceSince {
 #horseToggleBox > div#horseToggleUnavailable > .background {
   width: 100%;
   margin-top: 1px;
-  background: url('../img_ltr/hero/horseToggle/heroNotInHomeVillageBackground-ltr.png') no-repeat bottom center;
+  background: url('../img_ltr/hero/horseToggle/heroNotInHomeVillageBackground-ltr.png')
+    no-repeat bottom center;
 }
 
 #horseToggleBox > div#horseToggleUnavailable > .background.state3,
@@ -2402,7 +2491,8 @@ div.hero_auction span.balanceSince {
 
 #horseToggleBox > div#horseToggleUnavailable > .hero.dead {
   height: 78.5%;
-  background: url('../img_ltr/hero/horseToggle/heroTombstone-ltr.png') no-repeat bottom center;
+  background: url('../img_ltr/hero/horseToggle/heroTombstone-ltr.png') no-repeat
+    bottom center;
   margin-left: 25px;
   width: 527px;
 }
@@ -2418,8 +2508,8 @@ div.hero_auction span.balanceSince {
   width: auto;
   display: block;
 }
-.rtl #horseToggleBox > div#horseToggleUnavailable > .details .heroStatus, .rtl
-#horseToggleBox > div#horseToggleUnavailable > .details .message {
+.rtl #horseToggleBox > div#horseToggleUnavailable > .details .heroStatus,
+.rtl #horseToggleBox > div#horseToggleUnavailable > .details .message {
   font-size: 15px;
 }
 

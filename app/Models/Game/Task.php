@@ -3,37 +3,57 @@
 namespace App\Models\Game;
 
 use Aliziodev\LaravelTaxonomy\Traits\HasTaxonomy;
-use App\Services\GameIntegrationService;
 use App\Services\GameNotificationService;
 use App\Traits\Commentable;
 use App\Traits\GameValidationTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use sbamtr\LaravelQueryEnrich\QE;
+
 use function sbamtr\LaravelQueryEnrich\c;
+
+use sbamtr\LaravelQueryEnrich\QE;
 
 class Task extends Model
 {
-    use HasFactory, HasTaxonomy, HasReference, Commentable, Lift, GameValidationTrait;
+    use Commentable;
+    use GameValidationTrait;
+    use HasFactory;
+    use HasReference;
+    use HasTaxonomy;
 
     // Laravel Lift typed properties
     public int $id;
+
     public int $world_id;
+
     public int $player_id;
+
     public string $title;
+
     public ?string $description;
+
     public string $type;
+
     public string $status;
+
     public int $progress;
+
     public ?int $target;
+
     public ?array $rewards;
+
     public ?\Carbon\Carbon $deadline;
+
     public ?\Carbon\Carbon $started_at;
+
     public ?\Carbon\Carbon $completed_at;
+
     public ?string $reference_number;
+
     public \Carbon\CarbonImmutable $created_at;
+
     public \Carbon\CarbonImmutable $updated_at;
 
     protected $table = 'player_tasks';
@@ -65,6 +85,7 @@ class Task extends Model
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -117,7 +138,7 @@ class Task extends Model
 
     public function scopeNotExpired($query)
     {
-        return $query->where(function ($q) {
+        return $query->where(function ($q): void {
             $q
                 ->whereNull('deadline')
                 ->orWhere('deadline', '>', now());
@@ -147,7 +168,7 @@ class Task extends Model
                 ->from('player_tasks', 'pt5')
                 ->whereColumn('pt5.player_id', c('player_tasks.player_id'))
                 ->where('pt5.status', '=', 'active')
-                ->as('avg_progress')
+                ->as('avg_progress'),
         ]);
     }
 
@@ -198,11 +219,11 @@ class Task extends Model
     public function scopeSearch($query, $searchTerm)
     {
         return $query->when($searchTerm, function ($q) use ($searchTerm) {
-            return $q->where(function ($subQ) use ($searchTerm) {
+            return $q->where(function ($subQ) use ($searchTerm): void {
                 $subQ
-                    ->where('title', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('type', 'like', '%' . $searchTerm . '%');
+                    ->where('title', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('description', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('type', 'like', '%'.$searchTerm.'%');
             });
         });
     }
@@ -229,7 +250,7 @@ class Task extends Model
     public static function createWithIntegration(array $data): self
     {
         $task = self::create($data);
-        
+
         // Send notification
         GameNotificationService::sendQuestNotification(
             $task->player_id,

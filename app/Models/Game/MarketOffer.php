@@ -2,21 +2,23 @@
 
 namespace App\Models\Game;
 
-use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use IndexZer0\EloquentFiltering\Contracts\IsFilterable;
 use IndexZer0\EloquentFiltering\Filter\Contracts\AllowedFilterList;
 use IndexZer0\EloquentFiltering\Filter\Filterable\Filter;
-use IndexZer0\EloquentFiltering\Filter\Types\Types;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Model;
+use IndexZer0\EloquentFiltering\Filter\Traits\Filterable;
 use MohamedSaid\Referenceable\Traits\HasReference;
-use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use OwenIt\Auditing\Contracts\Auditable;
 
 class MarketOffer extends Model implements Auditable, IsFilterable
 {
-    use HasFactory, HasReference, AuditableTrait, Filterable;
+    use AuditableTrait;
+    use Filterable;
+    use HasFactory;
+    use HasReference;
 
     protected $fillable = [
         'village_id',
@@ -47,6 +49,7 @@ class MarketOffer extends Model implements Auditable, IsFilterable
 
     // Referenceable configuration
     protected $referenceColumn = 'reference_number';
+
     protected $referenceStrategy = 'template';
 
     protected $referenceTemplate = [
@@ -57,10 +60,13 @@ class MarketOffer extends Model implements Auditable, IsFilterable
     protected $referencePrefix = 'MKT';
 
     // Status constants
-    const STATUS_ACTIVE = 'active';
-    const STATUS_COMPLETED = 'completed';
-    const STATUS_CANCELLED = 'cancelled';
-    const STATUS_EXPIRED = 'expired';
+    public const STATUS_ACTIVE = 'active';
+
+    public const STATUS_COMPLETED = 'completed';
+
+    public const STATUS_CANCELLED = 'cancelled';
+
+    public const STATUS_EXPIRED = 'expired';
 
     public function village(): BelongsTo
     {
@@ -110,12 +116,12 @@ class MarketOffer extends Model implements Auditable, IsFilterable
 
     public function scopeOfferingResource($query, $resource)
     {
-        return $query->whereJsonContains('offering->' . $resource, '>', 0);
+        return $query->whereJsonContains('offering->'.$resource, '>', 0);
     }
 
     public function scopeRequestingResource($query, $resource)
     {
-        return $query->whereJsonContains('requesting->' . $resource, '>', 0);
+        return $query->whereJsonContains('requesting->'.$resource, '>', 0);
     }
 
     public function scopeWithRatio($query, $minRatio = null, $maxRatio = null)
@@ -126,6 +132,7 @@ class MarketOffer extends Model implements Auditable, IsFilterable
         if ($maxRatio !== null) {
             $query->where('ratio', '<=', $maxRatio);
         }
+
         return $query;
     }
 
@@ -176,8 +183,9 @@ class MarketOffer extends Model implements Auditable, IsFilterable
     {
         $formatted = [];
         foreach ($this->offering as $resource => $amount) {
-            $formatted[] = number_format($amount) . ' ' . ucfirst($resource);
+            $formatted[] = number_format($amount).' '.ucfirst($resource);
         }
+
         return implode(', ', $formatted);
     }
 
@@ -185,8 +193,9 @@ class MarketOffer extends Model implements Auditable, IsFilterable
     {
         $formatted = [];
         foreach ($this->requesting as $resource => $amount) {
-            $formatted[] = number_format($amount) . ' ' . ucfirst($resource);
+            $formatted[] = number_format($amount).' '.ucfirst($resource);
         }
+
         return implode(', ', $formatted);
     }
 
@@ -238,7 +247,7 @@ class MarketOffer extends Model implements Auditable, IsFilterable
 
     public function getTimeRemaining(): ?string
     {
-        if (!$this->expires_at) {
+        if (! $this->expires_at) {
             return null;
         }
 

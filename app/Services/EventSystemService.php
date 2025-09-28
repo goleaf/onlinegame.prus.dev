@@ -2,18 +2,17 @@
 
 namespace App\Services;
 
+use App\Models\Game\Alliance;
 use App\Models\Game\Event;
 use App\Models\Game\Player;
-use App\Models\Game\Village;
-use App\Models\Game\Alliance;
+use App\Utilities\LoggingUtil;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use LaraUtilX\Utilities\CachingUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 
 class EventSystemService
 {
     protected CachingUtil $cachingUtil;
+
     protected LoggingUtil $loggingUtil;
 
     public function __construct()
@@ -55,7 +54,7 @@ class EventSystemService
                 'event_id' => $event->id,
                 'type' => $event->type,
                 'category' => $event->category,
-                'severity' => $event->severity
+                'severity' => $event->severity,
             ]);
 
             // Clear cache
@@ -67,8 +66,9 @@ class EventSystemService
             DB::rollBack();
             $this->loggingUtil->error('Failed to create event', [
                 'event_data' => $eventData,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -78,11 +78,11 @@ class EventSystemService
      */
     public function getActiveEvents(array $filters = []): \Illuminate\Database\Eloquent\Collection
     {
-        $cacheKey = 'active_events_' . md5(serialize($filters));
+        $cacheKey = 'active_events_'.md5(serialize($filters));
 
         return $this->cachingUtil->remember($cacheKey, 300, function () use ($filters) {
             $query = Event::where('is_active', true)
-                ->where(function ($q) {
+                ->where(function ($q): void {
                     $q->whereNull('expires_at')
                         ->orWhere('expires_at', '>', now());
                 });
@@ -105,14 +105,14 @@ class EventSystemService
             }
 
             if (isset($filters['player_id'])) {
-                $query->where(function ($q) use ($filters) {
+                $query->where(function ($q) use ($filters): void {
                     $q->where('is_global', true)
                         ->orWhereJsonContains('affected_players', $filters['player_id']);
                 });
             }
 
             if (isset($filters['alliance_id'])) {
-                $query->where(function ($q) use ($filters) {
+                $query->where(function ($q) use ($filters): void {
                     $q->where('is_global', true)
                         ->orWhereJsonContains('affected_alliances', $filters['alliance_id']);
                 });
@@ -129,11 +129,11 @@ class EventSystemService
      */
     public function getPlayerEvents(Player $player, array $filters = []): \Illuminate\Database\Eloquent\Collection
     {
-        $cacheKey = "player_events_{$player->id}_" . md5(serialize($filters));
+        $cacheKey = "player_events_{$player->id}_".md5(serialize($filters));
 
         return $this->cachingUtil->remember($cacheKey, 600, function () use ($player, $filters) {
             $query = Event::where('is_active', true)
-                ->where(function ($q) use ($player) {
+                ->where(function ($q) use ($player): void {
                     $q->where('is_global', true)
                         ->orWhereJsonContains('affected_players', $player->id)
                         ->orWhereJsonContains('affected_alliances', $player->alliance_id)
@@ -164,11 +164,11 @@ class EventSystemService
      */
     public function getAllianceEvents(Alliance $alliance, array $filters = []): \Illuminate\Database\Eloquent\Collection
     {
-        $cacheKey = "alliance_events_{$alliance->id}_" . md5(serialize($filters));
+        $cacheKey = "alliance_events_{$alliance->id}_".md5(serialize($filters));
 
         return $this->cachingUtil->remember($cacheKey, 600, function () use ($alliance, $filters) {
             $query = Event::where('is_active', true)
-                ->where(function ($q) use ($alliance) {
+                ->where(function ($q) use ($alliance): void {
                     $q->where('is_global', true)
                         ->orWhereJsonContains('affected_alliances', $alliance->id)
                         ->orWhereJsonContains('affected_players', $alliance->members()->pluck('id')->toArray());
@@ -215,7 +215,7 @@ class EventSystemService
             $this->loggingUtil->info('Event completed', [
                 'event_id' => $event->id,
                 'type' => $event->type,
-                'completion_data' => $completionData
+                'completion_data' => $completionData,
             ]);
 
             // Clear cache
@@ -227,8 +227,9 @@ class EventSystemService
             DB::rollBack();
             $this->loggingUtil->error('Failed to complete event', [
                 'event_id' => $event->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -252,7 +253,7 @@ class EventSystemService
             $this->loggingUtil->info('Event cancelled', [
                 'event_id' => $event->id,
                 'type' => $event->type,
-                'reason' => $reason
+                'reason' => $reason,
             ]);
 
             // Clear cache
@@ -264,8 +265,9 @@ class EventSystemService
             DB::rollBack();
             $this->loggingUtil->error('Failed to cancel event', [
                 'event_id' => $event->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -289,14 +291,14 @@ class EventSystemService
             } catch (\Exception $e) {
                 $this->loggingUtil->error('Failed to process expired event', [
                     'event_id' => $event->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
 
         if ($processed > 0) {
             $this->loggingUtil->info('Processed expired events', [
-                'processed_count' => $processed
+                'processed_count' => $processed,
             ]);
         }
 
@@ -373,8 +375,8 @@ class EventSystemService
             'expires_at' => now()->addHours(2),
             'data' => [
                 'estimated_duration' => '2 hours',
-                'affected_services' => ['game_server', 'database', 'cache']
-            ]
+                'affected_services' => ['game_server', 'database', 'cache'],
+            ],
         ]);
 
         // World event
@@ -390,12 +392,12 @@ class EventSystemService
             'data' => [
                 'bonus_type' => 'resource_production',
                 'bonus_amount' => 0.25,
-                'duration_hours' => 24
-            ]
+                'duration_hours' => 24,
+            ],
         ]);
 
         $this->loggingUtil->info('System events created', [
-            'events_created' => count($systemEvents)
+            'events_created' => count($systemEvents),
         ]);
 
         return $systemEvents;
@@ -409,15 +411,19 @@ class EventSystemService
         switch ($event->type) {
             case 'world_event':
                 $this->processWorldEventCompletion($event, $completionData);
+
                 break;
             case 'maintenance':
                 $this->processMaintenanceCompletion($event, $completionData);
+
                 break;
             case 'alliance_war':
                 $this->processAllianceWarCompletion($event, $completionData);
+
                 break;
             case 'wonder_construction':
                 $this->processWonderConstructionCompletion($event, $completionData);
+
                 break;
             default:
                 // Generic completion handling
@@ -431,13 +437,13 @@ class EventSystemService
     protected function processWorldEventCompletion(Event $event, array $completionData): void
     {
         $data = $event->data ?? [];
-        
+
         if (isset($data['bonus_type']) && isset($data['bonus_amount'])) {
             // Remove world event bonuses
             $this->loggingUtil->info('World event bonus removed', [
                 'event_id' => $event->id,
                 'bonus_type' => $data['bonus_type'],
-                'bonus_amount' => $data['bonus_amount']
+                'bonus_amount' => $data['bonus_amount'],
             ]);
         }
     }
@@ -449,7 +455,7 @@ class EventSystemService
     {
         $this->loggingUtil->info('Maintenance completed', [
             'event_id' => $event->id,
-            'completion_data' => $completionData
+            'completion_data' => $completionData,
         ]);
     }
 
@@ -461,7 +467,7 @@ class EventSystemService
         // Process alliance war results
         $this->loggingUtil->info('Alliance war completed', [
             'event_id' => $event->id,
-            'completion_data' => $completionData
+            'completion_data' => $completionData,
         ]);
     }
 
@@ -473,7 +479,7 @@ class EventSystemService
         // Process wonder construction results
         $this->loggingUtil->info('Wonder construction completed', [
             'event_id' => $event->id,
-            'completion_data' => $completionData
+            'completion_data' => $completionData,
         ]);
     }
 

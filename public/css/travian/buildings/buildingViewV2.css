@@ -829,7 +829,7 @@
 .buildingsV2 #build .upgradeHeader #build_value {
   width: 62%;
   position: relative;
-  color: #F2F2F2;
+  color: #f2f2f2;
   margin-bottom: 0;
   margin-left: 10px;
 }
@@ -838,9 +838,9 @@
   z-index: 2;
 }
 .buildingsV2 #build .buildingDescription .headline {
-  background-color: #F9FBF4;
-  border: solid 1px #A1BC79;
-  background: linear-gradient(to right, #cbe0ac, #F9FBF4);
+  background-color: #f9fbf4;
+  border: solid 1px #a1bc79;
+  background: linear-gradient(to right, #cbe0ac, #f9fbf4);
   min-height: 25px;
   line-height: 25px;
   text-align: left;
@@ -888,8 +888,8 @@
   margin-top: -2px;
 }
 .buildingsV2 #build .upgradeBuilding {
-  background-color: #F9FBF4;
-  border: solid 1px #A1BC79;
+  background-color: #f9fbf4;
+  border: solid 1px #a1bc79;
   border-radius: 4px;
   margin-bottom: 20px;
 }
@@ -899,7 +899,7 @@
   text-align: center;
   padding: 10px 0;
   margin: 0 10px;
-  border-bottom: dotted 1px #C0C0C0;
+  border-bottom: dotted 1px #c0c0c0;
 }
 .buildingsV2 #build .upgradeBuilding .contractWrapper .upgradeBlocked {
   display: -ms-grid;
@@ -907,7 +907,12 @@
   -ms-grid-columns: 1fr 1fr;
   grid-template-columns: 1fr 1fr;
 }
-.buildingsV2 #build .upgradeBuilding .contractWrapper .upgradeBlocked .errorMessage {
+.buildingsV2
+  #build
+  .upgradeBuilding
+  .contractWrapper
+  .upgradeBlocked
+  .errorMessage {
   color: #777777;
   font-weight: bold;
   padding: 0;

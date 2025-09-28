@@ -7,14 +7,14 @@ return [
 
     'suppress' => [
         'filter' => [
-            'invalid'          => false,
-            'missing'          => false,
+            'invalid' => false,
+            'missing' => false,
             'malformed_format' => false,
-            'denied'           => false,
+            'denied' => false,
         ],
         'sort' => [
             'malformed_format' => false,
-            'denied'           => false,
+            'denied' => false,
         ],
     ],
 

@@ -4,29 +4,35 @@ namespace App\Livewire\Game;
 
 use App\Models\Game\Player;
 use App\Models\Game\Village;
-use App\Services\QueryEnrichService;
 use App\Services\QueryOptimizationService;
 use Livewire\Component;
 use Livewire\WithPagination;
-use sbamtr\LaravelQueryEnrich\QE;
-
-use function sbamtr\LaravelQueryEnrich\c;
 
 class QueryEnrichDemo extends Component
 {
     use WithPagination;
 
     public $worldId = null;
+
     public $playerId = null;
+
     public $days = 7;
+
     public $hours = 24;
+
     public $limit = 20;
+
     // Results
     public $activePlayers = [];
+
     public $playerStats = [];
+
     public $villageStats = [];
+
     public $battleStats = [];
+
     public $upcomingCompletions = [];
+
     public $resourcesReachingCapacity = [];
 
     public function mount()
@@ -55,7 +61,7 @@ class QueryEnrichDemo extends Component
             },
             $this->days > 0 => function ($q) {
                 return $q->where('last_activity', '>=', now()->subDays($this->days));
-            }
+            },
         ];
 
         $this->activePlayers = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
@@ -79,7 +85,7 @@ class QueryEnrichDemo extends Component
         $filters = [
             $this->worldId => function ($q) {
                 return $q->where('world_id', $this->worldId);
-            }
+            },
         ];
 
         $this->playerStats = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
@@ -108,7 +114,7 @@ class QueryEnrichDemo extends Component
         $filters = [
             $this->playerId => function ($q) {
                 return $q->where('player_id', $this->playerId);
-            }
+            },
         ];
 
         $this->villageStats = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
@@ -134,12 +140,12 @@ class QueryEnrichDemo extends Component
 
         $filters = [
             $this->playerId => function ($q) {
-                return $q->where(function ($subQ) {
+                return $q->where(function ($subQ): void {
                     $subQ
                         ->where('attacker_id', $this->playerId)
                         ->orWhere('defender_id', $this->playerId);
                 });
-            }
+            },
         ];
 
         $this->battleStats = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
@@ -163,7 +169,7 @@ class QueryEnrichDemo extends Component
 
         $filters = [
             $this->playerId => function ($q) {
-                return $q->whereHas('village', function ($villageQ) {
+                return $q->whereHas('village', function ($villageQ): void {
                     $villageQ->where('player_id', $this->playerId);
                 });
             },
@@ -171,7 +177,7 @@ class QueryEnrichDemo extends Component
                 return $q
                     ->where('construction_completed_at', '<=', now()->addHours($this->hours))
                     ->where('construction_completed_at', '>', now());
-            }
+            },
         ];
 
         $this->upcomingCompletions = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
@@ -195,13 +201,13 @@ class QueryEnrichDemo extends Component
 
         $filters = [
             $this->playerId => function ($q) {
-                return $q->whereHas('village', function ($villageQ) {
+                return $q->whereHas('village', function ($villageQ): void {
                     $villageQ->where('player_id', $this->playerId);
                 });
             },
             $this->hours > 0 => function ($q) {
                 return $q->whereRaw('(storage_capacity - amount) / GREATEST(production_rate, 1) <= ?', [$this->hours]);
-            }
+            },
         ];
 
         $this->resourcesReachingCapacity = QueryOptimizationService::applyConditionalFilters($baseQuery, $filters)
@@ -260,13 +266,13 @@ class QueryEnrichDemo extends Component
         $playerFilters = [
             $this->worldId => function ($q) {
                 return $q->where('world_id', $this->worldId);
-            }
+            },
         ];
 
         $villageFilters = [
             $this->playerId => function ($q) {
                 return $q->where('player_id', $this->playerId);
-            }
+            },
         ];
 
         return view('livewire.game.query-enrich-demo', [
@@ -284,7 +290,7 @@ class QueryEnrichDemo extends Component
                     (SELECT COUNT(*) FROM troops WHERE village_id = villages.id AND quantity > 0) as troop_count,
                     (SELECT SUM(wood + clay + iron + crop) FROM resources WHERE village_id = villages.id) as total_resources
                 ')
-                ->paginate(10)
+                ->paginate(10),
         ]);
     }
 }

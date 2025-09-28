@@ -2,35 +2,37 @@
 
 namespace App\Http\Controllers\Game;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\LarautilxIntegrationService;
 use App\Traits\GameValidationTrait;
+use App\Traits\ValidationHelperTrait;
+use App\Utilities\LoggingUtil;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Intervention\Validation\Rules\Username;
 use JonPurvis\Squeaky\Rules\Clean;
 use LaraUtilX\Http\Controllers\CrudController;
 use LaraUtilX\Traits\ApiResponseTrait;
-use LaraUtilX\Traits\ValidationHelperTrait;
 use LaraUtilX\Utilities\FeatureToggleUtil;
-use LaraUtilX\Utilities\LoggingUtil;
 use LaraUtilX\Utilities\RateLimiterUtil;
-use Propaganistas\LaravelPhone\Rules\Phone;
 use Ziming\LaravelZxcvbn\Rules\ZxcvbnRule;
 
 class UserController extends CrudController
 {
-    use ApiResponseTrait, GameValidationTrait, ValidationHelperTrait;
+    use ApiResponseTrait;
+    use GameValidationTrait;
+    use ValidationHelperTrait;
 
     protected Model $model;
+
     protected RateLimiterUtil $rateLimiter;
+
     protected array $validationRules = [];
 
     protected function getValidationRules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', new Username(), new Clean],
+            'name' => ['required', 'string', 'max:255', new Username(), new Clean()],
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
             'phone' => 'nullable|string',
@@ -39,7 +41,9 @@ class UserController extends CrudController
     }
 
     protected array $searchableFields = ['name', 'email', 'phone', 'phone_normalized', 'phone_e164'];
+
     protected array $relationships = ['player', 'players'];
+
     protected int $perPage = 20;
 
     public function __construct(User $user, RateLimiterUtil $rateLimiter)
@@ -56,8 +60,8 @@ class UserController extends CrudController
     public function withGameStats(Request $request)
     {
         // Rate limiting for user statistics
-        $rateLimitKey = 'user_stats_' . ($request->ip() ?? 'unknown');
-        if (!$this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
+        $rateLimitKey = 'user_stats_'.($request->ip() ?? 'unknown');
+        if (! $this->rateLimiter->attempt($rateLimitKey, 10, 1)) {
             return $this->errorResponse('Too many requests. Please try again later.', 429);
         }
 
@@ -82,10 +86,10 @@ class UserController extends CrudController
                         'type' => '$has',
                         'target' => 'player',
                         'value' => [
-                            ['target' => 'name', 'type' => '$like', 'value' => $searchTerm]
-                        ]
-                    ]
-                ]
+                            ['target' => 'name', 'type' => '$like', 'value' => $searchTerm],
+                        ],
+                    ],
+                ],
             ];
         }
 
@@ -95,8 +99,8 @@ class UserController extends CrudController
                 'type' => '$has',
                 'target' => 'player',
                 'value' => [
-                    ['target' => 'world_id', 'type' => '$eq', 'value' => $request->get('world_id')]
-                ]
+                    ['target' => 'world_id', 'type' => '$eq', 'value' => $request->get('world_id')],
+                ],
             ];
         }
 
@@ -105,8 +109,8 @@ class UserController extends CrudController
                 'type' => '$has',
                 'target' => 'player',
                 'value' => [
-                    ['target' => 'tribe', 'type' => '$eq', 'value' => $request->get('tribe')]
-                ]
+                    ['target' => 'tribe', 'type' => '$eq', 'value' => $request->get('tribe')],
+                ],
             ];
         }
 
@@ -115,53 +119,33 @@ class UserController extends CrudController
                 'type' => '$has',
                 'target' => 'player',
                 'value' => [
-                    ['target' => 'alliance_id', 'type' => '$eq', 'value' => $request->get('alliance_id')]
-                ]
+                    ['target' => 'alliance_id', 'type' => '$eq', 'value' => $request->get('alliance_id')],
+                ],
             ];
         }
 
         if ($request->has('is_online')) {
-            if ($request->get('is_online') === 'true') {
-                $filters[] = [
-                    'type' => '$has',
-                    'target' => 'player',
-                    'value' => [
-                        ['target' => 'is_online', 'type' => '$eq', 'value' => true]
-                    ]
-                ];
-            } else {
-                $filters[] = [
-                    'type' => '$has',
-                    'target' => 'player',
-                    'value' => [
-                        ['target' => 'is_online', 'type' => '$eq', 'value' => false]
-                    ]
-                ];
-            }
+            $filters[] = [
+                'type' => '$has',
+                'target' => 'player',
+                'value' => [
+                    ['target' => 'is_online', 'type' => '$eq', 'value' => $request->boolean('is_online')],
+                ],
+            ];
         }
 
         if ($request->has('is_active')) {
-            if ($request->get('is_active') === 'true') {
-                $filters[] = [
-                    'type' => '$has',
-                    'target' => 'player',
-                    'value' => [
-                        ['target' => 'is_active', 'type' => '$eq', 'value' => true]
-                    ]
-                ];
-            } else {
-                $filters[] = [
-                    'type' => '$has',
-                    'target' => 'player',
-                    'value' => [
-                        ['target' => 'is_active', 'type' => '$eq', 'value' => false]
-                    ]
-                ];
-            }
+            $filters[] = [
+                'type' => '$has',
+                'target' => 'player',
+                'value' => [
+                    ['target' => 'is_active', 'type' => '$eq', 'value' => $request->boolean('is_active')],
+                ],
+            ];
         }
 
         // Apply eloquent filtering
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             $query = $query->filter($filters);
         }
 
@@ -187,6 +171,7 @@ class UserController extends CrudController
         // Add game statistics to each user
         $users->getCollection()->transform(function ($user) {
             $user->game_stats = $user->getGameStats();
+
             return $user;
         });
 
@@ -252,7 +237,7 @@ class UserController extends CrudController
                         ->groupBy('players.world_id')
                         ->pluck('count', 'world_id'),
                     'recent_registrations' => User::where('created_at', '>=', now()->subDays(7))->count(),
-                    'recent_activity' => User::whereHas('player', function ($q) {
+                    'recent_activity' => User::whereHas('player', function ($q): void {
                         $q->where('last_active_at', '>=', now()->subHours(24));
                     })->count(),
                 ];
@@ -271,9 +256,9 @@ class UserController extends CrudController
         $user = User::with([
             'player.world',
             'player.alliance',
-            'player.villages' => function ($query) {
+            'player.villages' => function ($query): void {
                 $query->withStats();
-            }
+            },
         ])->findOrFail($userId);
 
         $details = [
@@ -307,7 +292,7 @@ class UserController extends CrudController
     {
         $user = User::findOrFail($userId);
 
-        $validated = $request->validate([
+        $validated = $this->validateRequestData($request, [
             'is_active' => 'boolean',
             'is_online' => 'boolean',
             'last_active_at' => 'nullable|date',
@@ -333,7 +318,7 @@ class UserController extends CrudController
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $this->validateRequestData($request, [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => [
@@ -374,7 +359,7 @@ class UserController extends CrudController
     {
         $user = User::findOrFail($userId);
 
-        $validated = $request->validate([
+        $validated = $this->validateRequestData($request, [
             'password' => [
                 'required',
                 'confirmed',
@@ -406,7 +391,7 @@ class UserController extends CrudController
     {
         $user = User::with(['player'])->findOrFail($userId);
 
-        if (!$user->player) {
+        if (! $user->player) {
             return $this->errorResponse('User does not have a game player.', 404);
         }
 
@@ -451,14 +436,14 @@ class UserController extends CrudController
         if ($request->has('phone')) {
             $phoneTerm = $request->get('phone');
             $cleanPhoneTerm = preg_replace('/[^0-9+]/', '', $phoneTerm);
-            
+
             $filters[] = [
                 'type' => '$or',
                 'value' => [
                     ['target' => 'phone', 'type' => '$like', 'value' => $phoneTerm],
                     ['target' => 'phone_normalized', 'type' => '$like', 'value' => $cleanPhoneTerm],
-                    ['target' => 'phone_e164', 'type' => '$like', 'value' => $cleanPhoneTerm]
-                ]
+                    ['target' => 'phone_e164', 'type' => '$like', 'value' => $cleanPhoneTerm],
+                ],
             ];
         }
 
@@ -476,8 +461,8 @@ class UserController extends CrudController
                 'type' => '$has',
                 'target' => 'player',
                 'value' => [
-                    ['target' => 'world_id', 'type' => '$eq', 'value' => $request->get('world_id')]
-                ]
+                    ['target' => 'world_id', 'type' => '$eq', 'value' => $request->get('world_id')],
+                ],
             ];
         }
 
@@ -486,8 +471,8 @@ class UserController extends CrudController
                 'type' => '$has',
                 'target' => 'player',
                 'value' => [
-                    ['target' => 'tribe', 'type' => '$eq', 'value' => $request->get('tribe')]
-                ]
+                    ['target' => 'tribe', 'type' => '$eq', 'value' => $request->get('tribe')],
+                ],
             ];
         }
 
@@ -496,37 +481,33 @@ class UserController extends CrudController
                 'type' => '$has',
                 'target' => 'player',
                 'value' => [
-                    ['target' => 'alliance_id', 'type' => '$eq', 'value' => $request->get('alliance_id')]
-                ]
+                    ['target' => 'alliance_id', 'type' => '$eq', 'value' => $request->get('alliance_id')],
+                ],
             ];
         }
 
         if ($request->has('is_online')) {
-            if ($request->get('is_online') === 'true') {
-                $filters[] = [
-                    'type' => '$has',
-                    'target' => 'player',
-                    'value' => [
-                        ['target' => 'is_online', 'type' => '$eq', 'value' => true]
-                    ]
-                ];
-            }
+            $filters[] = [
+                'type' => '$has',
+                'target' => 'player',
+                'value' => [
+                    ['target' => 'is_online', 'type' => '$eq', 'value' => $request->boolean('is_online')],
+                ],
+            ];
         }
 
         if ($request->has('is_active')) {
-            if ($request->get('is_active') === 'true') {
-                $filters[] = [
-                    'type' => '$has',
-                    'target' => 'player',
-                    'value' => [
-                        ['target' => 'is_active', 'type' => '$eq', 'value' => true]
-                    ]
-                ];
-            }
+            $filters[] = [
+                'type' => '$has',
+                'target' => 'player',
+                'value' => [
+                    ['target' => 'is_active', 'type' => '$eq', 'value' => $request->boolean('is_active')],
+                ],
+            ];
         }
 
         // Apply eloquent filtering
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             $query = $query->filter($filters);
         }
 
@@ -543,6 +524,7 @@ class UserController extends CrudController
         $users->getCollection()->transform(function ($user) {
             $user->game_stats = $user->getGameStats();
             $user->is_online = $user->isOnline();
+
             return $user;
         });
 
@@ -572,7 +554,7 @@ class UserController extends CrudController
      */
     public function bulkUpdateStatus(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $this->validateRequestData($request, [
             'user_ids' => 'required|array',
             'user_ids.*' => 'integer|exists:users,id',
             'status' => 'required|array',

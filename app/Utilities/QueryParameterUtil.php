@@ -1,6 +1,6 @@
 <?php
 
-namespace LaraUtilX\Utilities;
+namespace App\Utilities;
 
 use Illuminate\Http\Request;
 
@@ -9,8 +9,6 @@ class QueryParameterUtil
     /**
      * Parse query parameters from request.
      *
-     * @param Request $request
-     * @param array $allowedParameters
      * @return array
      */
     public static function parse(Request $request, array $allowedParameters)

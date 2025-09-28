@@ -36,7 +36,7 @@ class PopulateVillageGeographicData extends Command
         Village::whereNull('latitude')
             ->orWhereNull('longitude')
             ->orWhereNull('geohash')
-            ->chunk($chunkSize, function ($villages) use ($geoService, &$processed) {
+            ->chunk($chunkSize, function ($villages) use ($geoService, &$processed): void {
                 foreach ($villages as $village) {
                     try {
                         // Calculate real-world coordinates from game coordinates
@@ -61,7 +61,7 @@ class PopulateVillageGeographicData extends Command
                             $this->info("Processed {$processed} villages...");
                         }
                     } catch (\Exception $e) {
-                        $this->error("Error processing village {$village->id}: " . $e->getMessage());
+                        $this->error("Error processing village {$village->id}: ".$e->getMessage());
                     }
                 }
             });

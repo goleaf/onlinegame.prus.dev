@@ -18,8 +18,11 @@ class EnhancedLivewireTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $world;
+
     protected $player;
+
     protected $village;
 
     protected function setUp(): void
@@ -438,5 +441,3 @@ class EnhancedLivewireTest extends TestCase
         $component->assertSet('connectionStatus', 'connected');
     }
 }
-
-

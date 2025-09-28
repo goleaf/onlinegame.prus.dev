@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -27,7 +26,7 @@ return new class extends Migration
             $table->integer('quantity_traded')->nullable(); // How many units were traded
             $table->string('reference_number')->unique(); // Unique reference number
             $table->timestamps();
-            
+
             // Indexes
             $table->index(['status', 'expires_at']);
             $table->index(['player_id', 'status']);
@@ -37,7 +36,7 @@ return new class extends Migration
             $table->index(['created_at']);
             $table->index(['completed_at']);
             $table->index(['cancelled_at']);
-            
+
             // JSON indexes for resource filtering
             $table->index(['offering'], 'idx_offering');
             $table->index(['requesting'], 'idx_requesting');

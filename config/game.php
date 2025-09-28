@@ -12,7 +12,7 @@ return [
 
     'name' => env('GAME_NAME', 'Online Strategy Game'),
     'version' => env('GAME_VERSION', '1.0.0'),
-    
+
     /*
     |--------------------------------------------------------------------------
     | Performance Settings
@@ -211,4 +211,3 @@ return [
         'retention' => env('GAME_LOG_RETENTION', 30), // days
     ],
 ];
-

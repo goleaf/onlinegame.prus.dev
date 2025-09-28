@@ -34,21 +34,25 @@ class ValueObjectService
                     $amounts = new ResourceAmounts(wood: $resource->amount, clay: $amounts->clay, iron: $amounts->iron, crop: $amounts->crop);
                     $production = new ResourceAmounts(wood: $resource->production_rate, clay: $production->clay, iron: $production->iron, crop: $production->crop);
                     $capacity = new ResourceAmounts(wood: $resource->storage_capacity, clay: $capacity->clay, iron: $capacity->iron, crop: $capacity->crop);
+
                     break;
                 case 'clay':
                     $amounts = new ResourceAmounts(wood: $amounts->wood, clay: $resource->amount, iron: $amounts->iron, crop: $amounts->crop);
                     $production = new ResourceAmounts(wood: $production->wood, clay: $resource->production_rate, iron: $production->iron, crop: $production->crop);
                     $capacity = new ResourceAmounts(wood: $capacity->wood, clay: $resource->storage_capacity, iron: $capacity->iron, crop: $capacity->crop);
+
                     break;
                 case 'iron':
                     $amounts = new ResourceAmounts(wood: $amounts->wood, clay: $amounts->clay, iron: $resource->amount, crop: $amounts->crop);
                     $production = new ResourceAmounts(wood: $production->wood, clay: $production->clay, iron: $resource->production_rate, crop: $production->crop);
                     $capacity = new ResourceAmounts(wood: $capacity->wood, clay: $capacity->clay, iron: $resource->storage_capacity, crop: $capacity->crop);
+
                     break;
                 case 'crop':
                     $amounts = new ResourceAmounts(wood: $amounts->wood, clay: $amounts->clay, iron: $amounts->iron, crop: $resource->amount);
                     $production = new ResourceAmounts(wood: $production->wood, clay: $production->clay, iron: $production->iron, crop: $resource->production_rate);
                     $capacity = new ResourceAmounts(wood: $capacity->wood, clay: $capacity->clay, iron: $capacity->iron, crop: $resource->storage_capacity);
+
                     break;
             }
         }
@@ -102,37 +106,46 @@ class ValueObjectService
                 case 'spearman':
                 case 'spearmen':
                     $counts = new TroopCounts(spearmen: $quantity, swordsmen: $counts->swordsmen, archers: $counts->archers, cavalry: $counts->cavalry, mountedArchers: $counts->mountedArchers, catapults: $counts->catapults, rams: $counts->rams, spies: $counts->spies, settlers: $counts->settlers);
+
                     break;
                 case 'swordsman':
                 case 'swordsmen':
                     $counts = new TroopCounts(spearmen: $counts->spearmen, swordsmen: $quantity, archers: $counts->archers, cavalry: $counts->cavalry, mountedArchers: $counts->mountedArchers, catapults: $counts->catapults, rams: $counts->rams, spies: $counts->spies, settlers: $counts->settlers);
+
                     break;
                 case 'archer':
                 case 'archers':
                     $counts = new TroopCounts(spearmen: $counts->spearmen, swordsmen: $counts->swordsmen, archers: $quantity, cavalry: $counts->cavalry, mountedArchers: $counts->mountedArchers, catapults: $counts->catapults, rams: $counts->rams, spies: $counts->spies, settlers: $counts->settlers);
+
                     break;
                 case 'cavalry':
                     $counts = new TroopCounts(spearmen: $counts->spearmen, swordsmen: $counts->swordsmen, archers: $counts->archers, cavalry: $quantity, mountedArchers: $counts->mountedArchers, catapults: $counts->catapults, rams: $counts->rams, spies: $counts->spies, settlers: $counts->settlers);
+
                     break;
                 case 'mounted_archer':
                 case 'mounted_archers':
                     $counts = new TroopCounts(spearmen: $counts->spearmen, swordsmen: $counts->swordsmen, archers: $counts->archers, cavalry: $counts->cavalry, mountedArchers: $quantity, catapults: $counts->catapults, rams: $counts->rams, spies: $counts->spies, settlers: $counts->settlers);
+
                     break;
                 case 'catapult':
                 case 'catapults':
                     $counts = new TroopCounts(spearmen: $counts->spearmen, swordsmen: $counts->swordsmen, archers: $counts->archers, cavalry: $counts->cavalry, mountedArchers: $counts->mountedArchers, catapults: $quantity, rams: $counts->rams, spies: $counts->spies, settlers: $counts->settlers);
+
                     break;
                 case 'ram':
                 case 'rams':
                     $counts = new TroopCounts(spearmen: $counts->spearmen, swordsmen: $counts->swordsmen, archers: $counts->archers, cavalry: $counts->cavalry, mountedArchers: $counts->mountedArchers, catapults: $counts->catapults, rams: $quantity, spies: $counts->spies, settlers: $counts->settlers);
+
                     break;
                 case 'spy':
                 case 'spies':
                     $counts = new TroopCounts(spearmen: $counts->spearmen, swordsmen: $counts->swordsmen, archers: $counts->archers, cavalry: $counts->cavalry, mountedArchers: $counts->mountedArchers, catapults: $counts->catapults, rams: $counts->rams, spies: $quantity, settlers: $counts->settlers);
+
                     break;
                 case 'settler':
                 case 'settlers':
                     $counts = new TroopCounts(spearmen: $counts->spearmen, swordsmen: $counts->swordsmen, archers: $counts->archers, cavalry: $counts->cavalry, mountedArchers: $counts->mountedArchers, catapults: $counts->catapults, rams: $counts->rams, spies: $counts->spies, settlers: $quantity);
+
                     break;
             }
         }

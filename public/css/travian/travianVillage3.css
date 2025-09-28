@@ -92,11 +92,11 @@ div.village3 table#ressources td.tra a {
 }
 div.village3 table#warehouse td.crit,
 div.village3 table#warehouse span.crit {
-  color: #FF0000;
+  color: #ff0000;
 }
-.colorBlind div.village3 table#warehouse td.crit, .colorBlind
-div.village3 table#warehouse span.crit {
-  color: #0000FF;
+.colorBlind div.village3 table#warehouse td.crit,
+.colorBlind div.village3 table#warehouse span.crit {
+  color: #0000ff;
 }
 div.village3 table#warehouse td.vil {
   padding-left: 4px;
@@ -126,7 +126,7 @@ div.village3 table#culture_points td.cel {
   width: 20%;
 }
 div.village3 span.dot {
-  color: #C0C0C0;
+  color: #c0c0c0;
   font-weight: bold;
 }
 div.village3 table#culture_points td.tro {
@@ -145,25 +145,31 @@ div.village3 table#troops tr.small th,
 div.village3 table#troops tr.small td {
   font-size: 11px;
 }
-.rtl div.village3 table#troops tr.small th, .rtl
-div.village3 table#troops tr.small td {
+.rtl div.village3 table#troops tr.small th,
+.rtl div.village3 table#troops tr.small td {
   font-size: 12px;
 }
 div.village3 table#troops th,
-div.village3 table#troops td, div.village3 table.vil_troops th,
-div.village3 table.vil_troops td, div.village3 table.under_progress th,
+div.village3 table#troops td,
+div.village3 table.vil_troops th,
+div.village3 table.vil_troops td,
+div.village3 table.under_progress th,
 div.village3 table.under_progress td {
   padding: 6px 1px 3px;
 }
 div.village3 table#troops th.unit,
-div.village3 table#troops td.unit, div.village3 table.vil_troops th.unit,
-div.village3 table.vil_troops td.unit, div.village3 table.under_progress th.unit,
+div.village3 table#troops td.unit,
+div.village3 table.vil_troops th.unit,
+div.village3 table.vil_troops td.unit,
+div.village3 table.under_progress th.unit,
 div.village3 table.under_progress td.unit {
   width: 7%;
 }
 div.village3 table#troops th.villageName,
-div.village3 table#troops td.villageName, div.village3 table.vil_troops th.villageName,
-div.village3 table.vil_troops td.villageName, div.village3 table.under_progress th.villageName,
+div.village3 table#troops td.villageName,
+div.village3 table.vil_troops th.villageName,
+div.village3 table.vil_troops td.villageName,
+div.village3 table.under_progress th.villageName,
 div.village3 table.under_progress td.villageName {
   text-align: left;
   white-space: nowrap;
@@ -173,11 +179,15 @@ div.village3 table.under_progress td.villageName {
   max-width: 1px;
 }
 div.village3 table#troops th.inProgress,
-div.village3 table#troops td.inProgress, div.village3 table.vil_troops th.inProgress,
-div.village3 table.vil_troops td.inProgress, div.village3 table.under_progress th.inProgress,
+div.village3 table#troops td.inProgress,
+div.village3 table.vil_troops th.inProgress,
+div.village3 table.vil_troops td.inProgress,
+div.village3 table.under_progress th.inProgress,
 div.village3 table.under_progress td.inProgress {
   width: 22%;
 }
-div.village3 table#troops th.villageName, div.village3 table.vil_troops th.villageName, div.village3 table.under_progress th.villageName {
+div.village3 table#troops th.villageName,
+div.village3 table.vil_troops th.villageName,
+div.village3 table.under_progress th.villageName {
   text-align: center;
 }

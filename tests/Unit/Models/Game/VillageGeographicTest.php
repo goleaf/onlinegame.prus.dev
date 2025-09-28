@@ -2,20 +2,23 @@
 
 namespace Tests\Unit\Models\Game;
 
-use App\Models\Game\Village;
 use App\Models\Game\Player;
+use App\Models\Game\Village;
 use App\Models\Game\World;
 use App\Models\User;
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class VillageGeographicTest extends TestCase
 {
     use RefreshDatabase;
 
     private Village $village1;
+
     private Village $village2;
+
     private Player $player;
+
     private World $world;
 
     protected function setUp(): void
@@ -27,7 +30,7 @@ class VillageGeographicTest extends TestCase
         $this->world = World::factory()->create();
         $this->player = Player::factory()->create([
             'user_id' => $user->id,
-            'world_id' => $this->world->id
+            'world_id' => $this->world->id,
         ]);
 
         $this->village1 = Village::factory()->create([
@@ -36,7 +39,7 @@ class VillageGeographicTest extends TestCase
             'x_coordinate' => 100,
             'y_coordinate' => 100,
             'latitude' => 52.520008,
-            'longitude' => 13.404954
+            'longitude' => 13.404954,
         ]);
 
         $this->village2 = Village::factory()->create([
@@ -45,7 +48,7 @@ class VillageGeographicTest extends TestCase
             'x_coordinate' => 200,
             'y_coordinate' => 200,
             'latitude' => 48.8566,
-            'longitude' => 2.3522
+            'longitude' => 2.3522,
         ]);
     }
 
@@ -69,7 +72,7 @@ class VillageGeographicTest extends TestCase
             'x_coordinate' => 500,
             'y_coordinate' => 500,
             'latitude' => null,
-            'longitude' => null
+            'longitude' => null,
         ]);
 
         $coords = $village->getRealWorldCoordinates();
@@ -154,4 +157,3 @@ class VillageGeographicTest extends TestCase
         $this->assertEquals('array', $casts['geographic_metadata']);
     }
 }
-

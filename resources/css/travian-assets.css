@@ -2,635 +2,634 @@
 
 /* Travian Color Palette */
 :root {
-    --travian-primary: #8B4513;
-    --travian-secondary: #A0522D;
-    --travian-gold: #FFD700;
-    --travian-green: #228B22;
-    --travian-red: #DC143C;
-    --travian-blue: #0066CC;
-    --travian-gray: #696969;
-    --travian-light-gray: #F5F5F5;
-    --travian-dark-gray: #2F2F2F;
-    --travian-brown: #8B4513;
-    --travian-beige: #F5DEB3;
-    --travian-cream: #FFF8DC;
+  --travian-primary: #8b4513;
+  --travian-secondary: #a0522d;
+  --travian-gold: #ffd700;
+  --travian-green: #228b22;
+  --travian-red: #dc143c;
+  --travian-blue: #0066cc;
+  --travian-gray: #696969;
+  --travian-light-gray: #f5f5f5;
+  --travian-dark-gray: #2f2f2f;
+  --travian-brown: #8b4513;
+  --travian-beige: #f5deb3;
+  --travian-cream: #fff8dc;
 }
 
 /* Travian Background Images */
 .travian-background {
-    background-image: url('/images/travian/travian-page-bg-ltr.jpg');
-    background-repeat: repeat;
-    background-attachment: fixed;
+  background-image: url('/images/travian/travian-page-bg-ltr.jpg');
+  background-repeat: repeat;
+  background-attachment: fixed;
 }
 
 .travian-background-rtl {
-    background-image: url('/images/travian/travian-page-bg-rtl.jpg');
-    background-repeat: repeat;
-    background-attachment: fixed;
+  background-image: url('/images/travian/travian-page-bg-rtl.jpg');
+  background-repeat: repeat;
+  background-attachment: fixed;
 }
 
 /* Travian Header Styles */
 .travian-header {
-    background: url('/images/travian/top_nav_bg.png') repeat-x;
-    background-color: var(--travian-primary);
-    border-bottom: 3px solid var(--travian-gold);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  background: url('/images/travian/top_nav_bg.png') repeat-x;
+  background-color: var(--travian-primary);
+  border-bottom: 3px solid var(--travian-gold);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .travian-header .logo {
-    background: url('/images/travian/logo.png') no-repeat center;
-    background-size: contain;
-    width: 200px;
-    height: 60px;
+  background: url('/images/travian/logo.png') no-repeat center;
+  background-size: contain;
+  width: 200px;
+  height: 60px;
 }
 
 /* Travian Navigation */
 .travian-nav {
-    background: url('/images/travian/nav-bg.png') repeat-x;
-    background-color: var(--travian-dark-gray);
-    border-bottom: 2px solid var(--travian-brown);
+  background: url('/images/travian/nav-bg.png') repeat-x;
+  background-color: var(--travian-dark-gray);
+  border-bottom: 2px solid var(--travian-brown);
 }
 
 .travian-nav a {
-    background: url('/images/travian/button_big-ltr.png') no-repeat center;
-    background-size: contain;
-    color: white;
-    text-decoration: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  background: url('/images/travian/button_big-ltr.png') no-repeat center;
+  background-size: contain;
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .travian-nav a:hover {
-    background: url('/images/travian/button_big-rtl.png') no-repeat center;
-    background-size: contain;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: url('/images/travian/button_big-rtl.png') no-repeat center;
+  background-size: contain;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Travian Resource Bars */
 .travian-resource-bar {
-    background: url('/images/travian/stat_bg.png') repeat-x;
-    background-color: var(--travian-dark-gray);
-    border-bottom: 2px solid var(--travian-brown);
-    padding: 10px 20px;
+  background: url('/images/travian/stat_bg.png') repeat-x;
+  background-color: var(--travian-dark-gray);
+  border-bottom: 2px solid var(--travian-brown);
+  padding: 10px 20px;
 }
 
 .travian-resource-item {
-    background: url('/images/travian/green-btn.png') no-repeat center;
-    background-size: contain;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 15px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    min-width: 120px;
-    color: white;
-    font-weight: bold;
+  background: url('/images/travian/green-btn.png') no-repeat center;
+  background-size: contain;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 120px;
+  color: white;
+  font-weight: bold;
 }
 
 .travian-resource-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: white;
-    font-size: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  font-size: 12px;
 }
 
 .travian-resource-icon.wood {
-    background: var(--travian-brown);
+  background: var(--travian-brown);
 }
 
 .travian-resource-icon.clay {
-    background: #CD853F;
+  background: #cd853f;
 }
 
 .travian-resource-icon.iron {
-    background: #708090;
+  background: #708090;
 }
 
 .travian-resource-icon.crop {
-    background: var(--travian-green);
+  background: var(--travian-green);
 }
 
 /* Travian Building Grid */
 .travian-building-grid {
-    background: url('/images/travian/greenbox/') repeat;
-    background-color: var(--travian-cream);
-    border: 2px solid var(--travian-brown);
-    border-radius: 10px;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 10px;
+  background: url('/images/travian/greenbox/') repeat;
+  background-color: var(--travian-cream);
+  border: 2px solid var(--travian-brown);
+  border-radius: 10px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
 }
 
 .travian-building-slot {
-    aspect-ratio: 1;
-    border: 2px dashed #ccc;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: white;
-    position: relative;
-    overflow: hidden;
+  aspect-ratio: 1;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+  position: relative;
+  overflow: hidden;
 }
 
 .travian-building-slot:hover {
-    border-color: var(--travian-brown);
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border-color: var(--travian-brown);
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .travian-building-slot.occupied {
-    border: 2px solid var(--travian-brown);
-    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  border: 2px solid var(--travian-brown);
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
 }
 
 .travian-building-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid var(--travian-brown);
-    object-fit: cover;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--travian-brown);
+  object-fit: cover;
 }
 
 .travian-building-level {
-    font-size: 12px;
-    font-weight: bold;
-    color: var(--travian-brown);
-    margin-top: 5px;
-    text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--travian-brown);
+  margin-top: 5px;
+  text-align: center;
 }
 
 /* Travian Buttons */
 .travian-btn {
-    background: url('/images/travian/button_big-ltr.png') no-repeat center;
-    background-size: contain;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    cursor: pointer;
+  background: url('/images/travian/button_big-ltr.png') no-repeat center;
+  background-size: contain;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .travian-btn:hover {
-    background: url('/images/travian/button_big-rtl.png') no-repeat center;
-    background-size: contain;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  background: url('/images/travian/button_big-rtl.png') no-repeat center;
+  background-size: contain;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .travian-btn:active {
-    transform: translateY(0);
+  transform: translateY(0);
 }
 
 .travian-btn-secondary {
-    background: url('/images/travian/green-btn.png') no-repeat center;
-    background-size: contain;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    cursor: pointer;
+  background: url('/images/travian/green-btn.png') no-repeat center;
+  background-size: contain;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .travian-btn-secondary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Travian Modals */
 .travian-modal {
-    background: url('/images/travian/popup_bg.png') repeat;
-    background-color: white;
-    border: 3px solid var(--travian-brown);
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  background: url('/images/travian/popup_bg.png') repeat;
+  background-color: white;
+  border: 3px solid var(--travian-brown);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .travian-modal .modal-header {
-    background: url('/images/travian/popup_top.png') no-repeat top;
-    background-color: var(--travian-primary);
-    color: white;
-    padding: 15px 20px;
-    border-bottom: 2px solid var(--travian-gold);
-    border-radius: 10px 10px 0 0;
+  background: url('/images/travian/popup_top.png') no-repeat top;
+  background-color: var(--travian-primary);
+  color: white;
+  padding: 15px 20px;
+  border-bottom: 2px solid var(--travian-gold);
+  border-radius: 10px 10px 0 0;
 }
 
 .travian-modal .modal-footer {
-    background: url('/images/travian/popup_bottom.png') no-repeat bottom;
-    background-color: #f8f8f8;
-    padding: 15px 20px;
-    border-top: 1px solid #ddd;
-    border-radius: 0 0 10px 10px;
+  background: url('/images/travian/popup_bottom.png') no-repeat bottom;
+  background-color: #f8f8f8;
+  padding: 15px 20px;
+  border-top: 1px solid #ddd;
+  border-radius: 0 0 10px 10px;
 }
 
 /* Travian Notifications */
 .travian-notification {
-    background: url('/images/travian/wit_bg.png') repeat;
-    background-color: white;
-    border-left: 4px solid var(--travian-brown);
-    padding: 15px 20px;
-    margin: 10px 0;
-    border-radius: 0 5px 5px 0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: url('/images/travian/wit_bg.png') repeat;
+  background-color: white;
+  border-left: 4px solid var(--travian-brown);
+  padding: 15px 20px;
+  margin: 10px 0;
+  border-radius: 0 5px 5px 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .travian-notification.success {
-    border-left-color: var(--travian-green);
+  border-left-color: var(--travian-green);
 }
 
 .travian-notification.error {
-    border-left-color: var(--travian-red);
+  border-left-color: var(--travian-red);
 }
 
 .travian-notification.warning {
-    border-left-color: var(--travian-gold);
+  border-left-color: var(--travian-gold);
 }
 
 .travian-notification.info {
-    border-left-color: var(--travian-blue);
+  border-left-color: var(--travian-blue);
 }
 
 /* Travian Loading */
 .travian-loading {
-    background: url('/images/travian/loading.gif') no-repeat center;
-    background-size: 20px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 20px;
-    color: var(--travian-brown);
-    font-weight: bold;
+  background: url('/images/travian/loading.gif') no-repeat center;
+  background-size: 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  color: var(--travian-brown);
+  font-weight: bold;
 }
 
 /* Travian World Map */
 .travian-world-map {
-    background: url('/images/travian/') repeat;
-    background-color: var(--travian-green);
-    border: 2px solid var(--travian-brown);
-    border-radius: 10px;
-    position: relative;
-    overflow: hidden;
+  background: url('/images/travian/') repeat;
+  background-color: var(--travian-green);
+  border: 2px solid var(--travian-brown);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
 }
 
 .travian-village-marker {
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
 }
 
 .travian-village-marker:hover {
-    transform: scale(1.2);
-    z-index: 10;
+  transform: scale(1.2);
+  z-index: 10;
 }
 
 .travian-village-icon {
-    border-radius: 50%;
-    border: 2px solid var(--travian-brown);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  border: 2px solid var(--travian-brown);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Travian Arrows */
 .travian-arrow-left {
-    background: url('/images/travian/arrow_prev-ltr.png') no-repeat center;
-    background-size: contain;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
+  background: url('/images/travian/arrow_prev-ltr.png') no-repeat center;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 }
 
 .travian-arrow-right {
-    background: url('/images/travian/arrow_next-ltr.png') no-repeat center;
-    background-size: contain;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
+  background: url('/images/travian/arrow_next-ltr.png') no-repeat center;
+  background-size: contain;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 }
 
 .travian-arrow-left:hover,
 .travian-arrow-right:hover {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 /* Travian Round Buttons */
 .travian-round-btn {
-    background: url('/images/travian/btn_round_next-ltr.png') no-repeat center;
-    background-size: contain;
-    width: 30px;
-    height: 30px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  background: url('/images/travian/btn_round_next-ltr.png') no-repeat center;
+  background-size: contain;
+  width: 30px;
+  height: 30px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .travian-round-btn:hover {
-    background: url('/images/travian/btn_round_next-rtl.png') no-repeat center;
-    background-size: contain;
-    transform: scale(1.1);
+  background: url('/images/travian/btn_round_next-rtl.png') no-repeat center;
+  background-size: contain;
+  transform: scale(1.1);
 }
 
 /* Travian Dividers */
 .travian-divider {
-    background: url('/images/travian/divider.png') repeat-x;
-    height: 2px;
-    margin: 10px 0;
+  background: url('/images/travian/divider.png') repeat-x;
+  height: 2px;
+  margin: 10px 0;
 }
 
 .travian-divider-large {
-    background: url('/images/travian/divider-large.png') repeat-x;
-    height: 4px;
-    margin: 20px 0;
+  background: url('/images/travian/divider-large.png') repeat-x;
+  height: 4px;
+  margin: 20px 0;
 }
 
 /* Travian Status Indicators */
 .travian-status-online {
-    background: url('/images/travian/opened.png') no-repeat center;
-    background-size: contain;
-    width: 16px;
-    height: 16px;
-    display: inline-block;
+  background: url('/images/travian/opened.png') no-repeat center;
+  background-size: contain;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
 }
 
 .travian-status-offline {
-    background: url('/images/travian/closed.png') no-repeat center;
-    background-size: contain;
-    width: 16px;
-    height: 16px;
-    display: inline-block;
+  background: url('/images/travian/closed.png') no-repeat center;
+  background-size: contain;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
 }
 
 /* Travian Gold Elements */
 .travian-gold-top {
-    background: url('/images/travian/gold_top.png') no-repeat top;
-    background-size: contain;
-    height: 20px;
+  background: url('/images/travian/gold_top.png') no-repeat top;
+  background-size: contain;
+  height: 20px;
 }
 
 .travian-gold-middle {
-    background: url('/images/travian/gold_middle.png') repeat-y;
-    background-size: contain;
-    min-height: 40px;
+  background: url('/images/travian/gold_middle.png') repeat-y;
+  background-size: contain;
+  min-height: 40px;
 }
 
 .travian-gold-bottom {
-    background: url('/images/travian/gold_bottom.png') no-repeat bottom;
-    background-size: contain;
-    height: 20px;
+  background: url('/images/travian/gold_bottom.png') no-repeat bottom;
+  background-size: contain;
+  height: 20px;
 }
 
 /* Travian Statistics */
 .travian-stat-bg {
-    background: url('/images/travian/stat_bg.png') repeat;
-    background-color: var(--travian-dark-gray);
-    border: 2px solid var(--travian-brown);
-    border-radius: 5px;
-    padding: 10px;
+  background: url('/images/travian/stat_bg.png') repeat;
+  background-color: var(--travian-dark-gray);
+  border: 2px solid var(--travian-brown);
+  border-radius: 5px;
+  padding: 10px;
 }
 
 .travian-stat-top {
-    background: url('/images/travian/stat_top.png') no-repeat top;
-    background-size: contain;
-    height: 20px;
+  background: url('/images/travian/stat_top.png') no-repeat top;
+  background-size: contain;
+  height: 20px;
 }
 
 .travian-stat-bottom {
-    background: url('/images/travian/stat_bottom.png') no-repeat bottom;
-    background-size: contain;
-    height: 20px;
+  background: url('/images/travian/stat_bottom.png') no-repeat bottom;
+  background-size: contain;
+  height: 20px;
 }
 
 /* Travian News */
 .travian-news-bg {
-    background: url('/images/travian/news_bg.png') repeat;
-    background-color: var(--travian-cream);
-    border: 2px solid var(--travian-brown);
-    border-radius: 5px;
-    padding: 15px;
+  background: url('/images/travian/news_bg.png') repeat;
+  background-color: var(--travian-cream);
+  border: 2px solid var(--travian-brown);
+  border-radius: 5px;
+  padding: 15px;
 }
 
 /* Travian Footer */
 .travian-footer {
-    background: url('/images/travian/footer_bg.png') repeat;
-    background-color: var(--travian-dark-gray);
-    border-top: 2px solid var(--travian-brown);
-    padding: 20px;
-    color: white;
-    text-align: center;
+  background: url('/images/travian/footer_bg.png') repeat;
+  background-color: var(--travian-dark-gray);
+  border-top: 2px solid var(--travian-brown);
+  padding: 20px;
+  color: white;
+  text-align: center;
 }
 
 /* Travian Strip Elements */
 .travian-strip {
-    background: url('/images/travian/strip/') repeat-x;
-    background-color: var(--travian-beige);
-    height: 30px;
-    border: 1px solid var(--travian-brown);
+  background: url('/images/travian/strip/') repeat-x;
+  background-color: var(--travian-beige);
+  height: 30px;
+  border: 1px solid var(--travian-brown);
 }
 
 /* Travian Time Display */
 .travian-time {
-    background: url('/images/travian/stime.png') no-repeat center;
-    background-size: contain;
-    padding: 5px 10px;
-    color: var(--travian-brown);
-    font-weight: bold;
+  background: url('/images/travian/stime.png') no-repeat center;
+  background-size: contain;
+  padding: 5px 10px;
+  color: var(--travian-brown);
+  font-weight: bold;
 }
 
 /* Travian Ticker */
 .travian-ticker {
-    background: url('/images/travian/ticker.gif') repeat-x;
-    background-color: var(--travian-gold);
-    height: 20px;
-    border: 1px solid var(--travian-brown);
+  background: url('/images/travian/ticker.gif') repeat-x;
+  background-color: var(--travian-gold);
+  height: 20px;
+  border: 1px solid var(--travian-brown);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .travian-building-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 5px;
-        padding: 10px;
-    }
+  .travian-building-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    padding: 10px;
+  }
 
-    .travian-resource-item {
-        min-width: 100px;
-        padding: 5px 10px;
-    }
+  .travian-resource-item {
+    min-width: 100px;
+    padding: 5px 10px;
+  }
 
-    .travian-nav a {
-        padding: 8px 12px;
-        font-size: 12px;
-    }
+  .travian-nav a {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 480px) {
-    .travian-building-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .travian-building-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-    .travian-resource-item {
-        min-width: 80px;
-        padding: 5px 8px;
-    }
+  .travian-resource-item {
+    min-width: 80px;
+    padding: 5px 8px;
+  }
 }
 
 /* Travian Animation Classes */
 .travian-fade-in {
-    animation: travianFadeIn 0.5s ease-in;
+  animation: travianFadeIn 0.5s ease-in;
 }
 
 @keyframes travianFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .travian-slide-in {
-    animation: travianSlideIn 0.3s ease-out;
+  animation: travianSlideIn 0.3s ease-out;
 }
 
 @keyframes travianSlideIn {
-    from {
-        transform: translateX(-100%);
-    }
+  from {
+    transform: translateX(-100%);
+  }
 
-    to {
-        transform: translateX(0);
-    }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .travian-bounce-in {
-    animation: travianBounceIn 0.6s ease-out;
+  animation: travianBounceIn 0.6s ease-out;
 }
 
 @keyframes travianBounceIn {
-    0% {
-        transform: scale(0.3);
-        opacity: 0;
-    }
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
 
-    50% {
-        transform: scale(1.05);
-    }
+  50% {
+    transform: scale(1.05);
+  }
 
-    70% {
-        transform: scale(0.9);
-    }
+  70% {
+    transform: scale(0.9);
+  }
 
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* Travian Utility Classes */
 .text-travian-primary {
-    color: var(--travian-primary);
+  color: var(--travian-primary);
 }
 
 .text-travian-secondary {
-    color: var(--travian-secondary);
+  color: var(--travian-secondary);
 }
 
 .text-travian-gold {
-    color: var(--travian-gold);
+  color: var(--travian-gold);
 }
 
 .text-travian-green {
-    color: var(--travian-green);
+  color: var(--travian-green);
 }
 
 .text-travian-red {
-    color: var(--travian-red);
+  color: var(--travian-red);
 }
 
 .text-travian-blue {
-    color: var(--travian-blue);
+  color: var(--travian-blue);
 }
 
 .text-travian-brown {
-    color: var(--travian-brown);
+  color: var(--travian-brown);
 }
 
 .bg-travian-primary {
-    background-color: var(--travian-primary);
+  background-color: var(--travian-primary);
 }
 
 .bg-travian-secondary {
-    background-color: var(--travian-secondary);
+  background-color: var(--travian-secondary);
 }
 
 .bg-travian-gold {
-    background-color: var(--travian-gold);
+  background-color: var(--travian-gold);
 }
 
 .bg-travian-green {
-    background-color: var(--travian-green);
+  background-color: var(--travian-green);
 }
 
 .bg-travian-red {
-    background-color: var(--travian-red);
+  background-color: var(--travian-red);
 }
 
 .bg-travian-blue {
-    background-color: var(--travian-blue);
+  background-color: var(--travian-blue);
 }
 
 .bg-travian-brown {
-    background-color: var(--travian-brown);
+  background-color: var(--travian-brown);
 }
 
 .border-travian-primary {
-    border-color: var(--travian-primary);
+  border-color: var(--travian-primary);
 }
 
 .border-travian-secondary {
-    border-color: var(--travian-secondary);
+  border-color: var(--travian-secondary);
 }
 
 .border-travian-gold {
-    border-color: var(--travian-gold);
+  border-color: var(--travian-gold);
 }
 
 .border-travian-green {
-    border-color: var(--travian-green);
+  border-color: var(--travian-green);
 }
 
 .border-travian-red {
-    border-color: var(--travian-red);
+  border-color: var(--travian-red);
 }
 
 .border-travian-blue {
-    border-color: var(--travian-blue);
+  border-color: var(--travian-blue);
 }
 
 .border-travian-brown {
-    border-color: var(--travian-brown);
+  border-color: var(--travian-brown);
 }
-

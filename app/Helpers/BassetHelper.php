@@ -29,7 +29,7 @@ class BassetHelper
     {
         $assets = self::getCommonAssets();
 
-        if (!isset($assets[$key])) {
+        if (! isset($assets[$key])) {
             throw new \InvalidArgumentException("Asset key '{$key}' not found in common assets.");
         }
 
@@ -45,7 +45,7 @@ class BassetHelper
         $tags = '';
 
         foreach ($keys as $key) {
-            if (!isset($assets[$key])) {
+            if (! isset($assets[$key])) {
                 continue;
             }
 
@@ -77,9 +77,9 @@ class BassetHelper
      */
     public static function getPreconnectTags(): string
     {
-        return '<link rel="preconnect" href="https://fonts.bunny.net">' . "\n"
-            . '<link rel="preconnect" href="https://cdn.jsdelivr.net">' . "\n"
-            . '<link rel="preconnect" href="https://cdnjs.cloudflare.com">' . "\n";
+        return '<link rel="preconnect" href="https://fonts.bunny.net">'."\n"
+            .'<link rel="preconnect" href="https://cdn.jsdelivr.net">'."\n"
+            .'<link rel="preconnect" href="https://cdnjs.cloudflare.com">'."\n";
     }
 
     /**

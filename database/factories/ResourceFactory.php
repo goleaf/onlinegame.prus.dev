@@ -39,7 +39,7 @@ class ResourceFactory extends Factory
      */
     public function wood(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'wood',
             'amount' => $this->faker->numberBetween(5000, 50000),
             'production_rate' => $this->faker->numberBetween(20, 100),
@@ -51,7 +51,7 @@ class ResourceFactory extends Factory
      */
     public function clay(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'clay',
             'amount' => $this->faker->numberBetween(5000, 50000),
             'production_rate' => $this->faker->numberBetween(20, 100),
@@ -63,7 +63,7 @@ class ResourceFactory extends Factory
      */
     public function iron(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'iron',
             'amount' => $this->faker->numberBetween(5000, 50000),
             'production_rate' => $this->faker->numberBetween(20, 100),
@@ -75,7 +75,7 @@ class ResourceFactory extends Factory
      */
     public function crop(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'type' => 'crop',
             'amount' => $this->faker->numberBetween(5000, 50000),
             'production_rate' => $this->faker->numberBetween(20, 100),
@@ -87,7 +87,7 @@ class ResourceFactory extends Factory
      */
     public function lowLevel(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'amount' => $this->faker->numberBetween(1000, 10000),
             'production_rate' => $this->faker->numberBetween(10, 30),
             'storage_capacity' => $this->faker->numberBetween(10000, 50000),
@@ -100,7 +100,7 @@ class ResourceFactory extends Factory
      */
     public function highLevel(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'amount' => $this->faker->numberBetween(50000, 500000),
             'production_rate' => $this->faker->numberBetween(50, 200),
             'storage_capacity' => $this->faker->numberBetween(500000, 2000000),
@@ -128,7 +128,7 @@ class ResourceFactory extends Factory
      */
     public function empty(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'amount' => 0,
         ]);
     }

@@ -19,8 +19,11 @@ class TaskManagerTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $world;
+
     protected $player;
+
     protected $village;
 
     protected function setUp(): void

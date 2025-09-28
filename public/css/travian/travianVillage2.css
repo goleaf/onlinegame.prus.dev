@@ -30,10 +30,18 @@ body.village2 div#center div#contentOuterContainer div.contentTitle {
   z-index: 500;
   border: none;
 }
-body.village2 div#center div#contentOuterContainer div.contentTitle .contentTitleButton {
+body.village2
+  div#center
+  div#contentOuterContainer
+  div.contentTitle
+  .contentTitleButton {
   display: none;
 }
-body.village2 div#center div#contentOuterContainer div.contentTitle .contentTitleButton#answersButton {
+body.village2
+  div#center
+  div#contentOuterContainer
+  div.contentTitle
+  .contentTitleButton#answersButton {
   display: inline-block;
 }
 body.village2 div#center div#contentOuterContainer div.contentFooter {
@@ -53,7 +61,8 @@ div.village2 table {
   line-height: 19px;
   background: none;
 }
-div.village2 table th, div.village2 table td {
+div.village2 table th,
+div.village2 table td {
   padding: 0;
   background: none;
 }

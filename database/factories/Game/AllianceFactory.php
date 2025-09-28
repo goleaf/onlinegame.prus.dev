@@ -24,7 +24,7 @@ class AllianceFactory extends Factory
         return [
             'world_id' => World::factory(),
             'tag' => strtoupper($this->faker->lexify('???')),
-            'name' => $this->faker->company() . ' Alliance',
+            'name' => $this->faker->company().' Alliance',
             'description' => $this->faker->paragraph(),
             'leader_id' => Player::factory(),
             'points' => $this->faker->numberBetween(1000, 100000),
@@ -39,7 +39,7 @@ class AllianceFactory extends Factory
      */
     public function inactive(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => false,
         ]);
     }
@@ -49,7 +49,7 @@ class AllianceFactory extends Factory
      */
     public function world($worldId): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'world_id' => $worldId,
         ]);
     }

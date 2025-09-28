@@ -30,7 +30,7 @@ div.reports #reportWrapper .animalReport .animalHeader .headline .to {
 }
 
 div.reports #reportWrapper .animalReport {
-  border: solid 1px #DFC495;
+  border: solid 1px #dfc495;
   border-top: none;
 }
 div.reports #reportWrapper .animalReport .animalHeader .headline .from,
@@ -40,7 +40,7 @@ div.reports #reportWrapper .animalReport .animalHeader .headline .to {
   position: relative;
   text-transform: uppercase;
   font-size: 1.5em;
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 div.reports #reportWrapper .animalReport .animalHeader .headline .from {
   z-index: 2;
@@ -65,13 +65,25 @@ div.reports #reportWrapper .animalReport .animalHeader .headline {
   grid-template-columns: 1fr 150px;
 }
 div.reports #reportWrapper .animalReport .animalHeader .headline .from {
-  background-color: #8CB1C8;
+  background-color: #8cb1c8;
 }
-div.reports #reportWrapper .animalReport .animalHeader .headline .from .tribeIcon {
+div.reports
+  #reportWrapper
+  .animalReport
+  .animalHeader
+  .headline
+  .from
+  .tribeIcon {
   position: absolute;
   left: 0;
 }
-div.reports #reportWrapper .animalReport .animalHeader .headline .from .roleIcon {
+div.reports
+  #reportWrapper
+  .animalReport
+  .animalHeader
+  .headline
+  .from
+  .roleIcon {
   position: absolute;
   width: 40px;
   height: 46px;
@@ -83,13 +95,13 @@ div.reports #reportWrapper .animalReport .animalHeader .headline .to {
   background-color: #6a9ab8;
 }
 div.reports #reportWrapper .animalReport .animalHeader .headline .to svg {
-  fill: #8CB1C8;
+  fill: #8cb1c8;
 }
 div.reports #reportWrapper .animalReport .animalHeader .participants {
   font-size: 15px;
-  background-color: #FCF2DA;
-  border-top: solid 1px #DFC495;
-  border-bottom: solid 1px #DFC495;
+  background-color: #fcf2da;
+  border-top: solid 1px #dfc495;
+  border-bottom: solid 1px #dfc495;
   padding: 8px 10px;
 }
 .rtl div.reports #reportWrapper .animalReport .animalHeader .participants {
@@ -99,5 +111,5 @@ div.reports #reportWrapper .animalReport .troopHeadline {
   display: none;
 }
 div.reports #reportWrapper .animalReport #trade {
-  border: solid 1px #DFC495;
+  border: solid 1px #dfc495;
 }

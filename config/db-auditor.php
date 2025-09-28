@@ -1,4 +1,5 @@
 <?php
+
 // config for Vcian/LaravelDbAuditor
 
 return [
@@ -24,5 +25,5 @@ return [
         'jobs',
         'queue_job',
         'queue_failed_jobs',
-    ]
+    ],
 ];

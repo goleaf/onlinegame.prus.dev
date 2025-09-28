@@ -61,7 +61,8 @@
 .resourceWrapper .resource:last-child {
   margin-right: 0;
 }
-.resourceWrapper .resources i, .resourceWrapper .resources a,
+.resourceWrapper .resources i,
+.resourceWrapper .resources a,
 .resourceWrapper .resource i,
 .resourceWrapper .resource a {
   -ms-grid-column: 1;

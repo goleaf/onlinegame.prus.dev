@@ -13,26 +13,36 @@
 /*** RESOURCES ** */
 /* die Toolbar welche in der Map mit enthalten ist */
 #mapContainer .toolbar {
-  color: #F2F2F2;
+  color: #f2f2f2;
   position: absolute;
   z-index: 1998;
 }
 
 /* Allgemeines aussehn mit runden ecken und co */
-#mapContainer .toolbar .tl, #mapContainer .toolbar .tc, #mapContainer .toolbar .tr,
-#mapContainer .toolbar .ml, #mapContainer .toolbar .mc, #mapContainer .toolbar .mr,
-#mapContainer .toolbar .bl, #mapContainer .toolbar .bc, #mapContainer .toolbar .br {
+#mapContainer .toolbar .tl,
+#mapContainer .toolbar .tc,
+#mapContainer .toolbar .tr,
+#mapContainer .toolbar .ml,
+#mapContainer .toolbar .mc,
+#mapContainer .toolbar .mr,
+#mapContainer .toolbar .bl,
+#mapContainer .toolbar .bc,
+#mapContainer .toolbar .br {
   background-color: transparent;
   background-position: left top;
 }
 
-#mapContainer .toolbar .tc, #mapContainer .toolbar .mc, #mapContainer .toolbar .bc {
+#mapContainer .toolbar .tc,
+#mapContainer .toolbar .mc,
+#mapContainer .toolbar .bc {
   margin-left: 4px;
   margin-right: 4px;
   width: auto;
 }
 
-#mapContainer .toolbar .tl, #mapContainer .toolbar .tc, #mapContainer .toolbar .tr {
+#mapContainer .toolbar .tl,
+#mapContainer .toolbar .tc,
+#mapContainer .toolbar .tr {
   height: 4px;
 }
 
@@ -68,7 +78,9 @@
   background-repeat: repeat-y;
 }
 
-#mapContainer .toolbar .bl, #mapContainer .toolbar .bc, #mapContainer .toolbar .br {
+#mapContainer .toolbar .bl,
+#mapContainer .toolbar .bc,
+#mapContainer .toolbar .br {
   height: 4px;
 }
 
@@ -169,7 +181,7 @@
 }
 
 #mapContainer .toolbar .dropdown .dataContainer .entry.selected {
-  background-color: #61AE56;
+  background-color: #61ae56;
 }
 
 #mapContainer .toolbar .dropdown .dataContainer .entry:hover {

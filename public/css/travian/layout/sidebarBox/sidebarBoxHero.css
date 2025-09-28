@@ -23,7 +23,7 @@ div.sidebar div#sidebarBoxHero .heroImageButton {
   width: 107px;
 }
 div.sidebar div#sidebarBoxHero .heroImageButton:before {
-  content: "";
+  content: '';
   position: absolute;
   top: 12px;
   right: 15px;
@@ -40,7 +40,7 @@ div.sidebar div#sidebarBoxHero .heroImageButton .heroImage {
   z-index: 2;
 }
 div.sidebar div#sidebarBoxHero .heroImageButton:not(.background):after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: 0;
@@ -88,8 +88,8 @@ div.sidebar div#sidebarBoxHero .heroXpBarBox {
   height: 10px;
   margin: 10px 0 10px 23px;
   padding: 1px;
-  background-color: #FEF0CE;
-  border: 1px solid #A6A6A6;
+  background-color: #fef0ce;
+  border: 1px solid #a6a6a6;
   border-radius: 3px;
 }
 div.sidebar div#sidebarBoxHero .heroHealthBarBox a,
@@ -106,7 +106,7 @@ div.sidebar div#sidebarBoxHero .heroXpBarBox .bar {
   height: 6px;
 }
 div.sidebar div#sidebarBoxHero .heroHealthBarBox.regeneration .bar {
-  background-color: #F88C1F;
+  background-color: #f88c1f;
 }
 div.sidebar div#sidebarBoxHero .heroXpBarBox .iExperience {
   width: 16px;

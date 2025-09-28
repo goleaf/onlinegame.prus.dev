@@ -9,11 +9,17 @@ use Livewire\Component;
 class DefenseCalculator extends Component
 {
     public $villageId;
+
     public $village;
+
     public $defenseReport;
+
     public $recommendations;
+
     public $selectedBuilding = '';
+
     public $buildingLevel = 1;
+
     public $simulationResults = [];
 
     protected $defenseService;
@@ -40,7 +46,7 @@ class DefenseCalculator extends Component
 
     public function calculateDefense()
     {
-        if (!$this->village) {
+        if (! $this->village) {
             return;
         }
 
@@ -50,7 +56,7 @@ class DefenseCalculator extends Component
 
     public function simulateBuildingUpgrade()
     {
-        if (!$this->village || !$this->selectedBuilding) {
+        if (! $this->village || ! $this->selectedBuilding) {
             return;
         }
 
@@ -60,7 +66,7 @@ class DefenseCalculator extends Component
         $currentBuilding = $this
             ->village
             ->buildings()
-            ->whereHas('buildingType', function ($query) {
+            ->whereHas('buildingType', function ($query): void {
                 $query->where('key', $this->selectedBuilding);
             })
             ->first();

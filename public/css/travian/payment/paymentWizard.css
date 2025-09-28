@@ -116,7 +116,7 @@ div#paymentWizard .header .tabButton .text {
   font-weight: bold;
   font-size: 14px;
   line-height: 34px;
-  color: #F9F9F9;
+  color: #f9f9f9;
   overflow: visible;
   padding-left: 9px;
   padding-right: 9px;
@@ -645,7 +645,7 @@ div#paymentWizard .providerLink .boxes.paymentProvider .boxes-mr {
 
 div#paymentWizard .providerLink .boxes.paymentProvider .boxes-mc {
   background: none;
-  background-color: #FBF8EC;
+  background-color: #fbf8ec;
 }
 
 /**
@@ -679,7 +679,7 @@ div#paymentWizard .providerLink:hover .boxes.paymentProvider .boxes-bc {
 
 div#paymentWizard .providerLink:hover .boxes.paymentProvider .boxes-mc {
   background: none;
-  background-color: #F8F1D0;
+  background-color: #f8f1d0;
 }
 
 /**
@@ -713,7 +713,7 @@ div#paymentWizard .providerLink:active .boxes.paymentProvider .boxes-bc {
 
 div#paymentWizard .providerLink:active .boxes.paymentProvider .boxes-mc {
   background: none;
-  background-color: #EDE5BE;
+  background-color: #ede5be;
 }
 
 /**
@@ -748,7 +748,7 @@ div#paymentWizard .providerLink.inactive .boxes.paymentProvider .boxes-bc {
 
 div#paymentWizard .providerLink.inactive .boxes.paymentProvider .boxes-mc {
   background: none;
-  background-color: #D9D5C1;
+  background-color: #d9d5c1;
 }
 
 div#paymentWizard .paymentWizard .providerLink .providerContent {
@@ -758,7 +758,7 @@ div#paymentWizard .paymentWizard .providerLink .providerContent {
 
 div#paymentWizard .paymentWizard .providerLink .selectedGoldPacket {
   left: 1px;
-  border-right: 1px solid #BBB49C;
+  border-right: 1px solid #bbb49c;
 }
 
 div#paymentWizard .paymentWizard .providerLink .boxes.paymentProvider .boxes-tl,
@@ -766,27 +766,59 @@ div#paymentWizard .paymentWizard .providerLink .boxes.paymentProvider .boxes-tr,
 div#paymentWizard .paymentWizard .providerLink .boxes.paymentProvider .boxes-tc,
 div#paymentWizard .paymentWizard .providerLink .boxes.paymentProvider .boxes-bl,
 div#paymentWizard .paymentWizard .providerLink .boxes.paymentProvider .boxes-br,
-div#paymentWizard .paymentWizard .providerLink .boxes.paymentProvider .boxes-bc {
+div#paymentWizard
+  .paymentWizard
+  .providerLink
+  .boxes.paymentProvider
+  .boxes-bc {
   background-image: url('../../img_ltr/paymentWizard/providerBorders-ltr.png');
 }
 
 div#paymentWizard .paymentWizard .providerLink .boxes.paymentProvider .boxes-ml,
-div#paymentWizard .paymentWizard .providerLink .boxes.paymentProvider .boxes-mr {
+div#paymentWizard
+  .paymentWizard
+  .providerLink
+  .boxes.paymentProvider
+  .boxes-mr {
   background-image: url('../../img_ltr/paymentWizard/providerBordersVerticalActive-ltr.png');
 }
 
-div#paymentWizard .paymentWizard .providerLink:hover .boxes.paymentProvider .boxes-ml,
-div#paymentWizard .paymentWizard .providerLink:hover .boxes.paymentProvider .boxes-mr {
+div#paymentWizard
+  .paymentWizard
+  .providerLink:hover
+  .boxes.paymentProvider
+  .boxes-ml,
+div#paymentWizard
+  .paymentWizard
+  .providerLink:hover
+  .boxes.paymentProvider
+  .boxes-mr {
   background-image: url('../../img_ltr/paymentWizard/providerBordersVerticalHover-ltr.png');
 }
 
-div#paymentWizard .paymentWizard .providerLink:active .boxes.paymentProvider .boxes-ml,
-div#paymentWizard .paymentWizard .providerLink:active .boxes.paymentProvider .boxes-mr {
+div#paymentWizard
+  .paymentWizard
+  .providerLink:active
+  .boxes.paymentProvider
+  .boxes-ml,
+div#paymentWizard
+  .paymentWizard
+  .providerLink:active
+  .boxes.paymentProvider
+  .boxes-mr {
   background-image: url('../../img_ltr/paymentWizard/providerBordersVerticalDown-ltr.png');
 }
 
-div#paymentWizard .paymentWizard .providerLink.inactive .boxes.paymentProvider .boxes-ml,
-div#paymentWizard .paymentWizard .providerLink.inactive .boxes.paymentProvider .boxes-mr {
+div#paymentWizard
+  .paymentWizard
+  .providerLink.inactive
+  .boxes.paymentProvider
+  .boxes-ml,
+div#paymentWizard
+  .paymentWizard
+  .providerLink.inactive
+  .boxes.paymentProvider
+  .boxes-mr {
   background-image: url('../../img_ltr/paymentWizard/providerBordersVerticalInactive-ltr.png');
 }
 
@@ -798,8 +830,8 @@ div#paymentWizard.plusSupport,
 div#paymentWizard.earnGold {
   font-size: 13px;
 }
-.rtl div#paymentWizard.plusSupport, .rtl
-div#paymentWizard.earnGold {
+.rtl div#paymentWizard.plusSupport,
+.rtl div#paymentWizard.earnGold {
   font-size: 14px;
 }
 
@@ -892,11 +924,11 @@ div#paymentWizard.earnGold .contentArea .roundedContentBox h5 {
 }
 
 div#paymentWizard.earnGold .contentArea .roundedContentBox.red h5 {
-  color: #D40000;
+  color: #d40000;
 }
 
 div#paymentWizard.earnGold .contentArea .roundedContentBox.red .boxContent {
-  color: #D40000;
+  color: #d40000;
 }
 
 div#paymentWizard.earnGold .contentArea .buttonLine,
@@ -922,7 +954,7 @@ div#paymentWizard.earnGold .contentArea .messageLine {
 }
 
 div#paymentWizard.earnGold .contentArea .messageLine .green {
-  color: #99C01A;
+  color: #99c01a;
 }
 
 div#paymentWizard .contentArea .roundedContentBox {
@@ -1003,7 +1035,7 @@ div#paymentWizard.earnGold .roundedContentBox .boxes-bc {
 div#paymentWizard.plusSupport .roundedContentBox .boxes-mc,
 div#paymentWizard.earnGold .roundedContentBox .boxes-mc {
   background: none;
-  background-color: #F8F1D0;
+  background-color: #f8f1d0;
 }
 
 div#paymentWizard.plusSupport .roundedContentBox .boxes-mr,
@@ -1015,8 +1047,8 @@ div#paymentWizard table,
 div#paymentWizard tr,
 div#paymentWizard td {
   border-collapse: collapse;
-  background-color: #F8F1D0;
-  border: 1px solid #AD9251;
+  background-color: #f8f1d0;
+  border: 1px solid #ad9251;
   text-align: center;
 }
 
@@ -1024,9 +1056,9 @@ div#paymentWizard table thead,
 div#paymentWizard table thead tr,
 div#paymentWizard table thead td,
 div#paymentWizard table thead th {
-  background-color: #99C01A;
+  background-color: #99c01a;
   border: 1px solid #646464;
-  color: #F2F2F2;
+  color: #f2f2f2;
   font-weight: bold;
 }
 
@@ -1125,14 +1157,14 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
 #paymentWizardContainer #paymentWizard .infoArea {
   width: 245px;
   padding: 10px;
-  border: solid 1px #CCBB8F;
+  border: solid 1px #ccbb8f;
   border-radius: 5px;
 }
 
 #paymentWizardContainer #paymentWizard .contentArea {
   width: 578px;
   padding: 10px;
-  border: solid 1px #CCBB8F;
+  border: solid 1px #ccbb8f;
   border-radius: 5px;
 }
 
@@ -1170,7 +1202,8 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   font-size: 15px;
 }
 
-.headerPlayerInfo .accountBalance, div#paymentWizard .accountBalance.v2 {
+.headerPlayerInfo .accountBalance,
+div#paymentWizard .accountBalance.v2 {
   position: relative;
   top: 0;
   margin-left: 10px;
@@ -1180,8 +1213,8 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   width: 100%;
   min-height: 250px;
   box-sizing: border-box;
-  border-top: solid 3px #DDD9CE;
-  border-bottom: solid 3px #DDD9CE;
+  border-top: solid 3px #ddd9ce;
+  border-bottom: solid 3px #ddd9ce;
   padding: 6px 10px 0;
   margin-bottom: 10px;
 }
@@ -1277,7 +1310,7 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
 
 #paymentWizardContainer #paymentWizard #packageSlider .package,
 #smallestPackageData .package {
-  border: solid 3px #DDD9CE;
+  border: solid 3px #ddd9ce;
   margin-left: 10px;
   background-color: #faf5e1;
   position: relative;
@@ -1337,7 +1370,11 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   pointer-events: none;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .productsPage .package:nth-child(2) {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .productsPage
+  .package:nth-child(2) {
   margin-left: 0 !important;
 }
 
@@ -1346,7 +1383,7 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
 }
 
 #paymentWizardContainer #paymentWizard #packageSlider .package.selected {
-  box-shadow: 0 0 5px #0AB507;
+  box-shadow: 0 0 5px #0ab507;
   border-color: rgba(10, 181, 7, 0.38);
   cursor: default;
 }
@@ -1364,7 +1401,11 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   z-index: 1;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .goldProductImageWrapper img,
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .goldProductImageWrapper
+  img,
 #smallestPackageData .package .goldProductImageWrapper img {
   max-width: 100%;
 }
@@ -1378,74 +1419,146 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   height: 100%;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .goldProductTextWrapper .goldUnits,
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .goldProductTextWrapper
+  .goldUnits,
 #smallestPackageData .package .goldProductTextWrapper .goldUnits {
   padding-top: 15px;
   font-size: 38px;
   line-height: 30px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size1 .goldProductTextWrapper .goldUnits,
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size1
+  .goldProductTextWrapper
+  .goldUnits,
 #smallestPackageData .package.size1 .goldProductTextWrapper .goldUnits {
   font-size: 38px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size2 .goldProductTextWrapper .goldUnits {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size2
+  .goldProductTextWrapper
+  .goldUnits {
   font-size: 36px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size3 .goldProductTextWrapper .goldUnits {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size3
+  .goldProductTextWrapper
+  .goldUnits {
   font-size: 34px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size4 .goldProductTextWrapper .goldUnits {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size4
+  .goldProductTextWrapper
+  .goldUnits {
   font-size: 32px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size5 .goldProductTextWrapper .goldUnits {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size5
+  .goldProductTextWrapper
+  .goldUnits {
   font-size: 30px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size6 .goldProductTextWrapper .goldUnits {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size6
+  .goldProductTextWrapper
+  .goldUnits {
   font-size: 28px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .goldProductTextWrapper .goldUnitsTypeText,
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .goldProductTextWrapper
+  .goldUnitsTypeText,
 #smallestPackageData .package .goldProductTextWrapper .goldUnitsTypeText {
   font-size: 22px;
   padding-top: 15px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size1 .goldProductTextWrapper .goldUnitsTypeText {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size1
+  .goldProductTextWrapper
+  .goldUnitsTypeText {
   font-size: 22px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size2 .goldProductTextWrapper .goldUnitsTypeText {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size2
+  .goldProductTextWrapper
+  .goldUnitsTypeText {
   font-size: 20px;
   padding-top: 14px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size3 .goldProductTextWrapper .goldUnitsTypeText {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size3
+  .goldProductTextWrapper
+  .goldUnitsTypeText {
   font-size: 18px;
   padding-top: 11px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size4 .goldProductTextWrapper .goldUnitsTypeText {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size4
+  .goldProductTextWrapper
+  .goldUnitsTypeText {
   font-size: 16px;
   padding-top: 9px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size5 .goldProductTextWrapper .goldUnitsTypeText {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size5
+  .goldProductTextWrapper
+  .goldUnitsTypeText {
   font-size: 14px;
   padding-top: 7px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size6 .goldProductTextWrapper .goldUnitsTypeText {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size6
+  .goldProductTextWrapper
+  .goldUnitsTypeText {
   font-size: 12px;
   padding-top: 4px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .goldProductTextWrapper .footerLine,
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .goldProductTextWrapper
+  .footerLine,
 #smallestPackageData .package .goldProductTextWrapper .footerLine {
   width: 100%;
   position: absolute;
@@ -1453,27 +1566,57 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   font-size: 16px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size1 .goldProductTextWrapper .footerLine {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size1
+  .goldProductTextWrapper
+  .footerLine {
   font-size: 16px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size2 .goldProductTextWrapper .footerLine {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size2
+  .goldProductTextWrapper
+  .footerLine {
   font-size: 15px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size3 .goldProductTextWrapper .footerLine {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size3
+  .goldProductTextWrapper
+  .footerLine {
   font-size: 14px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size4 .goldProductTextWrapper .footerLine {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size4
+  .goldProductTextWrapper
+  .footerLine {
   font-size: 13px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size5 .goldProductTextWrapper .footerLine {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size5
+  .goldProductTextWrapper
+  .footerLine {
   font-size: 12px;
 }
 
-#paymentWizardContainer #paymentWizard #packageSlider .package.size6 .goldProductTextWrapper .footerLine {
+#paymentWizardContainer
+  #paymentWizard
+  #packageSlider
+  .package.size6
+  .goldProductTextWrapper
+  .footerLine {
   font-size: 11px;
 }
 
@@ -1498,7 +1641,10 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   z-index: 2;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .slidingContentOuter {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .slidingContentOuter {
   margin-left: 40px;
   width: 454px;
   height: 170px;
@@ -1507,7 +1653,10 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   padding-bottom: 4px;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .slidingContentInner {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .slidingContentInner {
   width: 99999%;
 }
 
@@ -1518,11 +1667,17 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   float: left;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .methodsPage.visible {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .methodsPage.visible {
   opacity: 1;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .methodsPage.hidden {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .methodsPage.hidden {
   opacity: 0;
   cursor: default;
   pointer-events: none;
@@ -1534,7 +1689,7 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   float: left;
   margin-bottom: 23px;
   margin-left: 5px;
-  border: solid 3px #DDD9CE;
+  border: solid 3px #ddd9ce;
   background-color: #faf5e1;
   transition-duration: 500ms;
   text-align: center;
@@ -1551,20 +1706,29 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   box-shadow: 0 0 5px #b3b3b3;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .methodItem.selected {
-  box-shadow: 0 0 5px #0AB507;
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .methodItem.selected {
+  box-shadow: 0 0 5px #0ab507;
   border-color: rgba(10, 181, 7, 0.38);
   cursor: default;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .methodItem.inactive {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .methodItem.inactive {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .methodItem.defect {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .methodItem.defect {
   opacity: 0.5;
-  box-shadow: 0 0 50px #B52828 inset;
+  box-shadow: 0 0 50px #b52828 inset;
   cursor: not-allowed;
 }
 
@@ -1575,7 +1739,10 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   cursor: pointer;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .slideArea.inactive {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .slideArea.inactive {
   cursor: default;
 }
 
@@ -1587,27 +1754,51 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   margin-top: -22px;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .slideArea .arrowL {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .slideArea
+  .arrowL {
   background: url('../../img_ltr/layout/arrowL-ltr.png') no-repeat 0 -44px;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .slideArea .arrowR {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .slideArea
+  .arrowR {
   background: url('../../img_ltr/layout/arrowR-ltr.png') no-repeat 0 -44px;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .slideArea:hover div {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .slideArea:hover
+  div {
   opacity: 0.8;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .slideArea.inactive:hover div {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .slideArea.inactive:hover
+  div {
   opacity: 1;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .slideArea:active div {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .slideArea:active
+  div {
   opacity: 1;
 }
 
-#paymentWizardContainer #paymentWizard #paymentMethodsSlider .slideArea.inactive div {
+#paymentWizardContainer
+  #paymentWizard
+  #paymentMethodsSlider
+  .slideArea.inactive
+  div {
   background-position: 0 0;
 }
 
@@ -1623,14 +1814,14 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   padding-left: 15px;
   padding-right: 9px;
   position: relative;
-  border-left: solid 3px #DDD9CE;
+  border-left: solid 3px #ddd9ce;
 }
 
 #paymentWizardContainer #paymentWizard #overview .resultBox {
   width: 100%;
   min-height: 173px;
   padding: 10px;
-  border: solid 3px #DDD9CE;
+  border: solid 3px #ddd9ce;
   background-color: #faf5e1;
   margin: 0 auto;
   box-sizing: border-box;
@@ -1658,9 +1849,13 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   padding-bottom: 30px;
 }
 
-#paymentWizardContainer #paymentWizard #overview .resultBox tr:nth-last-of-type(2) {
-  border-top: solid 2px #DDD9CE;
-  border-bottom: solid 2px #DDD9CE;
+#paymentWizardContainer
+  #paymentWizard
+  #overview
+  .resultBox
+  tr:nth-last-of-type(2) {
+  border-top: solid 2px #ddd9ce;
+  border-bottom: solid 2px #ddd9ce;
 }
 
 #paymentWizardContainer #paymentWizard #overview .resultBox tr:last-of-type td {
@@ -1678,12 +1873,12 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   position: relative;
   padding: 0 10px 0;
   box-sizing: border-box;
-  border-right: solid 3px #DDD9CE;
+  border-right: solid 3px #ddd9ce;
 }
 
 #paymentWizardContainer #paymentWizard #phonePackages .package,
 #paymentWizardContainer #paymentWizard #vouchers .package {
-  border: solid 3px #DDD9CE;
+  border: solid 3px #ddd9ce;
   float: left;
   background-color: #faf5e1;
   position: relative;
@@ -1706,7 +1901,7 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
 
 #paymentWizardContainer #paymentWizard #phonePackages .package.selected,
 #paymentWizardContainer #paymentWizard #vouchers .package.selected {
-  box-shadow: 0 0 5px #0AB507;
+  box-shadow: 0 0 5px #0ab507;
   border-color: rgba(10, 181, 7, 0.38);
   cursor: default;
 }
@@ -1718,7 +1913,11 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   position: absolute;
 }
 
-#paymentWizardContainer #paymentWizard #phonePackages .goldProductImageWrapper img {
+#paymentWizardContainer
+  #paymentWizard
+  #phonePackages
+  .goldProductImageWrapper
+  img {
   max-width: 51px;
   max-height: 51px;
   margin-top: 8px;
@@ -1741,18 +1940,30 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   z-index: 2;
 }
 
-#paymentWizardContainer #paymentWizard #phonePackages .goldProductTextWrapper .goldUnits {
+#paymentWizardContainer
+  #paymentWizard
+  #phonePackages
+  .goldProductTextWrapper
+  .goldUnits {
   padding-top: 0;
   font-size: 25px;
   line-height: 25px;
 }
 
-#paymentWizardContainer #paymentWizard #phonePackages .goldProductTextWrapper .goldUnitsTypeText {
+#paymentWizardContainer
+  #paymentWizard
+  #phonePackages
+  .goldProductTextWrapper
+  .goldUnitsTypeText {
   font-size: 15px;
   padding-top: 0;
 }
 
-#paymentWizardContainer #paymentWizard #phonePackages .goldProductTextWrapper .footerLine {
+#paymentWizardContainer
+  #paymentWizard
+  #phonePackages
+  .goldProductTextWrapper
+  .footerLine {
   font-size: 10px;
   word-break: break-all;
   font-weight: bold;
@@ -1771,9 +1982,21 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   margin-left: 5px;
 }
 
-#paymentWizardContainer #paymentWizard #vouchers .goldProductTextWrapper .goldUnits,
-#paymentWizardContainer #paymentWizard #vouchers .goldProductTextWrapper .goldUnitsTypeText,
-#paymentWizardContainer #paymentWizard #vouchers .goldProductTextWrapper .footerLine {
+#paymentWizardContainer
+  #paymentWizard
+  #vouchers
+  .goldProductTextWrapper
+  .goldUnits,
+#paymentWizardContainer
+  #paymentWizard
+  #vouchers
+  .goldProductTextWrapper
+  .goldUnitsTypeText,
+#paymentWizardContainer
+  #paymentWizard
+  #vouchers
+  .goldProductTextWrapper
+  .footerLine {
   display: none;
 }
 
@@ -1788,7 +2011,7 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
   width: 100%;
   min-height: 467px;
   padding: 10px;
-  border: solid 1px #CCBB8F;
+  border: solid 1px #ccbb8f;
   border-radius: 5px;
   box-sizing: border-box;
 }
@@ -1796,7 +2019,7 @@ div#paymentWizard .feature .dynamicContent .highlightArrow {
 #paymentWizardContainer #paymentWizard .spaceBorder {
   width: 100%;
   height: 1px;
-  border-top: solid 3px #DDD9CE;
+  border-top: solid 3px #ddd9ce;
   margin-top: 10px;
   margin-bottom: 6px;
 }

@@ -2,11 +2,9 @@
 
 namespace App\Livewire\Game;
 
-use Aliziodev\LaravelTaxonomy\Facades\Taxonomy;
 use App\Models\Game\Player;
 use App\Models\Game\Technology;
 use App\Models\Game\Village;
-use App\Services\QueryOptimizationService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
@@ -21,34 +19,63 @@ class TechnologyManager extends Component
     public $village;
 
     public $technologies = [];
+
     public $availableTechnologies = [];
+
     public $researchedTechnologies = [];
+
     public $researchQueue = [];
+
     public $selectedTechnology = null;
+
     public $notifications = [];
+
     public $isLoading = false;
+
     public $realTimeUpdates = true;
+
     public $autoRefresh = true;
+
     public $refreshInterval = 20;
+
     public $gameSpeed = 1;
+
     public $showDetails = false;
+
     public $selectedTechnologyId = null;
+
     public $filterByCategory = null;
+
     public $filterByLevel = null;
+
     public $filterByStatus = null;
+
     public $sortBy = 'name';
+
     public $sortOrder = 'asc';
+
     public $searchQuery = '';
+
     public $showOnlyAvailable = false;
+
     public $showOnlyResearched = false;
+
     public $showOnlyResearching = false;
+
     public $technologyStats = [];
+
     public $researchProgress = [];
+
     public $researchHistory = [];
+
     public $technologyTree = [];
+
     public $researchCosts = [];
+
     public $researchBenefits = [];
+
     public $technologyCategories = [];
+
     public $researchPriorities = ['low', 'medium', 'high', 'critical'];
 
     protected $listeners = [
@@ -68,7 +95,7 @@ class TechnologyManager extends Component
                 ->findOrFail($villageId);
         } else {
             $player = Player::where('user_id', Auth::id())
-                ->with(['villages' => function ($query) {
+                ->with(['villages' => function ($query): void {
                     $query
                         ->withStats()
                         ->with(['resources:id,village_id,wood,clay,iron,crop']);
@@ -150,7 +177,7 @@ class TechnologyManager extends Component
 
             $this->addNotification('Technology data loaded successfully', 'success');
         } catch (\Exception $e) {
-            $this->addNotification('Failed to load technology data: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to load technology data: '.$e->getMessage(), 'error');
         } finally {
             $this->isLoading = false;
         }
@@ -172,14 +199,14 @@ class TechnologyManager extends Component
 
     public function toggleDetails()
     {
-        $this->showDetails = !$this->showDetails;
+        $this->showDetails = ! $this->showDetails;
     }
 
     public function startResearch($technologyId)
     {
         $technology = Technology::find($technologyId);
 
-        if (!$technology) {
+        if (! $technology) {
             $this->addNotification('Technology not found', 'error');
 
             return;
@@ -198,14 +225,14 @@ class TechnologyManager extends Component
         }
 
         // Check prerequisites
-        if (!$this->checkPrerequisites($technology)) {
+        if (! $this->checkPrerequisites($technology)) {
             $this->addNotification('Technology prerequisites not met', 'error');
 
             return;
         }
 
         // Check resources
-        if (!$this->checkResources($technology)) {
+        if (! $this->checkResources($technology)) {
             $this->addNotification('Insufficient resources for research', 'error');
 
             return;
@@ -232,7 +259,7 @@ class TechnologyManager extends Component
                 'player_id' => $this->village->player_id,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to start research: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to start research: '.$e->getMessage(), 'error');
         }
     }
 
@@ -240,7 +267,7 @@ class TechnologyManager extends Component
     {
         $research = $this->village->player->technologies()->where('technology_id', $technologyId)->first();
 
-        if (!$research) {
+        if (! $research) {
             $this->addNotification('Research not found', 'error');
 
             return;
@@ -269,7 +296,7 @@ class TechnologyManager extends Component
                 'player_id' => $this->village->player_id,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to cancel research: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to cancel research: '.$e->getMessage(), 'error');
         }
     }
 
@@ -277,7 +304,7 @@ class TechnologyManager extends Component
     {
         $research = $this->village->player->technologies()->where('technology_id', $technologyId)->first();
 
-        if (!$research) {
+        if (! $research) {
             $this->addNotification('Research not found', 'error');
 
             return;
@@ -315,7 +342,7 @@ class TechnologyManager extends Component
                 'player_id' => $this->village->player_id,
             ]);
         } catch (\Exception $e) {
-            $this->addNotification('Failed to complete research: ' . $e->getMessage(), 'error');
+            $this->addNotification('Failed to complete research: '.$e->getMessage(), 'error');
         }
     }
 
@@ -324,7 +351,7 @@ class TechnologyManager extends Component
         $prerequisites = json_decode($technology->prerequisites, true) ?? [];
 
         foreach ($prerequisites as $prerequisite) {
-            if (!$this->checkPrerequisite($prerequisite)) {
+            if (! $this->checkPrerequisite($prerequisite)) {
                 return false;
             }
         }
@@ -362,7 +389,7 @@ class TechnologyManager extends Component
 
         foreach ($costs as $resource => $amount) {
             $resourceModel = $this->village->resources()->where('type', $resource)->first();
-            if (!$resourceModel || $resourceModel->amount < $amount) {
+            if (! $resourceModel || $resourceModel->amount < $amount) {
                 return false;
             }
         }
@@ -484,7 +511,7 @@ class TechnologyManager extends Component
 
     public function toggleAvailableFilter()
     {
-        $this->showOnlyAvailable = !$this->showOnlyAvailable;
+        $this->showOnlyAvailable = ! $this->showOnlyAvailable;
         $this->addNotification(
             $this->showOnlyAvailable ? 'Showing only available technologies' : 'Showing all technologies',
             'info'
@@ -493,7 +520,7 @@ class TechnologyManager extends Component
 
     public function toggleResearchedFilter()
     {
-        $this->showOnlyResearched = !$this->showOnlyResearched;
+        $this->showOnlyResearched = ! $this->showOnlyResearched;
         $this->addNotification(
             $this->showOnlyResearched ? 'Showing only researched technologies' : 'Showing all technologies',
             'info'
@@ -502,7 +529,7 @@ class TechnologyManager extends Component
 
     public function toggleResearchingFilter()
     {
-        $this->showOnlyResearching = !$this->showOnlyResearching;
+        $this->showOnlyResearching = ! $this->showOnlyResearching;
         $this->addNotification(
             $this->showOnlyResearching ? 'Showing only researching technologies' : 'Showing all technologies',
             'info'
@@ -601,7 +628,7 @@ class TechnologyManager extends Component
 
     private function calculateTimeRemaining($research)
     {
-        if (!isset($research['estimated_completion'])) {
+        if (! isset($research['estimated_completion'])) {
             return 'Unknown';
         }
 
@@ -677,9 +704,9 @@ class TechnologyManager extends Component
         if ($timeInSeconds < 60) {
             return "{$timeInSeconds}s";
         } elseif ($timeInSeconds < 3600) {
-            return round($timeInSeconds / 60) . 'm';
+            return round($timeInSeconds / 60).'m';
         } else {
-            return round($timeInSeconds / 3600) . 'h';
+            return round($timeInSeconds / 3600).'h';
         }
     }
 
@@ -697,7 +724,7 @@ class TechnologyManager extends Component
 
     public function toggleRealTimeUpdates()
     {
-        $this->realTimeUpdates = !$this->realTimeUpdates;
+        $this->realTimeUpdates = ! $this->realTimeUpdates;
         $this->addNotification(
             $this->realTimeUpdates ? 'Real-time updates enabled' : 'Real-time updates disabled',
             'info'
@@ -706,7 +733,7 @@ class TechnologyManager extends Component
 
     public function toggleAutoRefresh()
     {
-        $this->autoRefresh = !$this->autoRefresh;
+        $this->autoRefresh = ! $this->autoRefresh;
         $this->addNotification(
             $this->autoRefresh ? 'Auto-refresh enabled' : 'Auto-refresh disabled',
             'info'

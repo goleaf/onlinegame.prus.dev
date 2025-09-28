@@ -8,8 +8,11 @@ use Livewire\Component;
 class RabbitMQDemo extends Component
 {
     public $playerId = 1;
+
     public $villageId = 1;
+
     public $message = '';
+
     public $messages = [];
 
     protected $rabbitMQ;
@@ -27,7 +30,7 @@ class RabbitMQDemo extends Component
             [
                 'action_type' => 'demo',
                 'timestamp' => now()->toISOString(),
-                'village_id' => $this->villageId
+                'village_id' => $this->villageId,
             ]
         );
 
@@ -57,8 +60,8 @@ class RabbitMQDemo extends Component
                 'defensive_bonus' => 0.12,
                 'battle_power' => [
                     'attacker' => 1800,
-                    'defender' => 1500
-                ]
+                    'defender' => 1500,
+                ],
             ]
         );
 
@@ -73,7 +76,7 @@ class RabbitMQDemo extends Component
                 'wood' => rand(1000, 5000),
                 'clay' => rand(1000, 5000),
                 'iron' => rand(1000, 5000),
-                'crop' => rand(1000, 5000)
+                'crop' => rand(1000, 5000),
             ]
         );
 
@@ -87,7 +90,7 @@ class RabbitMQDemo extends Component
             'Demo notification from RabbitMQ!',
             [
                 'type' => 'demo',
-                'timestamp' => now()->toISOString()
+                'timestamp' => now()->toISOString(),
             ]
         );
 
@@ -102,7 +105,7 @@ class RabbitMQDemo extends Component
             [
                 'player_id' => $this->playerId,
                 'message' => 'This is a demo email notification sent via RabbitMQ!',
-                'timestamp' => now()->toISOString()
+                'timestamp' => now()->toISOString(),
             ]
         );
 
@@ -117,8 +120,8 @@ class RabbitMQDemo extends Component
             'custom_data' => [
                 'demo' => true,
                 'message' => 'This is a custom demo event!',
-                'timestamp' => now()->toISOString()
-            ]
+                'timestamp' => now()->toISOString(),
+            ],
         ]);
 
         $this->addMessage('Custom game event published successfully!');
@@ -134,7 +137,7 @@ class RabbitMQDemo extends Component
                 'target_village_name' => 'Demo Target Village',
                 'trap_level' => 3,
                 'spy_defense' => 15,
-                'demo' => true
+                'demo' => true,
             ]
         );
 
@@ -150,7 +153,7 @@ class RabbitMQDemo extends Component
     {
         $this->messages[] = [
             'text' => $message,
-            'timestamp' => now()->format('H:i:s')
+            'timestamp' => now()->format('H:i:s'),
         ];
     }
 

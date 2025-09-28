@@ -12,13 +12,18 @@
 /*** BUILDINGS ** */
 /*** RESOURCES ** */
 /* Allgemeines aussehen mit runden ecken und co */
-.tab .tab-tl, .tab .tab-tc, .tab .tab-tr,
-.tab .tab-ml, .tab .tab-mc, .tab .tab-mr {
+.tab .tab-tl,
+.tab .tab-tc,
+.tab .tab-tr,
+.tab .tab-ml,
+.tab .tab-mc,
+.tab .tab-mr {
   background-color: transparent;
   background-position: left top;
 }
 
-.tab .tab-tc, .tab .tab-mc {
+.tab .tab-tc,
+.tab .tab-mc {
   margin-left: 4px;
   margin-right: 4px;
   width: auto;
@@ -60,8 +65,12 @@
 }
 
 .tab .tab-position,
-.tab .tab-tl, .tab .tab-tc, .tab .tab-tr,
-.tab .tab-ml, .tab .tab-mc, .tab .tab-mr {
+.tab .tab-tl,
+.tab .tab-tc,
+.tab .tab-tr,
+.tab .tab-ml,
+.tab .tab-mc,
+.tab .tab-mr {
   position: absolute;
   left: 0;
   top: 0;

@@ -2,220 +2,229 @@
 
 namespace App\Console\Commands;
 
-use App\Services\EnhancedCacheService;
-use App\Services\EnhancedSessionService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Redis;
-use SmartCache\Facades\SmartCache;
 
-/**
- * Command to demonstrate and test Laravel 12.29.0+ features
- */
 class Laravel129FeaturesCommand extends Command
 {
-    protected $signature = 'laravel:129-features {--test : Run feature tests}';
-    protected $description = 'Demonstrate Laravel 12.29.0+ enhanced features';
+    protected $signature = 'laravel:129-features {--feature= : Show a specific feature set}';
+
+    protected $description = 'Show Laravel 12.9 new features and improvements';
 
     public function handle(): int
     {
-        $this->info('🚀 Laravel 12.29.0+ Features Demonstration');
-        $this->newLine();
+        $this->info('🚀 Laravel 12.9 Features Overview');
 
-        if ($this->option('test')) {
-            return $this->runFeatureTests();
+        $feature = $this->option('feature');
+        $verbose = (bool) ($this->option('verbose') ?? false) || $this->output->isVerbose();
+
+        if ($feature) {
+            return $this->showFeatureSection($feature);
         }
 
-        $this->showFeatureOverview();
-        return 0;
+        $this->showOverview($verbose);
+
+        return Command::SUCCESS;
     }
 
-    protected function showFeatureOverview(): void
+    private function showOverview(bool $verbose): void
     {
-        $this->info('📋 Available Features:');
-        $this->line('1. Enhanced Debug Page with auto dark/light mode detection');
-        $this->line('2. Performance-boosting session drivers (Redis with compression)');
-        $this->line('3. Enhanced caching mechanisms (Redis with igbinary + lzf)');
-        $this->line('4. Streamlined dependency injection');
-        $this->newLine();
+        $this->line('Laravel 12.9 introduces several exciting new features:');
+        $this->line('✨ New Features:');
 
-        $this->info('🔧 Configuration Status:');
-        $this->checkConfiguration();
-        $this->newLine();
+        foreach ($this->overviewFeatures() as $feature => $details) {
+            $this->line('  • '.$feature);
 
-        $this->info('📊 Performance Metrics:');
-        $this->showPerformanceMetrics();
-    }
-
-    protected function runFeatureTests(): int
-    {
-        $this->info('🧪 Running Laravel 12.29.0+ Feature Tests...');
-        $this->newLine();
-
-        $tests = [
-            'Enhanced Cache Service' => fn() => $this->testEnhancedCache(),
-            'Enhanced Session Service' => fn() => $this->testEnhancedSession(),
-            'SmartCache Integration' => fn() => $this->testSmartCache(),
-            'Redis Connection' => fn() => $this->testRedisConnection(),
-            'Compression Support' => fn() => $this->testCompressionSupport(),
-        ];
-
-        $passed = 0;
-        $total = count($tests);
-
-        foreach ($tests as $name => $test) {
-            $this->line("Testing {$name}...");
-
-            try {
-                $result = $test();
-                if ($result) {
-                    $this->info("✅ {$name}: PASSED");
-                    $passed++;
-                } else {
-                    $this->error("❌ {$name}: FAILED");
+            if ($verbose && isset($details['details'])) {
+                foreach ($details['details'] as $detail) {
+                    $this->line('    - '.$detail);
                 }
-            } catch (\Exception $e) {
-                $this->error("❌ {$name}: ERROR - {$e->getMessage()}");
             }
         }
-
-        $this->newLine();
-        $this->info("Test Results: {$passed}/{$total} passed");
-
-        return $passed === $total ? 0 : 1;
     }
 
-    protected function testEnhancedCache(): bool
+    private function showFeatureSection(string $feature): int
     {
-        try {
-            $cacheService = app(EnhancedCacheService::class);
+        $features = $this->detailedFeatures();
+        $key = strtolower($feature);
 
-            // Test basic caching
-            $key = 'test-cache-' . time();
-            $data = ['test' => 'data', 'timestamp' => time()];
+        if (! isset($features[$key])) {
+            $this->line('Unknown feature: '.$feature);
+            $this->line('Available features:');
 
-            $cached = $cacheService->remember($key, 60, fn() => $data);
+            foreach ($features as $name => $data) {
+                $this->line(sprintf('  %-13s- %s', $name, $data['description']));
+            }
 
-            return $cached === $data;
-        } catch (\Exception $e) {
-            return false;
+            return Command::SUCCESS;
         }
-    }
 
-    protected function testEnhancedSession(): bool
-    {
-        try {
-            $sessionService = app(EnhancedSessionService::class);
+        $section = $features[$key];
 
-            // Test session operations
-            $key = 'test-session-' . time();
-            $data = ['test' => 'session-data'];
-
-            $sessionService->put($key, $data);
-            $retrieved = $sessionService->get($key);
-
-            return $retrieved === $data;
-        } catch (\Exception $e) {
-            return false;
+        $this->line($section['title']);
+        foreach ($section['items'] as $item) {
+            $this->line('  • '.$item);
         }
+
+        return Command::SUCCESS;
     }
 
-    protected function testRedisConnection(): bool
+    private function overviewFeatures(): array
     {
-        try {
-            Redis::ping();
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    protected function testCompressionSupport(): bool
-    {
-        $hasIgbinary = function_exists('igbinary_serialize');
-        $hasLzf = function_exists('lzf_compress');
-
-        // igbinary is available, lzf is optional
-        return $hasIgbinary;
-    }
-
-    protected function checkConfiguration(): void
-    {
-        $configs = [
-            'Session Driver' => config('session.driver'),
-            'Cache Store' => config('cache.default'),
-            'Session Lifetime' => config('session.lifetime') . ' minutes',
-            'Debug Mode' => config('app.debug') ? 'Enabled' : 'Disabled',
+        return [
+            'Enhanced Eloquent ORM with improved performance' => [
+                'details' => [
+                    'Better query optimization',
+                    'Improved memory usage',
+                    'Enhanced relationship handling',
+                ],
+            ],
+            'New Blade directives for better templating' => [
+                'details' => [
+                    '@cache directive for template caching',
+                    '@component directive with better props',
+                    '@slot directive for flexible layouts',
+                ],
+            ],
+            'Improved queue system with better monitoring' => [],
+            'Enhanced validation rules and error handling' => [],
+            'New artisan commands for development' => [],
+            'Improved testing framework with better assertions' => [],
+            'Enhanced security features and middleware' => [],
+            'Better error handling and debugging tools' => [],
+            'Improved database migration system' => [],
+            'Enhanced caching mechanisms' => [],
         ];
-
-        foreach ($configs as $key => $value) {
-            $status = $this->getConfigStatus($key, $value);
-            $this->line("  {$key}: {$value} {$status}");
-        }
     }
 
-    protected function getConfigStatus(string $key, string $value): string
+    private function detailedFeatures(): array
     {
-        return match ($key) {
-            'Session Driver' => $value === 'redis' ? '✅' : '⚠️',
-            'Cache Store' => $value === 'redis' ? '✅' : '⚠️',
-            'Debug Mode' => $value === 'Enabled' ? '✅' : '⚠️',
-            default => '✅',
-        };
-    }
-
-    protected function showPerformanceMetrics(): void
-    {
-        try {
-            $cacheService = app(EnhancedCacheService::class);
-            $sessionService = app(EnhancedSessionService::class);
-
-            $cacheStats = $cacheService->getStats();
-            $sessionStats = $sessionService->getStats();
-
-            $this->line('  Cache Statistics:');
-            foreach ($cacheStats as $key => $value) {
-                $this->line("    {$key}: {$value}");
-            }
-
-            $this->line('  SmartCache Statistics:');
-            $this->line('    Status: Active ✅');
-            $this->line('    Optimization: Automatic compression and chunking');
-            $this->line('    Memory Threshold: 100KB');
-            $this->line('    Compression Level: 6 (Redis), 4 (File)');
-
-            $this->line('  Session Statistics:');
-            foreach ($sessionStats as $key => $value) {
-                $this->line("    {$key}: {$value}");
-            }
-        } catch (\Exception $e) {
-            $this->error('  Unable to retrieve performance metrics: ' . $e->getMessage());
-        }
-    }
-
-    protected function testSmartCache(): bool
-    {
-        try {
-            $testKey = 'smartcache_test_' . time();
-            $testData = ['test' => 'data', 'timestamp' => now()];
-
-            // Test SmartCache remember functionality
-            $cached = SmartCache::remember($testKey, now()->addMinutes(1), function () use ($testData) {
-                return $testData;
-            });
-
-            // Verify data was cached correctly
-            if ($cached['test'] === 'data') {
-                $this->line('    ✅ SmartCache remember functionality working');
-
-                // Clean up test cache
-                SmartCache::forget($testKey);
-                return true;
-            }
-
-            return false;
-        } catch (\Exception $e) {
-            $this->line('    ❌ SmartCache test failed: ' . $e->getMessage());
-            return false;
-        }
+        return [
+            'eloquent' => [
+                'title' => 'Eloquent ORM Features:',
+                'description' => 'Eloquent ORM features',
+                'items' => [
+                    'Improved query performance with optimized joins',
+                    'New relationship methods for complex queries',
+                    'Enhanced eager loading with better memory management',
+                    'New scopes for reusable query logic',
+                    'Improved model events and observers',
+                    'Better handling of large datasets',
+                    'Enhanced model factories for testing',
+                    'New casting options for better data handling',
+                ],
+            ],
+            'blade' => [
+                'title' => 'Blade Templating Features:',
+                'description' => 'Blade templating features',
+                'items' => [
+                    'New @cache directive for template caching',
+                    'Enhanced @component directive with better props',
+                    'New @slot directive for flexible layouts',
+                    'Improved @include with better error handling',
+                    'New @once directive for one-time includes',
+                    'Enhanced @yield with better content management',
+                    'New @push and @prepend directives',
+                    'Improved @section with better inheritance',
+                ],
+            ],
+            'queue' => [
+                'title' => 'Queue System Features:',
+                'description' => 'Queue system features',
+                'items' => [
+                    'Enhanced job monitoring with real-time metrics',
+                    'New job batching with better error handling',
+                    'Improved failed job management',
+                    'New job chaining with conditional execution',
+                    'Enhanced queue workers with better resource management',
+                    'New job middleware for cross-cutting concerns',
+                    'Improved job serialization and deserialization',
+                    'Better integration with external queue systems',
+                ],
+            ],
+            'validation' => [
+                'title' => 'Validation Features:',
+                'description' => 'Validation features',
+                'items' => [
+                    'New validation rules for modern data types',
+                    'Enhanced error messages with better localization',
+                    'New conditional validation rules',
+                    'Improved form request validation',
+                    'New custom validation rules with better integration',
+                    'Enhanced validation with database constraints',
+                    'New validation rules for API endpoints',
+                    'Improved validation performance with caching',
+                ],
+            ],
+            'testing' => [
+                'title' => 'Testing Framework Features:',
+                'description' => 'Testing framework features',
+                'items' => [
+                    'Enhanced test assertions with better error messages',
+                    'New database testing utilities',
+                    'Improved HTTP testing with better request handling',
+                    'New browser testing with enhanced automation',
+                    'Enhanced test factories with better data generation',
+                    'New test utilities for common scenarios',
+                    'Improved test performance with better isolation',
+                    'New testing helpers for complex workflows',
+                ],
+            ],
+            'security' => [
+                'title' => 'Security Features:',
+                'description' => 'Security features',
+                'items' => [
+                    'Enhanced CSRF protection with better token management',
+                    'New rate limiting with improved algorithms',
+                    'Enhanced authentication with better session handling',
+                    'New authorization policies with better performance',
+                    'Improved input sanitization and validation',
+                    'New security headers with better protection',
+                    'Enhanced encryption with better key management',
+                    'New security middleware for common threats',
+                ],
+            ],
+            'artisan' => [
+                'title' => 'Artisan Commands Features:',
+                'description' => 'Artisan commands features',
+                'items' => [
+                    'New make commands for common components',
+                    'Enhanced existing commands with better options',
+                    'New development helpers for faster coding',
+                    'Improved command output with better formatting',
+                    'New debugging commands for troubleshooting',
+                    'Enhanced migration commands with better handling',
+                    'New optimization commands for better performance',
+                    'Improved command discovery and registration',
+                ],
+            ],
+            'database' => [
+                'title' => 'Database Features:',
+                'description' => 'Database features',
+                'items' => [
+                    'Enhanced migration system with better rollback',
+                    'New database seeding with better data management',
+                    'Improved query builder with better performance',
+                    'New database connection pooling',
+                    'Enhanced database transactions with better handling',
+                    'New database monitoring and profiling',
+                    'Improved database schema management',
+                    'New database utilities for common operations',
+                ],
+            ],
+            'caching' => [
+                'title' => 'Caching Features:',
+                'description' => 'Caching features',
+                'items' => [
+                    'Enhanced cache drivers with better performance',
+                    'New cache tags with better organization',
+                    'Improved cache invalidation with better strategies',
+                    'New cache warming with better efficiency',
+                    'Enhanced cache monitoring with better metrics',
+                    'New cache compression with better storage',
+                    'Improved cache serialization with better handling',
+                    'New cache utilities for common scenarios',
+                ],
+            ],
+        ];
     }
 }

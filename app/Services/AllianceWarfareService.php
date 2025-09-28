@@ -4,19 +4,17 @@ namespace App\Services;
 
 use App\Models\Game\Alliance;
 use App\Models\Game\Movement;
-use App\Models\Game\Player;
 use App\Models\Game\Report;
 use App\Models\Game\Village;
-use App\Services\BattleSimulationService;
-use App\Services\DefenseCalculationService;
-use App\Services\RabbitMQService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AllianceWarfareService
 {
     protected $battleService;
+
     protected $defenseService;
+
     protected $rabbitMQ;
 
     public function __construct()
@@ -78,11 +76,11 @@ class AllianceWarfareService
             ];
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to declare war: ' . $e->getMessage());
+            Log::error('Failed to declare war: '.$e->getMessage());
 
             return [
                 'success' => false,
-                'message' => 'Failed to declare war: ' . $e->getMessage(),
+                'message' => 'Failed to declare war: '.$e->getMessage(),
             ];
         }
     }
@@ -438,13 +436,13 @@ class AllianceWarfareService
         $content .= "Current War Score: {$war->war_score}\n\n";
 
         $content .= "=== BATTLE POWER ===\n";
-        $content .= 'Attacker Power: ' . number_format($battleData['attacker_power'], 0) . "\n";
-        $content .= 'Defender Power: ' . number_format($battleData['defender_power'], 0) . "\n\n";
+        $content .= 'Attacker Power: '.number_format($battleData['attacker_power'], 0)."\n";
+        $content .= 'Defender Power: '.number_format($battleData['defender_power'], 0)."\n\n";
 
         if (isset($battleData['alliance_bonuses'])) {
             $content .= "=== ALLIANCE BONUSES ===\n";
-            $content .= 'Attacker Bonus: ' . number_format($battleData['alliance_bonuses']['attacker_bonus'] * 100, 1) . "%\n";
-            $content .= 'Defender Bonus: ' . number_format($battleData['alliance_bonuses']['defender_bonus'] * 100, 1) . "%\n\n";
+            $content .= 'Attacker Bonus: '.number_format($battleData['alliance_bonuses']['attacker_bonus'] * 100, 1)."%\n";
+            $content .= 'Defender Bonus: '.number_format($battleData['alliance_bonuses']['defender_bonus'] * 100, 1)."%\n\n";
         }
 
         return $content;

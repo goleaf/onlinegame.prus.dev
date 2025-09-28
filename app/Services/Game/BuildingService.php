@@ -2,10 +2,9 @@
 
 namespace App\Services\Game;
 
-use App\Models\Game\Village;
 use App\Models\Game\Building;
 use App\Models\Game\BuildingType;
-use App\Models\Game\Resource;
+use App\Models\Game\Village;
 use Illuminate\Support\Facades\DB;
 use SmartCache\Facades\SmartCache;
 
@@ -13,7 +12,8 @@ class BuildingService
 {
     public function __construct(
         private ResourceService $resourceService
-    ) {}
+    ) {
+    }
 
     /**
      * Check if building requirements are met
@@ -29,20 +29,23 @@ class BuildingService
                 case 'building_level':
                     foreach ($value as $buildingType => $requiredLevel) {
                         $building = $village->buildings()->where('building_type', $buildingType)->first();
-                        if (!$building || $building->level < $requiredLevel) {
+                        if (! $building || $building->level < $requiredLevel) {
                             return false;
                         }
                     }
+
                     break;
                 case 'village_level':
                     if ($village->level < $value) {
                         return false;
                     }
+
                     break;
                 case 'population':
                     if ($village->population < $value) {
                         return false;
                     }
+
                     break;
             }
         }
@@ -72,6 +75,7 @@ class BuildingService
     public function getConstructionTime(BuildingType $buildingType, int $currentLevel): int
     {
         $baseTime = $buildingType->construction_time ?? 60; // 1 minute base
+
         return (int) ($baseTime * pow(1.2, $currentLevel));
     }
 
@@ -85,7 +89,7 @@ class BuildingService
         $currentLevel = $existingBuilding ? $existingBuilding->level : 0;
 
         // Check requirements
-        if (!$this->meetsRequirements($village, $buildingType->requirements)) {
+        if (! $this->meetsRequirements($village, $buildingType->requirements)) {
             return [
                 'success' => false,
                 'message' => 'Building requirements not met',
@@ -97,7 +101,7 @@ class BuildingService
         $costs = $this->getBuildingCosts($buildingType, $currentLevel);
 
         // Check if village has enough resources
-        if (!$this->resourceService->hasEnoughResources($village, $costs)) {
+        if (! $this->resourceService->hasEnoughResources($village, $costs)) {
             return [
                 'success' => false,
                 'message' => 'Insufficient resources for construction',
@@ -109,7 +113,7 @@ class BuildingService
         // Calculate construction time
         $constructionTime = $this->getConstructionTime($buildingType, $currentLevel);
 
-        DB::transaction(function () use ($village, $buildingType, $currentLevel, $costs, $constructionTime) {
+        DB::transaction(function () use ($village, $buildingType, $currentLevel, $costs, $constructionTime): void {
             // Deduct resources
             $this->resourceService->deductResources($village, $costs);
 
@@ -279,8 +283,8 @@ class BuildingService
                     'level' => $building->level,
                     'construction_started_at' => $building->construction_started_at,
                     'construction_completed_at' => $building->construction_completed_at,
-                    'is_under_construction' => $building->construction_started_at && !$building->construction_completed_at,
-                    'remaining_time' => $building->construction_completed_at ? 
+                    'is_under_construction' => $building->construction_started_at && ! $building->construction_completed_at,
+                    'remaining_time' => $building->construction_completed_at ?
                         max(0, $building->construction_completed_at->diffInSeconds(now())) : null,
                 ];
             })->toArray();
@@ -320,12 +324,12 @@ class BuildingService
     private function canBuild(Village $village, BuildingType $buildingType): bool
     {
         // Check if building is active
-        if (!$buildingType->is_active) {
+        if (! $buildingType->is_active) {
             return false;
         }
 
         // Check requirements
-        if (!$this->meetsRequirements($village, $buildingType->requirements)) {
+        if (! $this->meetsRequirements($village, $buildingType->requirements)) {
             return false;
         }
 
